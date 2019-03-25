@@ -1,0 +1,83 @@
+<!--dialog评价-->
+<template>
+  <ui-page>
+      <ui-view class="weui-cells__title">评价内容</ui-view>
+      <ui-view class="sample_content">
+          <ui-textarea ui:model="{{textPJ}}" placeholder="请填写评价内容" rows="3" auto-height maxlength="125"></ui-textarea>
+      </ui-view>
+      <!--<ui-row border-bottom  border-top height="40">
+        <ui-col  vertical-align="middle" align="left" span="5">
+          <ui-view class="weui-cells__title">评分</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" span="7">
+          <ui-star ui:if="{{starShow}}" bindchange="startChange" ui:value="{{numFen}}"  half=false star-width="26" star-height="26"></ui-star>
+        </ui-col>
+      </ui-row>-->
+      
+      
+      <ui-view class="btn_win">
+          <ui-button type="primary" bindtap="confirmSelect">确认</ui-button>
+      </ui-view>
+  </ui-page>
+</template>
+
+
+<script>
+export default {
+  data () {
+    return {
+      numFen: '',
+      textPJ:'',
+      coachId3:'',
+      starShow:false
+    }
+  },
+  mounted () {
+    this.$DialogOpen((data) => {
+      if (data) {
+        this.textPJ = data.textPJ
+        this.numFen = data.numFen
+        this.coachId3 = data.coachId2
+        this.starShow = true
+        console.log(data.coachId2)
+      }
+    })
+     
+  },
+
+  methods: {
+    confirmSelect () {
+      //保存评论
+      this.$http('POST',ui.getApp().apis.RATEDETAILSAVE,{
+           traineeId:this.getUser().id,
+           coachId:this.coachId3,
+           rate:this.numFen,
+           traineeName:this.getUser().name,
+           comment:this.textPJ
+          },(res)=>{
+            console.log("给教练评价"+JSON.stringify(res))
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            ui.hideDialog({result:res.result})
+            this.numFen = ''//关闭窗口时清除弹窗数据
+            this.textPJ = ''
+            this.coachId = ''
+            this.starShow = false
+      })
+
+    },
+    startChange (val) {
+      this.numFen = val+''
+    }
+  }
+}
+
+</script>
+
+<style lang="less">
+  .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+</style>

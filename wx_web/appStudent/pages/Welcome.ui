@@ -1,0 +1,154 @@
+<!---->
+<template>
+  <ui-page top=0 class="welcomeSty" style="overflow:hidden">
+    <!-- <ui-nav-bar slot="nav-bar" custom-style="{{ {'color':'#fff', 'background': 'linear-gradient(to right,#3799ee, #2890ea)'} }}"> -->
+      <!-- <ui-row height="46">
+        <ui-col vertical-align="middle" align="center" width="60">
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">登录</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="60">
+        </ui-col>
+      </ui-row> -->
+    <!-- </ui-nav-bar> -->
+    <ui-view class="top_logo">
+      <ui-image src="{{require('#/images/loginHeader.png')}}" mode="widthFix" width="130"></ui-image>
+    </ui-view>
+    <ui-view class="appName">
+      <ui-view>学员助手</ui-view>
+      <ui-view class="appNameEnglish">Student Assistant</ui-view>
+    </ui-view>
+    <ui-view class="welcomeTit">
+      正在加载中,请稍候....
+    </ui-view>
+    <ui-view class="progressSty">
+      <ui-progress percent="{{ percent }}" border-radius="10" stroke-width="16" active-color="#60BCF7, #007DCC"></ui-progress>
+    </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationStyle: 'custom',
+  },
+  data() {
+    return {
+      percent: 0,
+    }
+  },
+  beforeCreate() {
+   
+   
+  },
+  watch:{
+    percent:(n,o)=>{
+         
+          if(n==100){
+            let tok = localStorage.getItem('userInfo')
+            if(tok){
+                ui.redirectTo({
+                  url: '/pages/index'
+              })
+              }else{
+                ui.redirectTo({
+                  url: '/pages/dialogs/loginInterface'
+                })
+              }
+            }
+          }
+    
+  },
+  methods: {
+  
+    handleProgressChange () {
+      if (this.percent > 0) {
+        this.percent = 0
+      }
+      let welcomeThis = this
+      var script = document.createElement("script")
+      script.type = "text/javascript"
+      script.src='./static/utils/jweixin-1.2.0.js'
+      document.body.appendChild(script)
+
+      script.onload = function(){ // 微信js初始化 回调函数
+      console.log('*****wx',wx)
+      // 微信js初始化成功后引用 微信功能方法
+          ui.getApp().wxUtil = require('../static/ajax/wechatUtil.js').default
+          var code =  ui.getApp().wxUtil.getQueryString("code")
+          if(code){
+            /**ui.getApp().wxUtil.getOpenid(code,(res)=>{
+                  if(res){
+                  sessionStorage.setItem("openid",res);//存储openid
+                  }
+                  //缓存获取到的openid并跳转界面
+                  let sid = window.setInterval(() => {
+                    welcomeThis.percent++
+                    if (welcomeThis.percent >= 100) {
+                      welcomeThis.disabled = false
+                      window.clearInterval(sid)
+                    }
+                  }, 10)
+            });**/
+            let sid = window.setInterval(() => {
+                    welcomeThis.percent++
+                    if (welcomeThis.percent >= 100) {
+                      welcomeThis.disabled = false
+                      window.clearInterval(sid)
+                    }
+            }, 10)
+            sessionStorage.setItem("wxCode",code);
+          }else{
+            let urlto = ui.getApp().wxUtil.getCode()
+            console.log(urlto)
+            window.location.href = urlto
+          }
+      }
+    }
+  },
+  mounted() {
+    this.handleProgressChange()
+    
+  },
+  created () {
+    
+  }
+}
+</script>
+
+<style lang="less">
+.welcomeSty{
+  background:url(../static/img/bankbank.gif)  no-repeat center center;
+  background-size: 100% 100%;
+}
+.top_logo{
+  text-align: center;
+  margin-top: 20%;
+  .ui-image-container{
+    margin: auto;
+  }
+}
+.welcomeTit{
+  padding: 20% 0; 
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+}
+.progressSty{
+  padding: 0 30rpx;
+  position: fixed;
+  bottom: 50rpx;
+  width: 100%;
+}
+.appName{
+  color: #fff;
+  font-size: 40rpx;
+  text-align: center;
+  .appNameEnglish{
+    font-size: 30rpx;
+
+  }
+}
+</style>

@@ -1,0 +1,152 @@
+<!--新增邀请，提交邀请对象的身份证号手机号姓名等信息，以备查验-->
+<template>
+  <ui-page>
+    <ui-view class="form_content">
+      <ui-row height="50">
+        <ui-col vertical-align="middle" align="center" width="80">
+          <ui-view class="name">姓名</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="left" space-right="10">
+          <ui-input maxlength="20" placeholder="被邀请对象姓名" ui:model="{{ ivtName }}"></ui-input>
+        </ui-col>
+      </ui-row>
+      <ui-row height="50">
+        <ui-col vertical-align="middle" align="center" width="80">
+          <ui-view class="name">手机号</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="left" space-right="10">
+          <ui-input type="number" maxlength="11" placeholder="被邀请对象手机号" ui:model="{{ ivtPhone }}"></ui-input>
+        </ui-col>
+      </ui-row>
+      <ui-row height="50">
+        <ui-col vertical-align="middle" align="center" width="80">
+          <ui-view class="name">身份证</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="left" space-right="10">
+          <ui-input maxlength="18" placeholder="被邀请对象身份证号" ui:model="{{ ivtIdCard }}"></ui-input>
+        </ui-col>
+      </ui-row>
+    </ui-view>
+
+
+    <ui-view class="btn_win">
+          <ui-button type="primary" bindtap="submitForm">提交</ui-button>
+    </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  
+  data() {
+    return {
+      ivtName:'',
+      ivtPhone:'',
+      ivtIdCard:''
+    }
+  },
+  methods: {
+    submitForm:function(){
+      let myregPhone=/^[1][3,4,5,6,7,8][0-9]{9}$/;
+      //let myregIdCard=/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/;
+      let myregIdCard = /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$)/
+      
+      if(this.ivtName === ''){
+        ui.showToast({ title: '请输入姓名' })
+        return 
+      } 
+      if(this.ivtPhone === ''){
+        ui.showToast({ title: '请输入手机号' })
+        return
+      } 
+      if( ! myregPhone.test(this.ivtPhone)){
+        ui.showToast({ title: '手机号有误' })
+        return
+      }
+      if(this.ivtIdCard === ''){
+        ui.showToast({ title: '请输入身份证' })
+        return
+      }
+      if( ! myregIdCard.test(this.ivtIdCard)){
+        ui.showToast({ title: '身份证号有误' })
+        return
+      }
+      this.$http('POST',ui.getApp().apis.INVITEFRIENDSAVE,{
+           inviteFriendPhone:this.ivtPhone,
+           inviteFriendNo:this.ivtIdCard,
+           inviteFriendName:this.ivtName,
+           traineeId:this.getUser().id,
+           traineeName:this.getUser().name
+          },(res)=>{
+            ui.hideDialog({result:true})
+            this.ivtName = ''
+            this.ivtPhone = ''
+            this.ivtIdCard = ''
+            
+          },(res)=>{
+            ui.showToast({ title: '提交信息失败！', duration: 2000 })
+      })
+    }
+  },
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+ .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+.form_content{
+  padding: 10px 0 0px 10px;
+  background: #fff;
+  .ui-row{
+    .mix-1px(0, 0, 1, 0, #ccc);
+    &.last_row{
+      border: 0;
+    }
+    .name{
+      font-size: 32rpx;
+      font-weight: 600;
+      color: #050505;
+      &.name1{
+        padding-top: 10px;
+      }
+    }
+    .ui-input{
+      border: 0;
+      padding: 0;
+      background: transparent;
+    }
+    .address_book{
+      color: #2281FF;
+      font-size: 14px;
+    }
+    .map_address{
+      font-size: #c2c2c2;
+      font-size: 14px;
+    }
+    .tag-before{
+      border-radius: 5px;
+      border: 1px solid #F5F5F5;
+      width: 65px;
+      text-align: center;
+      line-height: 25px;
+      margin-top: 5px;
+      &.select-class{
+        border-radius: 5px;
+        width: 65px;
+        text-align: center;
+        line-height: 25px;
+        margin-top: 5px;
+        border: 1px solid #B9DAFE;
+        background: #F8FBFF;
+        color: #3785E4;
+      }
+    }
+    
+  }
+}
+</style>

@@ -1,0 +1,108 @@
+<!--xueyuan-->
+<template>
+  <ui-page>
+      <ui-segment bindchange="changeTab1" index="{{value}}">
+      <ui-segment-item>
+          未结业
+      </ui-segment-item>
+      <ui-segment-item>
+          已结业
+      </ui-segment-item>
+      <ui-segment-item>
+          未签到
+      </ui-segment-item>
+        </ui-segment>
+      <ui-view class="tabContent" ui:show="{{contentshow === 0}}">
+          <ui-row style="font-size:18px" height=60 border-top=true border-bottom=true bindtap="goxq()">
+         <ui-col span=2>
+           <ui-image
+              src="{{ portraitUrl }}"
+              mode='aspectFill'
+              width="60"
+              height="60"
+              class="head_portrait"
+              ></ui-image>
+         </ui-col>
+         <ui-col vertical-align="middle">
+           gogiong  13567789877
+         </ui-col>
+         <ui-col span=2 vertical-align="middle">
+           未结业
+         </ui-col>
+       </ui-row>
+      </ui-view>
+      <ui-view class="tabContent" ui:show="{{contentshow === 1}}">
+          <ui-row style="background-color:#73c33a;font-size:18px" height=60 border-top=true border-bottom=true bindtap="goxq()">
+         <ui-col span=2>
+           <ui-image
+              src="{{ portraitUrl }}"
+              mode='aspectFill'
+              width="60"
+              height="60"
+              class="head_portrait"
+              ></ui-image>
+         </ui-col>
+         <ui-col vertical-align="middle">
+           gogiong  13567789877
+         </ui-col>
+         <ui-col span=2 vertical-align="middle">
+           已结业
+         </ui-col>
+       </ui-row>
+      </ui-view>
+      <ui-view class="tabContent" ui:show="{{contentshow === 2}}">
+          <ui-row style="background-color:#ff0000;font-size:18px" height=60 border-top=true border-bottom=true bindtap="goxq()">
+         <ui-col span=2>
+           <ui-image
+              src="{{ portraitUrl }}"
+              mode='aspectFill'
+              width="60"
+              height="60"
+              class="head_portrait"
+              ></ui-image>
+         </ui-col>
+         <ui-col vertical-align="middle">
+           gogiong  13567789877
+         </ui-col>
+         <ui-col span=2 vertical-align="middle">
+           未联系
+         </ui-col>
+       </ui-row>
+      </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "我的学员"
+  },
+  data() {
+    return {
+      value: 1,
+      contentshow: 1,
+      portraitUrl:require('#/static/img/123.png')
+    }
+  },
+  methods: {
+    changeTab1 (index) {
+      this.contentshow = index
+    },
+    goxq(){
+      ui.navigateTo({
+        url: 'studentxq'
+      })
+    }
+  },
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+ .tabContent{
+  margin:10px
+}
+.head_portrait {
+      border-radius: 50%; 
+}
+</style>

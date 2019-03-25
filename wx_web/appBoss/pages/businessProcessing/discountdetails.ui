@@ -1,0 +1,470 @@
+<!--discountdetails-->
+<template>
+  <ui-page>
+    <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'solid 2px #f2f2f2','background-color':'rgba(255, 255, 255, 1)'} }}">
+              <ui-row height="46">
+                <ui-col vertical-align="middle" align="center" width="60" bindtap="goBack">
+                  <ui-icon type="arrow-left" font-size="24"></ui-icon>
+                </ui-col>
+                <ui-col vertical-align="middle" align="center">
+                  <span class="nav-bar-center-text">{{title}}</span>
+                </ui-col>
+                <ui-col align="center" width="60">
+                  
+                </ui-col>
+              </ui-row>
+    </ui-nav-bar>
+    <ui-view>
+       <ui-row height="120" class="header_top">
+          <ui-col vertical-align="middle" align="center" width="90">
+            <ui-view class="head_portrait">
+            </ui-view>
+            <ui-image
+              src="{{studentMess.headImg }}"
+              mode='aspectFill'
+              width="100"
+              height="100"
+              class="head_portrait"
+            ></ui-image>
+          </ui-col>
+        </ui-row>
+      </ui-view>
+     <ui-view>
+       
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           姓名
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.name}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           身份证号码
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.idCardNo}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           报名点
+         </ui-col>
+         <ui-col vertical-align="middle" width=200 align="right" space-right=20 class="listContent">
+           {{studentMess.jgmc}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           申请车型
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.carType}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           手机号
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent cus-theme-color" bindtap = "calPhone(studentMess.phone)">
+           {{studentMess.phone}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           报名时间
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.registrationTime}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           优惠项
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.reduceName}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           优惠金额
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.reducePrice}}
+         </ui-col>
+       </ui-row>
+       <ui-view ui:show="{{showMore}}">
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           流水号
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.serialNum}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           有效期
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.indateEndTime}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           当前状态
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{fanyiStatus('ZDCLK1010',studentMess.status)}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           是否分期
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{fanyiStatus('ZDCLK1014',studentMess.installment)}}
+         </ui-col>
+       </ui-row>
+       
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           是否欠费
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.arrearage == '10' ?'欠费':'不欠费'}}
+         </ui-col>
+       </ui-row>
+       <ui-row ui:show="{{(studentMess.arrearage == '00') ? false : true}}" height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           欠费金额
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.oweAmount}}
+         </ui-col>
+       </ui-row>
+
+       <ui-row  height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科一状态
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{fanyiStatus('ZDCLK1011',studentMess.firSub)}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科一初考缴费时间
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.firSubPaymentTime}}
+         </ui-col>
+       </ui-row>
+
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科一初考约考时间
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.firSubTestTime}}
+         </ui-col>
+       </ui-row>
+
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科一考试次数
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+          {{studentMess.firSubTestNum}}
+         </ui-col>
+       </ui-row>
+
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科二状态
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{fanyiStatus('ZDCLK1012',studentMess.secSub)}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科二教练员
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.secondSubjectCoach}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科二初考缴费时间
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.secSubPaymentTime}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+          科二初考约考时间
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.secSubTestTime}}
+         </ui-col>
+       </ui-row>
+
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+          科二考试次数
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.secSubTestNum}}
+         </ui-col>
+       </ui-row>
+
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+          科三状态
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{fanyiStatus('ZDCLK1012',studentMess.thirdSub)}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+          科三教练员
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.thirdSubjectCoach}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科三初考缴费时间
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.thirdSubPaymentTime}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           科三初考约考时间
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.thirdSubTestTime}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+          科三考试次数
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{studentMess.thirdSubTestNum}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+          科四状态
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{fanyik4(studentMess.forthSub)}}
+         </ui-col>
+       </ui-row>
+       </ui-view>
+       
+     </ui-view>
+
+     <ui-view>
+       <ui-row space-top=25 space-bottom=25>
+         <ui-col space=30 ui:show={{yhsh}}>
+           <ui-button bindtap="tongguo()" formType="submit" type="primary" class="submit">审核通过</ui-button>
+         </ui-col>
+         <ui-col space=30 ui:show={{yhch}}>
+           <ui-button bindtap="youhuiCH()" formType="submit" type="primary" class="submit">优惠撤回</ui-button>
+         </ui-col>
+         <ui-col space=30 ui:show={{xxwh}}>
+           <ui-button bindtap="updateInfo()" formType="submit" type="primary" class="submit">修改信息</ui-button>
+         </ui-col>
+       </ui-row>
+     </ui-view>
+
+     <!--<img ui:if="{{okshow}}" class="OKIMG" src="static/img/ok.png">-->
+  </ui-page>
+</template>
+
+<script>
+import mixin from '#/static/ajax/mixin'
+export default {
+  config: {
+    navigationStyle: 'custom'
+  },
+  mixins:[mixin],
+  data() {
+    return {
+      studentMess:{},
+      showMore:false,//查看详情时展示
+      yhsh:false,//用户优惠审核
+      yhch:false,//用户优惠撤回
+      xxwh:false,//信息维护
+      title:'优惠信息审核'
+    }
+  },
+  methods: {
+    tongguo(){
+      this.$http('get',ui.getApp().apis.YWCL.AUDIT,{id:this.studentMess.id,reduceStatus:'10'},(res)=>{
+        if(res.code == 200){
+          ui.showToast({ title: '审批通过', icon: 'success'})
+          
+            this.yhsh = false
+  
+        }
+      })
+    },
+    youhuiCH(){//优惠撤回
+       this.$http('get',ui.getApp().apis.YWCL.RECALLUSERAUDITING,{id:this.studentMess.id,reduceStatus:'00'},(res)=>{
+        if(res.code == 200){
+          ui.showToast({ title: '撤回成功!', icon: 'success'})
+           this.yhch = false
+        }
+      })
+    },
+    goBack(){
+      ui.navigateBack()
+    },
+    updateInfo(){
+      import(`#/pages/dialogs/dialogUserUpdate.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '修改信息',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#666'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                userItem:this.studentMess
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                if (data && data.type==true) {
+                   ui.showToast({ title: '修改成功！', icon: 'success', duration: 2000 })
+                   if(data.item){
+                     this.studentMess = data.item
+                     sessionStorage.setItem("bossStudentMessThis",JSON.stringify(this.studentMess)) //再次缓存数据，防止刷新界面时数据调用旧缓存
+                   }
+                   this.xxwh = false
+                }
+              }
+            })
+        })
+    },
+    calPhone(phone){
+        if(phone){
+            ui.makePhoneCall({
+              phoneNumber: phone
+            })
+        }else{
+            ui.showToast({ title: '暂无手机号'})
+        }
+        
+    },
+    fanyiStatus(lmdm,status){//返回当前翻译的数据字典
+       return this.fanyiAppZd(lmdm,status)
+    },
+    fanyik4:function(key){//翻译科目四状态
+        if(key == '00'){
+          key ='已约考'
+        }
+        if(key == '10'){
+          key ='不合格'
+        }
+        if(key == '20'){
+          key ='合格'
+        }
+        return key
+    }
+  },
+  mounted() {
+    
+  },
+  created () {
+    this.studentMess =  JSON.parse(sessionStorage.getItem("bossStudentMessThis"))   
+    if(! this.studentMess.id){
+      ui.navigateBack()
+      ui.showToast({ title: '请选择学员'})
+    }else{
+      
+      if(this.studentMess.headImg){
+          this.studentMess.headImg = this.studentMess.headImg//这里不加前缀是因为列表页已经加过了
+        }else{
+          this.studentMess.headImg = require('#/images/portrait_bg.png')
+      }
+    }
+
+    let type = ui.getQuery().type
+    if(type == 'detail'){
+      this.title = '学员详情'
+      this.showMore = true
+    }
+    
+    if(type == 'yhsh'){
+      this.title = '优惠信息审核'
+      this.yhsh = true
+    }
+
+    if(type == 'yhch'){
+      this.title = '优惠撤回'
+      this.yhch = true
+    }
+
+    if(type == 'xxwh'){
+      this.title = '信息维护'
+      this.xxwh = true
+    }
+
+
+
+
+
+  }
+}
+</script>
+
+<style lang="less">
+.OKIMG{
+  width: 400rpx;
+  position: absolute;
+  top: 250px;
+  left: 130px;
+  z-index: 100;
+}
+.header_top {
+    .head_portrait {
+      border-radius: 50%; 
+    }
+    .login {
+      color: rgb(114, 110, 110);
+      font-size: 16px;
+    }
+    .login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+}
+.button-style-demo1 {
+  background-color: #C01920;
+  border-radius: 20px;
+  border-color: #C01920;
+  box-shadow: 3px 3px 8px #E57A7E;
+  color: #fff;
+}
+.listTitle{
+  font-size: 32rpx;
+  color:#888888;
+}
+.listContent{
+  font-size: 30rpx;
+}
+</style>

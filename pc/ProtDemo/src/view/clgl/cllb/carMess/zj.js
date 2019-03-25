@@ -1,0 +1,26 @@
+export default [
+  {
+    title:'机动车登记证书',
+    url:''
+  },
+  {
+    title:'购置税完税证明',
+    url:''
+  },
+  {
+    title:'发票',
+    url:''
+  },
+  {
+    title:'行驶证正本',
+    url:''
+  },
+  {
+    title:'行驶证副本',
+    url:''
+  },
+  {
+    title:'道路运输证',
+    url:''
+  },
+]

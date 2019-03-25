@@ -1,0 +1,656 @@
+<!--详细界面-->
+<template>
+  <ui-page page-load="{{ pageLoad }}">
+    <ui-row height="100" class="top_tip top_tipDiv" border-bottom>
+                <ui-col align="center" vertical-align="middle">
+                  <ui-image class="left_header" src="{{userInfo.headImg}}"  mode="simple"></ui-image>
+                  <ui-view style="width: 100%;">
+                    <ui-row height="30">
+                      <ui-col align="center" vertical-align="middle">
+                        <ui-text>{{userInfo.name}}</ui-text>
+                      </ui-col>
+                      
+                    </ui-row>
+                    
+                  </ui-view>
+                </ui-col>
+                
+      </ui-row>
+      
+      <!--底部选项卡开始-->
+      <ui-tabs bounce="{{false}}" index="{{ tapsIndex }}" bindchange="handleChange($event, 'tapsIndex')" active-tab-style="{{activeTabStyle}}">
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>基础资料</ui-text>
+              </ui-view>
+          </ui-tab>
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>培训记录</ui-text>
+              </ui-view>
+          </ui-tab>
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>历史约考</ui-text>
+              </ui-view>
+          </ui-tab>
+         
+      </ui-tabs>
+      <ui-view ui:show="{{isflag === 0}}" class="wineshop-1 wineshop-box">
+      <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            姓名
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.name}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            报名时间
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.registrationTime}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            报考车型
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.carType}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            流水号
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.serialNum}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            有效期
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.indateEndTime}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            当前状态
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{fanyiStatus('ZDCLK1010',userInfo.status)}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            是否分期
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{fanyiStatus('ZDCLK1014',userInfo.installment)}}</ui-view><!--是否分期 /* 00: 不分期 10：分期*/-->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            是否欠费
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.arrearage == '10' ?'欠费':'不欠费'}}</ui-view><!--是否欠费 /* 00: 不欠费 10： 欠费 */-->
+          </ui-col>
+        </ui-row>
+        <ui-row ui:show="{{(userInfo.arrearage == '00') ? false : true}}" height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            欠费金额
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.oweAmount}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科一状态
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{fanyiStatus('ZDCLK1011',userInfo.firSub)}}</ui-view><!--科目一状态 /* 00：已缴费 10：培训 20: 已约考 30：不合格 40：合格*/-->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科一初考缴费时间
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.firSubPaymentTime}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科一初考约考时间
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.firSubTestTime}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科一考试次数
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.firSubTestNum}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科二状态
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{fanyiStatus('ZDCLK1012',userInfo.secSub)}}</ui-view><!-- /* 00: 培训 10：已约考 20：已缴费 30：不合格 40：合格*/-->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科二教练员
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.secondSubjectCoach}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科二初考缴费时间
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.secSubPaymentTime}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科二初考约考时间
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.secSubTestTime}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科二考试次数
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.secSubTestNum}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科三状态
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{fanyiStatus('ZDCLK1012',userInfo.thirdSub)}}</ui-view><!-- /* 00: 培训 10：已约考 20：已缴费 30：不合格 40：合格*/-->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科三教练员
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.thirdSubjectCoach}}</ui-view>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科三初考缴费时间
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.thirdSubPaymentTime}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科三初考约考时间
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.thirdSubTestTime}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科三考试次数
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{userInfo.thirdSubTestNum}}</ui-view><!---->
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="userInfo_list2">
+          <ui-col vertical-align="middle" space-left="15">
+            
+            科四状态
+          
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" space-right="15">
+            <ui-view class="active">{{fanyik4(userInfo.forthSub)}}</ui-view><!-- /* 00：已约考 :10: 不合格 20：合格*/-->
+          </ui-col>
+        </ui-row>
+      </ui-view>
+      <!--培训记录开始-->
+      <ui-view class="wineshop-1 wineshop-box" ui:show="{{isflag === 1}}">
+         <ui-accordion header-height="50"  ui:for="{{ accordion }}">
+          <ui-view slot="header">
+            <ui-row height="50" border-bottom class="title">
+              <ui-col vertical-align="middle" align="left" space-left="10">
+                日期：{{ item.nowtime }}
+              </ui-col>
+              <ui-col vertical-align="middle" align="right" width="100">
+                {{ item.allDayTime }}小时
+              </ui-col>
+              <ui-col vertical-align="middle" align="center" width="30"></ui-col>
+            </ui-row>
+          </ui-view>
+          <ui-view slot="content">
+            <ui-row height="40" ui:for="{{ item.dayItem }}" ui:for-item="item2" class='content'>
+              <ui-col vertical-align="middle" align="left" space-left="10">{{ item2.trainStartTime }}-{{ item2.trainEndTime }}</ui-col>
+              <ui-col vertical-align="middle" align="center" width="50">
+                <ui-icon type="{{ (item2.trainEndTime ==null || item2.trainEndTime == '') ? 'error':'queren' }}" size="16" color="{{ (item2.trainEndTime ==null || item2.trainEndTime == '') ? '#F5AC29':'#2AA744' }}"></ui-icon>
+              </ui-col>
+            </ui-row>
+          </ui-view>
+         </ui-accordion>
+         <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(accordion && accordion.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+        </ui-view> 
+      </ui-view>
+      <!--培训记录结束-->
+      <!--约考记录开始-->
+      <ui-view class="wineshop-1 wineshop-box" ui:show="{{isflag === 2}}" style="padding:10px;">
+          
+            <ui-row height="160" class="top_tip" border-bottom ui:for="{{ yuekaoArray }}" style="background-color:rgb(51, 153, 255);border-radius:10px;color:white;margin-bottom:10px;box-shadow: 3px 4px 5px gray;">
+              <ui-col class="text" align="left" vertical-align="middle" space="20">
+                <ui-view style="width: 100%;" class = "content_list">
+                  <ui-row height="30">
+                    <ui-col align="center" vertical-align="middle">
+                      <ui-text>{{ item.subject }}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-text>约考时间：{{item.testTime}}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-text>约考地点：{{item.testPlace}}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-text>考试结果：{{getTestResult(item.testResult)}}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-text class="{{ {colorRed:! payStatusFunc(item)} }}">缴费情况：{{ payStatusFunc(item) == true?'已缴费':'未缴费' }}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                </ui-view>
+              </ui-col>
+            </ui-row>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(yuekaoArray && yuekaoArray.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+            </ui-view> 
+          
+      </ui-view>
+      <!--约考记录结束-->
+      <!--底部选项卡结束-->
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "学员详情",
+    navigationBarBackgroundColor:'#FFFFFF'
+  },
+  data() {
+    return {
+      traineeImg:'',//学生头像
+      userInfo:{
+        headImg:require('#/images/portrait_bg.png')
+      },//用户信息
+      traineeId:"",
+      pageLoad:{
+        trigger:'always',
+        handle:()=>{
+          let getData=ui.getQuery()
+          this.traineeId = getData.id
+          /** this.allotDays = getData.day
+          this.trainTimes = getData.allTime
+          this.carType = getData.carType
+          this.status = getData.status*/
+           this.getStudentDetail()
+           this.getPeiXunList()
+           this.getYueKaoList()
+        }
+      },
+      //选项卡开始
+      activeTabStyle:{
+        'color': '#3399FF',
+        'border-bottom':'1px solid #3399FF'
+      },
+      isflag: 0,
+      tapsIndex:0,
+      accordion: [],
+      yuekaoArray: []
+        
+      //选项卡结束
+    }
+  
+  },
+  methods : {
+    //选项卡开始
+    handleChange (index, key) {
+      this[key] = index
+      if (key === 'current1') {
+        this.filmData = this.films[index]
+        if (this.filmData.film !== '') {
+          this.filmData = this.films[index]
+          this.isnull = false
+        } else {
+          this.isnull = true
+        }
+      } else if (key === 'tapsIndex') {
+        this.isflag = index
+      }
+    },
+    //选项卡结束
+    getStudentDetail(){//查询学生详情
+      this.$http('get',ui.getApp().apis.TRAINEEINFOMATION+this.traineeId,{},(res)=>{
+         let user = res.result
+         user.headImg = (user.headImg == null ||  user.headImg == '')? require('#/images/portrait_bg.png'):ui.getApp().imgUrlHeader+user.headImg
+         this.userInfo = user  
+            
+      })
+    },
+    getPeiXunList(){
+        this.$http('GET',ui.getApp().apis.GETRECORDLIST,{
+           traineeId:this.traineeId
+          },(res)=>{
+            	    //处理数据方法
+                  let arrayList = []
+                  let custemList = res.result && res.result.repList || []
+                  custemList.forEach(function(value,index){
+                      let obj = new Object()
+                      let array = []
+                      let listData = ''
+                      let oneDayPXTime = 0
+                      value.forEach((value2,index2) => {
+                          if(value2.trainStartTime && value2.trainStartTime.length>=19){
+                            listData = value2.trainStartTime.substring(0,10)
+                            value2.trainStartTime = value2.trainStartTime.substring(11)
+                          }
+                          if(value2.trainEndTime && value2.trainEndTime.length>=19){
+                            value2.trainEndTime = value2.trainEndTime.substring(11)
+                          }
+
+                          if(value2.trainTimes){
+                            value2.trainTimes = (Number(value2.trainTimes)/60).toFixed(2) 
+                            oneDayPXTime += Number(value2.trainTimes)
+                          }
+                          array.push(value2)
+                        
+                      }) 
+                      obj.nowtime = listData //培训日期，按每天计算
+                      obj.allDayTime = oneDayPXTime //每天的总共学时
+                      obj.dayItem = array
+                      arrayList.push(obj)
+                  })
+                 this.accordion = arrayList
+          },(res)=>{
+               
+                
+          })
+    },
+    getYueKaoList(){//查询约考信息
+         this.$http('get',ui.getApp().apis.TRAINEEINFOMATION+this.traineeId,{},(res)=>{
+           sessionStorage.setItem('userkmy',JSON.stringify(res.result))//缓存当前用户信息，用于校验科目一是否真实缴费
+           this.$http('get',ui.getApp().apis.COUNTTESTINFO,{traineeId:this.traineeId},(res)=>{
+            this.yuekaoArray = res.result || []
+           })
+         })
+        
+
+        
+    },
+    fanyik4:function(key){//翻译科目四状态
+        if(key == '00'){
+          key ='已约考'
+        }
+        if(key == '10'){
+          key ='不合格'
+        }
+        if(key == '20'){
+          key ='合格'
+        }
+        return key
+    },
+    fanyiStatus(lmdm,status){//翻译数据字典
+       return this.fanyiAppZd(lmdm,status)
+    },
+   payStatusFunc(item){
+      let status = false;//默认为未缴费
+      if(item.subject == '科目一'){
+         let user = JSON.parse(sessionStorage.getItem('userkmy'))
+         if(user.firSubPaymentTime){//如果科目一初考缴费时间存在则显示已经缴费
+             status = true
+         }
+      }else{
+         if(item.payStatus=='00'){
+            status = true
+         }
+      }
+      return status
+    },
+    getTestResult(res){
+        let result = ''
+        if(res == '00'){
+            result = '合格'
+        }else if(res == '10'){
+            result = '不合格'
+        }else if(res == '' || res == null){
+            result = '待考'
+        }
+        return result
+    },
+  },
+  mounted() {
+   
+  }
+}
+</script>
+
+<style lang="less">
+.left_header{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    line-height: 60px;
+    
+}
+.top_tipDiv{
+  
+  
+  text-align: center;
+}
+.stuItem_bottomDiv{
+  background-color: white;
+  color: #D4D4D4;
+  font-size: 28rpx;
+}
+.stuItem_bottomTextDiv{
+  background-color: white;
+}
+//底部选项卡开始-------------------------------
+.ui-tabs {
+  padding-bottom: 1px;
+}
+.wineshop-1{
+  .small-title{
+    color:#666;
+    font-size:12px;
+  }
+  .address div{
+    font-weight: bold;
+  }
+  .wineshop{
+    margin:0 20px;
+    padding:10px 0;
+    // .mix-1px(0, 0, 1, 0, #ccc);
+    .ui-button{
+      background-color:#24c471;
+      border:0;
+      color:#fff
+    }
+  }
+  .sub-1 div{
+    color:#666;
+    font-size:12px;
+    display:inline;
+    padding:3px;
+    .mix-1px(1, 1, 1, 1, #666);
+  }
+}
+
+.backbg{
+  transition-duration: 1s;
+}
+.back{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -15px 0 0 -15px;
+}
+.imgbox{
+  width:150px;
+  margin:0 auto;
+  .ui-image{
+    width:100%;
+  }
+}
+.markicon{
+  .ui-text{
+    div{
+      display: inline;
+      font-size:12px;
+      padding: 3px
+    }
+  }
+}
+
+.self-btn{
+  background-color: #fff;
+  color:#fbb966
+}
+
+//培训记录开始
+.title{
+  width: 100%;
+  background-color: #fff;
+  font-size: 14px;
+  .state{
+    border: 1px solid #797979;;
+    width: 100%;
+    height: 30px;
+    .mix-flex-center();
+    color: #797979;
+    font-size: 12px;
+    &.abnormal{
+      border: 1px solid #F5AC29;;
+      color: #F5AC29;
+    }
+    &.normal{
+      border: 1px solid #2AA744;;
+      color: #2AA744;
+    }
+  }
+}
+.content{
+  background-color: #F6F6F6;
+  font-size: 14px;
+  border-bottom: 1px solid #fff;
+}
+//培训记录结束
+//底部选项卡结束---------------------------------
+.userInfo_list2{
+  background-color: #fff;
+  .mix-1px(0, 0, 1, 0, #ccc);
+  .active{
+    font-size: 14px;
+    color: #8C8C8C;
+  }
+  .active2{
+    font-size: 14px;
+    color: #1F95FF;
+  }
+  .portrait{
+    display: flex;
+    .ui-image{
+      border-radius: 50%;
+    }
+    .ui-icon{
+      line-height: 40px;
+    }
+  }
+}
+.content_list{
+    .ui-text{
+      font-size:38rpx;
+    }
+  }
+</style>

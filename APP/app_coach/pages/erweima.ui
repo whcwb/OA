@@ -1,0 +1,59 @@
+<!--erweima-->
+<template>
+  <ui-page>
+     <ui-view class="user_content">
+      <ui-row height="150" class="header_top">
+        <ui-col vertical-align="middle" align="center" width="90">
+            <ui-image
+              src="{{ portraitUrl }}"
+              mode='aspectFill'
+              width="100"
+              height="100"
+              class="head_portrait"
+              ></ui-image>
+        </ui-col>
+      </ui-row>
+      <ui-row style="font-size:22px">
+        <ui-text>张三教练</ui-text>
+      </ui-row>
+    </ui-view>
+     <ui-row>
+       <ui-image src="../static/img/123.png"></ui-image>
+     </ui-row>
+     <ui-row>
+       <ui-text>学车签到扫一扫</ui-text>
+     </ui-row>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "我的二维码"
+  },
+  data() {
+    return {
+      portraitUrl:require('#/static/img/123.png')
+    }
+  },
+  methods: {},
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+.header_top {
+   
+    .head_portrait {
+      border-radius: 50%; 
+    }
+    .login {
+      color: rgb(27, 25, 25);
+      font-size: 18px;
+    }
+    .login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+}
+</style>

@@ -1,0 +1,175 @@
+<!--studentdetails-->
+<template>
+  <ui-page style="overflow-y: hidden;position:relative">
+     <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'solid 2px #f2f2f2','background-color':'rgba(255, 255, 255, 1)'} }}">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="60" bindtap="goBack">
+            <ui-icon ui:if={{!okshow}} type="fanhui" size="22" color="#d0d0d0"></ui-icon>
+            <ui-text ui:else>完成</ui-text>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center">
+            <ui-view class="nav_title">信息详情</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="60" >
+          </ui-col>
+        </ui-row>
+     </ui-nav-bar>
+     <ui-view>
+        <ui-row height="150" class="header_top">
+          <ui-col vertical-align="middle" align="center" width="90">
+            <ui-view class="head_portrait">
+            </ui-view>
+            <ui-image
+              ui:if="{{studentMess.headImg}}"
+              src="{{ imgUrl+studentMess.headImg }}"
+              mode='aspectFill'
+              width="100"
+              height="100"
+              class="head_portrait"
+            ></ui-image>
+            <ui-image
+              ui:else
+              src="{{'./static/img/tx.png'}}"
+              mode='aspectFill'
+              width="100"
+              height="100"
+              class="head_portrait"
+            ></ui-image>
+          </ui-col>
+        </ui-row>
+      </ui-view>
+     <ui-view>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" style="font-size:18px;color:#888888">
+           姓名
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 style="font-size:18px">
+           {{studentMess.name}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" style="font-size:18px;color:#888888">
+            证件号码
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 style="font-size:18px">
+           {{studentMess.idCardNo | idCardNo}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" style="font-size:18px;color:#888888">
+           报名地点
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 style="font-size:18px">
+           {{studentMess.jgmc}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" style="font-size:18px;color:#888888">
+           申请车型
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 style="font-size:18px">
+           {{studentMess.carType}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" style="font-size:18px;color:#888888">
+           手机号码
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 style="font-size:18px">
+           {{studentMess.phone | phone}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" style="font-size:18px;color:#888888">
+           报名时间
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 style="font-size:18px">
+           {{studentMess.registrationTime}}
+         </ui-col>
+       </ui-row>
+     </ui-view>
+
+     <ui-view>
+       <ui-row space-top=45>
+         <ui-col space=30>
+           <ui-button disabled="{{okshow}}" type="warn" bindtap="tongguo()">审核通过</ui-button>
+         </ui-col>
+       </ui-row>
+     </ui-view>
+  
+    <img ui:if="{{okshow}}" class="OKIMG" src="static/img/ok.png">
+  
+  </ui-page>
+</template>
+
+<script>
+import mixin from '#/static/ajax/mixin'
+export default {
+  config: {
+    navigationBarTitleText: "学员信息详情",
+    navigationStyle: 'custom',
+  },
+  mixins:[mixin],
+  data() {
+    return {
+      imgUrl:ui.getApp().apis.getImgUrl,
+      studentMess:{},
+      okshow:false
+    }
+  },
+  methods: {
+    tongguo(){
+      this.$http('POST',ui.getApp().apis.AUDIT,{id:this.studentMess.id,infoCheckStatus:'10'},(res)=>{
+        if(res.code == 200){
+          ui.showToast({ title: '审批通过', icon: 'success'})
+          setTimeout(() => {
+            this.okshow = !this.okshow
+          }, 1500);
+        }
+      })
+    },
+    goBack(){
+      ui.navigateBack()
+    }
+  },
+  mounted() {},
+  created () {
+    if(!ui.getApp().studentMess.id){
+      ui.navigateBack()
+      ui.showToast({ title: '请选择学员'})
+    }else{
+      this.studentMess = ui.getApp().studentMess
+    }
+  }
+}
+</script>
+
+<style lang="less">
+.OKIMG{
+  width: 400rpx;
+  position: absolute;
+  top: 250px;
+  left: 130px;
+  z-index: 100;
+}
+.header_top {
+    .head_portrait {
+      border-radius: 50%; 
+    }
+    .login {
+      color: rgb(114, 110, 110);
+      font-size: 16px;
+    }
+    .login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+}
+.button-style-demo1 {
+  background-color: #C01920;
+  border-radius: 20px;
+  border-color: #C01920;
+  box-shadow: 3px 3px 8px #E57A7E;
+  color: #fff;
+}
+</style>

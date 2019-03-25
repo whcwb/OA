@@ -1,0 +1,355 @@
+<template>
+  <ui-page>
+     <ui-view class="user_content">
+        <ui-row height="150" class="header_top">
+          <ui-col vertical-align="middle" align="center" width="90">
+            <ui-view class="head_portrait">
+            </ui-view>
+            <ui-image
+            src="{{ portraitUrl }}"
+            mode='aspectFill'
+            width="100"
+            height="100"
+            class="head_portrait"
+            ></ui-image>
+          </ui-col>
+        </ui-row>
+        <ui-row class="login">
+             负责人姓名:张三
+          </ui-row>
+          <ui-row class="login">
+             负责人电话:133443434
+          </ui-row>
+      </ui-view>
+      <ui-divider color="#ff2a00">我是红色的底线</ui-divider>
+      <ui-tab-view class="text-zoomIn">
+        <template slot="header">
+          <ui-tab-view-header>受理</ui-tab-view-header>
+          <ui-tab-view-header>科一</ui-tab-view-header>
+          <ui-tab-view-header>科二</ui-tab-view-header>
+          <ui-tab-view-header>科三</ui-tab-view-header>
+          <ui-tab-view-header>科四</ui-tab-view-header>
+        </template>
+        <template slot="body">
+          <ui-tab-view-body>
+            <!-- 受理进度 -->
+            <ui-view class="tab-content">
+                  <ui-view class="timeline-demo2">
+                      <ui-view style="padding: 60px 20px" >
+                          <ui-timeline mode="row" >
+                            <ui-timeline-item ui:for="{{list}}" 
+                              point-color="{{index <= thisIndex ? '#3399ff' : '#8a8a8a'}}" 
+                              line-color="{{index<thisIndex?'#3399ff':''}}"
+                              shadow-class="{{index === thisIndex ? 'shadow-class' : ''}}"
+                              show-line="{{index === list.length-1 ? false : true}}">
+                              <ui-view class="continer" >
+                                <ui-view class="gary" :style="{'color': index === thisIndex ? '#3399ff' : '#8a8a8a'}">{{item.content}}</ui-view>
+                                <ui-view class="pos">{{item.pos}}</ui-view>
+                                <ui-view class="time">{{item.time}}</ui-view>
+                              </ui-view>
+                            </ui-timeline-item>
+                          </ui-timeline>
+                        </ui-view>
+                      </ui-view>
+            </ui-view>
+          </ui-tab-view-body>
+          <ui-tab-view-body>
+            <!-- 科一考试 -->
+            <ui-view class="tab-content">
+                <ui-view class="tab-content">
+                <ui-view class="tab-content">
+                <ui-row style="font-size:18px" border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    考试次数
+                  </ui-col>
+                  <ui-col align="center">
+                    2次
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年08月24日
+                  </ui-col>
+                  <ui-col align="center">
+                    东山考场
+                  </ui-col>
+                  <ui-col align="center">
+                    不合格
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年09月25日
+                  </ui-col>
+                  <ui-col align="center">
+                    王家湾考场
+                  </ui-col>
+                  <ui-col align="center">
+                    合格
+                  </ui-col>
+                </ui-row>
+              </ui-view>
+            </ui-view>
+            </ui-view>
+          </ui-tab-view-body>
+          <ui-tab-view-body>
+            <!-- 科二考试 -->
+            <ui-view class="tab-content">
+                <ui-view class="tab-content">
+                <ui-row style="font-size:18px" border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    考试次数
+                  </ui-col>
+                  <ui-col align="center">
+                    2次
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年08月24日
+                  </ui-col>
+                  <ui-col align="center">
+                    东山考场
+                  </ui-col>
+                  <ui-col align="center">
+                    不合格
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年09月25日
+                  </ui-col>
+                  <ui-col align="center">
+                    王家湾考场
+                  </ui-col>
+                  <ui-col align="center">
+                    合格
+                  </ui-col>
+                </ui-row>
+              </ui-view>
+            </ui-view>
+          </ui-tab-view-body>
+          <ui-tab-view-body>
+              <!-- 科三考试 -->
+            <ui-view class="tab-content">
+                <ui-view class="tab-content">
+                <ui-view class="tab-content">
+                <ui-row style="font-size:18px" border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    考试次数
+                  </ui-col>
+                  <ui-col align="center">
+                    2次
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年08月24日
+                  </ui-col>
+                  <ui-col align="center">
+                    东山考场
+                  </ui-col>
+                  <ui-col align="center">
+                    不合格
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年09月25日
+                  </ui-col>
+                  <ui-col align="center">
+                    王家湾考场
+                  </ui-col>
+                  <ui-col align="center">
+                    合格
+                  </ui-col>
+                </ui-row>
+              </ui-view>
+            </ui-view>
+            </ui-view>
+          </ui-tab-view-body>
+          <ui-tab-view-body>
+              <!-- 科四考试 -->
+            <ui-view class="tab-content">
+                <ui-view class="tab-content">
+                <ui-view class="tab-content">
+                <ui-row style="font-size:18px" border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    考试次数
+                  </ui-col>
+                  <ui-col align="center">
+                    2次
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年08月24日
+                  </ui-col>
+                  <ui-col align="center">
+                    东山考场
+                  </ui-col>
+                  <ui-col align="center">
+                    不合格
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年09月25日
+                  </ui-col>
+                  <ui-col align="center">
+                    王家湾考场
+                  </ui-col>
+                  <ui-col align="center">
+                    合格
+                  </ui-col>
+                </ui-row>
+              </ui-view>
+            </ui-view>
+            </ui-view>
+          </ui-tab-view-body>
+        </template>
+      </ui-tab-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: '首页',
+    backgroundColor: '#F4F4F4',
+    navigationBarTextStyle: 'black'
+  },
+  data () {
+    return {
+      buttonText: '界面跳转',
+      isShow:false,
+      portraitUrl: require('#/static/img/yh.png'),
+      list: [
+        { pos: '武汉中心医院', content: '医院体检',time:'2018-05-01' },
+        { pos: '明涛驾校', content: '入网面签',time:'2018-05-01' },
+        { pos: '明涛驾校', content: '档案采集',time:'2018-05-01' },
+        { pos: '明涛驾校', content: '受理成功',time:'2018-05-01' }
+      ],
+      left: (window.innerWidth - 280) / 2,
+      winWidth: window.innerWidth,
+      color: '',
+      thisIndex: 0
+    }
+  },
+  methods: {
+    Next () {
+      if (this.thisIndex !== this.list.length - 1) {
+        this.thisIndex++
+      } else {
+        this.thisIndex = 0
+      }
+    },
+    Previous () {
+      if (this.thisIndex !== 0) {
+        this.thisIndex--
+      } else {
+        this.thisIndex = this.list.length - 1
+      }
+    },
+    sliderShow() {
+      this.isShow=true
+    },
+    navHandle () {
+      ui.navigateTo({
+        url: '/pages/detail'
+      })
+    }
+  },
+  mounted() {
+    //首屏页面需要在mounted中延时才能调用框架api，其他页面不需要延时
+    setTimeout(() => {
+      //关闭app启动图
+      ui.closeSplashscreen()
+    }, 1000);
+  }
+}
+
+</script>
+
+<style lang="less">
+// timeline2.less
+.timeline-demo2 {
+  
+  .continer {
+    width: 90px;
+    position: relative;
+    top: 4px;
+    .pos {
+      margin-top: 20px;
+      color: #333;
+      font-size: 14px;
+    }
+    .time{
+      color: #333;
+      font-size: 12px;
+    }
+    .gary {
+      color: #8a8a8a;
+      font-size: 16px;
+    }
+  }
+}
+
+.shadow-class {
+  &:before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(51, 153, 255,.3);
+      position: absolute;
+      left: -5px;
+      top: -5px;
+      z-index: 1;
+    }
+}
+.content{
+  .mix-flex-center();
+}
+.sliderContent{
+  padding:50px 50px 0px 50px;
+}
+.buttonContent{
+  padding:50px;
+}
+.header_top {
+   
+    .head_portrait {
+      border-radius: 50%; 
+    }
+    .login {
+      color: rgb(27, 25, 25);
+      font-size: 18px;
+    }
+    .login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+}
+.user_content{
+  background-color: aquamarine;
+  font-size: 19px;
+}
+.text-zoomIn{
+  background-color: #ffffff;
+  .ui-tab-view-header-wrapper .ui-tab-view-header.active{
+    border:0;
+    animation: textzoomIn .2s;
+    animation-fill-mode:forwards
+  }
+}
+.ui-timeline-row{
+  height: 150px;
+}
+@keyframes textzoomIn
+{
+from {transform:scale(1)}
+to {transform:scale(1.1)}
+}
+</style>

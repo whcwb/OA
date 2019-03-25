@@ -1,0 +1,24 @@
+<!--优惠审核驳回-->
+
+<template>
+  <ui-page>
+     
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "reject_price"
+  },
+  data() {
+    return {}
+  },
+  methods: {},
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+
+</style>

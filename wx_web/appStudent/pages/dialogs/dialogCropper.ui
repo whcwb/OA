@@ -1,0 +1,104 @@
+<!--头像裁剪界面-->
+<!--投诉dialog界面-->
+<template>
+  <ui-page>
+      <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'1px solid rgba(231, 231, 231, 0.6)','background-color':'#fff'} }}">
+      <ui-row height="46">
+        <ui-col vertical-align="middle" align="center" width="60" bindtap="hidenDialog">
+          <ui-icon type="cuowuguanbiquxiao" size="30" color="#39f"></ui-icon>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">裁剪</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="60" bindtap="confirmSelect">
+          <ui-view class="confirmSelect">使用</ui-view>
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+      <div class="container">
+        <div>
+          <img id="image" src="{{headerImg}}" alt="Picture">
+        </div>
+        
+        <div id="result"></div>
+      </div>
+  </ui-page>
+</template>
+
+
+<script>
+import Cropper from '#/static/ajax/cropper.js'
+export default {
+  config: {
+    navigationStyle: "custom",
+  },
+  data () {
+    return {
+      headerImg: '',//需要裁剪的头像
+      cropper:""
+      
+    }
+  },
+  mounted () {
+    this.$DialogOpen((data) => {
+      if (data && data.imgSrc) {
+        this.headerImg = data.imgSrc
+        //this.headerImg = 'http://116.62.220.91:81/img/temp/6eda76e74a874fa986b9f88ef832957d.jpg'
+        setTimeout(() => {
+          var image = document.getElementById('image');
+          this.cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            background:false,
+            zoomable:false,
+            ready: function () {
+              
+            }
+          });
+        }, 1000);
+     }
+    })
+  },
+  updated(){
+        
+  },
+  methods: {
+    confirmSelect () {
+      var result = document.getElementById('result');
+      let base64 = this.cropper.getCroppedCanvas().toDataURL("image/png");
+      ui.hideDialog({type:true,base64:base64})
+      this.cropper.destroy();
+    },
+    hidenDialog(){
+            ui.hideDialog();
+            this.cropper.destroy();
+    }
+  }
+}
+
+</script>
+
+<style lang="less">
+  .container {
+      max-width: 640px;
+     
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50%;
+    }
+  .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+.confirmSelect{
+  color:#39f;
+}
+</style>

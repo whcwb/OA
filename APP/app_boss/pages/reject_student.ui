@@ -1,0 +1,42 @@
+<!--学生信息审核驳回-->
+<template>
+  <ui-page>
+     <ui-view class="header">
+      <ui-row height=80 space=20>
+        <ui-col span=2 align="certer" space=20 vertical-align="middle">
+          <ui-image
+            src="{{ touxiang }}"
+            mode='aspectFill'
+            width="60"
+            height="60"
+            class="tx_head"
+            ></ui-image>
+        </ui-col>
+         <ui-col space=20 vertical-align="middle">
+           姓名（34123435455434）
+           
+         </ui-col>
+         <ui-col span=2 align="certer" space=20 vertical-align="middle">
+            <ui-icon type=gerenxinxi></ui-icon>
+        </ui-col>
+      </ui-row>
+    </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "reject_student"
+  },
+  data() {
+    return {}
+  },
+  methods: {},
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+
+</style>

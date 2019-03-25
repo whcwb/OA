@@ -1,0 +1,67 @@
+<!---->
+<template>
+  <ui-view class="box_row">
+    <ui-view ui:for="{{starList}}">
+        <ui-icon type="xingxing2" size="28" color="{{item.color}}"></ui-icon>
+    </ui-view>
+    <ui-view class="fzsty">
+      {{num}}分
+    </ui-view>
+  </ui-view>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: ""
+  },
+  data() {
+    return {
+      starList:[
+        {
+          color:'#c0bfbf'
+        },{
+          color:'#c0bfbf'
+        },{
+          color:'#c0bfbf'
+        },{
+          color:'#c0bfbf'
+        },{
+          color:'#c0bfbf'
+        }
+      ]
+    }
+  },
+  props:{
+    num:{
+      type:Number,
+      default:0
+    }
+  },
+  created () {
+    console.log(this.num);
+    this.starList.forEach((item,index) => {
+      if(index<this.num){
+        item.color="#ffc217"
+      }
+    });
+  },
+  methods: {},
+  mounted() {
+    console.log(this.num)
+    this.starList.forEach((item,index) => {
+      if(index<this.num){
+        item.color="#ffc217"
+      }
+    });
+  }
+}
+</script>
+
+<style lang="less">
+.fzsty{
+  padding: 18rpx 0 0 8rpx;
+  font-size: 36rpx;
+  // font-weight: 600
+}
+</style>

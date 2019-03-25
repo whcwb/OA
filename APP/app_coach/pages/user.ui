@@ -1,0 +1,99 @@
+<template>
+    <ui-page >
+       <ui-view style="background-color:#ffffff">
+         <ui-row style="font-size:18px" space=20>
+           <ui-col space=20 span=3>
+             张三教练
+             汉阳区
+           </ui-col>
+           <ui-col>
+              <ui-icon type="erweima" size="22" bindtap="goerweima()"></ui-icon>
+           </ui-col>
+           <ui-col>
+            <ui-image
+              src="{{ portraitUrl }}"
+              mode='aspectFill'
+              width="60"
+              height="60"
+              class="head_portrait"
+              ></ui-image>
+           </ui-col>
+         </ui-row>
+        <ui-row space=20>
+          <ui-col space=20> 
+            评分：
+            <ui-mini-star value="5" width="76" height="16"></ui-mini-star>
+          </ui-col>
+        </ui-row>
+        <ui-row  style="font-size:14px" space=20>
+          <ui-col space=10 span=3>
+              总校区教练员
+          </ui-col>
+          <ui-col>
+            <ui-icon type="shenfenrenzheng" color="#FFE384"></ui-icon>
+          </ui-col>
+        </ui-row>
+       </ui-view>
+
+       <ui-view style="background:#ffffff">
+          <ui-row style="font-size:18px" space=20>
+           <ui-col space=20 span=3>
+            <ui-icon type="tongzhi"></ui-icon>
+           </ui-col>
+           <ui-col>
+             消息发送
+           </ui-col>
+           <ui-icon type="iconfontjiantou2"></ui-icon>
+         </ui-row>
+       </ui-view>
+    </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "个人中心",
+    navigationBarTextStyle: 'back',
+    backgroundColor: '#F4F4F4'
+  },
+  data () {
+    return {
+      portraitUrl: require('#/images/portrait_bg.png')
+    }
+  },
+  methods: {
+    goerweima(){
+      ui.navigateTo({
+        url: '/pages/erweima'
+      })
+    },
+  }
+}
+
+</script>
+
+<style lang="less">
+
+.nav_bar {
+    background: @theme-color;
+    .nav_title {
+        color: #fff;
+    }
+}
+
+.header_top {
+    background: @theme-color;
+    .head_portrait {
+      border-radius: 50%; 
+    }
+    .login {
+      color: #fff;
+      font-size: 18px;
+    }
+    .login_after {
+        color: #fff;
+        font-size: 12px;
+    }
+}
+
+</style>

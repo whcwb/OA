@@ -1,0 +1,186 @@
+<!--undefined-->
+<template>
+  <ui-page>
+      <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'1px solid rgba(231, 231, 231, 0.6)','background-color':'#fff'} }}">
+      <ui-row height="46">
+        <ui-col vertical-align="middle" align="center" width="60">
+         <!-- <ui-view class="nav_left"><ui-icon type="arrow-left" size="16" color="#39f"></ui-icon>返回</ui-view>-->
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">上传头像</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="60">
+          
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+      <ui-view class="top_logo">
+        <ui-image class="headImg" bindtap="choseImg" src="{{headImg}}" mode="aspectFill" height="130" width="130"></ui-image>
+        <ui-view class="headImgTitle">
+          点击头像图片，可自定义头像<br>
+          真实的头像有助于教练加深对你的印象
+        </ui-view>
+      </ui-view>
+      <ui-form>
+      <ui-view class="win" style="padding:50px 50px 0px 50px">
+        <ui-button  type="primary" bindtap="imgSubmit">提交头像数据</ui-button>
+      </ui-view>
+      
+      <!--<ui-view class="win" style="padding:50px 50px 0px 50px">
+        <ui-button  type="primary" bindtap="imgChoose">选择图片</ui-button>
+      </ui-view>-->
+      </ui-form>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "上传头像",
+    title:'上传头像',
+     navigationStyle: "custom",
+  },
+  data() {
+    return {
+      headImg:require('#/images/portrait_bg.png'),
+      headImgInput:'',
+      headImgRoute:''//后台返回的未经裁剪的图片路径，裁剪完成后后台的该图片会删除
+    }
+  },
+  methods: {
+    choseImg:function(){//选择图片
+      ui.getApp().wxUtil.chooseImage((imgIds)=>{//imgIds 返回选择的图片
+            ui.showLoading({
+              text: '图片处理中'
+            })
+            ui.getApp().wxUtil.uploadImage(imgIds[0],(serverId)=>{//imgIds 返回选择的图片
+            //图片利用微信上传后返回服务器路径
+            ui.hideLoading()
+            this.$http('POST',ui.getApp().apis.PUBGETPIC,{
+                userId:this.getUser().id,
+                serverId:serverId,
+                userrole:'1'
+              },(res)=>{
+                  this.headImgRoute = ui.getApp().imgUrlHeader+res.message //完整的图片访问路径
+                  this.cropperImg()//打开裁剪弹窗
+
+              },(res)=>{
+                    ui.showToast({ title: '图片打开失败！', duration: 2000 })
+              })
+            
+            });
+      });
+    },
+    cropperImg:function(){
+      import(`#/pages/dialogs/dialogCropper.ui`).then((content) => {
+                ui.showDialog({
+                   // 窗体标题
+                    title: '',
+                    content: content,
+                    statusBarColor: 'black',
+                    headerStyle: {//设置dialog  nav样式
+                                  color: '#666'
+                                 },
+                    // 向dialog1.ui传入数据
+                    data: {
+                          imgSrc:this.headImgRoute
+                    },
+                     // 接收ui.hideDialog回传的数据
+                     onHide: (data) => {
+                              if (data && data.type==true) {
+                               this.headImg = data.base64
+                               this.headImgInput = data.base64
+                              }
+                    }                                 
+                })                                  
+      })
+
+    },
+    imgSubmit:function(){//头像上传
+      if(this.headImgInput){
+        this.$http('POST',ui.getApp().apis.PUBLICUPLOADIMG,{
+          userId:this.getUser().id,
+          targetPath:'/wxStuHeadImg',
+          Base64:this.headImgInput
+        },(res)=>{
+              let userInfoList =  localStorage.getItem("userInfoList");//获取登录用户历史信息，用于切换账户
+              let userInfo =  localStorage.getItem("userInfo");//获取当前用户信息
+              userInfo = JSON.parse(userInfo)
+              userInfo.headImg = res.message
+              localStorage.setItem('userInfo',JSON.stringify(userInfo))//更新缓存中的用户头像信息
+              if(userInfoList){
+                userInfoList = JSON.parse(userInfoList)
+                userInfoList.forEach(function (value,index) {
+                 if(value.id == userInfo.id){
+                    userInfoList[index] = userInfo
+                    return
+                  }
+                })
+              }
+              localStorage.setItem("userInfoList",JSON.stringify(userInfoList))//缓存登录用户历史信息
+              ui.showToast({ title: '头像上传成功！', icon: 'success', duration: 2000 })
+              setTimeout(() => {
+                ui.redirectTo({
+                  url: '/pages/index'
+                })
+              }, 2000);    
+        },(res)=>{
+              ui.showToast({ title: '头像上传失败！', duration: 2000 })
+        })
+
+      }else{
+        ui.showToast({ title: '请先选择头像' })
+      }
+      
+    },
+
+
+    /** imgChoose:function(){
+
+      import(`#/pages/dialogs/dialogCropper.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#666'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                imgSrc:require('#/images/phone.jpg')
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                if (data && data.type==true) {
+                   ui.showToast({ title: '意见反馈提交成功！', icon: 'success', duration: 2000 })
+                }
+              }
+            })
+      })
+ 
+    }*/
+  },
+  mounted() {
+
+  }
+}
+</script>
+
+<style lang="less">
+.top_logo{
+  text-align: center;
+  padding-top: 50px;
+  .ui-image-container{
+    margin: auto;
+  }
+}
+.headImg{
+  border-radius: 65px; 
+  box-shadow: 0px 4px 3px #888888;
+}
+.headImgTitle{
+  padding-top: 10px;
+  color:#B1AFAF;
+}
+</style>

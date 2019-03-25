@@ -1,0 +1,413 @@
+<!--优惠审核-->
+<template>
+  <ui-page pull-down="{{ pullDown }}"  enable-reach-bottom-load ="{{loadMore}}" on-load-more="{{ handleLoadMore }}">
+            <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'solid 2px #f2f2f2','background-color':'rgba(255, 255, 255, 1)'} }}">
+              <ui-row height="46">
+                <ui-col vertical-align="middle" align="center" width="60" bindtap="goback">
+                  <ui-icon type="arrow-left" font-size="24"></ui-icon>
+                </ui-col>
+                <ui-col vertical-align="middle" align="center">
+                  <span class="nav-bar-center-text">教练</span>
+                </ui-col>
+                <ui-col align="center" width="60" bindtap="openPopup1">
+                   <ui-icon type="sousuo-xianxing" size="24"></ui-icon>
+                </ui-col>
+              </ui-row>
+           </ui-nav-bar>
+            <!--列表开始-->
+            <ui-view slot="pull-down" class="pull-down-content" ui:if="{{proportion}}">
+              <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+                <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+              </ui-view>
+
+              <ui-view class="img-layer" ui:else>
+                <ui-view class="gauge-loader" ui:if="{{state === 2}}"></ui-view>
+                <ui-view class="gauge-loader" ui:show="{{state === 3 || state === 4}}"></ui-view>
+              </ui-view>
+            </ui-view>
+            <ui-view >
+                  <ui-row ui:for="{{props}}" height="80" class="top_tip" border-bottom  bindtap="godiscountdetails(item)">
+                      <ui-col width="80" align="center" vertical-align="middle">
+                          <ui-view>
+                              <ui-image
+                                src="{{ item.headImg }}"
+                                mode='aspectFill'
+                                width="50"
+                                height="50"
+                                class="head_portrait"
+                              ></ui-image>
+                              
+                          </ui-view>
+                      </ui-col>
+                      <ui-col class="text" align="left" vertical-align="middle" space="20" >
+                          <ui-view style="width: 100%;">
+                          <ui-row>
+                                  <ui-col align="left" vertical-align="middle">
+                                    <ui-text >{{item.coachName}}</ui-text>
+                                    <ui-view >{{fanyiKeMu(item.coachSub)}} _ {{item.jgmc}}</ui-view>
+                                  </ui-col>
+                                  <ui-col align="right" width="60"  vertical-align="middle" space-right="10">
+                                      
+                                        <ui-icon  slot="content" type="iconfontjiantou2" size="20" color="#C7C7C7" style="display:inline-block"></ui-icon>
+                                      
+                                  </ui-col>
+                          </ui-row>
+                          </ui-view>
+
+                          
+                      </ui-col>
+                  </ui-row>
+              </ui-view>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(props && props.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+            <ui-view style="width:200px;margin:0 auto;">
+              <ui-divider ui:show="{{!loadMore}}">没有新数据了</ui-divider>
+            </ui-view>
+
+            <ui-popup value="{{seachShow1}}"  bindhide="openPopupHide" bindshow="openPopupShow" top="46" position="top" mask-style="{{{ top: '46px' }}}">
+              <ui-view class="popup0">
+                <ui-row class="searchRow" >
+                    <ui-col space-left="10" width="70" align="right" vertical-align="middle">
+                      <ui-text class="">姓名：</ui-text>
+                    </ui-col>
+                    <ui-col space-right="10">
+                      <ui-input ui:model="{{pjDate.coachNameLike}}" show-clear="true" placeholder="请输入姓名" maxlength="20"></ui-input>
+                    </ui-col>
+                </ui-row>
+                <ui-row class="searchRow">
+                    <ui-col space-left="10" width="70" align="right" vertical-align="middle">
+                      <ui-text class="">手机：</ui-text>
+                    </ui-col>
+                    <ui-col space-right="10">
+                      <ui-input ui:model="{{pjDate.phoneLike}}" show-clear="true" placeholder="请输入手机号" maxlength="11" type="number"></ui-input>
+                    </ui-col>
+                </ui-row>
+                <ui-row class="searchRow" >
+                    <ui-col space-left="10" width="70" align="right" vertical-align="middle">
+                      <ui-text class="">身份证：</ui-text>
+                    </ui-col>
+                    <ui-col space-right="10">
+                      <ui-input ui:model="{{pjDate.idCardNoLike}}" show-clear="true" placeholder="请输入身份证号" maxlength="18" ></ui-input>
+                    </ui-col>
+                </ui-row>
+                <ui-row border-bottom>
+                    <ui-row border-top="border-top" height="40" class="sub">
+                    <ui-col vertical-align="middle" align="center" border-right="border-right" bindtap="formReset">
+                      重置
+                    </ui-col>
+                    <ui-col vertical-align="middle" align="center" bindtap="handleActive" class="complete">
+                      完成
+                    </ui-col>
+                    </ui-row>
+                </ui-row>
+              </ui-view>
+            </ui-popup>
+           
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "学员",
+    title:'学员',
+    navigationStyle: 'custom',
+  },
+  data() {
+    return {
+      pullDownDivHeight:100,
+      // 下拉刷新（初始状态）
+      proportion: 0,
+      state: 1,
+      loadMore: true,
+      pullDown: {
+        distance: 60,
+        onBegin: this.handleBegin,
+        onActive: this.handleActive,
+        onAfter: this.handleAfter
+      },
+      //上下拉刷新结束
+      //列表开始
+      props:[],//列表信息
+      pjPage:{//返回分页信息存储
+          pageNum : '',
+          pageSize: '',
+          size : '',
+          startRow : '',
+          endRow : '',
+          total : '0',
+          pages : ''
+      },
+      pjDate:{
+        pageNum:1,//请求第几
+        pageSize:8,//每页个数
+        coachNameLike:'',//姓名
+        idCardNoLike:'',//身份证
+        phoneLike:''//手机号 
+        //另有多余可扩展参数startTime  endTime   格式yyyy-MM-dd
+      },//提交参数
+      //列表结束
+      //搜索条件模态框开始
+      seachShow1:false,
+      //搜索条件模态框结束
+    }
+  },
+  methods: {
+  	//上下拉刷新开始
+    handleLoadMore () {//加载更多
+       
+          if(this.pjDate.pageNum<=this.pjPage.pages){
+              this.getPjList()
+           }else{
+             this.loadMore = false
+              return false
+           }
+     
+    },
+    getPjList (){//请求数据
+        this.openPopupHide()
+        this.$http('post',ui.getApp().apis.YWCX.COACHMANAGEMENT,this.pjDate,(res)=>{
+                    this.pjPage.pageNum = res.page.pageNum
+                    this.pjPage.pageSize = res.page.pageSize
+                    this.pjPage.size = res.page.size
+                    this.pjPage.startRow = res.page.startRow
+                    this.pjPage.endRow = res.page.endRow
+                    this.pjPage.total = res.page.total
+                    this.pjPage.pages = res.page.pages
+                    let list = res.page.list
+                    list.forEach((value,index) => {
+                      if(value.headimg){
+                        value.headImg = ui.getApp().imgUrlHeader+value.headImg
+                      }else{
+                        value.headImg = require('#/images/portrait_bg.png')
+                      }
+                     
+                    });
+                   this.props = this.props.concat(list)
+                   this.pjDate.pageNum ++
+                   if(this.pjDate.pageNum > this.pjPage.pages){
+                     this.loadMore = false
+                     return false
+                   }
+
+        })
+      
+    },
+    handleBegin ({ distance, direction }) {
+      this.proportion = distance / 40
+      // 拉满40px
+      if (this.proportion >= 1) {
+        if (this.state === 1 && direction === 'down') {
+          // 释放刷新
+          this.state = 2
+
+          // 300ms吉祥物翻转时间
+          window.setTimeout(() => {
+            // 刷新中...
+            this.state = 3
+          }, 300)
+        }
+      } else {
+        this.state = 1
+      }
+    },
+    handleActive () {//下拉刷新
+           this.loadMore = true
+           this.props = []//清空列表
+           this.pjDate.pageNum = 1
+           this.getPjList ()
+           this.state = 4
+    },
+    handleAfter (flag) {//下拉刷新绑定数据
+      this.proportion = 0
+      this.state = 1
+    },
+    tongguo(stuId){
+      this.$http('get',ui.getApp().apis.YWCL.AUDIT,{id:stuId,reduceStatus:'10'},(res)=>{
+        if(res.code == 200){
+          ui.showToast({ title: '审批通过', icon: 'success'})
+          this.handleActive()
+        }
+      })
+    },
+    changeHandler1 (state ,index) {
+      if (this.el !== index) {
+        if (this.el!== undefined) {
+          this.props[this.el].switcher = 'off'
+        }
+        this.props[index].switcher = 'on'
+        this.el = index
+      }
+    },
+    godiscountdetails(item){//详情
+      sessionStorage.setItem("bossCoachDetail",JSON.stringify(item))
+      ui.navigateTo({
+        url: '/pages/businessQuery/coachDetail'
+      })
+      
+    },
+    openPopup1 () {//模态框
+      if(this.seachShow1){
+        this.seachShow1 = false
+      }else{
+        this.seachShow1 = true
+      }
+    },
+    openPopupHide (){
+      this.seachShow1 = false
+    },
+    openPopupShow (){
+      this.seachShow1 = true
+    },
+    goback(){
+       ui.navigateBack()
+    },
+    formReset(){
+      //重置搜索条件
+      this.pjDate.phoneLike=''
+      this.pjDate.idCardNoLike=''
+      this.pjDate.coachNameLike=''
+      //搜索
+      this.handleActive()
+    },
+    fanyiKeMu (key){//翻译科目
+       let km = ''
+       let kmCodeArray = []
+       if(key){
+         if(key.indexOf(',') !=-1){
+            kmCodeArray = key.split(',')
+         }else{
+            kmCodeArray.push(key)
+         }
+       }
+       
+       kmCodeArray.forEach(function(value,index){
+          if(value == '01'){
+            km+='科一'
+          }
+          if(value == '02'){
+            km+='科二'
+          }
+          if(value == '03'){
+            km+='科三'
+          }
+          if(value == '04'){
+            km+='科四'
+          }
+          if(index != kmCodeArray.length-1){
+            km+=','
+          }
+       })
+       
+       return km
+       
+    },
+    calPhone(phone){
+        if(phone){
+            ui.makePhoneCall({
+              phoneNumber: phone
+            })
+        }else{
+            ui.showToast({ title: '暂无手机号'})
+        }
+        
+    }
+  },
+  mounted() {
+    this.pullDownDivHeight=this.getSystemMessage().windowHeight-86
+    this.getPjList()
+  }
+}
+</script>
+
+<style lang="less">
+.head_portrait {
+      border-radius:35px; 
+    }
+ .login {
+      color: rgb(114, 110, 110);
+      font-size: 16px;
+    }
+.login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+    .swipe-out-dome-1{
+   transition: height .25s ease-in;
+   overflow: hidden;
+   border-bottom: 1px solid #efefef;
+ }
+.swipe-out-dome-1-content {
+  overflow: hidden;
+  background: #fff;
+  padding: 10px;
+
+  .text {
+    font-size: 14px;
+  }
+}
+.delete{
+  width: 80px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 14px;
+  color: #fff;
+  background: #19be6d;
+}
+.details{
+  width: 80px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 14px;
+  color: #fff;
+  background: #FCB300;
+}
+.back{
+   width: 80px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 14px;
+  color: #fff;
+  background: #f22;
+}
+.top_tip{
+  background-color: #fff;
+  .text{
+    .ui-text{
+      font-size: 16px;
+      color: #313338;
+    }
+    .ui-view{
+      color: #9C9FA4;
+      font-size: 12px;
+      .mix-text-overflow();
+    }
+  }
+}
+.ui-tabs{
+  background-color: #fff;
+  padding-bottom: 1px;
+}
+.content {
+  height: 60px;
+  line-height: 60px;
+}
+.sub{
+  margin-top: 30px;
+  width: 100%;
+  background: #fff;
+  .complete{
+    color:#09C2B1;
+  }
+}
+.searchRow{
+  margin-top: 10px;
+  .ui-input{
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0px;
+  }
+}
+</style>

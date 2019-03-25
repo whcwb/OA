@@ -1,0 +1,76 @@
+<!--投诉dialog界面-->
+<template>
+  <ui-page>
+      <ui-view class="jlheaderView">
+        <ui-image class="jlheader" src="{{ headerIcon }}"  mode="simple"></ui-image>
+      </ui-view>
+      <ui-view class="">
+        <ui-text class="jlName">{{name}}</ui-text>
+      </ui-view>
+      <ui-view class="" style="width:100%;text-align:center;">
+        <ui-image class="qrCode" src="{{ qrCode }}"  mode="simple"></ui-image>
+      </ui-view>
+  </ui-page>
+</template>
+
+
+<script>
+export default {
+  data () {
+    return {
+      name: '',
+      headerIcon:'',
+      qrCode:''
+    }
+  },
+  mounted () {
+    this.$DialogOpen((data) => {
+      if (data && data.qrCode && data.name && data.headerIcon) {
+        this.qrCode = data.qrCode
+        this.name = data.name
+        this.headerIcon = data.headerIcon
+      }
+    })
+  },
+
+  methods: {
+    
+      // 调用ui.hideDialog关闭窗体，并回传数据
+      //ui.hideDialog({ textContent: this.textContent })
+    
+  }
+}
+
+</script>
+
+<style lang="less">
+  .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+
+.jlheaderView{
+  text-align: center;
+  width: 100%;
+  margin-top: 30px;
+}
+.jlheader{
+  width:80px;
+  height: 80px;
+  border-radius: 40px;
+  display:inline-block;
+}
+.jlName{
+  text-align:center;
+  width: 100%;
+  display: block;
+  font-size: 60rpx;
+}
+.qrCode{
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+}
+</style>

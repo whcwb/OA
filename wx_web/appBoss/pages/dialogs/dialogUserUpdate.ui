@@ -1,0 +1,143 @@
+<!--修改用户信息-->
+<template>
+  <ui-page>
+    <ui-row class="searchRow" >
+            <ui-col space-left="10" width="70" align="right" vertical-align="middle">
+                <ui-text class="">姓名：</ui-text>
+            </ui-col>
+            <ui-col space-right="10">
+                      <ui-input ui:model="{{uitem.name}}" show-clear="true" placeholder="请输入姓名" ></ui-input>
+            </ui-col>                   
+    </ui-row>
+    <ui-row class="searchRow" >
+            <ui-col space-left="10" width="70" align="right" vertical-align="middle">
+                <ui-text class="">手机号：</ui-text>
+            </ui-col>
+            <ui-col space-right="10">
+                      <ui-input ui:model="{{uitem.phone}}" show-clear="true" placeholder="请输入手机号" maxlength=11 type="number" ></ui-input>
+            </ui-col>                   
+       </ui-row>
+       <ui-row class="searchRow" >
+            <ui-col space-left="10" width="70" align="right" vertical-align="middle">
+                <ui-text class="">身份证：</ui-text>
+            </ui-col>
+            <ui-col space-right="10">
+                <ui-input ui:model="{{uitem.idCardNo}}" show-clear="true" placeholder="请输入身份证号" maxlength=18 ></ui-input>
+            </ui-col>                    
+       </ui-row>
+       <!--<ui-row class="searchRow" >
+            <ui-col space-left="10" width="70" align="right" vertical-align="middle">
+                <ui-text class="">驾校：</ui-text>
+            </ui-col>
+            <ui-col space-right="10">
+              <ui-check-list max="1" label-position="left" options="{{ countryList }}" type="plain" ui:model="{{ check }}" bindchange="changeCheck"></ui-check-list>
+            </ui-col>                    
+       </ui-row>-->
+       <ui-view class="btn_win">
+          <ui-button type="primary" bindtap="confirmSelect">确认</ui-button>
+      </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "修改信息"
+  },
+  data() {
+    return {
+      uitem:{},
+      countryList:[],//驾校数据源
+      check:["明涛驾校"]//选择的驾校(暂时没用)
+    }
+  },
+  methods: {
+    confirmSelect:function(){
+      let myregPhone=/^[1][3,4,5,6,7,8][0-9]{9}$/;
+      
+      let myregIdCard = /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$)/
+      
+      if(! this.uitem.phone){
+        ui.showToast({ title: '手机号不能为空!' })
+        return
+      }
+
+      if(! myregPhone.test(this.uitem.phone)){
+        ui.showToast({ title: '手机号格式错误!' })
+         return
+      }
+      
+      if(! this.uitem.idCardNo){
+        ui.showToast({ title: '身份证不能为空!' })
+         return
+      }
+      if(! myregIdCard.test(this.uitem.idCardNo)){
+        ui.showToast({ title: '身份证格式有误!' })
+         return
+      }
+      let data = {
+        id:this.uitem.id,
+        phone:this.uitem.phone,
+        jgmc:this.uitem.jgmc,
+        idCardNo:this.uitem.idCardNo,
+        name:this.uitem.name
+
+      }
+      this.$http('post',ui.getApp().apis.YWCL.UPDATEINFO,data,(res)=>{
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            let citem = this.uitem
+            ui.hideDialog({type:true,item:citem})//因为作用于详细界面时不会刷新数据，所以成功后数据回传
+            this.uitem = {}//关闭窗口时清除弹窗数据
+      },(res)=>{
+            ui.showToast({ title: '提交失败！', duration: 2000 })
+      })
+    },
+    changeCheck:function(val){//驾校选择事件，暂时没用
+      //alert(JSON.stringify(val))
+    },
+    
+  },
+  mounted() {
+    this.$DialogOpen((data) => {
+      if (data && data.userItem) {
+        this.uitem = data.userItem
+      }
+    })
+    //所属驾校数据字典查询
+    /**
+    let that = this
+    this.$http('POST',ui.getApp().apis.YWCL.ZDPAGER,{pageNum:1,pageSize:100,lmdm:'ZDCLK1019'},(res)=>{
+              if(res.page.list && res.page.list.length>=1 ){
+                 let shList = res.page.list[0].zdxmList
+                 console.log(JSON.stringify(shList))
+                 that.countryList = []
+                 shList.forEach(function(value,index){
+                    let obj = {}
+                    obj.key = value.zddm
+                    obj.value = value.zdmc
+                    that.countryList.push(obj)
+                });
+                
+                }
+    }) */
+  }
+}
+</script>
+
+<style lang="less">
+  .btn_win{
+  margin-top: 20px;
+  padding: 0 10px;
+}
+.searchRow{
+  margin-top: 10px;
+  .ui-input{
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0px;
+  }
+  
+}
+
+</style>

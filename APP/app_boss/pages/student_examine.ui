@@ -1,0 +1,53 @@
+<!--学生信息审核-->
+<template>
+  <ui-page>
+    <ui-view class="head_portrait">
+       <ui-row space=5 border-top border-bottom height=70>
+         <ui-col span=3>
+           <ui-image
+            src="{{portraitUrl}}"
+            mode='aspectFill'
+            width="70"
+            height="70"
+            class="head_portrait"
+           ></ui-image>
+         </ui-col>
+         <ui-col style="font-size:18px" vertical-align="middle">
+           张三 · 341205198756479867
+         </ui-col>
+         <ui-col span=2 align="center" vertical-align="middle">
+           <ui-icon type="iconfontjiantou2" size="24"></ui-icon>
+         </ui-col>
+       </ui-row>
+     </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "学员信息审核"
+  },
+  data() {
+    return {
+       portraitUrl:('http://img2.imgtn.bdimg.com/it/u=4163885218,1747615568&fm=27&gp=0.jpg')
+    }
+  },
+  methods: {},
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+ .head_portrait {
+      border-radius:35px; 
+    }
+ .login {
+      color: rgb(114, 110, 110);
+      font-size: 16px;
+    }
+.login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+</style>

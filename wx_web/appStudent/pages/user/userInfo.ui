@@ -1,0 +1,516 @@
+<!--userinfo.ui-->
+<template>
+  <ui-page>
+    <ui-nav-bar slot="nav-bar" class="nav_bar">
+      <ui-row height="46">
+        <ui-col vertical-align="middle" align="left" space-left="10"  width="50" bindtap="navigateBack">
+          <ui-icon type="arrow-left" size="16" color="#fff"></ui-icon>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">个人信息</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="50"></ui-col>
+      </ui-row>
+    </ui-nav-bar>
+    
+    <ui-row height="50" class="userInfo_list2" space-top="10">
+      <ui-col vertical-align="middle" space-left="15">
+        头像
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="portrait">
+        <ui-image bindtap = "choseImg"  src="{{ portraitUrl }}" width="40" height="40" >
+        </ui-image>
+        <ui-icon type="arrow-right" size="16" color="#656565"></ui-icon>
+        </ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        姓名
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.name}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        报名时间
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.registrationTime}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        报考车型
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.carType}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        流水号
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.serialNum}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        有效期
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.indateEndTime}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        当前状态
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{fanyiStatus('ZDCLK1010',userInfo.status)}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        是否分期
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{fanyiStatus('ZDCLK1014',userInfo.installment)}}</ui-view><!--是否分期 /* 00: 不分期 10：分期*/-->
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        是否欠费
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.arrearage == '10' ?'欠费':'不欠费'}}</ui-view><!--是否欠费 /* 00: 不欠费 10： 欠费 */-->
+      </ui-col>
+    </ui-row>
+    <ui-row ui:show="{{(userInfo.arrearage == '00') ? false : true}}" height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        欠费金额
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.oweAmount}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <!--
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科一状态
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{fanyiStatus('ZDCLK1011',userInfo.firSub)}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科一初考缴费时间
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.firSubPaymentTime}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科一初考约考时间
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.firSubTestTime}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科一考试次数
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.firSubTestNum}}</ui-view>
+      </ui-col>
+    </ui-row>
+
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科二状态
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{fanyiStatus('ZDCLK1012',userInfo.secSub)}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科二教练员
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.secondSubjectCoach}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科二初考缴费时间
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.secSubPaymentTime}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科二初考约考时间
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.secSubTestTime}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科二考试次数
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.secSubTestNum}}</ui-view>
+      </ui-col>
+    </ui-row>
+
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科三状态
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{fanyiStatus('ZDCLK1012',userInfo.thirdSub)}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科三教练员
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.thirdSubjectCoach}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科三初考缴费时间
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.thirdSubPaymentTime}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科三初考约考时间
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.thirdSubTestTime}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科三考试次数
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userInfo.thirdSubTestNum}}</ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        
+        科四状态
+      
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{fanyik4(userInfo.forthSub)}}</ui-view>
+      </ui-col>
+    </ui-row>
+    
+    -->
+    <!--
+    <ui-view class="list_title">账号绑定</ui-view>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col width="50" vertical-align="middle" align="center">
+        <ui-icon type="shouji1" color="#1E94FF" size="20"></ui-icon>
+      </ui-col>
+      <ui-col vertical-align="middle">
+        手机
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{userPhone}}
+        <ui-icon type="arrow-right" size="16" color="#656565"></ui-icon>
+        </ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col width="50" vertical-align="middle" align="center">
+        <ui-icon type="weixin1" color="#37B431" size="20"></ui-icon>
+      </ui-col>
+      <ui-col vertical-align="middle">
+        openId
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">{{openId}}
+        <ui-icon type="arrow-right" size="16" color="#656565"></ui-icon>
+        </ui-view>
+      </ui-col>
+    </ui-row>
+    -->
+
+    <!--<ui-view class="list_title">安全设置</ui-view>
+    <ui-row height="50" class="userInfo_list2">
+      <ui-col vertical-align="middle" space-left="15">
+        登录密码
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">修改
+          <ui-icon type="arrow-right" size="16" color="#656565"></ui-icon>
+        </ui-view>
+      </ui-col>
+    </ui-row>-->
+    
+  </ui-page>
+</template>
+
+
+<script>
+
+export default {
+  config: {
+    backgroundColor: '#F2F2F2',
+    delay:false
+  },
+  data () {
+    return {
+      portraitUrl: require('#/images/portrait_bg.png'),
+      openId:'',
+      userInfo:{},
+      headImgRoute:''//后台返回的未经裁剪的图片路径，裁剪完成后后台的该图片会删除
+
+    }
+  },
+  methods: {
+    navigateBack () {
+      ui.navigateBack()
+    },
+    choseImg:function(){//选择图片
+      ui.getApp().wxUtil.chooseImage((imgIds)=>{//imgIds 返回选择的图片
+        ui.showLoading({
+              text: '图片处理中'
+            })
+        ui.getApp().wxUtil.uploadImage(imgIds[0],(serverId)=>{//imgIds 返回选择的图片
+            //图片利用微信上传后返回服务器路径
+            ui.hideLoading()
+            this.$http('POST',ui.getApp().apis.PUBGETPIC,{
+                userId:this.getUser().id,
+                serverId:serverId,
+                userrole:'1'
+              },(res)=>{
+                  this.headImgRoute = ui.getApp().imgUrlHeader+res.message //完整的图片访问路径
+                  this.cropperImg()//打开裁剪弹窗
+
+              },(res)=>{
+                    ui.showToast({ title: '图片打开失败！', duration: 2000 })
+              })
+            
+        });
+      });
+    },
+    cropperImg(){//打开裁剪图片框
+     import(`#/pages/dialogs/dialogCropper.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#666'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                imgSrc:this.headImgRoute
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                if (data && data.type==true) {//开始上传头像
+                   this.$http('POST',ui.getApp().apis.PUBLICUPLOADIMG,{
+                        userId:this.getUser().id,
+                        targetPath:'/wxStuHeadImg',
+                        Base64:data.base64
+                      },(res)=>{
+                            this.portraitUrl = ui.getApp().imgUrlHeader+res.message
+                            let userInfoList =  localStorage.getItem("userInfoList");//获取登录用户历史信息，用于切换账户
+                            let userInfo =  localStorage.getItem("userInfo");//获取当前用户信息
+                            userInfo = JSON.parse(userInfo)
+                            userInfo.headImg = res.message
+                            localStorage.setItem('userInfo',JSON.stringify(userInfo))//更新缓存中的用户头像信息
+                            if(userInfoList){
+                              userInfoList = JSON.parse(userInfoList)
+                              userInfoList.forEach(function (value,index) {
+                              if(value.id == userInfo.id){
+                                  userInfoList[index] = userInfo
+                                  return
+                                }
+                              })
+                            }
+                            localStorage.setItem("userInfoList",JSON.stringify(userInfoList))//缓存登录用户历史信息
+                            ui.showToast({ title: '头像上传成功！', icon: 'success', duration: 2000 })
+                              
+                      },(res)=>{
+                            ui.showToast({ title: '头像上传失败！', duration: 2000 })
+                      })
+                }
+              }
+            })
+      })
+    },
+    fanyiStatus(lmdm,status){//返回当前科目
+       return this.fanyiAppZd(lmdm,status)
+    },
+    getUserDetail(){//根据id查询自身详细信息
+      this.$http('get',ui.getApp().apis.TRAINEEINFOMATION+this.getUser().id,{},(res)=>{
+        res.result.token = this.getUser().token
+        localStorage.setItem('userInfo',JSON.stringify(res.result))//缓存用户信息
+        let user = res.result
+        this.userInfo = user
+        this.portraitUrl = (this.userInfo.headImg == null ||  this.userInfo.headImg == '')? require('#/images/portrait_bg.png'):ui.getApp().imgUrlHeader+this.userInfo.headImg
+           
+            //更新缓存的用户数据及历史登录用户数据
+            let userInfoList =  localStorage.getItem("userInfoList");//获取登录用户历史信息，用于切换账户
+             if(userInfoList){
+               userInfoList = JSON.parse(userInfoList)
+               if(userInfoList.length>0){
+               userInfoList.forEach(function (value,index) {
+                 if(value.id == user.id){
+                    userInfoList[index] = user
+                    return
+                  }else{
+                    userInfoList.push(user)
+                  }
+                })
+                }else{
+                  userInfoList.push(user)
+                }
+               localStorage.setItem('userInfoList',JSON.stringify(userInfoList))
+             }else{
+               userInfoList = []
+               userInfoList.push(user)
+               localStorage.setItem('userInfoList',JSON.stringify(userInfoList))
+             }
+
+            
+      })
+    },
+    fanyik4:function(key){//翻译科目四状态
+        if(key == '00'){
+          key ='已约考'
+        }
+        if(key == '10'){
+          key ='不合格'
+        }
+        if(key == '20'){
+          key ='合格'
+        }
+        return key
+    }
+  },
+  mounted () {
+    this.getUserDetail()
+    
+  }
+}
+
+</script>
+
+<style lang="less">
+
+// userinfo.less
+.nav_bar {
+  background: linear-gradient(to right, #1F97FE, #126DFE);
+  .nav_title{
+    color: #fff;
+  }
+}
+.userInfo_list{
+  background-color: #fff;
+  .active{
+    font-size: 14px;
+    color: #8C8C8C;
+  }
+  .active2{
+    font-size: 14px;
+    color: #1F95FF;
+  }
+}
+.userInfo_list2{
+  background-color: #fff;
+  .mix-1px(0, 0, 1, 0, #ccc);
+  .active{
+    font-size: 14px;
+    color: #8C8C8C;
+  }
+  .active2{
+    font-size: 14px;
+    color: #1F95FF;
+  }
+  .portrait{
+    display: flex;
+    .ui-image{
+      border-radius: 50%;
+    }
+    .ui-icon{
+      line-height: 40px;
+    }
+  }
+}
+
+.list_title{
+  font-size: 12px;
+  color: #656565;
+  padding-left: 15px;
+  line-height: 40px;
+}
+</style>

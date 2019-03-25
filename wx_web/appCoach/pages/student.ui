@@ -1,0 +1,682 @@
+<template>
+  <ui-page page-load="{{ pageLoad }}">
+
+    <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'1px solid rgba(231, 231, 231, 0.6)','background-color':'#fff'} }}">
+      <ui-row height="46">
+        <ui-col vertical-align="middle" align="center" width="60" bindtap="">
+         <!-- <ui-view class="nav_left"><ui-icon type="arrow-left" size="16" color="#39f"></ui-icon>返回</ui-view>-->
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">我的学员</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="60" bindtap="">
+          <!--<ui-icon type="QR" size="20" class="ui-nav-iconColor"></ui-icon>-->
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+    
+    <!--筛选条件-->
+    <ui-fixed-view top="45" left="0" right="0">
+     <ui-view>
+          <ui-row height="46" class="nav_top">
+            <ui-col vertical-align="middle" align="center" bindtap="openPopup(index)" ui:for="{{ navList }}" class="{{ item.active }}">
+              <ui-row height="46">
+                <ui-col vertical-align="middle" align="right" space-right="5">
+                  <ui-view>
+                    {{ item.name}}
+                  </ui-view>
+                </ui-col>
+                <ui-col vertical-align="middle" align="left" span="4" space-left="5">
+                  <ui-icon type="{{item.arrow}}" size="8" color="#878787;" class="{{ item.active }}"></ui-icon>
+                </ui-col>
+              </ui-row>
+            </ui-col>
+          </ui-row>
+    </ui-view>
+    </ui-fixed-view>
+    <!--筛选条件结束-->
+    <!--学生列表开始-->
+    <ui-scroll-view scroll-y height="{{pullDownDivHeight}}" pull-down="{{ pullDown }}"  enable-reach-bottom-load ="{{loadMore}}" on-load-more="{{ handleLoadMore }}" style="padding-top:46px;">
+        
+        <ui-view slot="pull-down" class="custom-pull-down-content">
+          <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+            <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+          </ui-view>
+          <ui-view class="img-layer" ui:else>
+            <ui-view class="gauge-loader" ui:if="{{state === 2}}"></ui-view>
+            <ui-view class="gauge-loader" ui:show="{{state === 3 || state === 4}}"></ui-view>
+          </ui-view>
+        </ui-view>
+
+        <!--学员信息列表循环部分开始-->
+        <ui-view class="stuListItem" ui:for="{{stuItem}}">
+            <ui-row height="40" class="top_tip top_tipDiv" border-bottom bindtap="gotoDetail(item.id,item.allotDays,returnHours(item.trainTimes),item.status,item.car_type)">
+                <ui-col width="40" align="center" vertical-align="middle">
+                  <ui-image class="left_header" src="{{item.head_img}}"  mode="simple"></ui-image>
+                </ui-col>
+                <ui-col class="text" align="left" vertical-align="middle" space="20">
+                  <ui-view style="width: 100%;">
+                    <ui-row height="30">
+                      <ui-col align="left" vertical-align="middle">
+                        <ui-text>{{item.trainee_name}}</ui-text>
+                      </ui-col>
+                      <ui-col align="right" width="100" vertical-align="middle">
+                        <ui-icon type="xiayiyeqianjinchakangengduo" size="24" color="#fff"></ui-icon>
+                      </ui-col>
+                    </ui-row>
+                    
+                  </ui-view>
+                </ui-col>
+            </ui-row>
+            <ui-swipe-out height="80" operate-width="180" bindchange="stuChangeHandler(index)" value="{{item.switcher}}">
+            <ui-view slot="content">
+            <ui-row height="40" border-top   class="stuItem_bottomDiv">
+                <ui-col>
+                  <ui-row>
+                    <ui-col span="4"  vertical-align="middle" align="center">
+                      分配
+                    </ui-col>
+                    <ui-col span="4" vertical-align="middle" align="center">
+                        状态
+                    </ui-col>
+                    <ui-col span="4" vertical-align="middle" align="center">
+                        车型
+                    </ui-col>
+                  </ui-row>
+                </ui-col>
+                <ui-col width="120" border-right vertical-align="middle" align="center">
+                  学时
+                </ui-col>
+              </ui-row>
+              <ui-row height="40" border-bottom class="stuItem_bottomTextDiv">
+                <ui-col>
+                  <ui-row>
+                    <ui-col span="4"  vertical-align="middle" align="center">
+                      {{item.allotDays}}天
+                    </ui-col>
+                    <ui-col span="4" vertical-align="middle" align="center">
+                        {{item.status}}
+                    </ui-col>
+                    <ui-col span="4" vertical-align="middle" align="center">
+                        {{item.car_type}}
+                    </ui-col>
+                  </ui-row>
+                </ui-col>
+                <ui-col width="120" border-right vertical-align="middle" align="center">
+                  {{returnHours(item.trainTimes)}}小时
+                </ui-col>
+              </ui-row>
+            </ui-view>
+            <ui-view slot="operate">
+            <ui-view class="dome_operate">
+              <ui-row height="80">
+                <ui-col bindtap="tuixueFunc(item.id)" vertical-align="middle" align="center">
+                  <ui-icon type="zhuxiaoguanji" size="24" color="#fff"></ui-icon>
+                </ui-col>
+                <ui-col bindtap="sendMessage(item)" vertical-align="middle" align="center">
+                 
+                  <ui-icon type="xinxiduanxinxiaoxitixingyoujiansixinyouxiang1" size="24" color="#fff"></ui-icon>
+                 
+                </ui-col>
+                <ui-col bindtap="calPhone(item.phone)" vertical-align="middle" align="center">
+                  <ui-icon type="dianhua-yuankuang" size="24" color="#fff"></ui-icon>
+                </ui-col>
+              </ui-row>
+            </ui-view>
+          </ui-view>
+            </ui-swipe-out>
+        </ui-view>
+        <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(stuItem && stuItem.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+        </ui-view>  
+        <!--学员信息列表循环部分结束-->    
+        <ui-view style="width:200px;margin:0 auto;">
+          <ui-divider ui:show="{{!loadMore}}">没有新数据了</ui-divider>
+         </ui-view>
+
+    </ui-scroll-view>
+    <!--学生列表结束-->
+    <ui-popup ui:model="{{show1 }}" position="top" top="{{ popupTop }}" height="{{ scroHeight }}" mask-style="{{{ top: popupTop+'px' }}}" bindhide="popHide" bindshow="popShow">
+      <ui-view class="top_pop">
+        <ui-scroll-view scroll-y="scroll-y" height="{{scroHeight}}">
+          <ui-check-list max="1" label-position="left" options="{{ kemuList }}" type="plain" ui:model="{{ checklist1 }}" bindchange="change" color="#3AC3B0"></ui-check-list>
+        </ui-scroll-view>
+      </ui-view>
+    </ui-popup>
+
+    <ui-popup ui:model="{{show2 }}" position="top" top="{{ popupTop }}" height="{{ scroHeight }}" mask-style="{{{ top: popupTop+'px' }}}" bindhide="popHide1" bindshow="popShow1">
+      
+        <ui-view class="top_pop">
+          <ui-scroll-view scroll-y="scroll-y" height="{{scroHeight}}">
+            <ui-check-list max="1" label-position="left" options="{{ xblist }}" type="plain" ui:model="{{ checklist2 }}" bindchange="change1" color="#3AC3B0"></ui-check-list>
+          </ui-scroll-view>
+        </ui-view>
+    </ui-popup>
+
+    <ui-popup ui:model="{{ show3 }}" position="top" top="{{ popupTop }}"  mask-style="{{{ top: popupTop+'px' }}}" bindhide="popHide2" bindshow="popShow2">
+      <ui-view class="top_pop">
+        <ui-scroll-view scroll-y="scroll-y" height="{{scroHeight}}">
+            <ui-check-list max="1" label-position="left" options="{{ sortList }}" type="plain" ui:model="{{ checklist3 }}" bindchange="change2" color="#3AC3B0"></ui-check-list>
+        </ui-scroll-view>
+      </ui-view>
+    </ui-popup>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: '我的学员',
+    title:'我的学员',
+    navigationStyle:'custom'
+    
+  },
+  data () {
+    return {
+      jlbh: '教练证编号',
+      typetype:ui.getApp().globalData.bannerAutoplay,
+      buttonText: '界面跳转',
+      //学生数据
+      stuItem: [],
+      scroHeight: parseInt(ui.DEFAULT_CONTENT_HEIGHT * 0.8),
+      kemuList: [{key:'all',value:'全部'},{key:'10',value:'科目一'},{key:'20',value:'科目二'},{key:'30',value:'科目三'},{key:'40',value:'科目四'}],
+      xblist:[{key:'all',value:'全部'},{key:'00',value:'受理'},{key:'50',value:'结业'},{key:'60',value:'退学'}],
+      sortList: [
+        {key:'all',value:'全部'},{key:'C1',value:'C1'},{key:'C2',value:'C2'},{key:'B1',value:'B1'},{key:'B2',value:'B2'},{key:'A1',value:'A1'},{key:'A2',value:'A2'},
+      ],
+      checklist1: [],//下来选择框选择的数据
+      checklist2: [],
+      checklist3: [],
+      navList: [
+        {
+          name: '科目',
+          active: '',
+          arrow: 'biaotou-daoxu',
+          bindtap: 'openPopup1'
+        }, {
+          name: '状态',
+          active: '',
+          arrow: 'biaotou-daoxu',
+          bindtap: 'openPopup2'
+        }, {
+          name: '车型',
+          active: '',
+          arrow: 'biaotou-daoxu',
+          bindtap: 'openPopup3'
+        }
+      ],
+      winWidth: ui.WIN_WIDTH,
+      popupTop: ui.DEFAULT_HEADER_HEIGHT + 46,
+      show1: false,
+      show2: false,
+      show3: false,
+      loadMore:true,//加载更多
+      count:0,//用于模拟数据后期可删除
+      pullDown: {//下拉刷新
+        distance: 60,
+        onBegin: this.handleBegin,
+        onActive: this.handleActive,
+        onAfter: this.handleAfter
+      },
+      proportion:0,
+      pullDownDivHeight:0,//设置上下拉容器高度
+      
+      state:0,
+      //下拉刷新结束
+      el2: undefined,
+      sendDate:{//请求列表信息所带参数
+        status:'',//学生状态,包含科目
+        carType:'',//车型
+        pageNum:1,//请求第几
+        pageSize:8,//每页个数
+        coachId:this.getUser().id || ''
+      },
+      getDate:{
+        pageNum:'',//当前是第几页
+        pageSize:'',//当前每页是几条数据
+        pages:'',//总页数
+        total:'',//总数据条数
+        list:[]
+      },
+      pageLoad: {// 切换页面执行方法
+        trigger: 'always',
+        handle: () => {
+            this.sendDate.pageNum = 1
+            this.loadMore = true
+            this.getStudentList(1)//第一次请求
+        }
+      }
+    }
+      
+    
+  },
+  methods: {
+    openPopup (index) {
+      if (index === 0) {
+        this.show2 = false
+        this.show3 = false
+        this.show1 = !this.show1
+      } else if (index === 1) {
+        this.show1 = false
+        this.show3 = false
+        this.show2 = !this.show2
+      } else if (index === 2) {
+        this.show1 = false
+        this.show2 = false
+        this.show3 = !this.show3
+      }
+    },
+
+    change (val) {
+      if(val[0] == 'all'){
+          this.sendDate.status = ''
+      }else{
+          this.sendDate.status = val[0]
+      }
+      this.sendDate.pageNum = 1
+      this.loadMore = true
+      this.getStudentList(1)
+      //console.log(JSON.stringify(this.sendDate)+"----------------------")
+      this.show1 = false
+     
+    },
+    change1 (val) {
+      if(val[0] == 'all'){
+          this.sendDate.status = ''
+      }else{
+          this.sendDate.status = val[0]
+      }
+      this.sendDate.pageNum = 1
+      this.loadMore = true
+      this.getStudentList(1)
+      console.log(JSON.stringify(this.sendDate)+"----------------------")
+      //this.navList[1].name = val.join('-')
+      this.show2 = false
+    },
+    change2 (val) {
+      if(val[0] == 'all'){
+          this.sendDate.carType = ''
+      }else{
+          this.sendDate.carType = val[0]
+      }
+      this.sendDate.pageNum = 1
+      this.loadMore = true
+      this.getStudentList(1)
+      console.log(JSON.stringify(this.sendDate)+"----------------------")
+      //this.navList[2].name = this.checklist3[0].value
+      this.show3 = false
+    },
+    popHide () {
+      this.navList[0].active = ''
+    },
+    popShow () {
+      this.navList[0].active = 'active'
+    },
+    popHide1 () {
+      this.navList[1].active = ''
+    },
+    popShow1 () {
+      this.navList[1].active = 'active'
+    },
+    popHide2 () {
+      this.navList[2].active = ''
+    },
+    popShow2 () {
+      this.navList[2].active = 'active'
+    },
+    handleLoadMore () {//获取学生数据加载更多
+      this.getStudentList(2)//加载更多
+    },
+    handleBegin ({ distance, direction }) {
+      this.proportion = distance / 60
+      // 拉满60px
+      if (this.proportion >= 1) {
+        if (this.state === 1 && direction === 'down') {
+          // 释放刷新
+          this.state = 2
+
+          // 300ms吉祥物翻转时间
+          window.setTimeout(() => {
+            // 刷新中...
+            this.state = 3
+          }, 300)
+        }
+      } else {
+        this.state = 1
+      }
+    },
+    handleActive () {
+      this.stuItem = []
+      this.sendDate.pageNum = 1
+      this.getStudentList(1)
+    },
+    handleAfter (flag) {
+      this.proportion = 0
+      this.state = 1
+      
+    },
+    /**pageScroll (scrollTop) {//监听page滚动
+      if(scrollTop>0){
+        this.searchFixed = true
+      }else{
+        this.searchFixed = false
+      }
+
+    }
+    **/
+   //打电话方法
+   calPhone (phone){
+     if(phone){
+     ui.makePhoneCall({
+        phoneNumber: phone
+     })
+     }else{
+        ui.showToast({ title: '手机号码为空!'})
+     }
+   },
+   //发送通知
+   sendMessage (item){
+     let opendIdS = item.open_id
+     let traineeIdS = item.trainee_id
+     let phone = this.getUser().phone
+     let name = this.getUser().coachName
+     if(opendIdS){
+        import(`#/pages/dialogs/sendMsg.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '发送通知',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#666'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                openId : opendIdS,
+                traineeId : traineeIdS,
+                coachPhone:phone,
+                coachName:name
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                if (data && data.type==true) {
+                   ui.showToast({ title: '通知发送成功！', icon: 'success', duration: 2000 })
+                }
+              }
+            })
+          })
+     }else{
+       ui.showToast({ title: '用户暂未绑定微信!'})
+     }
+
+    
+    /**this.$http('POST',ui.getApp().apis.PUBSENDMSG,{
+           coachId:this.getUser().id
+          },(res)=>{
+            console.log("前十条数据"+JSON.stringify(res))
+            let result = res.result
+            result.forEach((value,index) => {
+               if(! value.head_img){
+                  value.head_img = require('#/images/portrait_bg.png')
+               }else{
+                 value.head_img = ui.getApp().imgUrlHeader+value.head_img
+               }
+            });
+           this.studentItems=result
+            
+      })**/
+     
+   },
+   //退学申请
+   tuixueFunc (stuID){
+     if(stuID){
+        import(`#/pages/dialogs/tuixue.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '退学申请',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#666'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                studentId: stuID
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                if (data && data.type==true) {
+                   ui.showToast({ title: '退学申请提交成功！', icon: 'success', duration: 2000 })
+                }
+              }
+            })
+          })
+     }
+
+   },
+   //左滑动操作功能键
+   stuChangeHandler (index) {
+      if (this.el2 !== index) {
+        if (this.el2!== undefined) {
+          this.stuItem[this.el2].switcher = 'off'
+        }
+        this.stuItem[index].switcher = 'on'
+        this.el2 = index
+      }
+    },
+    gotoDetail (stuId,day,allTime,status,carType){//学生id 分配天数 总学时 状态  车型
+        
+        ui.navigateTo({
+          url: 'student/detail?id='+stuId+'&day='+day+'&allTime='+allTime+'&status='+status+'&carType='+carType
+        })
+    },
+    getStudentList(type){
+      this.$http('POST',ui.getApp().apis.TRANINESSLIST,this.sendDate,(res)=>{
+            console.log("学生数据"+JSON.stringify(res))
+            let itemList = []
+            
+            this.getDate.pageNum = res.result.pageNum
+            this.getDate.pages = res.result.pages
+            this.getDate.pageSize = res.result.pageSize
+            this.getDate.total = res.result.total
+            this.getDate.list = res.result.list
+            if(type == 1){
+              //this.stuItem = itemList
+              itemList = this.getDate.list
+            }else if(type == 2){//加载更多
+              itemList = this.stuItem.concat(this.getDate.list)
+            }
+            itemList.forEach((value,index) => {
+              if(! value.head_img){
+                  value.head_img = require('#/images/portrait_bg.png')
+               }else{
+                 value.head_img = ui.getApp().imgUrlHeader+value.head_img
+               }
+               value.switcher = 'off'
+               value.status =this.returnType(value.status)
+            });
+            this.stuItem = itemList
+            this.sendDate.pageNum++
+            if(this.sendDate.pageNum>this.getDate.pageNum){
+              this.loadMore = false
+              return 
+            }
+            
+           /** let result = res.result
+            result.forEach((value,index) => {
+               if(! value.head_img){
+                  value.head_img = require('#/images/portrait_bg.png')
+               }else{
+                 value.head_img = ui.getApp().imgUrlHeader+value.head_img
+               }
+            }); **/
+           //this.studentItems=result
+            
+      })
+    },
+    returnType (code){//翻译数据字典
+        let codeName = ''
+        let codeArray = this.kemuList.concat(this.xblist)
+        if(code){
+            codeArray.forEach(function(val,index){
+                if(val.key ==code ){
+                  codeName = val.value
+                  return 
+                }
+            })
+        }
+        return codeName
+    },
+    returnHours(min){
+      let hours = ""
+      if(min){
+          hours = (Number(min)/60).toFixed(2)
+      }
+      return hours
+    }
+
+  },
+
+  mounted() {
+    this.pullDownDivHeight=this.getSystemMessage().windowHeight-46-56
+   
+    
+  }
+}
+
+</script>
+
+<style lang="less">
+@import '~static/css/loading.less';
+.content{
+  .mix-flex-center();
+}
+
+//-------------------------------------------------------------------------控制筛选条件开始
+.sticky-in-relative-container {
+  position: relative;
+  height: 46px;
+}
+ .nav_top{//筛选条件部分
+  background: #fff;
+  font-size:14px;
+  color:#878787;
+  .ui-col.active{
+    color:#3399ff;
+  }
+  .ui-row{
+    width: 100%;
+    height: 100%;
+    .ui-view{
+      width: 100%;
+      .mix-text-overflow();
+    }
+  }
+}
+//展示选择项样式
+.top_pop{
+  background: #fff;
+}
+//筛选数据列表勾选时的颜色设置
+.is-checked .weui-cell__bd{
+  color:#3399ff 
+}
+//筛选框图标设置样式
+.ui-icon{
+  display: inline-block;
+  transform:rotate(0deg);
+  transition: all .3s ease-in;
+  &.active{
+    transform:rotate(180deg);
+    color:#3399ff !important;
+  }
+}
+
+.content {
+  height: 60px;
+  line-height: 60px;
+
+  .swiper-slide {
+    padding-left: 1em;
+    padding-right: 1em;
+    color: #333;
+  }
+}
+
+.tabs_head{
+  .mix-1px(0, 0, 1, 0, #ccc);
+  .ui-view{
+    width: 45px;
+    height: 100%;
+    line-height: 46px;
+    border-bottom: 2px solid transparent;
+    &.active{
+      border-bottom: 2px solid #3399ff;
+    }
+  }
+}
+
+.ui-cascader-content > .ui-cascader-item:nth-child(2n){
+  width: 65%;
+  flex: 0 0 60%;
+}
+//--------------------------------------------------------------------控制筛选条件结束
+.left_header{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    line-height: 30px;
+    
+}
+//下拉刷新自定义样式
+.custom-pull-down-content {
+  height: 60px;
+  margin-top: -60px;
+  display: flex;
+  align-items:flex-end;
+  padding-bottom: 8px;
+}
+
+
+.img-layer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .img_content{
+    width: 82px;
+    background-position: -2px center;
+    background-size: 1149px 100%;
+    zoom: 0.5;
+  }
+}
+
+
+
+//下拉刷新自定义样式
+//数据列表title样式设置开始
+.top_tipDiv{
+  background-color: rgb(51, 153, 255);
+  color: white;
+}
+
+.ui-page-content{
+background-color: #F7F7F7;
+}
+.stuListItem{
+  margin-top: 6px;
+}
+.stuItem_bottomDiv{
+  background-color: white;
+  color: #D4D4D4;
+  font-size: 28rpx;
+}
+.stuItem_bottomTextDiv{
+  background-color: white;
+}
+
+//数据列表title样式设置结束
+.ui-swipe-out-operate{
+  background-color: rgb(51, 153, 255);
+}
+</style>

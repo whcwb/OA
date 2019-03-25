@@ -1,0 +1,69 @@
+<!--发送通知dialog界面-->
+<template>
+  <ui-page>
+      <ui-view class="weui-cells__title">发送通知</ui-view>
+      <ui-view class="sample_content">
+          <ui-textarea ui:model="{{remark}}" placeholder="请填写通知内容" rows="3" auto-height maxlength="200"></ui-textarea>
+      </ui-view>
+      <ui-view class="btn_win">
+          <ui-button type="primary" bindtap="confirmSelect">确认</ui-button>
+      </ui-view>
+  </ui-page>
+</template>
+
+
+<script>
+export default {
+  data () {
+    return {
+      remark : '',//内容
+      openId:'',//openid
+      traineeId:'',//学生id
+      coachPhone:'',//教练手机号
+      coachName:''
+    }
+  },
+  mounted () {
+    this.$DialogOpen((data) => {
+      if (data && data.openId) {
+        this.openId = data.openId
+        this.traineeId = data.traineeId
+        this.coachPhone = data.coachPhone
+        this.coachName = data.coachName
+      }
+    })
+  },
+
+  methods: {
+    
+    confirmSelect () {
+      let data = {
+           traineeId:this.traineeId,openId:this.openId,remark:this.remark,coachPhone:this.coachPhone,coachName:this.coachName
+      }
+        //发送通知
+      this.$http('POST',ui.getApp().apis.PUBSENDMSG,data,(res)=>{
+            console.log("通知"+JSON.stringify(res))
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            ui.hideDialog({type:true})
+            this.openId = ''//关闭窗口时清除弹窗数据
+            this.traineeId = ''
+            this.coachPhone = ''
+            this.coachName = ''
+      },(res)=>{
+            ui.showToast({ title: '通知发送失败！', duration: 2000 })
+      })
+
+    }
+  }
+}
+
+</script>
+
+<style lang="less">
+  .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+</style>

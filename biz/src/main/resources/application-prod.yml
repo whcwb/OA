@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:mysql://116.62.220.91:4389/oa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    username: jxoa
+    password: 'jxoa-18!**;'
+  redis:
+    host: 127.0.0.1
+    port: 6199
+    maxIdle: 200
+    maxActive: 1024
+    maxWait: 1000
+    password: 'jxba-MR17!#**'
+
+#      redis配置信息
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+#    database: 10
+
+
+staticPath: /opt/apiserver-webroot/img/
+#staticPath:  D:/static/common/
+server:
+  port: 10010
+

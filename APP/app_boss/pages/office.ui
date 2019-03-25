@@ -1,0 +1,76 @@
+<!--office-->
+<template>
+  <ui-page>
+    <ui-view class="jiugongge">
+      <ui-row space=40 class="row_size">
+        <ui-col space=40>
+          信息与审核 
+        </ui-col>
+      </ui-row>
+      <ui-row space=40>
+        <ui-col span=4 space=40>
+          <ui-image src="/static/img/sh.png"  mode=aspectFit width=50 height=50></ui-image>
+            学员信息
+        </ui-col>
+        <ui-col>
+           <ui-image src="/static/img/yh.png" mode=aspectFit width=50 height=50></ui-image>
+           优惠审核
+        </ui-col>
+      </ui-row>
+    </ui-view>
+    <ui-view class="jiugongge">
+      <ui-row space=40 class="row_size">
+        <ui-col space=40>
+          招生与财务 
+        </ui-col>
+      </ui-row>
+      <ui-row space=40>
+        <ui-col span=4 space=40>
+          <ui-image src="/static/img/zs.png" mode=aspectFit width=70 height=70 bindtap="gorestudent"></ui-image>
+          招生情况
+        </ui-col>
+        <ui-col>
+           <ui-image src="/static/img/bb.png" mode=aspectFit width=70 height=70></ui-image>
+           财务报表
+        </ui-col>
+      </ui-row>
+    </ui-view>
+  </ui-page> 
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "日常办公"
+  },
+  data() {
+    return {}
+  },
+  methods: {
+     gorestudent(){
+      ui.navigateTo({
+        url: '/pages/recruit_student'
+      })
+    },
+
+  },
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+.jiugongge{
+  .row_size{
+    font-size: 20px;
+     color: #1b1818;
+  }
+  .col_size{
+    font-size: 12px;
+     color: #1b1818;
+  }
+  
+}
+.col_jiao {
+  border-radius: 5px;
+}
+</style>

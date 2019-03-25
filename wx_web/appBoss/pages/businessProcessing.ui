@@ -1,0 +1,161 @@
+<!--examine-->
+<template>
+  <ui-page style="overflow-y: hidden;" >
+     <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'solid 2px #f2f2f2','background-color':'rgba(255, 255, 255, 1)'} }}">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="60">
+          </ui-col>
+          <ui-col vertical-align="middle" align="center">
+            <ui-view class="nav_title">业务处理</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="60" >
+          </ui-col>
+        </ui-row>
+     </ui-nav-bar>
+     <ui-view class="modelBox">
+             <!-- <ui-view class="box_row boxListTit">
+                <ui-view class="tit">
+                  <ui-text class="text">
+                    审核查询
+                  </ui-text>
+                </ui-view>
+              </ui-view>-->
+              <ui-view class="box_row_list boxList">
+                 <!--<ui-view class=" boxItem" bindtap = "gotoUserBMSHList"> 
+                      <ui-icon type="shenhe1" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                        报名审核
+                      </ui-view>
+                  </ui-view>
+                  <ui-view class=" boxItem" bindtap = "gotoUserCHSHList"> 
+                      <ui-icon type="shangyiyehoutuifanhui-yuankuang" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                        审核撤回
+                      </ui-view>
+                  </ui-view>
+                  <ui-view class=" boxItem" bindtap = "gotoYH"> 
+                      <ui-icon type="youhui1" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                        优惠审核
+                      </ui-view>
+                  </ui-view>
+                  <ui-view class=" boxItem" bindtap = "gotoUserUpdateList"> 
+                      <ui-icon type="renwu1" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                         信息维护
+                      </ui-view>
+                  </ui-view>
+                  <ui-view class=" boxItem" bindtap = "gotoTouSu"> 
+                      <ui-icon type="tousu3" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                        投诉处理
+                      </ui-view>
+                  </ui-view>-->
+                  <ui-view  ui:for = "{{authorityCH}}"  class=" boxItem" bindtap = "gotoHref(item.jump_url)"> 
+                      <ui-icon type="{{item.icon}}" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                        {{item.title}}
+                      </ui-view>
+                  </ui-view>
+              </ui-view>
+              
+      </ui-view> 
+    
+
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "业务处理",
+    navigationStyle: 'custom',
+    title:'业务处理'
+
+  },
+  data() {
+    return {
+      authorityCH:[]//权限
+  }
+  },
+  methods: {
+    /**gotoYH:function(){//跳转优惠列表界面
+      ui.navigateTo({
+        url: '/pages/businessProcessing/discount'
+      })
+    },
+    gotoTouSu:function(){//跳转投诉列表界面
+      ui.navigateTo({
+        url: '/pages/businessProcessing/complaintList'
+      })
+    },
+    gotoUserUpdateList:function(){//跳转至信息维护界面
+      ui.navigateTo({
+        url: '/pages/businessProcessing/userUpdateList'
+      })
+    },
+    gotoUserBMSHList:function(){//跳转至报名审核界面
+      ui.navigateTo({
+        url: '/pages/businessProcessing/userBMList'
+      })
+    },
+    gotoUserCHSHList:function(){
+      ui.navigateTo({
+        url: '/pages/businessProcessing/userBMCHList'
+      })
+    }
+    */
+    gotoHref:function(toURL){
+        if(toURL){
+          ui.navigateTo({
+            url: toURL.replace(/(^\s*)|(\s*$)/g, "") //去除左右空格
+          })
+        }else{
+          ui.showToast({ title: '功能路径为空!' })
+        }
+    }
+  },
+  created () {
+    
+    let qx = JSON.parse(localStorage.getItem("bossAuthority"));
+    this.authorityCH = qx["2"]
+  },
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+.modelBox{
+  .boxListTit{
+    padding-top: 4px;
+    height: 30px;
+    line-height: 30px;
+    
+    .tit{
+      margin-left: 15rpx;
+      font-size: 34rpx;
+      font-weight: 900;
+      .text{
+        border-left: #2b85e4 solid 5px;
+        padding-left: 8rpx;
+      }
+    }
+  }
+  .boxList{
+    padding: 0 10rpx;
+    .boxItem{
+      width: 25%;
+      padding:20rpx;
+      text-align: center;
+      img{
+        margin: auto;
+      }
+      .boxTit{
+        padding: 4rpx 0;
+        font-size: 26rpx;
+      }
+    }
+  }
+}
+
+</style>

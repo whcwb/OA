@@ -1,0 +1,234 @@
+<template>
+  <ui-page>
+    <ui-nav-bar slot="nav-bar">
+      <ui-row style="font-size=18px">
+        <ui-col space=40>
+          <ui-view>{{dataMonth}}</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="60">
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+
+     <ui-view class="bg-blue">
+        <ui-w-calendar
+        bindweekchange="weekHandler"
+        value="{{date}}"
+        bindchanged="selectedHandler($event)"
+      ></ui-w-calendar>
+    <ui-wave style="position:absolute;bottom:0" canvas-id="waterball" height="64"></ui-wave>
+
+    </ui-view>
+    <!-- <ui-text block style="margin-top:10px;text-align:center">{{dateDay}}</ui-text> -->
+
+      <ui-view class="sample_content">
+          <ui-row height="30">
+            
+            <ui-col span="10" space-left="10">
+              <ui-roller autoplay="2000">
+                <ui-roller-item>
+                  <ui-row>
+                    <ui-col span="1">
+                       <ui-icon type="tongzhi" color=red></ui-icon>
+                    </ui-col>
+                    <ui-col span="11">
+                      <ui-text block class="roller-text">touchui 让企业移动开发降低80%成本</ui-text>
+                    </ui-col>
+
+                  </ui-row>
+                </ui-roller-item>
+                <ui-roller-item>
+                  <ui-row>
+                    <ui-col span="1">
+                       <ui-icon type="tongzhi" color=red></ui-icon>
+                    </ui-col>
+                    <ui-col span="11">
+                      <ui-text block class="roller-text">touchui 让企业移动开发降低80%成本</ui-text>
+                    </ui-col>
+                  </ui-row>
+                </ui-roller-item>
+                <ui-roller-item>
+                  <ui-row>
+                    <ui-col span="1">
+                      <ui-icon type="tongzhi" color=red></ui-icon>
+                    </ui-col>
+                    <ui-col span="11">
+                      <ui-text block class="roller-text">touchui 让企业移动开发降低80%成本</ui-text>
+                    </ui-col>
+                  </ui-row>
+                </ui-roller-item>
+              </ui-roller>
+            </ui-col>
+          </ui-row>
+        </ui-view>
+
+      <ui-view class="tubiao_size">
+        <ui-row>招生情况</ui-row>
+        <ui-bar
+            value="{{bar2.data}}"
+            height="200"
+            width="400"
+            is-animated="true"
+            between-bars-padding = 0.3
+            percentage-label-margin="{{1}}"
+            color-schema="{{bar2.colorSchema}}"
+            y-axis-padding-between-chart="{{12}}"
+            ></ui-bar>
+      </ui-view>
+      <ui-view class="tubiao_size">
+        <ui-row>收入</ui-row>
+        <ui-row>280000元</ui-row>
+      </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    "navigationBarTitleText": "calendar3",
+    "navigationStyle": "custom",
+    "navigationBarTextStyle":"white"
+  },
+  data () {
+    return {
+      imgSrc2: require('#/static/img/bg-02.png'),
+      buttonText: '界面跳转',
+      isShow:false,
+      bar2: {
+        colorSchema: ['#70f0c7', '#41c4c9', '#fed009', '#fda71e', '#f65bb9'],
+        data: [
+          {
+            value: 134,
+            name: '1月'
+          }, {
+            value: 100,
+            name: '2月'
+          }, {
+            value: 234,
+            name: '3月'
+          }, {
+            value: 345,
+            name: '4月'
+          }, {
+            value: 432,
+            name: '5月'
+          }, {
+            value: 341,
+            name: '6月'
+          }
+        ]
+      },
+    
+     // 周日历绑定的日期
+      date: '',
+      // 天
+      dateDay: '',
+      // 时间对象，存储临时变化的时间
+      dateObj: {},
+      // 月
+      dataMonth:'' 
+    }
+  },
+  methods: {
+    sliderShow() {
+      this.isShow=true
+    },
+    navHandle () {
+      ui.navigateTo({
+        url: '/pages/detail'
+      })
+    },
+    // 周日历滑时出发，获取滑动后的日期。并赋值给nav-bar上
+    weekHandler(e){
+      let dataMonth = e.substring(0,7)
+      dataMonth = dataMonth.split('/')
+      this.dataMonth = `${dataMonth[0]}年${dataMonth[1]}月`
+    },
+    // 选择日期时触发。将选择后的日期格式化后显示出来
+    selectedHandler (e) {
+      this.dateObj = e.split('/')
+      this.dateDay = `${this.dateObj[0]}年${this.dateObj[1]}月${this.dateObj[2]}日`
+    },
+    // 返回
+    navigateBack () {
+      ui.navigateBack()
+    },
+    // 将日期格式化成 "年/月/日" 格式
+    format (obj) {
+      var date = new Date(obj)
+      var y = 1900 + date.getYear()
+      var m = '0' + (date.getMonth() + 1)
+      var d = '0' + date.getDate()
+      return y + '/' + m.substring(m.length - 2, m.length) + '/' + d.substring(d.length - 2, d.length)
+    }
+  },
+  mounted() {
+    //首屏页面需要在mounted中延时才能调用框架api，其他页面不需要延时
+    setTimeout(() => {
+      //关闭app启动图
+      ui.closeSplashscreen()
+    }, 1000);
+
+    // 获取今天的时间
+    let date = new Date()
+    date = this.format(date)
+    this.date = date
+
+    // 在初始化时，获取当天日期，并显示出来。
+    this.dateObj = this.date.split('/')
+    this.dateDay = `${this.dateObj[0]}年${this.dateObj[1]}月${this.dateObj[2]}日`
+    this.dataMonth = `${this.dateObj[0]}年${this.dateObj[1]}月`
+  }
+}
+
+</script>
+
+<style lang="less">
+.content{
+  .mix-flex-center();
+}
+.sliderContent{
+  padding:50px 50px 0px 50px;
+}
+.buttonContent{
+  padding:50px;
+}
+.tubiao_size{
+  height:280px;
+  background-color: #FFFF;
+  font-size: 24px
+}
+.item{
+  height: 20px;
+  line-height: 20px;
+}
+.roller-text{
+  .mix-text-overflow();
+}
+  // calendar3.less
+.ui-nav-bar{
+  background-color: #fff;
+  color:rgb(24, 23, 23)
+}
+.calendartab{
+  padding:10px 0
+}
+.ui-w-calendar{
+  background-color: transparent;
+  color:rgb(22, 21, 21);
+}
+.is-holiday{
+  color:rgb(27, 25, 25) !important;
+}
+.is-selected{
+  background-color:rgb(23, 142, 211)!important;
+  color:rgb(247, 247, 248)!important
+}
+
+.bg-blue{
+  background-color:#fff; 
+  width:100%; 
+  height: 100px;
+  position: relative;
+}
+</style>

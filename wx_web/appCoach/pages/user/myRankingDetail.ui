@@ -1,0 +1,512 @@
+<!--教练详情页-->
+<template>
+  <ui-page>
+     <ui-row ui:show={{infoType}} height="70" class="top_tip" border-bottom>
+                <ui-col width="80" align="center" vertical-align="middle" bindtap="goToDetail(item.id)">
+                  <ui-image class="left_header" src="{{ coachInfo.headImg }}"  mode="simple"></ui-image>
+                </ui-col>
+                <ui-col class="text" align="left" vertical-align="middle" space="20">
+                  <ui-view style="width: 100%;">
+                    <ui-row height="30">
+                      <ui-col align="left" vertical-align="middle" bindtap="goToDetail(item.id)">
+                          <ui-text>
+                            排名{{coachRank}}-{{ coachInfo.coachName }}
+                          </ui-text>
+                      </ui-col>
+                      <ui-col align="right" width="100" vertical-align="middle" space-right="10">
+                        <ui-icon bindtap="calPhone(coachInfo.phone)" type="dianhua-yuankuang" size="24" color="#3399FF"></ui-icon>
+                      </ui-col>
+                    </ui-row>
+                    <ui-view class="zhpfText" bindtap="goToDetail(coachInfo.id)">
+                      综合评分：{{coachInfo.coachRate}}
+                    </ui-view>
+                  </ui-view>
+                </ui-col>
+      </ui-row>
+      <!--选项卡开始-->
+      <ui-tabs bounce="{{false}}" index="{{ tapsIndex }}" bindchange="handleChange($event, 'tapsIndex')" active-tab-style="{{activeTabStyle}}">
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>评价</ui-text>
+              </ui-view>
+          </ui-tab>
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>评分</ui-text>
+              </ui-view>
+          </ui-tab>
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>投诉</ui-text>
+              </ui-view>
+          </ui-tab>
+         
+      </ui-tabs>
+      <!--评价开始-->
+      <ui-scroll-view ui:show="{{isflag === 0}}" style="{{ {height:pullDownDivHeight+'px'} }}" scroll-y  pull-down="{{ pullDownPJ }}"  enable-reach-bottom-load ="{{loadMorePJ}}" on-load-more="{{ handleLoadMorePJ }}" >
+            <ui-view slot="pull-down" class="pull-down-content" ui:if="{{proportion}}">
+              <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+                <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+              </ui-view>
+
+              <ui-view class="img-layer" ui:else>
+                <ui-view class="gauge-loader" ui:if="{{state === 2}}"></ui-view>
+                <ui-view class="gauge-loader" ui:show="{{state === 3 || state === 4}}"></ui-view>
+              </ui-view>
+            </ui-view>
+            <ui-list-view-item ui:for="{{propsPJ}}">
+            <ui-row class="content"  border-bottom  >
+                <ui-col width="50" align="center" vertical-align="top" style="padding-top:10px">
+                    <ui-view class="portrait">
+                        <ui-image src="{{item.headImg}}" width="100%" ></ui-image>
+                    </ui-view> 
+                </ui-col>
+                <ui-col class="pjRight" style="padding-top:10px;">
+                    <ui-view class="namePJ"> {{item.traineeName}}</ui-view>
+                    <ui-view class="contentPJ"> {{item.comment}}</ui-view>
+                    <ui-view>
+                        <ui-row height="40">
+                            <ui-col vertical-align="middle" align="left">
+                                <ui-view class="time">{{item.cjsj }}</ui-view>
+                            </ui-col>
+                            <ui-col vertical-align="middle" align="right" width="40" space-right="10">
+                                
+                            </ui-col>
+                        </ui-row>
+                    </ui-view>
+                </ui-col>
+            </ui-row>
+            
+            </ui-list-view-item>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(propsPJ && propsPJ.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+            <ui-view style="width:200px;margin:0 auto;">
+              <ui-divider ui:show="{{!loadMorePJ}}">没有新数据了</ui-divider>
+            </ui-view>
+      </ui-scroll-view>
+      <!--评价结束-->
+      <!--评分开始-->
+      <ui-scroll-view ui:show="{{isflag === 1}}" style="{{ {height:pullDownDivHeight+'px'} }}" scroll-y  pull-down="{{ pullDownPF }}"  enable-reach-bottom-load ="{{loadMorePF}}" on-load-more="{{ handleLoadMorePF }}" >
+            <ui-view slot="pull-down" class="pull-down-content" ui:if="{{proportion}}">
+              <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+                <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+              </ui-view>
+
+              <ui-view class="img-layer" ui:else>
+                <ui-view class="gauge-loader" ui:if="{{state === 2}}"></ui-view>
+                <ui-view class="gauge-loader" ui:show="{{state === 3 || state === 4}}"></ui-view>
+              </ui-view>
+            </ui-view>
+            <ui-list-view-item ui:for="{{propsPF}}">
+            <ui-row class="content"  border-bottom  >
+                <ui-col width="50" align="center" vertical-align="top" style="padding-top:10px">
+                    <ui-view class="portrait">
+                        <ui-image src="{{item.headImg}}" width="100%" ></ui-image>
+                    </ui-view> 
+                </ui-col>
+                <ui-col class="pjRight" style="padding-top:10px;">
+                    <ui-view class="namePJ"> {{item.traineeName}}</ui-view>
+                    <ui-view class="numPJ">
+                      <ui-mini-star value="{{item.coachScore}}"></ui-mini-star>
+                    </ui-view>
+                    <ui-view class="contentPJ"> {{item.content}}</ui-view>
+                    <ui-view>
+                        <ui-row height="40">
+                            <ui-col vertical-align="middle" align="left">
+                                <ui-view class="time">{{item.valuateTime }}</ui-view>
+                            </ui-col>
+                            <ui-col vertical-align="middle" align="right" width="40" space-right="10">
+                                
+                            </ui-col>
+                        </ui-row>
+                    </ui-view>
+                </ui-col>
+            </ui-row>
+            
+            </ui-list-view-item>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(propsPF && propsPF.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+            <ui-view style="width:200px;margin:0 auto;">
+              <ui-divider ui:show="{{!loadMorePF}}">没有新数据了</ui-divider>
+            </ui-view>
+      </ui-scroll-view>
+      <!--评分结束-->
+      <!--投诉开始-->
+      <ui-scroll-view ui:show="{{isflag === 2}}" style="{{ {height:pullDownDivHeight+'px'} }}" scroll-y  pull-down="{{ pullDownTS }}"  enable-reach-bottom-load ="{{loadMoreTS}}" on-load-more="{{ handleLoadMoreTS }}" >
+            <ui-view slot="pull-down" class="pull-down-content" ui:if="{{proportion}}">
+              <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+                <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+              </ui-view>
+
+              <ui-view class="img-layer" ui:else>
+                <ui-view class="gauge-loader" ui:if="{{state === 2}}"></ui-view>
+                <ui-view class="gauge-loader" ui:show="{{state === 3 || state === 4}}"></ui-view>
+              </ui-view>
+            </ui-view>
+            <ui-list-view-item ui:for="{{propsTS}}">
+            <ui-row class="content"  border-bottom  >
+                <ui-col width="50" align="center" vertical-align="top" style="padding-top:10px">
+                    <ui-view class="portrait">
+                        <ui-image src="{{item.headImg}}" width="100%" ></ui-image>
+                    </ui-view> 
+                </ui-col>
+                <ui-col class="pjRight" style="padding-top:10px;">
+                    <ui-view class="namePJ"> {{item.traineeName}}</ui-view>
+                    <ui-view class="contentPJ"> {{item.complainContent}}</ui-view>
+                    <ui-view>
+                        <ui-row height="40">
+                            <ui-col vertical-align="middle" align="left">
+                                <ui-view class="time">{{item.complainTime }}</ui-view>
+                            </ui-col>
+                            <ui-col vertical-align="middle" align="right" width="40" space-right="10">
+                                
+                            </ui-col>
+                        </ui-row>
+                    </ui-view>
+                </ui-col>
+            </ui-row>
+            
+            </ui-list-view-item>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(propsTS && propsTS.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+            <ui-view style="width:200px;margin:0 auto;">
+              <ui-divider ui:show="{{!loadMoreTS}}">没有新数据了</ui-divider>
+            </ui-view>
+      </ui-scroll-view>
+      <!--投诉结束-->
+      <!--选项卡结束-->
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "教练详情",
+    title:'教练详情'
+  },
+  data() {
+    return {
+      coachRank:'',//排名
+      coachId:'',//当前详情的教练id
+      coachInfo:{},//当前教练详情
+      infoType:false,//是否显示当前教练基本信息
+      //选项卡开始
+      activeTabStyle:{
+        'color': '#3399FF',
+        'border-bottom':'1px solid #3399FF'
+      },
+      isflag: 0,
+      tapsIndex:0,
+      //选项卡结束
+      //分页数据开始------------------------
+      pullDownDivHeight:100,//上下拉列表高度
+      // 下拉刷新（初始状态）
+      proportion: 0,
+      state: 1,
+      loadMorePJ: true,//评价
+      loadMorePF: true,//评分
+      loadMoreTS: true,//投诉
+      pullDownPJ: {
+        distance: 60,
+        onBegin: this.handleBegin,
+        onActive: this.handleActivePJ,
+        onAfter: this.handleAfter
+      },
+      pullDownPF: {
+        distance: 60,
+        onBegin: this.handleBegin,
+        onActive: this.handleActivePF,
+        onAfter: this.handleAfter
+      },
+      pullDownTS: {
+        distance: 60,
+        onBegin: this.handleBegin,
+        onActive: this.handleActiveTS,
+        onAfter: this.handleAfter
+      },
+      //上下拉刷新结束
+      //评价列表开始
+      propsPJ:[],//评价列表信息
+      propsPF:[],//评价列表信息
+      propsTS:[],//评价列表信息
+      pjPage:{//返回分页信息存储
+          pageNum : '',
+          pageSize: '',
+          size : '',
+          startRow : '',
+          endRow : '',
+          total : '0',
+          pages : ''
+      },
+      pjDate:{
+        pageNum:1,//请求第几
+        pageSize:8,//每页个数
+        coachId:''//教练id
+      },
+      pfPage:{//返回分页信息存储
+          pageNum : '',
+          pageSize: '',
+          size : '',
+          startRow : '',
+          endRow : '',
+          total : '0',
+          pages : ''
+      },
+      pfDate:{
+        pageNum:1,//请求第几
+        pageSize:8,//每页个数
+        coachId:''//教练id
+      },
+      tsPage:{//返回分页信息存储
+          pageNum : '',
+          pageSize: '',
+          size : '',
+          startRow : '',
+          endRow : '',
+          total : '0',
+          pages : ''
+      },
+      tsDate:{
+        pageNum:1,//请求第几
+        pageSize:8,//每页个数
+        coachId:''//教练id
+      },
+      
+      //分页数据结束------------------------
+    }
+  },
+  methods: {
+    getCoachById(){
+      this.$http('GET',ui.getApp().apis.GETCOACHBYID+this.coachId,{},(res)=>{
+          this.coachInfo = res.result
+          if(this.coachInfo.headImg){
+            this.coachInfo.headImg = ui.getApp().imgUrlHeader+this.coachInfo.headImg
+          }else{
+            this.coachInfo.headImg = require('#/images/portrait_bg.png')
+          }
+
+          this.infoType = true
+     })
+    },
+    //选项卡开始
+    handleChange (index, key) {
+      this[key] = index
+      if (key === 'current1') {
+        this.filmData = this.films[index]
+        if (this.filmData.film !== '') {
+          this.filmData = this.films[index]
+          this.isnull = false
+        } else {
+          this.isnull = true
+        }
+      } else if (key === 'tapsIndex') {
+        this.isflag = index
+      }
+    },
+    //选项卡结束
+    //上下拉刷新开始
+    handleBegin ({ distance, direction }) {
+      this.proportion = distance / 40
+      // 拉满40px
+      if (this.proportion >= 1) {
+        if (this.state === 1 && direction === 'down') {
+          // 释放刷新
+          this.state = 2
+
+          // 300ms吉祥物翻转时间
+          window.setTimeout(() => {
+            // 刷新中...
+            this.state = 3
+          }, 300)
+        }
+      } else {
+        this.state = 1
+      }
+    },
+    handleAfter (flag) {//下拉刷新绑定数据
+      this.proportion = 0
+      this.state = 1
+    },
+    //评价开始
+    handleActivePJ () {//评价下拉刷新
+           this.loadMorePJ = true
+           this.propsPJ = []//清空评价列表
+           this.pjDate.pageNum = 1
+           this.getPjList ()
+           this.state = 4
+    },
+    getPjList (){//请求教练评价
+        this.pjDate.coachId = this.coachId
+        this.$http('post',ui.getApp().apis.RATEDATAIL,this.pjDate,(res)=>{
+                    this.pjPage.pageNum = res.page.pageNum
+                    this.pjPage.pageSize = res.page.pageSize
+                    this.pjPage.size = res.page.size
+                    this.pjPage.startRow = res.page.startRow
+                    this.pjPage.endRow = res.page.endRow
+                    this.pjPage.total = res.page.total
+                    this.pjPage.pages = res.page.pages
+                    let list = res.page.list
+
+                    list.forEach((value,index) => {
+                      value.headImg = require('#/images/portrait_bg.png')
+                      value.traineeName = '匿名'
+                    });
+                   this.propsPJ = this.propsPJ.concat(list)
+                   this.pjDate.pageNum ++
+                   if(this.pjDate.pageNum > this.pjPage.pages){
+                     this.loadMorePJ = false
+                     return false
+                   }
+        })
+      
+    },
+    handleLoadMorePJ () {//教练评价加载更多
+          if(this.pjDate.pageNum<=this.pjPage.pages){
+              this.getPjList()
+           }else{
+             this.loadMorePJ = false
+              return false
+           }
+    },
+    //评价结束
+    //评分开始
+    handleActivePF () {//评分下拉刷新
+           this.loadMorePF = true
+           this.propsPF = []//清空评分列表
+           this.pfDate.pageNum = 1
+           this.getPfList ()
+           this.state = 4
+    },
+    getPfList (){//请求教练评分
+    this.pfDate.coachId = this.coachId
+        this.$http('GET',ui.getApp().apis.COACHVALUATIONLIST,this.pfDate,(res)=>{
+                    this.pfPage.pageNum = res.page.pageNum
+                    this.pfPage.pageSize = res.page.pageSize
+                    this.pfPage.size = res.page.size
+                    this.pfPage.startRow = res.page.startRow
+                    this.pfPage.endRow = res.page.endRow
+                    this.pfPage.total = res.page.total
+                    this.pfPage.pages = res.page.pages
+                    let list = res.page.list
+
+                    list.forEach((value,index) => {
+                      value.headImg = require('#/images/portrait_bg.png')
+                      value.traineeName = '匿名'
+                    });
+                   this.propsPF = this.propsPF.concat(list)
+                   this.pfDate.pageNum ++
+                   if(this.pfDate.pageNum > this.pfPage.pages){
+                     this.loadMorePF = false
+                     return false
+                   }
+        })    
+      
+    },
+    handleLoadMorePF () {//教练评分加载更多
+          if(this.pfDate.pageNum<=this.pfPage.pages){
+              this.getPfList()
+           }else{
+             this.loadMorePF = false
+              return false
+           }
+    },
+    //评分结束
+    //投诉开始
+    handleActiveTS () {//投诉下拉刷新
+           this.loadMoreTS = true
+           this.propsTS = []//清空投诉列表
+           this.tsDate.pageNum = 1
+           this.getTsList ()
+           this.state = 4
+    },
+    getTsList (){//请求教练相关投诉
+    this.tsDate.coachId = this.coachId
+        this.$http('GET',ui.getApp().apis.COMPLAINRECORDLIST,this.tsDate,(res)=>{
+                    this.tsPage.pageNum = res.page.pageNum
+                    this.tsPage.pageSize = res.page.pageSize
+                    this.tsPage.size = res.page.size
+                    this.tsPage.startRow = res.page.startRow
+                    this.tsPage.endRow = res.page.endRow
+                    this.tsPage.total = res.page.total
+                    this.tsPage.pages = res.page.pages
+                    let list = res.page.list
+
+                    list.forEach((value,index) => {
+                      value.headImg = require('#/images/portrait_bg.png')
+                      value.traineeName = '匿名'
+                    });
+                   this.propsTS = this.propsTS.concat(list)
+                   this.tsDate.pageNum ++
+                   if(this.tsDate.pageNum > this.tsPage.pages){
+                     this.loadMoreTS = false
+                     return false
+                   }
+        })    
+      
+    },
+    handleLoadMoreTS () {//教练投诉加载更多
+          if(this.tsDate.pageNum<=this.tsPage.pages){
+              this.getTsList()
+           }else{
+             this.loadMoreTS = false
+              return false
+           }
+    },
+    //投诉结束
+    //上下拉刷新结束
+    calPhone (phone){//打电话
+     if(phone){
+     ui.makePhoneCall({
+        phoneNumber: phone
+     })
+     }else{
+        ui.showToast({ title: '手机号码为空!'})
+     }
+   },
+  },
+  mounted() {
+    this.pullDownDivHeight=this.getSystemMessage().windowHeight-45-70-45
+    this.coachId=ui.getQuery().id
+    this.coachRank = ui.getQuery().rank
+    this.getCoachById()//获取教练基本信息
+    this.getPjList()//获取教练评价列表
+    this.getPfList()//获取教练评价列表
+    this.getTsList()//获取教练投诉列表
+  }
+}
+</script>
+
+<style lang="less">
+.left_header{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    line-height: 50px;
+    
+  }
+
+.sample_list{
+  padding-left: 6px;
+  height: 40px;
+  line-height: 40px;
+  .sign{
+    width: 5px;
+    height: 16px;
+    background-color: #168AFD;
+    border-radius: 5px;
+  }
+}
+.portrait .ui-image {
+  width: 30px !important;
+  height:30px !important;
+  border-radius:15px;
+  }
+.pjRight{
+  .numPJ,.contentPJ{
+    margin-top: 6px;
+  }
+}
+</style>

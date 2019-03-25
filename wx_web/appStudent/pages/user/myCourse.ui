@@ -1,0 +1,115 @@
+<!--我的进程界面，类似物流状态，展示我的历史信息-->
+<template>
+  <ui-page>
+    <ui-timeline>
+      <ui-timeline-item
+        ui:for="{{courseList}}"
+        ui:key="index"
+        point-color="#3399ff"
+        line-color="#3399ff"
+        show-line="{{true}}">
+        <ui-view class="item-content">
+          <ui-view class="title">
+            <ui-view class="{{ ['title-info', { 'title-infoNow' : index == '0' }] }}">{{item.operateTime}}</ui-view>
+          </ui-view>
+          <ui-view class="content">
+            <ui-view class="content-info">{{item.type}}</ui-view>
+          </ui-view>
+        </ui-view>
+      </ui-timeline-item>
+    </ui-timeline>
+
+    <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(courseList && courseList.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+    </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "我的进程"
+  },
+  data() {
+    return {
+      courseList:[]
+    }
+  },
+  methods: {
+    getMyCourse:function(){//获取我的进程信息
+      this.$http('get',ui.getApp().apis.TRAINEESTATUSLIST,{
+            traineeId:this.getUser().id
+            },(res)=>{
+              
+              this.courseList = res.result || []
+            },(res)=>{
+              ui.showToast({ title: '获取信息失败！', duration: 2000 })
+        })
+        
+    }
+  },
+  mounted() {
+    this.getMyCourse()
+  }
+}
+</script>
+
+<style lang="less">
+.item-content {
+  margin-left: 30px;
+  padding: 0 15px 10px 5px;
+
+}
+.title-info {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 12px;
+  color: #AAAAAA;
+  margin-right: 5px;
+  vertical-align: top;
+}
+.title-infoNow {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 12px;
+  color: #3399ff;
+  margin-right: 5px;
+  vertical-align: top;
+  font-weight: bolder
+}
+.title-date {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 12px;
+  color: #919090;
+  vertical-align: top;
+}
+
+.head {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &-info {
+      width: 270px;
+      color: #222;
+      font-size: 16px;
+  }
+  &-tag {
+      width: 30px;
+      height: 14px;
+      border: 1px solid #F5A623;
+      border-radius: 2px;
+      font-size: 12px;
+      box-sizing: border-box;
+      font-style: normal;
+      text-align: center;
+      line-height: 14px;
+      color: #F5A623;
+  }
+}
+
+.content-info {
+  color: #919090;
+}
+</style>

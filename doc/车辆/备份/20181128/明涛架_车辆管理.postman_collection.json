@@ -1,0 +1,1956 @@
+{
+	"info": {
+		"_postman_id": "68586005-4edc-4346-a28c-0b59b465dfaf",
+		"name": "明涛架_车辆管理",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "登录",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "admini",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123456",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/login",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-列表页",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "queryWarnType",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "queryWarnDay",
+							"value": "-1",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/car/pager",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"car",
+						"pager"
+					]
+				},
+				"description": "车辆新增时，只上传车辆的基础信息。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-新增",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "cph",
+							"value": "沪A016",
+							"description": "车牌号 必填",
+							"type": "text"
+						},
+						{
+							"key": "dah",
+							"value": "DA016",
+							"description": "档案号 必填",
+							"type": "text"
+						},
+						{
+							"key": "pxcx",
+							"value": "B2",
+							"description": "培训车型 必填 准驾车型 [ZDCLK0040] ",
+							"type": "text"
+						},
+						{
+							"key": "hpzl",
+							"value": "1",
+							"description": "车辆_号牌种类 [ZDCLK1036] 1、学牌 2、地牌    必填",
+							"type": "text"
+						},
+						{
+							"key": "syxz",
+							"value": "1",
+							"description": "使用性质  [ZDCLK1037] 1、教练 2、非教练 3、非营运   必填",
+							"type": "text"
+						},
+						{
+							"key": "clpp",
+							"value": "东风",
+							"description": "车辆品牌",
+							"type": "text"
+						},
+						{
+							"key": "cllx",
+							"value": "轿车（二箱）",
+							"description": "车辆类型",
+							"type": "text"
+						},
+						{
+							"key": "ppxh",
+							"value": "东风雪铁龙牌DC7160DB",
+							"description": "品牌型号",
+							"type": "text"
+						},
+						{
+							"key": "clxh",
+							"value": "DC7160DB",
+							"description": "车辆型号",
+							"type": "text"
+						},
+						{
+							"key": "clsbm",
+							"value": "车辆识别码",
+							"description": "车辆识别码",
+							"type": "text"
+						},
+						{
+							"key": "fdjh",
+							"value": "发动机号",
+							"description": "发动机号",
+							"type": "text"
+						},
+						{
+							"key": "fdjxh",
+							"value": "发动机型号",
+							"description": "发动机型号",
+							"type": "text"
+						},
+						{
+							"key": "rlzl",
+							"value": "1",
+							"description": "车辆燃油类型 [ZDCLK1038] 1、汽油 2、柴油",
+							"type": "text"
+						},
+						{
+							"key": "pl",
+							"value": "1587",
+							"description": "排量(数值)",
+							"type": "text"
+						},
+						{
+							"key": "gl",
+							"value": "78",
+							"description": "功率(数值)",
+							"type": "text"
+						},
+						{
+							"key": "zzcmc",
+							"value": "制造厂名称",
+							"description": "制造厂名称",
+							"type": "text"
+						},
+						{
+							"key": "csys",
+							"value": "白",
+							"description": "车身颜色",
+							"type": "text"
+						},
+						{
+							"key": "qlj",
+							"value": "1423",
+							"description": "前轮距(数值)",
+							"type": "text"
+						},
+						{
+							"key": "hlj",
+							"value": "1424",
+							"description": "后轮距(数值)",
+							"type": "text"
+						},
+						{
+							"key": "ltsl",
+							"value": "4",
+							"description": "轮胎数量(数值)",
+							"type": "text"
+						},
+						{
+							"key": "ltgg",
+							"value": "轮胎规格",
+							"description": "轮胎规格",
+							"type": "text"
+						},
+						{
+							"key": "bhps",
+							"value": "123",
+							"description": "板簧片数",
+							"type": "text"
+						},
+						{
+							"key": "zj",
+							"value": "3950",
+							"description": "轴距(数值)",
+							"type": "text"
+						},
+						{
+							"key": "wkc",
+							"value": "4133",
+							"description": "外廓(数值)",
+							"type": "text"
+						},
+						{
+							"key": "wkk",
+							"value": "1111",
+							"description": "外廓宽(数值)",
+							"type": "text"
+						},
+						{
+							"key": "wkg",
+							"value": "2222",
+							"description": "外廓高(数值)",
+							"type": "text"
+						},
+						{
+							"key": "zzl",
+							"value": "13050",
+							"description": "总质量(数值)",
+							"type": "text"
+						},
+						{
+							"key": "hdzk",
+							"value": "5",
+							"description": "核定载客(数值)",
+							"type": "text"
+						},
+						{
+							"key": "byxz",
+							"value": "教练",
+							"description": "保用性质",
+							"type": "text"
+						},
+						{
+							"key": "clhdfs",
+							"value": "购买",
+							"description": "车辆获得方式",
+							"type": "text"
+						},
+						{
+							"key": "ccrq",
+							"value": "2010-07014",
+							"description": "出厂日期",
+							"type": "text"
+						},
+						{
+							"key": "ccdjrq",
+							"value": "2011-01-18",
+							"description": "初次登记日期 yyyy-mm-dd 非必填",
+							"type": "text"
+						},
+						{
+							"key": "qzbfq",
+							"value": "2016-01-18",
+							"description": "强制报废期 yyyy-mm-dd 非必填",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "syrId",
+							"value": "1001",
+							"description": "使用人ID",
+							"type": "text"
+						},
+						{
+							"key": "syrName",
+							"value": "使用人姓名",
+							"description": "使用人姓名",
+							"type": "text"
+						},
+						{
+							"key": "syrSzd",
+							"value": "使用人所在地",
+							"description": "使用人所在地",
+							"type": "text"
+						},
+						{
+							"key": "syrDn",
+							"value": "使用人联系方式",
+							"description": "使用人联系方式",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/car/save",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"car",
+						"save"
+					]
+				},
+				"description": "车辆新增时，只上传车辆的基础信息。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-修改",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "514208885028945920",
+							"description": "主键",
+							"type": "text"
+						},
+						{
+							"key": "cph",
+							"value": "沪A001",
+							"description": "车牌号 必填",
+							"type": "text"
+						},
+						{
+							"key": "dah",
+							"value": "DA001",
+							"description": "档案号 必填",
+							"type": "text"
+						},
+						{
+							"key": "pxcx",
+							"value": "C1",
+							"description": "培训车型 必填 准驾车型 [ZDCLK0040] ",
+							"type": "text"
+						},
+						{
+							"key": "hpzl",
+							"value": "1",
+							"description": "车辆_号牌种类 [ZDCLK1036] 1、学牌 2、地牌    必填",
+							"type": "text"
+						},
+						{
+							"key": "syxz",
+							"value": "1",
+							"description": "使用性质  [ZDCLK1037] 1、教练 2、非教练 3、非营运   必填",
+							"type": "text"
+						},
+						{
+							"key": "clpp",
+							"value": "东风3号",
+							"description": "车辆品牌",
+							"type": "text"
+						},
+						{
+							"key": "cllx",
+							"value": "轿车（二箱）",
+							"description": "车辆类型",
+							"type": "text"
+						},
+						{
+							"key": "ppxh",
+							"value": "东风雪铁龙牌DC7160DB",
+							"description": "品牌型号",
+							"type": "text"
+						},
+						{
+							"key": "clxh",
+							"value": "DC7160DB",
+							"description": "车辆型号",
+							"type": "text"
+						},
+						{
+							"key": "clsbm",
+							"value": "车辆识别码",
+							"description": "车辆识别码",
+							"type": "text"
+						},
+						{
+							"key": "fdjh",
+							"value": "发动机号",
+							"description": "发动机号",
+							"type": "text"
+						},
+						{
+							"key": "fdjxh",
+							"value": "发动机型号",
+							"description": "发动机型号",
+							"type": "text"
+						},
+						{
+							"key": "rlzl",
+							"value": "1",
+							"description": "车辆燃油类型 [ZDCLK1038] 1、汽油 2、柴油",
+							"type": "text"
+						},
+						{
+							"key": "pl",
+							"value": "1587",
+							"description": "排量(数值)",
+							"type": "text"
+						},
+						{
+							"key": "gl",
+							"value": "78",
+							"description": "功率(数值)",
+							"type": "text"
+						},
+						{
+							"key": "zzcmc",
+							"value": "制造厂名称",
+							"description": "制造厂名称",
+							"type": "text"
+						},
+						{
+							"key": "csys",
+							"value": "白",
+							"description": "车身颜色",
+							"type": "text"
+						},
+						{
+							"key": "qlj",
+							"value": "1423",
+							"description": "前轮距(数值)",
+							"type": "text"
+						},
+						{
+							"key": "hlj",
+							"value": "1424",
+							"description": "后轮距(数值)",
+							"type": "text"
+						},
+						{
+							"key": "ltsl",
+							"value": "4",
+							"description": "轮胎数量(数值)",
+							"type": "text"
+						},
+						{
+							"key": "ltgg",
+							"value": "轮胎规格",
+							"description": "轮胎规格",
+							"type": "text"
+						},
+						{
+							"key": "bhps",
+							"value": "",
+							"description": "板簧片数",
+							"type": "text"
+						},
+						{
+							"key": "zj",
+							"value": "3950",
+							"description": "轴距(数值)",
+							"type": "text"
+						},
+						{
+							"key": "wkc",
+							"value": "4133",
+							"description": "外廓(数值)",
+							"type": "text"
+						},
+						{
+							"key": "wkk",
+							"value": "1111",
+							"description": "外廓宽(数值)",
+							"type": "text"
+						},
+						{
+							"key": "wkg",
+							"value": "2222",
+							"description": "外廓高(数值)",
+							"type": "text"
+						},
+						{
+							"key": "zzl",
+							"value": "13050",
+							"description": "总质量(数值)",
+							"type": "text"
+						},
+						{
+							"key": "hdzk",
+							"value": "5",
+							"description": "核定载客(数值)",
+							"type": "text"
+						},
+						{
+							"key": "byxz",
+							"value": "教练",
+							"description": "保用性质",
+							"type": "text"
+						},
+						{
+							"key": "clhdfs",
+							"value": "购买",
+							"description": "车辆获得方式",
+							"type": "text"
+						},
+						{
+							"key": "ccrq",
+							"value": "2010-07-14",
+							"description": "出厂日期",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/car/update",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"car",
+						"update"
+					]
+				},
+				"description": "车辆新增时，只上传车辆的基础信息。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-获取基本信息",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514208885028945920",
+							"description": "主键",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carbx/clbxlb",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carbx",
+						"clbxlb"
+					]
+				},
+				"description": "车辆新增时，只上传车辆的基础信息。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-使用人绑定",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514264114109874176",
+							"description": "车辆ID",
+							"type": "text"
+						},
+						{
+							"key": "syrId",
+							"value": "使用人编号",
+							"description": "使用人编号",
+							"type": "text"
+						},
+						{
+							"key": "syrName",
+							"value": "使用人姓名",
+							"description": "使用人姓名",
+							"type": "text"
+						},
+						{
+							"key": "syrSzd",
+							"value": "使用人所在地",
+							"description": "使用人所在地",
+							"type": "text"
+						},
+						{
+							"key": "syrDn",
+							"value": "使用人联系方式",
+							"description": "使用人联系方式",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carsyr/save",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carsyr",
+						"save"
+					]
+				},
+				"description": "车辆新增时，只上传车辆的基础信息。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-电子档案更新",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "514208885028945920",
+							"description": "主键 必填",
+							"type": "text"
+						},
+						{
+							"key": "dzdDjzCode",
+							"value": "机动车登记证书编号",
+							"description": "机动车登记证书编号",
+							"type": "text"
+						},
+						{
+							"key": "dzdDjzFileurl",
+							"value": "",
+							"description": "机动车登记证书 电子档路径",
+							"type": "text"
+						},
+						{
+							"key": "dzdWszmCode",
+							"value": "购置税完税证明证号",
+							"description": "购置税完税证明证号",
+							"type": "text"
+						},
+						{
+							"key": "dzdWszmPh",
+							"value": "购置税完税证明票号",
+							"description": "购置税完税证明票号",
+							"type": "text"
+						},
+						{
+							"key": "dzdWszmFileurl",
+							"value": "/aaa/ccc.jpg;/aaa/ddd.jpg",
+							"description": "购置税完税证明票号电子档路径",
+							"type": "text"
+						},
+						{
+							"key": "dzdFpCode",
+							"value": "发票号码",
+							"description": "发票号码",
+							"type": "text"
+						},
+						{
+							"key": "dzdFpFileurl",
+							"value": "/aaa/fp.jpg;/aaa/fp.jpg",
+							"description": "发票号码 电子档路径",
+							"type": "text"
+						},
+						{
+							"key": "dzdCchgFileurl",
+							"value": "/aaa/Cc.jpg;/aaa/cc.jpg",
+							"description": "出厂合格证明 电子档路径",
+							"type": "text"
+						},
+						{
+							"key": "dzdJyhgFileurl",
+							"value": "",
+							"description": "检验合格证明 电子档路径",
+							"type": "text"
+						},
+						{
+							"key": "dzdXlhgFileurl",
+							"value": "",
+							"description": "修理合格证明 电子档路径",
+							"type": "text"
+						},
+						{
+							"key": "dzdXszfyFileurl",
+							"value": "",
+							"description": "行驶证扫描件状态 电子档路径",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/car/dzda",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"car",
+						"dzda"
+					]
+				},
+				"description": "用户在上传多个电子档案时，使用;来进行分隔。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-电子档案文件上传",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": ""
+						},
+						{
+							"key": "targetPath",
+							"value": "car",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/upload",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"upload"
+					]
+				},
+				"description": "用户在上传多个电子档案时，使用;来进行分隔。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-产权内部变更",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514259968904396800",
+							"description": "车辆ID 必填",
+							"type": "text"
+						},
+						{
+							"key": "jgdm",
+							"value": "100",
+							"description": "机构代码 必填",
+							"type": "text"
+						},
+						{
+							"key": "ck",
+							"value": "0",
+							"description": "车款 正整数 \t必填 默认为0",
+							"type": "text"
+						},
+						{
+							"key": "zb",
+							"value": "100",
+							"description": "质保金 正整数 必填",
+							"type": "text"
+						},
+						{
+							"key": "cqr",
+							"value": "产权人2",
+							"description": "产权人 必填",
+							"type": "text"
+						},
+						{
+							"key": "cqrCode",
+							"value": "产权人证件号",
+							"description": "产权人证件号 必填",
+							"type": "text"
+						},
+						{
+							"key": "cqrDn",
+							"value": "产权人联系方式",
+							"description": "产权人联系方式 必填",
+							"type": "text"
+						},
+						{
+							"key": "propertyFileurl",
+							"value": "产权协议电子档案路径",
+							"description": "产权协议电子档案路径",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carcq/cqbg",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carcq",
+						"cqbg"
+					]
+				},
+				"description": "propertyFileurl 上传它的电子档"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-学牌车变为非学牌车",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514259968904396800",
+							"description": "车辆ID 必填",
+							"type": "text"
+						},
+						{
+							"key": "bz",
+							"value": "新的车牌号",
+							"description": "备注中让填写新的车牌号",
+							"type": "text"
+						},
+						{
+							"key": "propertyFileurl",
+							"value": "产权协议电子档案路径",
+							"description": "产权协议电子档案路径",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carcq/cphbg",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carcq",
+						"cphbg"
+					]
+				},
+				"description": "propertyFileurl  上传它的电子档"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆\b报废",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clid",
+							"value": "514257675790319616",
+							"description": "车辆ID 必填",
+							"type": "text"
+						},
+						{
+							"key": "jbr",
+							"value": "经办人",
+							"description": "经办人",
+							"type": "text"
+						},
+						{
+							"key": "jbrDn",
+							"value": "13311111111",
+							"description": "经办人手机号码",
+							"type": "text"
+						},
+						{
+							"key": "bfjl",
+							"value": "20000",
+							"description": "报废金额",
+							"type": "text"
+						},
+						{
+							"key": "propertyFileurl",
+							"value": "产权协议电子档案路径",
+							"description": "产权协议电子档案路径",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carcq/clbf",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carcq",
+						"clbf"
+					]
+				},
+				"description": "propertyFileurl  上传它的电子档"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆变卖",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514259968904396800",
+							"description": "车辆ID 必填",
+							"type": "text"
+						},
+						{
+							"key": "jbr",
+							"value": "经办人",
+							"description": "经办人",
+							"type": "text"
+						},
+						{
+							"key": "jbrDn",
+							"value": "13311111111",
+							"description": "经办人手机号码",
+							"type": "text"
+						},
+						{
+							"key": "ck",
+							"value": "10000",
+							"description": "车款",
+							"type": "text"
+						},
+						{
+							"key": "cqr",
+							"value": "产权人",
+							"description": "产权人",
+							"type": "text"
+						},
+						{
+							"key": "cqrDn",
+							"value": "产权人联系方式",
+							"description": "产权人联系方式",
+							"type": "text"
+						},
+						{
+							"key": "cqrCode",
+							"value": "产权人证件号",
+							"description": "产权人证件号",
+							"type": "text"
+						},
+						{
+							"key": "propertyFileurl",
+							"value": "产权协议电子档案路径",
+							"description": "产权协议电子档案路径",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carcq/clcs",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carcq",
+						"clcs"
+					]
+				},
+				"description": "propertyFileurl  上传它的电子档"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-年审初次登记日期设置",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "514446445118488576",
+							"description": "车辆ID",
+							"type": "text"
+						},
+						{
+							"key": "ccdjrq",
+							"value": "2011-01-18",
+							"description": "初次登记日期 yyyy-mm-dd 非必填",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carwarn/nccdrq",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carwarn",
+						"nccdrq"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆运营管理年审提醒设置",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "514446445118488576",
+							"description": "车辆ID",
+							"type": "text"
+						},
+						{
+							"key": "yyCdrq",
+							"value": "2011-01-18",
+							"description": "运管初次登记日期 yyyy-mm-dd 非必填",
+							"type": "text"
+						},
+						{
+							"key": "ygYszh",
+							"value": "运管运输证号",
+							"description": "运管运输证号",
+							"type": "text"
+						},
+						{
+							"key": "ygGpsType",
+							"value": "1",
+							"description": "运管 是否安装GPS  是/否 [ZDCLK1034] ",
+							"type": "text"
+						},
+						{
+							"key": "ygGpsCode",
+							"value": "运管_GPS号码",
+							"description": "运管 GPS号码",
+							"type": "text"
+						},
+						{
+							"key": "ygYyType",
+							"value": "0",
+							"description": "车辆备案_运营状态 [ZDCLK1033] 营运状态1、运营 2、注销 0、未登记",
+							"type": "text"
+						},
+						{
+							"key": "ygYsnSx",
+							"value": "0",
+							"description": "运管 1、14年上线  0、不是   是/否 [ZDCLK1034]\n",
+							"type": "text"
+						},
+						{
+							"key": "ygGx",
+							"value": "",
+							"description": "运管 更新（该字段保留）",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carwarn/ygnccdrq",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carwarn",
+						"ygnccdrq"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆油改气年审提醒设置",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "514446445118488576",
+							"description": "车辆ID",
+							"type": "text"
+						},
+						{
+							"key": "gxCdrq",
+							"value": "2011-01-18",
+							"description": "改气初登日期 yyyy-mm-dd 非必填",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carwarn/gxnccdrq",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carwarn",
+						"gxnccdrq"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆油改气年编辑",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "515901289062727680",
+							"description": "车辆ID",
+							"type": "text"
+						},
+						{
+							"key": "gasData",
+							"value": "2017-11-23",
+							"description": "改气时间",
+							"type": "text"
+						},
+						{
+							"key": "gasDd",
+							"value": "改气地点",
+							"description": "改气地点",
+							"type": "text"
+						},
+						{
+							"key": "bz",
+							"value": "备注",
+							"type": "text"
+						},
+						{
+							"key": "lxr",
+							"value": "联系人",
+							"description": "联系人",
+							"type": "text"
+						},
+						{
+							"key": "lxDn",
+							"value": "联系人电话",
+							"description": "联系人电话",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/cargas/save",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"cargas",
+						"save"
+					]
+				},
+				"description": "车辆新增时，只上传车辆的基础信息。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆续保提醒设置",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "514446445118488576",
+							"description": "车辆ID",
+							"type": "text"
+						},
+						{
+							"key": "bxCdrq",
+							"value": "2011-01-18",
+							"description": "保险初登日期 yyyy-mm-dd 非必填",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carwarn/bxnccdrq",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carwarn",
+						"bxnccdrq"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆强制报废设置",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "514446445118488576",
+							"description": "车辆ID",
+							"type": "text"
+						},
+						{
+							"key": "qzbfq",
+							"value": "2011-01-18",
+							"description": "强制报废期 yyyy-mm-dd 非必填",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carwarn/xzbfrq",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carwarn",
+						"xzbfrq"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆告警时间更新操作",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514446445118488576",
+							"description": "车辆ID",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carwarn/clgjgx",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carwarn",
+						"clgjgx"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-车辆告警列表接口",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "queryExpireType",
+							"value": "1",
+							"description": "1、查询到期提醒 否则查询所有提醒",
+							"type": "text"
+						},
+						{
+							"key": "queryWarnTypeList",
+							"value": "1,2,3,4,5",
+							"description": "类型(1、车辆年审提醒 2、运管年审提醒 3、改气年审提醒 4、续保提醒 5、报废提醒)",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carwarn/pager",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carwarn",
+						"pager"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-通过车辆ID查询该车下一次保单的状态",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514043266946039808",
+							"description": "1、查询到期提醒 否则查询所有提醒",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carbx/clbxzt",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carbx",
+						"clbxzt"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-保险审核",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514043266946039808",
+							"type": "text"
+						},
+						{
+							"key": "bxrq",
+							"value": "2018-11-23",
+							"description": "保险起保日期",
+							"type": "text"
+						},
+						{
+							"key": "bxz",
+							"value": "2019-11-23",
+							"description": "保险终保日期",
+							"type": "text"
+						},
+						{
+							"key": "warnId",
+							"value": "",
+							"description": "告警ID",
+							"type": "text"
+						},
+						{
+							"key": "bdCount",
+							"value": "4",
+							"description": "年审次数",
+							"type": "text"
+						},
+						{
+							"key": "bxdh",
+							"value": "保险联系人电话",
+							"description": "保险联系人电话",
+							"type": "text"
+						},
+						{
+							"key": "daFile",
+							"value": "电子档案URL",
+							"description": "电子档案URL",
+							"type": "text"
+						},
+						{
+							"key": "bz",
+							"value": "备注",
+							"description": "备注",
+							"type": "text"
+						},
+						{
+							"key": "tbgs",
+							"value": "投保公司",
+							"description": "投保公司",
+							"type": "text"
+						},
+						{
+							"key": "bxlxr",
+							"value": "保险联系人",
+							"description": "保险联系人",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carbx/save",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carbx",
+						"save"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-产权人列表",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "clId",
+							"value": "514043266946039808",
+							"type": "text"
+						},
+						{
+							"key": "bxrq",
+							"value": "2018-11-23",
+							"description": "保险起保日期",
+							"type": "text"
+						},
+						{
+							"key": "bxz",
+							"value": "2019-11-23",
+							"description": "保险终保日期",
+							"type": "text"
+						},
+						{
+							"key": "warnId",
+							"value": "",
+							"description": "告警ID",
+							"type": "text"
+						},
+						{
+							"key": "bdCount",
+							"value": "4",
+							"description": "年审次数",
+							"type": "text"
+						},
+						{
+							"key": "bxdh",
+							"value": "保险联系人电话",
+							"description": "保险联系人电话",
+							"type": "text"
+						},
+						{
+							"key": "daFile",
+							"value": "电子档案URL",
+							"description": "电子档案URL",
+							"type": "text"
+						},
+						{
+							"key": "bz",
+							"value": "备注",
+							"description": "备注",
+							"type": "text"
+						},
+						{
+							"key": "tbgs",
+							"value": "投保公司",
+							"description": "投保公司",
+							"type": "text"
+						},
+						{
+							"key": "bxlxr",
+							"value": "保险联系人",
+							"description": "保险联系人",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carcq/clcqlb",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carcq",
+						"clcqlb"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		},
+		{
+			"name": "车辆-产权人列表 Copy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					},
+					{
+						"key": "userid",
+						"value": "1"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "514447347778846720",
+							"description": "车辆ID",
+							"type": "text"
+						},
+						{
+							"key": "bxBxrq",
+							"value": "保险日期",
+							"description": "保险日期",
+							"type": "text"
+						},
+						{
+							"key": "bxBxz",
+							"value": "保险至",
+							"description": "保险至",
+							"type": "text"
+						},
+						{
+							"key": "bxBxdh",
+							"value": "保险电话",
+							"description": "保险电话",
+							"type": "text"
+						},
+						{
+							"key": "bxBdzbbh",
+							"value": "保单正本编号",
+							"description": "保单正本编号",
+							"type": "text"
+						},
+						{
+							"key": "bxBdfbbh",
+							"value": "保单副本编号",
+							"description": "保单副本编号",
+							"type": "text"
+						},
+						{
+							"key": "bxBdWz",
+							"value": "保单位置",
+							"description": "保单位置",
+							"type": "text"
+						},
+						{
+							"key": "bxBz",
+							"value": "备注",
+							"description": "备注",
+							"type": "text"
+						},
+						{
+							"key": "bxDaFile",
+							"value": "路径",
+							"description": "路径",
+							"type": "text"
+						},
+						{
+							"key": "bxlxr",
+							"value": "保单联系人",
+							"description": "保单联系人",
+							"type": "text"
+						},
+						{
+							"key": "bxTbgs",
+							"value": "保单投保公司",
+							"description": "保单投保公司",
+							"type": "text"
+						},
+						{
+							"key": "bxBdCount",
+							"value": "保单数量",
+							"description": "保单数量",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ip}}/api/carbx/updates",
+					"host": [
+						"{{ip}}"
+					],
+					"path": [
+						"api",
+						"carbx",
+						"updates"
+					]
+				},
+				"description": "车管年审 初次登记日期设置。设置后，批量\b添加到提醒表中。"
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,242 @@
+<!--学员投诉-->
+<template>
+  <ui-page>
+        <!--学员投诉开始-->
+            <ui-view  class="sample_list">
+            <ui-view class="group-title">
+              <ui-row type="flex" border-bottom>
+                <ui-col width="5" align="center" vertical-align="middle">
+                  <ui-view class="sign"></ui-view>
+                </ui-col>
+                <ui-col align="left" vertical-align="middle" space-left="10">
+                  <ui-view >学员投诉({{pjPage.total}})</ui-view>
+                </ui-col>
+              </ui-row>
+            </ui-view>
+            </ui-view>
+            <!--投诉列表开始-->
+            <ui-scroll-view style="{{ {height:pullDownDivHeight+'px'} }}" scroll-y  pull-down="{{ pullDown }}"  enable-reach-bottom-load ="{{loadMore}}" on-load-more="{{ handleLoadMore }}" >
+            <ui-view slot="pull-down" class="pull-down-content" ui:if="{{proportion}}">
+              <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+                <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+              </ui-view>
+
+              <ui-view class="img-layer" ui:else>
+                <ui-view class="gauge-loader" ui:if="{{state === 2}}"></ui-view>
+                <ui-view class="gauge-loader" ui:show="{{state === 3 || state === 4}}"></ui-view>
+              </ui-view>
+            </ui-view>
+            <ui-list-view-item ui:for="{{props}}">
+            <ui-row class="content"  border-bottom  >
+                <ui-col width="50" align="center" vertical-align="top" style="padding-top:10px">
+                    <ui-view class="portrait">
+                        <ui-image src="{{item.headImg}}" width="100%" ></ui-image>
+                    </ui-view> 
+                </ui-col>
+                <ui-col class="pjRight" style="padding-top:10px;">
+                    <ui-row height="20">
+                            <ui-col vertical-align="middle" align="left">
+                                <ui-view class="time"> {{item.traineeName}}</ui-view>
+                            </ui-col>
+                            <ui-col vertical-align="middle" align="right" width="140" space-right="10" style="color:#FF2A00">
+                               待处理
+                            </ui-col>
+                    </ui-row>
+                    <ui-view class="contentTSDX">投诉教练：{{item.coachName}}</ui-view>
+                    <ui-view class="contentTScontent">{{item.complainContent}}法师发誓哈发生发生的发生哈的沙发沙发啥的婚纱</ui-view>
+                    <ui-view>
+                        <ui-row height="40">
+                            <ui-col vertical-align="middle" align="left">
+                                <ui-view class="time">{{item.complainTime }}</ui-view>
+                            </ui-col>
+                            <ui-col vertical-align="middle" align="right" width="60" space-right="10" bindtap="tsclFunc(item.id)">
+                                <ui-icon type="i-pingjia" size="28" color="#168AFD"></ui-icon>
+                            </ui-col>
+                        </ui-row>
+                    </ui-view>
+                </ui-col>
+            </ui-row>
+            
+            </ui-list-view-item>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(props && props.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+            <ui-view style="width:200px;margin:0 auto;">
+              <ui-divider ui:show="{{!loadMore}}">没有新数据了</ui-divider>
+            </ui-view>
+            </ui-scroll-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "学员投诉",
+    title:'学员投诉'
+  },
+  data() {
+    return {
+      pullDownDivHeight:100,
+      // 下拉刷新（初始状态）
+      proportion: 0,
+      state: 1,
+      loadMore: true,
+      pullDown: {
+        distance: 60,
+        onBegin: this.handleBegin,
+        onActive: this.handleActive,
+        onAfter: this.handleAfter
+      },
+      //上下拉刷新结束
+      //投诉列表开始
+      props:[],//投诉列表信息
+      pjPage:{//返回分页信息存储
+          pageNum : '',
+          pageSize: '',
+          size : '',
+          startRow : '',
+          endRow : '',
+          total : '0',
+          pages : ''
+      },
+      pjDate:{
+        pageNum:1,//请求第几
+        pageSize:8,//每页个数
+        complainStatus:'2'//0已经投诉  1处理成功   2受理投诉中
+      },//投诉的提交参数
+      //投诉列表结束
+    }
+  },
+  methods: {
+  	//培训记录上下拉刷新开始
+    handleLoadMore () {//教练投诉加载更多
+       
+          if(this.pjDate.pageNum<=this.pjPage.pages){
+              this.getPjList()
+           }else{
+             this.loadMore = false
+              return false
+           }
+     
+    },
+    getPjList (){//请求教练投诉
+        this.$http('GET',ui.getApp().apis.COMPLAINRECORDLIST,this.pjDate,(res)=>{
+                    this.pjPage.pageNum = res.page.pageNum
+                    this.pjPage.pageSize = res.page.pageSize
+                    this.pjPage.size = res.page.size
+                    this.pjPage.startRow = res.page.startRow
+                    this.pjPage.endRow = res.page.endRow
+                    this.pjPage.total = res.page.total
+                    this.pjPage.pages = res.page.pages
+                    let list = res.page.list
+
+                    list.forEach((value,index) => {
+                      value.headImg = require('#/images/portrait_bg.png')
+                      value.traineeName = '匿名'
+                    });
+                   this.props = this.props.concat(list)
+                   this.pjDate.pageNum ++
+                   if(this.pjDate.pageNum > this.pjPage.pages){
+                     this.loadMore = false
+                     return false
+                   }
+        })
+      
+    },
+    handleBegin ({ distance, direction }) {
+      this.proportion = distance / 60
+      // 拉满60px
+      if (this.proportion >= 1) {
+        if (this.state === 1 && direction === 'down') {
+          // 释放刷新
+          this.state = 2
+
+          // 300ms吉祥物翻转时间
+          window.setTimeout(() => {
+            // 刷新中...
+            this.state = 3
+          }, 300)
+        }
+      } else {
+        this.state = 1
+      }
+    },
+    handleActive () {//投诉下拉刷新
+           this.loadMore = true
+           this.props = []//清空投诉列表
+           this.pjDate.pageNum = 1
+           this.getPjList ()
+           this.state = 4
+    },
+    handleAfter (flag) {//下拉刷新绑定数据
+      this.proportion = 0
+      this.state = 1
+    },
+    tsclFunc:function(tsid){//投诉处理
+      import(`#/pages/dialogs/dialogsTSCL.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '投诉处理',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#666'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                id: tsid
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                if (data && data.type==true) {
+                   ui.showToast({ title: '处理成功！', icon: 'success', duration: 2000 })
+                   this.loadMore = true
+                   this.props = []//清空投诉列表
+                   this.pjDate.pageNum = 1
+                   this.getPjList ()
+                }
+              }
+            })
+        })
+    }
+  },
+  mounted() {
+    this.pullDownDivHeight=this.getSystemMessage().windowHeight-86
+    this.getPjList()
+  }
+}
+</script>
+
+<style lang="less">
+//投诉列表开始
+.sample_list{
+  padding-left: 6px;
+  height: 40px;
+  line-height: 40px;
+  .sign{
+    width: 5px;
+    height: 16px;
+    background-color: #168AFD;
+    border-radius: 5px;
+  }
+}
+.portrait .ui-image {
+  width: 30px !important;
+  height:30px !important;
+  border-radius:15px;
+  }
+.pjRight{
+  .numPJ,.contentPJ,.contentTSDX{
+    margin-top: 6px;
+  }
+  .contentTSDX{
+    font-size: 28rpx;
+  }
+  .contentTScontent{
+    padding-right: 4px;
+    font-size: 30rpx;
+    color: #999;
+  }
+}
+//投诉列表结束
+</style>

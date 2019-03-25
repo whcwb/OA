@@ -1,0 +1,107 @@
+<!--邀请界面-->
+<template>
+  <ui-page>
+
+    <!--  <ui-nav-bar slot="nav-bar" class="nav_bar">
+      <ui-row height="46">
+        <ui-col vertical-align="middle" align="left" space-left="10"  width="50" bindtap="navigateBack">
+          <ui-icon type="arrow-left" size="16" color="#fff"></ui-icon>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title2">收货地址</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="50" >
+          
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>-->
+    <ui-view style="padding-bottom:50px">
+      <ui-row ui:for="{{invList}}" class="bg-white" height="80" border-bottom>
+            <ui-col vertical-align="middle" space-left="10">
+              <ui-view class="">姓名：<ui-text class="listText">{{item.inviteFriendName}}</ui-text></ui-view>
+              <ui-view class="">手机号：<ui-text class="listText">{{item.inviteFriendPhone}}</ui-text></ui-view>
+              <ui-view class="">身份证：<ui-text class="listText">{{item.inviteFriendNo}}</ui-text></ui-view>
+            </ui-col>
+      </ui-row>
+    </ui-view>
+   
+    <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(invList && invList.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+    </ui-view>
+    <ui-fixed-view class="add_address" bottom="0" bindtap="addInvitation">
+      <ui-icon type="addNew" size="20" color="#358EFE"></ui-icon>
+      <ui-text>新增邀请</ui-text>
+    </ui-fixed-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "邀请好友",
+    "backgroundColor": "#F2F2F2",
+    title:'邀请好友'
+  },
+  data() {
+    return {
+      invList:[]
+    }
+  },
+  methods: {
+    addInvitation:function(){
+      import(`#/pages/dialogs/addInvitation.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '新增邀请',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#666'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                //textContent: ''
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                if (data && data.result == true) {
+                   ui.showToast({ title: '新增邀请成功！', icon: 'success', duration: 2000 })
+                   this.getMyInvitation()
+                }
+              }
+            })
+          })
+    },
+    getMyInvitation:function(){//获取我提交的邀请信息
+      this.$http('get',ui.getApp().apis.INVITEFRIENDQUERY,{
+            traineeId:this.getUser().id
+            },(res)=>{
+              this.invList = res.result
+            },(res)=>{
+              ui.showToast({ title: '获取信息失败！', duration: 2000 })
+        })
+        
+    }
+  },
+  mounted() {
+    this.getMyInvitation()
+  }
+}
+</script>
+
+<style lang="less">
+.add_address{
+  width: 100%;
+  height: 50px;
+  background-color: #FFFFFF;
+  .mix-flex-center();
+  .ui-text{
+    margin-left: 10px;
+    color: #358efe;
+    font-size: 16px;
+  }
+}
+.listText{
+  color: #999999;
+}
+</style>

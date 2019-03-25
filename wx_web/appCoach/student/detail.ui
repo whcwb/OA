@@ -1,0 +1,375 @@
+<!--详细界面-->
+<template>
+  <ui-page>
+    <ui-row height="40" class="top_tip top_tipDiv" border-bottom>
+                <ui-col width="40" align="center" vertical-align="middle">
+                  <ui-image class="left_header" src="{{require('#/images/jiaolian1.jpg')}}"  mode="simple"></ui-image>
+                </ui-col>
+                <ui-col class="text" align="left" vertical-align="middle" space="20">
+                  <ui-view style="width: 100%;">
+                    <ui-row height="30">
+                      <ui-col align="left" vertical-align="middle">
+                        <ui-text>敖清鹏</ui-text>
+                      </ui-col>
+                      <ui-col align="right" width="100" vertical-align="middle" space-right="10">
+                        <ui-text>已结业</ui-text>
+                      </ui-col>
+                    </ui-row>
+                    
+                  </ui-view>
+                </ui-col>
+      </ui-row>
+      <ui-view>
+            <ui-row height="40" border-top   class="stuItem_bottomDiv">
+                <ui-col>
+                  <ui-row>
+                    <ui-col span="4"  vertical-align="middle" align="center">
+                      分配
+                    </ui-col>
+                    <ui-col span="4" vertical-align="middle" align="center">
+                        科目
+                    </ui-col>
+                    <ui-col span="4" vertical-align="middle" align="center">
+                        车型
+                    </ui-col>
+                  </ui-row>
+                </ui-col>
+                <ui-col width="120" border-right vertical-align="middle" align="center">
+                  学时
+                </ui-col>
+              </ui-row>
+              <ui-row height="40" border-bottom class="stuItem_bottomTextDiv">
+                <ui-col>
+                  <ui-row>
+                    <ui-col span="4"  vertical-align="middle" align="center">
+                      9天
+                    </ui-col>
+                    <ui-col span="4" vertical-align="middle" align="center">
+                        科目一
+                    </ui-col>
+                    <ui-col span="4" vertical-align="middle" align="center">
+                        C1
+                    </ui-col>
+                  </ui-row>
+                </ui-col>
+                <ui-col width="120" border-right vertical-align="middle" align="center">
+                  7小时
+                </ui-col>
+              </ui-row>
+      </ui-view>
+      <!--底部选项卡开始-->
+      <ui-tabs bounce="{{false}}" index="{{ tapsIndex }}" bindchange="handleChange($event, 'tapsIndex')" active-tab-style="{{activeTabStyle}}">
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>基础资料</ui-text>
+              </ui-view>
+          </ui-tab>
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>培训记录</ui-text>
+              </ui-view>
+          </ui-tab>
+          <ui-tab>
+              <ui-view>
+                  <ui-text block>历史约考</ui-text>
+              </ui-view>
+          </ui-tab>
+         
+      </ui-tabs>
+      <ui-view ui:show="{{isflag === 0}}" class="wineshop-1 wineshop-box">
+              <ui-row height="50" border-bottom class="title">
+                  <ui-col  vertical-align="middle" align="left" space-left="10">
+                   报名日期：2018-09-09
+                  </ui-col>
+                  <ui-col  vertical-align="middle" align="right" width="160">
+                    性别：男
+                  </ui-col>
+                  <ui-col vertical-align="middle" align="center" width="30"></ui-col>
+              </ui-row>
+              <ui-row height="50" border-bottom class="title">
+                  <ui-col  vertical-align="middle" align="left" space-left="10">
+                   是否分期：否
+                  </ui-col>
+                  <ui-col  vertical-align="middle" align="right" width="160">
+                    培训费：2600元
+                  </ui-col>
+                  <ui-col vertical-align="middle" align="center" width="30"></ui-col>
+              </ui-row>
+              <ui-row height="50" border-bottom class="title">
+                  <ui-col  vertical-align="middle" align="left" space-left="10">
+                   学员有效期：2018-09-09  至  2021-09-09
+                  </ui-col>
+                  <ui-col vertical-align="middle" align="center" width="30"></ui-col>
+              </ui-row>
+      </ui-view>
+      <!--培训记录开始-->
+      <ui-view class="wineshop-1 wineshop-box" ui:show="{{isflag === 1}}">
+         <ui-accordion header-height="50"  ui:for="{{ accordion }}">
+          <ui-view slot="header">
+            <ui-row height="50" border-bottom class="title">
+              <ui-col vertical-align="middle" align="left" space-left="10">
+                {{ item.title }}
+              </ui-col>
+              <ui-col vertical-align="middle" align="center" width="60">
+                {{ item.number }}
+              </ui-col>
+              <ui-col vertical-align="middle" align="center" width="30"></ui-col>
+            </ui-row>
+          </ui-view>
+          <ui-view slot="content">
+            <ui-row height="40" ui:for="{{ item.content }}" ui:for-item="item2" class='content'>
+              <ui-col vertical-align="middle" align="left" space-left="10">{{ item2.title }}</ui-col>
+              <ui-col vertical-align="middle" align="center" width="50">
+                <ui-icon type="{{ item.state==='cuowuguanbiquxiao-yuankuang' ? 'error':'queren' }}" size="16" color="{{ item.state==='cuowuguanbiquxiao-yuankuang' ? '#F5AC29':'#2AA744' }}"></ui-icon>
+              </ui-col>
+            </ui-row>
+          </ui-view>
+         </ui-accordion>
+
+      </ui-view>
+      <!--培训记录结束-->
+      <!--约考记录开始-->
+      <ui-view class="wineshop-1 wineshop-box" ui:show="{{isflag === 2}}">
+          
+            <ui-view ui:for="{{ accordion }}">
+                <ui-row height="50" border-bottom class="title">
+                  <ui-col vertical-align="middle" align="left" space-left="10">
+                    {{ item.title }}
+                  </ui-col>
+                  <ui-col vertical-align="middle" align="center" width="60">
+                    科目一
+                  </ui-col>
+                  <ui-col vertical-align="middle" align="center" width="30"></ui-col>
+              </ui-row>
+            </ui-view>
+          
+      </ui-view>
+      <!--约考记录结束-->
+      <!--底部选项卡结束-->
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "学员详情"
+  },
+  data() {
+    return {
+      //选项卡开始
+      activeTabStyle:{
+        'color': '#24c471',
+        'border-bottom':'1px solid #24c471'
+      },
+      isflag: 0,
+      tapsIndex:0,
+      accordion: [//培训记录
+        {
+          title: '日期：2018-09-11',
+          number: '4学时',
+          state: 'abnormal',
+          stateNum: 5,
+          content: [
+            {
+              title: '09:00:12-10:00:12',
+              time:'1学时'
+            },
+            {
+              title: '14:00:12-17:00:12',
+              time:'3学时'
+            },
+            {
+              title: '09:00:12-10:00:12',
+              time:'1学时'
+            },
+            {
+              title: '14:00:12-17:00:12',
+              time:'3学时'
+            }
+          ]
+        }, {
+          title: '日期：2018-09-12',
+          number: '4学时',
+          state: 'abnormal',
+          stateNum: 5,
+          content: [
+            {
+              title: '09:00:12-10:00:12',
+              time:'1学时'
+            },
+            {
+              title: '14:00:12-17:00:12',
+              time:'3学时'
+            },
+            {
+              title: '09:00:12-10:00:12',
+              time:'1学时'
+            },
+            {
+              title: '14:00:12-17:00:12',
+              time:'3学时'
+            }
+          ]
+        }, {
+          title: '日期：2018-09-13',
+          number: '4学时',
+          state: 'abnormal',
+          stateNum: 5,
+          content: [
+            {
+              title: '09:00:12-10:00:12',
+              time:'1学时'
+            },
+            {
+              title: '14:00:12-17:00:12',
+              time:'3学时'
+            },
+            {
+              title: '09:00:12-10:00:12',
+              time:'1学时'
+            },
+            {
+              title: '14:00:12-17:00:12',
+              time:'3学时'
+            }
+          ]
+        }
+      ]
+      //选项卡结束
+    }
+  
+  },
+  methods : {
+    //选项卡开始
+    handleChange (index, key) {
+      this[key] = index
+      if (key === 'current1') {
+        this.filmData = this.films[index]
+        if (this.filmData.film !== '') {
+          this.filmData = this.films[index]
+          this.isnull = false
+        } else {
+          this.isnull = true
+        }
+      } else if (key === 'tapsIndex') {
+        this.isflag = index
+      }
+    }
+    //选项卡结束
+  },
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+.left_header{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    line-height: 30px;
+    
+}
+.top_tipDiv{
+  background-color: #4CD964;//未完成#F0AD4E
+  color: white;
+}
+.stuItem_bottomDiv{
+  background-color: white;
+  color: #D4D4D4;
+  font-size: 28rpx;
+}
+.stuItem_bottomTextDiv{
+  background-color: white;
+}
+//底部选项卡开始-------------------------------
+.ui-tabs {
+  padding-bottom: 1px;
+}
+.wineshop-1{
+  .small-title{
+    color:#666;
+    font-size:12px;
+  }
+  .address div{
+    font-weight: bold;
+  }
+  .wineshop{
+    margin:0 20px;
+    padding:10px 0;
+    // .mix-1px(0, 0, 1, 0, #ccc);
+    .ui-button{
+      background-color:#24c471;
+      border:0;
+      color:#fff
+    }
+  }
+  .sub-1 div{
+    color:#666;
+    font-size:12px;
+    display:inline;
+    padding:3px;
+    .mix-1px(1, 1, 1, 1, #666);
+  }
+}
+
+.backbg{
+  transition-duration: 1s;
+}
+.back{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -15px 0 0 -15px;
+}
+.imgbox{
+  width:150px;
+  margin:0 auto;
+  .ui-image{
+    width:100%;
+  }
+}
+.markicon{
+  .ui-text{
+    div{
+      display: inline;
+      font-size:12px;
+      padding: 3px
+    }
+  }
+}
+
+.self-btn{
+  background-color: #fff;
+  color:#fbb966
+}
+
+//培训记录开始
+.title{
+  width: 100%;
+  background-color: #fff;
+  font-size: 14px;
+  .state{
+    border: 1px solid #797979;;
+    width: 100%;
+    height: 30px;
+    .mix-flex-center();
+    color: #797979;
+    font-size: 12px;
+    &.abnormal{
+      border: 1px solid #F5AC29;;
+      color: #F5AC29;
+    }
+    &.normal{
+      border: 1px solid #2AA744;;
+      color: #2AA744;
+    }
+  }
+}
+.content{
+  background-color: #F6F6F6;
+  font-size: 14px;
+  border-bottom: 1px solid #fff;
+}
+//培训记录结束
+//底部选项卡结束---------------------------------
+</style>

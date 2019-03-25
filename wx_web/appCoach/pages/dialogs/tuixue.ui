@@ -1,0 +1,63 @@
+<!--投诉dialog界面-->
+<template>
+  <ui-page>
+      <ui-view class="weui-cells__title">退学理由</ui-view>
+      <ui-view class="sample_content">
+          <ui-textarea ui:model="{{textContent}}" placeholder="请填写退学理由" rows="3" auto-height maxlength="200"></ui-textarea>
+      </ui-view>
+      <ui-view class="btn_win">
+          <ui-button type="primary" bindtap="confirmSelect">确认</ui-button>
+      </ui-view>
+  </ui-page>
+</template>
+
+
+<script>
+export default {
+  data () {
+    return {
+      textContent: '',//内容
+      studentId:'',//学生id
+    }
+  },
+  mounted () {
+    this.$DialogOpen((data) => {
+      if (data && data.studentId) {
+        this.studentId = data.studentId
+      }
+    })
+  },
+
+  methods: {
+    changeCountry (val) {
+      this.textContent = val
+    },
+    confirmSelect () {
+      let data = {
+           traineeId:this.studentId,reason:this.textContent
+      }
+        //提交退学申请
+      this.$http('POST',ui.getApp().apis.DROPOUTRECORD,data,(res)=>{
+            console.log("退学"+JSON.stringify(res))
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            ui.hideDialog({type:true})
+            this.textContent = ''//关闭窗口时清除弹窗数据
+            this.studentId = ''
+      },(res)=>{
+            ui.showToast({ title: '退学申请提交失败！', duration: 2000 })
+      })
+
+    }
+  }
+}
+
+</script>
+
+<style lang="less">
+  .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+</style>

@@ -1,0 +1,309 @@
+<template>
+  <ui-page page-load="{{ pageLoad }}">
+    <ui-nav-bar slot="nav-bar">
+      <ui-row style="font-size=18px">
+        <ui-col space=40>
+          <ui-view>{{dataMonth}}</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="60">
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+
+    <ui-view class="bg-blue">
+        <ui-w-calendar
+        bindweekchange="weekHandler"
+        value="{{date}}"
+        bindchanged="selectedHandler($event)"
+      ></ui-w-calendar>
+      <ui-wave style="position:absolute;bottom:0" canvas-id="waterball" height="64"></ui-wave>
+    </ui-view>
+
+      <!--消息通知-->
+      <ui-view class="sample_content">
+        <ui-row height="30">
+          <ui-col span="1" space-left="10" vertical-align="middle" class="text-alignC">
+            <ui-icon type="laba" size="24" class="ui-nav-iconColor"></ui-icon>
+          </ui-col>
+          <ui-col span="11" space-left="10">
+            <ui-roller autoplay="2000" speed="300">
+              <ui-roller-item ui:for="{{newsList}}" ui:for-item="itemNew">
+                <ui-row>
+                  <ui-col span="12">
+                    <ui-text block class="roller-text">{{itemNew.title}}</ui-text>
+                  </ui-col>
+                </ui-row>
+              </ui-roller-item>
+            </ui-roller>
+          </ui-col>
+        </ui-row>
+      </ui-view>
+      <!--消息通知结束-->
+
+        <ui-view class="tubiao_size" id = "tubiao_size1" style="{{ { height : height+40+'px' } }}">
+        <ui-row border-bottom>招生人数统计</ui-row>
+        <ui-bar ui:show = "{{bar1.data.length>=1}}" 
+            value="{{bar1.data}}"
+            height="{{height}}"
+            width="{{width}}"
+            is-animated="true"
+            between-bars-padding = 0.3
+            percentage-label-margin="{{1}}"
+            color-schema="{{bar1.colorSchema}}"
+            y-axis-padding-between-chart="{{12}}"
+            is-darker = "true"
+            is-horizontal = "true"
+            percentage-axis-to-max-ratio=2
+            margin="{{bar1.margin}}"
+            bindcustomclick="customclick1"
+            ></ui-bar>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(bar1.data.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+        </ui-view>
+
+        <ui-view class="tubiao_size">
+            <ui-bar ui:show = "{{bar2.data.length>=1}}" 
+            value="{{bar2.data}}"
+            height="200"
+            width="{{width}}"
+            is-animated="true"
+            between-bars-padding = 0.3
+            percentage-label-margin="{{1}}"
+            color-schema="{{bar2.colorSchema}}"
+            y-axis-padding-between-chart="{{12}}"
+            is-darker = "true"
+            is-horizontal = "true"
+            percentage-axis-to-max-ratio=2
+            margin="{{bar2.margin}}"
+            bindcustomclick="customclick1"
+            ></ui-bar>
+        
+            
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(bar2.data.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+        </ui-view>
+        
+   </ui-page>
+</template>
+
+<script>
+import mixin from '#/static/ajax/mixin'
+export default {
+  config: {
+    navigationStyle: 'custom',
+    navigationBarTextStyle:"white",
+    backgroundColor:'#fff',
+    delay:false,//延迟加载
+    title:'管理助手'
+  },
+  mixins:[mixin],
+  data () {
+    return {
+      height:120,
+      buttonText: '界面跳转',
+      isShow:false,
+      width:ui.WIN_WIDTH,
+      bar1: {
+        colorSchema: ['#70f0c7', '#41c4c9', '#fed009', '#fda71e', '#f65bb9'],
+        data: [],
+        margin: {
+          left: 60,
+          right: 20,
+          top: 10,
+          bottom: 20
+        },
+      },
+      bar2: {
+        colorSchema: ['#70f0c7', '#41c4c9', '#fed009', '#fda71e', '#f65bb9'],
+        data: [],
+        margin: {
+          left: 60,
+          right: 20,
+          top: 10,
+          bottom: 20
+        },
+       
+      },
+      // 周日历绑定的日期
+      date: '',
+      // 天
+      dateDay: '',
+      // 时间对象，存储临时变化的时间
+      dateObj: {},
+      // 月
+      dataMonth:'' ,
+      newsList:[],//公告消息列表
+      
+      pageLoad: {// 切换页面执行方法
+        trigger: 'always',
+        handle: () => {
+          // 获取今天的时间
+          let date = new Date()
+          date = this.format(date)
+          this.date = date
+
+          // 在初始化时，获取当天日期，并显示出来。
+          this.dateObj = this.date.split('-')
+          this.dateDay = `${this.dateObj[0]}年${this.dateObj[1]}月${this.dateObj[2]}日`
+          this.dataMonth = `${this.dateObj[0]}年${this.dateObj[1]}月`
+          this.getMessage()
+          
+          this.getCountByday(this.date)
+        }
+      }
+    }
+  },
+  methods: {
+    customclick1(e){
+     
+      ui.showToast({
+        title: `${e.name}`
+      })
+    },
+     sliderShow() {
+      this.isShow=true
+    },
+    navHandle () {
+      ui.navigateTo({
+        url: '/pages/detail'
+      })
+    },
+    // 周日历滑时出发，获取滑动后的日期。并赋值给nav-bar上
+    weekHandler(e){
+      let dataMonth = e.substring(0,7)
+      dataMonth = dataMonth.split('/')
+      this.dataMonth = `${dataMonth[0]}年${dataMonth[1]}月`
+    },
+    // 选择日期时触发。将选择后的日期格式化后显示出来
+    selectedHandler (e) {
+      this.dateObj = e.split('/')
+      this.dateDay = `${this.dateObj[0]}年${this.dateObj[1]}月${this.dateObj[2]}日`
+
+      let month = this.dateObj[1]<10?'0'+this.dateObj[1]:this.dateObj[1];
+      let day = this.dateObj[2]<10?'0'+this.dateObj[2]:this.dateObj[2]
+      this.getCountByday(`${this.dateObj[0]}-${month}-${day}`)
+    },
+    // 返回
+    navigateBack () {
+      ui.navigateBack()
+    },
+    // 将日期格式化成 "年/月/日" 格式
+    format (obj) {
+      var date = new Date(obj)
+      var y = 1900 + date.getYear()
+      var m = '0' + (date.getMonth() + 1)
+      var d = '0' + date.getDate()
+      return y + '-' + m.substring(m.length - 2, m.length) + '-' + d.substring(d.length - 2, d.length)
+    },
+    getMessage(){//获取公告
+      this.$http('post',ui.getApp().apis.INDEX.MESSAGE,{id:this.getUser().yhid,pageNum:1,pageSize:10},(res)=>{
+         this.newsList = res.page.list
+      })
+    },
+    getCountByday(day){//获取每天招收学员的统计数据
+      this.$http('post',ui.getApp().apis.INDEX.STUDENTCONTBYDAY,{startTime:day,endTime:day},(res)=>{
+           let team = res.result || []
+           let teamArray = []
+           let carTypeArray = []
+           this.bar1.data = []
+           this.bar2.data = []
+           if(team.length>0){
+           this.height = team.length * 30
+           }
+           team.forEach((value,index) => {
+             let teamObj = {}
+             teamObj.name = value.jgmc+'('+value.all+'人)'
+             teamObj.value = value.all
+             teamArray.unshift(teamObj)
+
+             if(value.jgmc == '合计'){
+                carTypeArray.unshift({name:'A1('+value.a1+'人)',value:value.a1})
+                carTypeArray.unshift({name:'A2('+value.a2+'人)',value:value.a2})
+                carTypeArray.unshift({name:'A3('+value.a3+'人)',value:value.a3})
+                carTypeArray.unshift({name:'B2('+value.b2+'人)',value:value.b2})
+                carTypeArray.unshift({name:'C1('+value.c1+'人)',value:value.c1})
+                carTypeArray.unshift({name:'C2('+value.c2+'人)',value:value.c2})
+                carTypeArray.unshift({name:'合计('+value.all+'人)',value:value.all})
+                
+             }
+           });
+           this.bar1.data = teamArray
+           this.bar2.data = carTypeArray
+      })
+    }
+  },
+  created () {
+  },
+  mounted() {
+    //首屏页面需要在mounted中延时才能调用框架api，其他页面不需要延时
+    setTimeout(() => {
+      //关闭app启动图
+      ui.closeSplashscreen()
+    }, 1000);
+
+    
+  
+  }
+}
+
+</script>
+
+<style lang="less">
+.content{
+  .mix-flex-center();
+}
+.sliderContent{
+  padding:50px 50px 0px 50px;
+}
+.buttonContent{
+  padding:50px;
+}
+.tubiao_size{
+  background-color: white;
+  font-size: 40rpx;
+  border-bottom:1px solid #D4D1D1;
+}
+.item{
+  height: 20px;
+  line-height: 20px;
+}
+.roller-text{
+  .mix-text-overflow();
+  font-size: 18px
+}
+  // calendar3.less
+.ui-nav-bar{
+  background-color: #fff;
+  color:rgb(24, 23, 23)
+}
+.calendartab{
+  padding:10px 0
+}
+.ui-w-calendar{
+  background-color: transparent;
+  color:rgb(22, 21, 21);
+}
+.is-holiday{
+  color:rgb(27, 25, 25) !important;
+}
+.is-selected{
+  background-color:rgb(23, 142, 211)!important;
+  color:rgb(247, 247, 248)!important
+}
+
+.bg-blue{
+  background-color:#fff; 
+  width:100%; 
+  height: 100px;
+  position: relative;
+}
+.sample_content{
+  background-color: white;
+}
+.roller-text{
+  font-size: 40rpx;
+  line-height: 30px;
+}
+</style>

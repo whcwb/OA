@@ -1,0 +1,386 @@
+<!--undefined-->
+<template>
+  <ui-page page-load="{{ pageLoad }}">
+      <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'1px solid rgba(231, 231, 231, 0.6)','background-color':'#fff'} }}">
+        <ui-row height="46">
+        <ui-col vertical-align="middle" align="center" width="60">
+          
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">{{navTitle}}</ui-view>
+        </ui-col>
+        <ui-col width="60" align="center" bindtap="handleShowNavRightP">
+          <ui-popover ui:model="showNavRpover" position="bottom">
+            <ui-view>
+              <ui-view class="popover_item" ui:for="{{tabItems}}">
+                <ui-row height="35" align="center" bindtap="handleHide(item)" border-bottom>
+                  
+                  <ui-col vertical-align="middle" space-left="5">{{item.name}}</ui-col>
+                </ui-row>
+              </ui-view>
+              
+            </ui-view>
+            <ui-icon  slot="content" type="liebiaoshitucaidan" size="16" color="#39f"></ui-icon>
+          </ui-popover>
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+    <!--列表开始-->
+   
+    <ui-view slot="pull-down" class="pull-down-content" ui:if="{{proportion}}">
+        <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+          <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+        </ui-view>
+
+        <ui-view class="img-layer" ui:else>
+          <ui-view class="mt-ready" ui:if="{{state === 2}}"></ui-view>
+          <ui-view class="mt-loading" ui:show="{{state === 3 || state === 4}}"></ui-view>
+        </ui-view>
+      </ui-view>
+      <ui-view class="content_list">
+        <ui-view slot="content" style="padding:10px">
+            <ui-row height="160" class="top_tip" border-bottom ui:for="{{ testItems }}" style="background-color:rgb(51, 153, 255);border-radius:10px;color:white;margin-bottom:10px;box-shadow: 3px 4px 5px gray;">
+              <ui-col class="text" align="left" vertical-align="middle" space="20">
+                <ui-view style="width: 100%;">
+                  <ui-row height="30">
+                    <ui-col align="center" vertical-align="middle">
+                      <ui-text>{{ item.subject }}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-text>约考时间：{{item.testTime}}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-text>约考地点：{{item.testPlace}}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-text>考试结果：{{getTestResult(item.testResult)}}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-text class="{{ {colorRed:! payStatusFunc(item)} }}">缴费情况：{{ payStatusFunc(item) == true?'已缴费':'未缴费' }}</ui-text>
+                    </ui-col> 
+                  </ui-row>
+
+                </ui-view>
+              </ui-col>
+            </ui-row>
+        </ui-view>
+        <ui-view style="text-align:center"  ui:show="{{testItems ? false : true}}">
+          <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+        </ui-view>
+            
+      </ui-view>
+      
+      <ui-view style="width:200px;margin:0 auto;">
+        <ui-divider ui:show="{{!loadMore}}">没有新数据了</ui-divider>
+       </ui-view>
+    
+    <!--列表结束-->
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: '约考信息',
+    title:'约考信息',
+    navigationStyle:'custom',
+    scrollType:'body'
+  },
+  data () {// navigationStyle:'custom'
+    return {
+      pullDownDivHeight:0,//设置上下拉容器高度
+      navTitle:'全部',
+      tabItems: [
+        { name: '全部',value:'all' },
+        { name: '科目一',value:'10' },
+        { name: '科目二',value:'20'},
+        { name: '科目三',value:'30'},
+        { name: '科目四',value:'40'}
+      ],
+      showNavRpover:false,//是否展示下来选择科目
+      //上下拉刷新开始-----------------
+      loadMore:true,
+      idCardText:'身份证号',
+      testItems: [],//考试数据
+       
+      
+      bottom: 30,
+      top: 0,
+      proportion: 0,
+      // 下拉刷新（初始状态）
+      state: 1,
+      showLoading: false,
+      imgSrc: require('#/images/mt_01.png'),
+      height: ui.DEFAULT_CONTENT_HEIGHT,
+      imgHeight: parseInt(ui.WIN_WIDTH / 1125 * 628),
+      pullDown: {
+        distance: 60,
+        onBegin: this.handleBegin,
+        onActive: this.handleActive,
+        onAfter: this.handleAfter
+      },
+      //上下拉刷新结束---------------------
+      pageLoad: {// 切换页面执行方法
+        trigger: 'always',
+        handle: () => {
+          /**if(this.getUser().status >= 10 && this.getUser().status <= 60){
+            if(this.getUser().status == 10){
+                this.handleHide(this.tabItems[0])
+            }
+            else if(this.getUser().status == 20){
+                this.handleHide(this.tabItems[1])
+            }
+            else if(this.getUser().status == 30){
+                this.handleHide(this.tabItems[2])
+            }
+            else if(this.getUser().status == 40){
+                this.handleHide(this.tabItems[3])
+            }else{
+                this.handleHide(this.tabItems[3])
+            }
+            
+          }else{
+             ui.showToast({ title:"当前状态为："+this.returnStatusText(this.getUser().status)+'暂时没有考试数据!',duration: 2000 })
+             this.testItems = []
+          }
+           */
+           this.handleHide(this.tabItems[0])
+        }
+      }
+    }
+    
+  },
+  mounted () {
+    this.pullDownDivHeight=this.getSystemMessage().windowHeight-46-56
+    /**for (let i = 1; i <= this.bottom; i++) {
+      this.items.push(`列表项目${i}`)
+    }
+    **/
+   
+  },
+  methods: {
+    returnStatusText(s){//翻译当前状态
+        let text  = ''
+        if(s == '00'){
+          text = '受理'
+        }else {
+          text = '未知'
+        }
+        return text
+     },
+    handleShowNavRightP () {//点击nav左侧选择科目图形按钮事件
+      this.showNavRpover = true
+    },
+    handleHide (text) {//具体选择科目事件,查询不同科目考试记录
+    
+      this.showNavRpover = false
+      this.navTitle=text.name//修改nav标题，显示具体选择的科目
+      if(text && text.value !='all'){
+        this.$http('GET',ui.getApp().apis.TRAINEETESTINFO,{
+            traineeId:this.getUser().id,subject:text.name
+            },(res)=>{
+              this.testItems = res.result
+        })
+      }else{//选择全部加载时先查询用户详细信息，通过科目一第一次缴费时间判断科目一考试是否缴费
+
+         this.$http('get',ui.getApp().apis.TRAINEEINFOMATION+this.getUser().id,{},(res)=>{
+           res.result.token = this.getUser().token
+           localStorage.setItem('userInfo',JSON.stringify(res.result))//缓存用户信息
+           this.$http('GET',ui.getApp().apis.TRAINEETESTINFO,{
+            traineeId:this.getUser().id
+            },(res)=>{
+              this.testItems = res.result
+            })
+         })
+
+        
+      }
+      //修改提交参数
+    },
+    //上下拉刷新开始
+    handleLoadMore () {
+          window.setTimeout(() => {
+            this.loadMore = false
+          }, 1500)
+
+    },
+    handleBegin ({ distance, direction }) {
+      this.proportion = distance / 60
+      // 拉满60px
+      if (this.proportion >= 1) {
+        if (this.state === 1 && direction === 'down') {
+          // 释放刷新
+          this.state = 2
+
+          // 300ms吉祥物翻转时间
+          window.setTimeout(() => {
+            // 刷新中...
+            this.state = 3
+          }, 300)
+        }
+      } else {
+        this.state = 1
+      }
+    },
+    handleActive () {
+      return ui.request({
+        // promise设置为true，让请求返回promise，这样就可以接管请求
+        // 请求结束后页面自动回弹
+        promise: true,
+        url: '/touchui-backstage/listInfo.do?state=1',
+        success: (response) => {
+          // 刷新成功...
+          this.state = 4
+        },
+        fail: (err) => {
+        }
+      })
+    },
+    handleAfter (flag) {
+      this.proportion = 0
+      this.state = 1
+      if (flag) {
+        /**for (let i = this.top - 1; i >= this.top - 10; i--) {
+          this.items.unshift(`列表项目${i}`)
+        }
+        this.top -= 10
+        **/
+      }
+    },
+    
+    //上下拉刷新结束
+    getTestResult(res){
+        let result = ''
+        if(res == '00'){
+            result = '合格'
+        }else if(res == '10'){
+            result = '不合格'
+        }else if(res == '' || res == null){
+            result = '待考'
+        }
+        return result
+    },
+    payStatusFunc(item){
+      let status = false;//默认为未缴费
+      if(item.subject == '科目一'){
+         let user = JSON.parse(localStorage.getItem('userInfo'))
+         if(user.firSubPaymentTime){//如果科目一初考缴费时间存在则显示已经缴费
+             status = true
+         }
+      }else{
+         if(item.payStatus=='00'){
+            status = true
+         }
+      }
+      
+      return status
+    }
+    
+  }
+}
+</script>
+
+<style lang="less">
+.content {
+  height: 60px;
+  line-height: 60px;
+}
+  .pull-down-content {
+  height: 60px;
+  margin-top: -60px;
+  display: flex;
+  align-items:flex-end;
+  padding-bottom: 8px;
+}
+
+
+.img-layer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .img_content{
+    width: 82px;
+    background: url('~images/mt_run.png') no-repeat;
+    background-position: -2px center;
+    background-size: 1149px 100%;
+    zoom: 0.5;
+  }
+}
+
+.mt-ready {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 82px;
+  height: 107px;
+  background: url('~images/mt_run.png') no-repeat;
+  animation: mt-ready steps(5, end) 300ms;
+  zoom: 0.5;
+}
+
+.mt-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 82px;
+  height: 107px;
+  background: url('~images/mt_run.png') no-repeat;
+  animation: mt-loading steps(1, end) 300ms infinite;
+  zoom: 0.5;
+} 
+
+@keyframes mt-ready {
+  
+  100% {
+    background-position: -410px center;
+  }
+}
+
+@keyframes mt-loading {
+  0%{
+    background-position: -495px center;
+  }
+
+  20%{
+    background-position: -576px center;
+  }
+
+  40%{
+    background-position: -658px center;
+  }
+  50%{
+    background-position: -740px center;
+  }
+  60%{
+    background-position: -823px center;
+  }
+  80%{
+    background-position: -905px center;
+  }
+  90%{
+    background-position: -986px center;
+  }
+
+  100% {
+    background-position: -1068px center;
+  }
+  
+}
+.colorRed{
+    color:red;
+  }
+.content_list{
+    .ui-text{
+      font-size:38rpx;
+    }
+  }
+</style>

@@ -1,0 +1,305 @@
+<!--userCenter.ui-->
+<template>
+  <ui-view>
+    <ui-view class="bg_blue"></ui-view> 
+    <ui-page pull-down="{{ pullDown }}" page-load="{{ pageLoad }}" id="Bigger">
+      <ui-view slot="pull-down"></ui-view>
+      <ui-nav-bar slot="nav-bar"  class="nav_bar">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="50">
+            <!--<ui-icon type="ring" size="24" color="#fff"></ui-icon>-->
+          </ui-col>
+          <ui-col vertical-align="middle" align="center">
+            <ui-view class="nav_title">个人中心</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="50" bindtap="setting">
+            <ui-icon type="shezhi" size="24" color="#fff"></ui-icon>
+          </ui-col>
+        </ui-row>
+      </ui-nav-bar>
+      <ui-view class="user_content">
+        <ui-row height="120" class="header_top" bindtap="login">
+          <ui-col vertical-align="middle" align="center" width="90">
+            <ui-view class="head_portrait">
+              <!-- <ui-icon type="user_portrait" color="#D0EDFF" size="50"></ui-icon> -->
+            </ui-view>
+            <ui-image
+            src="{{ portraitUrl }}"
+            mode='aspectFill'
+            width="60"
+            height="60"
+            class="head_portrait"
+            ></ui-image>
+          </ui-col>
+          <ui-col vertical-align="middle" align="left">
+            <ui-view class="login">{{ isLogin ? userName : '立即登录' }}</ui-view>
+            <ui-view class="login_after" ui:if="{{isLogin}}">
+              <ui-icon type="api-equipment" size="16" color="#fff"></ui-icon>
+              {{ userPhone }}
+            </ui-view>
+            <ui-view class="login_after" ui:else>登录后可享受更多特权</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" width="50" space-right="15">
+            <ui-icon type="xiayiyeqianjinchakangengduo" size="18" color="#fff"></ui-icon>
+          </ui-col>
+        </ui-row>
+        <ui-view class="user_content_list_wrapper">
+        
+        <ui-row height="50" class="user_content_list2" bindtap="wodezhuangtai">
+          <ui-col width="50" vertical-align="middle" align="center">
+            <ui-icon type="zhuangtaigenzong" color="#388EEC" size="28"></ui-icon>
+          </ui-col>
+          <ui-col vertical-align="middle">
+            我的进程
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" width="50" space-right="15">
+            <ui-icon type="arrow-right" size="18" color="#BAB9BF"></ui-icon>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="user_content_list2" bindtap="myComplaint">
+          <ui-col width="50" vertical-align="middle" align="center">
+            <ui-icon type="tousu1" color="#388EEC" size="28"></ui-icon>
+          </ui-col>
+          <ui-col vertical-align="middle">
+            我的投诉
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" width="50" space-right="15">
+            <ui-icon type="arrow-right" size="18" color="#BAB9BF"></ui-icon>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="user_content_list2" bindtap="handleOpenJianYi">
+          <ui-col width="50" vertical-align="middle" align="center">
+            <ui-icon type="i-pingjia" color="#388EEC" size="28"></ui-icon>
+          </ui-col>
+          <ui-col vertical-align="middle">
+            意见反馈
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" width="50" space-right="15">
+            <ui-icon type="arrow-right" size="18" color="#BAB9BF"></ui-icon>
+          </ui-col>
+        </ui-row>
+        <ui-row height="50" class="user_content_list2" bindtap="yaoqinghaoyou">
+          <ui-col width="50" vertical-align="middle" align="center">
+            <ui-icon type="hezuoguanxi-xianxing" color="#388EEC" size="28"></ui-icon>
+          </ui-col>
+          <ui-col vertical-align="middle">
+            邀请好友
+          </ui-col>
+          <ui-col vertical-align="middle" align="right" width="50" space-right="15">
+            <ui-icon type="arrow-right" size="18" color="#BAB9BF"></ui-icon>
+          </ui-col>
+        </ui-row>
+        </ui-view>
+      </ui-view>
+    </ui-page>
+</template>
+
+
+<script>
+// userCenter.js
+
+export default {
+  config: {
+    navigationStyle: "custom",
+    navigationBarTextStyle: 'white',
+    backgroundColor:"transparent",
+    title:'个人中心' 
+  },
+  data () {
+    return {
+      isLogin: false,
+      userName: '',
+      userPhone:'',
+      currentNum: 0,
+      portraitUrl: require('#/images/portrait_bg.png'),
+      pageLoad: {// 进入页面通过缓存tokenId来判断是否是登录状态
+        trigger: 'always',
+        handle: () => {
+          let userinfo = localStorage.getItem('userInfo')
+          if (userinfo !== null) {
+            userinfo = JSON.parse(userinfo)
+            this.isLogin = true
+            this.userName = userinfo.name
+            if(userinfo.headImg){
+            this.portraitUrl = ui.getApp().imgUrlHeader+userinfo.headImg
+            }else{
+              this.portraitUrl =  require('#/images/portrait_bg.png')
+            }
+            this.userPhone = userinfo.phone
+            
+          }else if(userinfo === null){
+            this.isLogin = false
+            this.portraitUrl = require('#/images/portrait_bg.png')
+            this.userPhone = ''
+          }
+        }
+      },
+      pullDown: {
+        distance:30
+      }
+    }
+  },
+  methods: {
+    
+    loginPage () {
+      ui.redirectTo({
+              url: '/pages/dialogs/loginInterface'
+      })
+    },
+    login () {
+      if (this.isLogin) {
+        ui.navigateTo({
+          url: '/pages/user/userInfo'
+        })
+      } else {
+        this.loginPage()
+      }
+    },
+    
+    // 设置
+    setting () {
+      if (this.isLogin) {
+        ui.navigateTo({
+          url: '/pages/user/setting'
+        })
+      } else {
+        this.loginPage()
+      }
+    },
+   
+    navigateBack () {
+      ui.navigateBack()
+    },
+    handleOpenJianYi () {
+      if (this.isLogin) {
+          import(`#/pages/dialogs/dialogYJFanKui.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '意见反馈',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#666'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                //textContent: ''
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                if (data && data.type==true) {
+                   ui.showToast({ title: '意见反馈提交成功！', icon: 'success', duration: 2000 })
+                }
+              }
+            })
+          })
+      } else {
+        this.loginPage()
+      }
+    },
+    yaoqinghaoyou(){//邀请好友
+        ui.navigateTo({
+          url: '/pages/user/invitation'
+        })
+    },
+    wodezhuangtai(){//我的进程
+        ui.navigateTo({
+          url: '/pages/user/myCourse'
+        })
+    },
+    myComplaint(){//我的进程
+        ui.navigateTo({
+          url: '/pages/user/myComplaint'
+        })
+    }
+  },
+  mounted () {
+    this.handle
+  }
+}
+
+</script>
+
+<style lang="less">
+  // userCenter.less
+.nav_bar {
+    background: linear-gradient(to right, #1F97FE, #126DFE);
+    border: 1px solid transparent;
+    .nav_title {
+      color: #fff;
+    }
+}
+
+.ui-navigator {
+    width: 100%;
+    height: 100%;
+}
+
+.bg_blue {
+    position: absolute;
+    width: 100%;
+    height: 226px;
+    background: linear-gradient(to right, #1F97FE, #126DFE);
+}
+
+
+.header_top {
+    background: linear-gradient(to right, #1F97FE, #126DFE);
+    .head_portrait {
+        //width: 60px;
+        //height: 60px;
+        // background-color: #83C5FF;
+        //background: url('~images/portrait_bg.png') no-repeat center center;
+        //background-size: 100%;
+        border-radius: 50%; //line-height: 85px;
+        //overflow: hidden;
+        //text-align: center;
+    }
+    .login {
+        color: #fff;
+        font-size: 18px;
+    }
+    .login_after {
+        color: #fff;
+        font-size: 12px;
+    }
+}
+
+.money_wrap {
+    background-color: #fff;
+    .ui-view {
+        font-size: 14px;
+        color: #4F4F4F;
+    }
+    .money_list01 {
+        color: #2987FE;
+        font-size: 12px;
+        height: 48px;
+        line-height: 48px;
+         :first-child {
+            font-size: 24px;
+        }
+    }
+    .money_list02 {
+        color: #F5402A;
+    }
+    .money_list03 {
+        color: #F88E09;
+    }
+}
+
+.user_content_list_wrapper {
+  padding-top: 10px;
+  background-color: #F2F2F2;
+}
+
+.user_content_list {
+    background-color: #fff;
+}
+
+.user_content_list2 {
+    background-color: #fff;
+    .mix-1px(0, 0, 1, 0, #ccc);
+}
+
+</style>

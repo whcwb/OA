@@ -1,0 +1,196 @@
+<!---->
+<template>
+  <ui-page>
+
+      <ui-nav-bar slot="nav-bar" custom-style="{{ {'color':'#fff', 'background': 'linear-gradient(to right,#3799ee, #2890ea)'} }}">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="60" bindtap="navigateBack">
+            <ui-icon type="left1" font-size="24"></ui-icon>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center">
+            <ui-view class="nav_title">密码重置</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="60">
+          </ui-col>
+        </ui-row>
+      </ui-nav-bar>
+
+      <ui-view class="grid_box" style="{{ { height: height + 'px'} }}">
+        <ui-view class="reg">
+            <ui-view class="fromSty">
+                <ui-row space="60">
+                  <ui-col align="center">
+                    <ui-view class="text">
+                     <ui-image src="static/img/login/logo.png" mode="widthFix" width="130"></ui-image>
+                    </ui-view>
+                  </ui-col>
+                </ui-row>
+                <ui-row space="40">
+                    <ui-input 
+                      ui:model="tel"
+                      maxlength="11" type="tel"
+                      placeholder="请输入手机号"></ui-input>
+                </ui-row>
+                <ui-row space="40" :class=" mesCode ? 'sms-code' : ''">
+                  <ui-sms-input 
+                      style="border-radius:5px;width:100%"
+                      ui:model="code"
+                      bindsend="handleSend"
+                      second="120"
+                      init-text="验证码"></ui-sms-input>
+                </ui-row>
+                <ui-row space="40">
+                  <ui-input ui:model="newPwd" type="password" placeholder="请输入密码"></ui-input>
+                </ui-row>
+                <ui-row space="40">
+                  <ui-button bindtap="regYZ"
+                  style="background: linear-gradient(to top, #f3b222, rgb(251, 219, 72));
+                  width: 100%;border-color: #e6a23c;color:#fff"
+                  full-width="false">
+                    提交
+                  </ui-button>
+                </ui-row>
+
+            </ui-view>
+
+
+        </ui-view>
+      </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarBackgroundColor:"#26a2ff",
+    navigationBarTextStyle:"white",
+    navigationBarTitleText:"密码找回",
+    title:'密码找回',
+    backgroundColor:'#f2f2f2',
+    delay:false,//延迟加载
+  },
+  data() {
+    return {
+      height: ui.DEFAULT_CONTENT_HEIGHT,
+      mesCode:false,
+      tel:'',
+      code:'',
+      newPwd:''
+    }
+  },
+  watch: {
+    mesCode:function(n,o) {
+      if(n){
+        setTimeout(() => {
+          this.mesCode=false
+        }, 120*1000);
+      }
+    }
+  },
+  created () {
+  },
+  mounted() {},
+  methods: {
+    navigateBack(){
+      ui.navigateBack()
+    },
+    handleSend (run) {
+        var v = this
+        this.$http(
+          'POST',
+          ui.getApp().apis.GET_FORGET_code,
+          {'zh':v.tel},
+          (res)=>{
+            if(res.code==200){
+              run()
+              this.mesCode=true
+              ui.showToast({ title: '验证码已发送' })
+            }else{
+              ui.showToast({ title: res.message })
+            }
+          }
+        )
+    },
+    regYZ(){//数据验证
+      var v = this
+      if(v.tel==''||v.tel.length!==11){
+        ui.showToast({ title: '您的手机号码有误!'})
+        return
+      }else if(v.code==''){
+        ui.showToast({ title: '请填写短信验证码!'})
+        return
+      }else if(v.newPwd==''){
+        ui.showToast({ title: '请设置新密码!'})
+        return
+      }else {
+        v.reg()
+      }
+    },
+    reg(){
+      ui.showToast({ title: '数据验证通过'})
+      var v = this
+      this.$http(
+        'POST',
+        ui.getApp().apis.GET_FORGET_RESETPWD,
+        {tel:v.tel,code:this.code,newPwd:v.newPwd},
+        (res)=>{
+          if(res.code==200){
+            ui.showToast({ title: '密码修改成功，请重新登录',duration: 1500})
+            setTimeout(()=>{
+              ui.navigateBack()
+            },1500)
+          }else{
+            ui.showToast({ title: res.message })
+          }
+        }
+      )
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .sms-code{
+    .ui-button {
+      background-color: #04be02;
+      border-color: #04be02;
+    }
+  }
+  .grid_box{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+  .reg{
+    flex-grow:1;
+    background-size: 100%;
+    background: url('../static/img/login/bg.png') no-repeat center center;
+  }
+  .fromSty{
+    height: 100%;
+    padding: 0 60rpx;
+    .text{
+      color: #fff;
+      font-size: 42rpx;
+      font-weight: 700
+    }
+  }
+  .checkbox{
+    .txt{
+      color: #fff;
+      .txtMess{
+        color: #f75d42;
+
+      }
+    }
+  }
+  .checkboxAm{
+    .txt{
+      color: #000;
+      .txtMess{
+        color: #f75d42;
+
+      }
+    }
+  }
+</style>

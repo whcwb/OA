@@ -1,0 +1,10 @@
+this.dictUtil.getByCode(this,'ZDCLK1019');
+this.dictUtil.getValByCode(this, 'ZDCLK1008', p.row.reduceStatus)
+
+this.$store.state.app.socketMess
+this.$store.commit()
+
+showCancelButton: true,
+confirmButtonText: '确定删除！',
+cancelButtonText: '取消删除！',
+

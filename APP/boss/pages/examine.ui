@@ -1,0 +1,209 @@
+<!--examine-->
+<template>
+  <ui-page style="overflow-y: hidden;" pull-down="{{ pullDown }}">
+     <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'solid 2px #f2f2f2','background-color':'rgba(255, 255, 255, 1)'} }}">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="60">
+          </ui-col>
+          <ui-col vertical-align="middle" align="center">
+            <ui-view class="nav_title">信息审核</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="60" >
+          </ui-col>
+        </ui-row>
+     </ui-nav-bar>
+     <ui-view class="box_col" style="{{ { height: pageHeight(0)+ 'px','background-color':'#f2f2f2'} }}">
+      <ui-view class="box_col_auto">
+        <ui-view ui:if="{{pagerlist.length == 0}}" style="text-align:center;padding-top:30%">
+          <img src="static/img/errMessT.png">
+          <ui-view>
+            暂无数据
+          </ui-view>
+        </ui-view>
+        <ui-swipe-out ui:for="{{pagerlist}}" operate-width="160"
+         can-swipe="{{item.canSwipe}}"
+         class="swipe-out-dome" value="{{item.switcher}}"
+         bindchange="changeHandler1($event,index)" height={{82}}>
+            <ui-view slot="content" bindtap="gostudent(item)">
+                <ui-row height="80" class="top_tip" border-bottom>
+                    <ui-col width="80" align="center" vertical-align="middle">
+                        <ui-view>
+                            <ui-image
+                              ui:if="{{item.headImg}}"
+                              src="{{ imgUrl+item.headImg }}"
+                              mode='aspectFill'
+                              width="50"
+                              height="50"
+                              class="head_portrait"
+                            ></ui-image>
+                            <ui-image
+                              ui:else
+                              src="{{'./static/img/tx.png'}}"
+                              mode='aspectFill'
+                              width="50"
+                              height="50"
+                              class="head_portrait"
+                            ></ui-image>
+                        </ui-view>
+                    </ui-col>
+                    <ui-col class="text" align="left" vertical-align="middle" space="20">
+                        <ui-view style="width: 100%;">
+                            <ui-row height="30">
+                                <ui-col align="left" vertical-align="middle">
+                                    <ui-text>{{item.name}}</ui-text>
+                                </ui-col>
+                                <ui-col align="right" width="100" vertical-align="middle" space-right="10">
+                                    <ui-badge text="待审"></ui-badge>
+                                </ui-col>
+                            </ui-row>
+                            <ui-view>{{item.carType}} _ {{item.jgmc}}</ui-view>
+                        </ui-view>
+                    </ui-col>
+                </ui-row>
+            </ui-view>
+            <ui-view slot="operate">
+              <ui-row height="75">
+                <ui-col>
+                  <ui-view class="details" bindtap="gostudent(item)">详情</ui-view>
+                </ui-col>
+                <!-- <ui-col>
+                  <ui-view class="back" bindtap="del(index)">驳回</ui-view>
+                </ui-col> -->
+                <ui-col>
+                  <ui-view class="delete" bindtap="tongguo()">通过</ui-view>
+                </ui-col>
+              </ui-row>
+            </ui-view>
+        </ui-swipe-out>
+      </ui-view>
+     </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "信息审核",
+    navigationStyle: 'custom',
+  },
+  data() {
+    return {
+      imgUrl:ui.getApp().apis.getImgUrl,
+      pullDown:{
+        distance: 100,
+        onActive:this.handleLoadMore
+      },
+      pagerlist: [],
+       portraitUrl:('http://img2.imgtn.bdimg.com/it/u=4163885218,1747615568&fm=27&gp=0.jpg')
+    }
+  },
+  methods: {
+    handleLoadMore(){
+      this.getPagerList()
+    },
+    tongguo(){//通过
+      this.$http('POST',ui.getApp().apis.AUDIT,{id:this.studentMess.id,infoCheckStatus:'10'},(res)=>{
+        if(res.code == 200){
+          ui.showToast({ title: '审批通过', icon: 'success'})
+          this.getPagerList()
+        }
+      })
+    },
+    goexamine(){
+      ui.navigateTo({
+        url: '/pages/examine'
+      })
+    },
+    gostudent(item){//详情
+      ui.getApp().studentMess = item
+      ui.navigateTo({
+        url: '/pages/studentdetails'
+      })
+    },
+     del (index) {
+      this.pagerlist[index].height = 0
+      // 实际使用时将该项id传给后台即可，不需要在前台真正删除数据。
+      // 前台直接删除数据会导致一些问题。
+      // setTimeout(() => {
+      //   this.pagerlist.splice(index, 1, {})
+      // }, 500)
+    },
+    changeHandler1 (state ,index) {
+      if (this.el !== index) {
+        if (this.el!== undefined) {
+          this.pagerlist[this.el].switcher = 'off'
+        }
+        this.pagerlist[index].switcher = 'on'
+        this.el = index
+      }
+    },
+    getPagerList(){
+      this.$http('POST',ui.getApp().apis.AUDIT_PAGER,{pageNum: 1,pageSize: 1000},(res)=>{
+        console.log('待审和信息哦',res)
+        if(res.code == 200){
+          this.pagerlist = res.page.list
+        }
+      })
+    }
+  },
+  created () {
+    this.getPagerList()
+  },
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+.swipe-out-dome{
+}
+ .head_portrait {
+      border-radius:35px; 
+    }
+ .login {
+      color: rgb(114, 110, 110);
+      font-size: 16px;
+    }
+.login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+.delete{
+  width: 80px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 14px;
+  color: #fff;
+  background: #19be6d;
+}
+.details{
+  width: 80px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 14px;
+  color: #fff;
+  background: #FCB300;
+}
+.back{
+   width: 80px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 14px;
+  color: #fff;
+  background: #f22;
+}
+.top_tip{
+  border-right: #FCB300 solid 4px;
+  background-color: #fff;
+  .text{
+    .ui-text{
+      font-size: 16px;
+      color: #313338;
+    }
+    .ui-view{
+      color: #9C9FA4;
+      font-size: 12px;
+      .mix-text-overflow();
+    }
+  }
+}
+</style>

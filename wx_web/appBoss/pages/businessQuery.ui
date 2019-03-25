@@ -1,0 +1,129 @@
+<!--discount-->
+<template>
+  <ui-page style="overflow-y: hidden;" >
+      <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'solid 2px #f2f2f2','background-color':'rgba(255, 255, 255, 1)'} }}">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="60">
+          </ui-col>
+          <ui-col vertical-align="middle" align="center">
+            <ui-view class="nav_title">业务查询</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="60" >
+          </ui-col>
+        </ui-row>
+     </ui-nav-bar>
+     <ui-view class="modelBox">
+              <!--<ui-view class="box_row boxListTit">
+                <ui-view class="tit">
+                  <ui-text class="text">
+                    人员查询
+                  </ui-text>
+                </ui-view>
+              </ui-view>-->
+              <ui-view class="box_row_list boxList">
+                  <!--<ui-view class=" boxItem" bindtap = "gotoXYList"> 
+                      <ui-icon type="xueyuan2" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                        学员
+                      </ui-view>
+                  </ui-view>
+                  <ui-view class=" boxItem" bindtap = "gotoCoachList"> 
+                      <ui-icon type="jiaolian" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                        教练
+                      </ui-view>
+                  </ui-view>-->
+
+                  <ui-view  ui:for = "{{authorityCH}}"  class=" boxItem" bindtap = "gotoHref(item.jump_url)"> 
+                      <ui-icon type="{{item.icon}}" size="28" color="#FF6600"></ui-icon>
+                      <ui-view class="boxTit">
+                        {{item.title}}
+                      </ui-view>
+                  </ui-view>
+              </ui-view>
+              
+      </ui-view> 
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "业务查询",
+    title:'业务查询',
+    navigationStyle: 'custom',
+  },
+  data() {
+    return {
+      authorityCH:[]
+    }
+  },
+  methods: {
+   /** gotoXYList:function(){
+      ui.navigateTo({
+        url: '/pages/businessQuery/stuSeachList'
+      })
+    },
+    gotoCoachList:function(){
+      ui.navigateTo({
+        url: '/pages/businessQuery/coachSeachList'
+      })
+    }
+     */
+    
+    gotoHref:function(toURL){
+        if(toURL){
+          ui.navigateTo({
+            url: toURL.replace(/(^\s*)|(\s*$)/g, "")
+          })
+        }else{
+          ui.showToast({ title: '功能路径为空!' })
+        }
+    }
+  },
+  created () {
+    
+    let qx = JSON.parse(localStorage.getItem("bossAuthority"));
+
+    console.log(qx)
+    this.authorityCH = qx["1"]
+  },
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+.modelBox{
+  .boxListTit{
+    padding-top: 4px;
+    height: 30px;
+    line-height: 30px;
+    
+    .tit{
+      margin-left: 15rpx;
+      font-size: 34rpx;
+      font-weight: 900;
+      .text{
+        border-left: #2b85e4 solid 5px;
+        padding-left: 8rpx;
+      }
+    }
+  }
+  .boxList{
+    padding: 0 10rpx;
+    .boxItem{
+      width: 25%;
+      padding:20rpx;
+      text-align: center;
+      img{
+        margin: auto;
+      }
+      .boxTit{
+        padding: 4rpx 0;
+        font-size: 26rpx;
+      }
+    }
+  }
+}
+
+</style>

@@ -1,0 +1,78 @@
+<!--投诉dialog界面-->
+<template>
+  <ui-page>
+      <ui-view class="weui-cells__title">投诉内容</ui-view>
+      <ui-view class="sample_content">
+          <ui-textarea ui:model="{{textContent}}" placeholder="请填写投诉内容" rows="3" auto-height maxlength="125"></ui-textarea>
+      </ui-view>
+      <ui-view class="btn_win">
+          <ui-button type="primary" bindtap="confirmSelect">确认</ui-button>
+      </ui-view>
+  </ui-page>
+</template>
+
+
+<script>
+export default {
+  data () {
+    return {
+      textContent: '',//投诉内容
+      coachId3:'',//教练id
+      coachName:'',//教练名称
+      coachNum:''//教练编号
+    }
+  },
+  mounted () {
+    this.$DialogOpen((data) => {
+      if (data && data.coachId3) {
+        this.coachId3 = data.coachId3
+        this.coachName = data.coachName
+        this.coachNum = data.coachNum
+      }
+    })
+  },
+
+  methods: {
+    changeCountry (val) {
+      this.textContent = val
+    },
+    confirmSelect () {
+      if(this.textContent == '' || this.textContent ==null){
+        ui.showToast({ title: '投诉建议不能为空!', duration: 2000 })
+        return
+      }
+      let data = {
+           traineeId:this.getUser().id || '',
+           traineeName:this.getUser().name || '',
+           complainContent:this.textContent || '', 
+           coachId:this.coachId3 || '',
+           coachName:this.coachName || ''
+          }
+      
+        //提交投诉
+      this.$http('POST',ui.getApp().apis.COMPLAINRECORDSAVE,data,(res)=>{
+            console.log("投诉教练"+JSON.stringify(res))
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            ui.hideDialog({type:true})
+            this.textContent = ''//关闭窗口时清除弹窗数据
+            this.coachId3 = ''
+            this.coachName = ''
+            this.coachNum = ''
+      },(res)=>{
+            ui.showToast({ title: '投诉建议提交失败！', duration: 2000 })
+      })
+
+    }
+  }
+}
+
+</script>
+
+<style lang="less">
+  .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+</style>

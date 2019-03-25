@@ -1,0 +1,239 @@
+<!--登录-->
+<template>
+  <ui-page>
+    <ui-nav-bar slot="nav-bar" custom-style="{{ {'color':'#fff', 'background': 'linear-gradient(to right,#3799ee, #2890ea)'} }}">
+      <ui-row height="46">
+        <ui-col vertical-align="middle" align="center" width="60">
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">登录</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="60">
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+    <ui-view class="grid_box" style="{{ { height: height + 'px'} }}">
+      <ui-view class="login_bg">
+        <ui-view class="section">
+          <ui-view class="grid_box" style="{{ { height: height + 'px'} }}">
+            <!-- logo图展示区 -->
+            <ui-view class="top_logo">
+              <ui-image src="static/img/login/logo.png" mode="widthFix" width="130"></ui-image>
+            </ui-view>
+            <!-- 数据表单区 -->
+            <ui-view class="content_form">
+              <ui-form>
+                <ui-view class="input_padding">
+                  <ui-input ui:model="form.username" maxlength="11" type="text" placeholder="请输入帐号"></ui-input>
+                </ui-view>
+                <ui-view class="input_padding">
+                  <ui-input ui:model="form.password" type="password" placeholder="请输入密码"></ui-input>
+                </ui-view>
+                <ui-view class="input_padding">
+                  <ui-row>
+                    <ui-col span="8" border-right vertical-align="middle" align="center">
+                      <ui-input ui:model="form.captcha" type="text" placeholder="请输入验证码"></ui-input>
+                    </ui-col>
+                    <ui-col span="4" border-right vertical-align="middle" align="center">
+                        <img src="{{YzUrl}}" width="100%" alt="验证码" style="margin-left: 8px;cursor: pointer" bindtap="getUrl">
+                    </ui-col>
+                  </ui-row>
+                </ui-view>
+                <ui-view class="input_padding">
+                  <ui-row>
+                    <ui-col align="right" vertical-align="middle" bindtap="forgetpassword">
+                      <!-- <ui-navigator url="/pages/componentDemo/navigator/navigator2?state=1"> -->
+                        <!-- <ui-text block class="reset_pwd">
+                          忘记密码?
+                        </ui-text> -->
+                      <!-- </ui-navigator> -->
+                    </ui-col>
+                  </ui-row>
+                </ui-view>
+                <ui-view class="input_padding">
+                  <ui-button class="submit_btn" bindtap="loginYZ">登录</ui-button>
+                </ui-view>
+                <!-- <ui-view class="bottom" bindtap="reg">
+                    <ui-text block class="reg">
+                      创建账号
+                    </ui-text>
+                </ui-view> -->
+              </ui-form>
+            </ui-view>
+            <!-- <ui-view class="bottom" bindtap="reg">
+                <ui-text block class="reg">
+                  创建账号
+                </ui-text>
+            </ui-view> -->
+          </ui-view>
+        </ui-view>
+      </ui-view>
+    </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    // "scrollType": "div",
+    navigationBarBackgroundColor:"#26a2ff",
+    navigationBarTextStyle:"white",
+    navigationBarTitleText:"登录",
+    title:'登录',
+    backgroundColor:'#f2f2f2',
+    delay:false,//延迟加载
+  },
+  data() {
+    return {
+      height: ui.DEFAULT_CONTENT_HEIGHT,
+      YzUrl:"123",
+      form:{
+        username: 'boss',
+        password: 'boss',
+        captcha:'',
+        codeID:''
+      }
+    }
+  },
+  methods: {
+    loginYZ(){
+      var v = this
+      if(v.form.username==''){
+        ui.showToast({ title: '请输入帐号!'})
+        return
+      }else if(v.form.password==''){
+        ui.showToast({ title: '请输入密码!'})
+        return
+      }else if(v.form.captcha==''){
+        ui.showToast({ title: '请输入验证码!'})
+      }else {
+        v.login()
+      }
+    },
+    login(){
+      var v = this
+
+      this.$http('POST',ui.getApp().apis.LOGIN.QUERY,v.form,(res)=>{
+          if(res.code==200){
+            localStorage.setItem("token",JSON.stringify(res.result.accessToken))
+            localStorage.setItem("userinfo",JSON.stringify(res.result.userInfo))
+            v.goIndex()
+          }else{
+              ui.showToast({ title: res.message})
+              this.getUrl()
+          }
+      })
+    },
+    goIndex(){
+        ui.navigateTo({
+          url: '/pages/index'
+        })
+    },
+    reg(){
+      // ui.getApp().yqm='460765622230319188'
+      // ui.navigateTo({
+      //   url: '/pages/reg'
+      // })
+      console.log('项目？ 微信:App**********',ui.getApp().projectType);
+      if(ui.getApp().projectType){
+          this.wxSys()
+      }else{
+          this.sys()
+      }
+    },
+    wxSys(){//微信扫一扫
+      ui.getApp().wxUtil.qrScan((res)=>{
+          // v.codeyz(res)
+          console.log('邀请码',res);
+          ui.getApp().yqm = res
+          ui.navigateTo({
+            url: '/pages/reg'
+          })
+      })
+    },
+    sys(){//App扫一扫功能
+      ui.scanCode({
+        backgroundColor:'#39f',
+        color:'#4caf5',
+        onlyFromCamera: true,
+        success: (res) => {
+          console.log(res)
+          ui.showAlert({
+            content: res,
+            buttonText: '扫一扫',
+            success () {
+              ui.showToast({
+                title: '触发了解更多'
+              })
+            }
+          })
+        }
+      })
+    },
+    forgetpassword(){
+      ui.navigateTo({
+        url: '/pages/retrieveworld'
+      })
+    },
+    getUrl() {
+      let codeId =this.getRandom(8)
+      this.YzUrl = ui.getApp().apis.url + ui.getApp().apis.LOGIN.YZ + codeId
+      this.form.codeID = codeId
+    },
+  },
+  mounted() {
+    
+  },
+  created () {
+    this.getUrl()
+    localStorage.clear()
+  }
+}
+</script>
+
+<style lang="less">
+.grid_box{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.login_bg{
+  flex-grow:1;
+  background: url('../static/img/login/bg.png') no-repeat center center;
+}
+
+.top_logo{
+  height: 420rpx;
+  .mix-flex-center();
+}
+.bottom{
+  // height: 320rpx;
+  margin-top: 20rpx;
+  .mix-flex-center();
+}
+.content_form{
+  flex-grow:1;
+}
+
+.input_padding{
+  padding: 20px 30px 0 30px;
+}
+
+.reset_pwd{
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+.reg{
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+}
+
+.submit_btn{
+  font-size:18px;
+  font-weight: bold;
+  color:#5cadff;
+}
+</style>

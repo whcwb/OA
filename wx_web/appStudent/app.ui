@@ -1,0 +1,628 @@
+<script>
+import ajaxUrl from '#/static/ajax/url'
+
+//import wechatUtil from'./static/ajax/wechatUtil.js'
+export default {
+  config: {
+    "pages": [
+      "pages/Welcome",
+      "pages/index",
+      "pages/detail",
+      "pages/peixun",
+      "pages/test",
+      "pages/dialogs/dialogTouSu",
+      "pages/dialogs/dialogPingJia",
+      "pages/dialogs/loginInterface",
+      "pages/user/setting",
+      "pages/user/userInfo",
+      "pages/user/about",
+      "pages/user/switchAccount"
+      ,"pages/user/uploadHeadImg","pages/dialogs/dialogPingFen","pages/dialogs/dialogYJFanKui","pages/user/invitation","pages/dialogs/addInvitation","pages/user/myCourse","pages/user/myComplaint","pages/coach/coachDetail","pages/dialogs/dialogCropper","pages/coach/coachDetail2"],
+    "theme": {
+      "theme-color": "#3399ff"
+    },
+    "window": {
+      "scrollType": "div",
+      "navigationBarBackgroundColor":"#FFFFFF",
+      "navigationBarTextStyle":"#666",
+      "navigationBarBorderColor":"rgba(231, 231, 231, 0.6)",
+      "navigationStyle": "default"
+      
+    },
+    "tabBar": {
+      "id":"tab-barIndex",
+      "color": "#7a7e83",
+      "selectedColor": "#39f",
+      "borderColor": "rgba(231, 231, 231, 0.6)",
+      "backgroundColor": "#fff",
+      "list": [
+        {
+          "pagePath": "pages/index",
+          "iconName": "home",
+          "text": "首页"
+        },
+        {
+          "pagePath": "pages/peixun",
+          "iconName": "4qiche",
+          "text": "培训记录"
+        },
+        {
+          "pagePath": "pages/test",
+          "iconName": "kaoshizhongxinoff",
+          "text": "约考信息"
+        },
+        {
+          "pagePath": "pages/user",
+          "iconName": "user",
+          "text": "个人中心"
+        }
+      ]
+    },
+    "networkBaseUrl":"",
+    "networkTimeout":"3000"
+  },
+  data () {
+    return {
+      //全局变量
+      globalData: {
+        bannerAutoplay: {
+         delay: 1000
+        } //全局轮播图设置时间为1秒，如果不需要轮播，设为false，true的话默认为5秒 
+        
+      },
+
+      appTypeCallback:'',
+      // ajax数据请求参数配置
+      apis:ajaxUrl,
+      Ajax:{
+        url:ajaxUrl.url,
+        port:ajaxUrl.port,
+        header:{
+          'content-type': 'application/x-www-form-urlencoded',
+          'token':'',
+          'userId':'',
+          'openid':'',
+          'userrole':'1'
+
+        }
+      },
+      wxUtil:null,//微信 功能方法
+      imgUrlHeader:ajaxUrl.imgUrl,//全局图片请求路径配置
+      userInfo:null,
+      globalData: {
+        searchShow:false
+      },
+      searchValue:'',
+
+
+      WIN_WIDTH:ui.WIN_WIDTH,
+      tabIndex: 0,
+      tabBarList: [],
+      navStyle: {},
+      tabBar: {},
+      tabBarHeight: 56,
+      isApp: ui.IS_APP,
+      headerHeight: ui.DEFAULT_HEADER_HEIGHT,
+      paths: [],
+      barHeight: ui.STATUS_BAR_HEIGHT,
+      showSlideMenu:false
+    }
+  },
+  computed: {
+    // 控制通用导航栏是否显示
+    navigationBarVisible () {
+      return this.winConfig.navigationStyle !== 'custom'
+    },
+    // 控制通用导航栏是否显示返回按钮（首页不显示，其他页显示）
+    showBack () {
+      let homePath = this.paths[0]
+      if (this.tabBar && this.tabBar.paths) {
+        return this.tabBar.paths.indexOf(homePath) < 0
+      } else {
+        return homePath !== this.$route.path
+      }
+    },
+    // 通用导航栏应用app.json和page.json的设置
+    winConfig () {
+      let window = this.$router.options.window
+      let config = { ...window, ...this.pageConfig }
+      let color = config.navigationBarTextStyle || 'white'
+
+      let scrollType = document.body.getAttribute('scroll-type')
+
+      this.navStyle = {
+        backgroundColor: config.navigationBarBackgroundColor,
+        color: color,
+        borderBottom: `1px solid ${config.navigationBarBorderColor}`,
+        backgroundImage: config.navigationBarBackgroundGradient,
+        position: scrollType === 'body' ? 'fixed' : 'absolute'
+      }
+
+      if (this.navStyle.backgroundColor) {
+        this.navStyle.backgroundImage = 'none'
+      }
+
+      if (config.navigationBarBorderColor) {
+        this.navStyle.borderBottom = `1px solid ${config.navigationBarBorderColor}`
+      } else {
+        this.navStyle.borderBottom = '0'
+      }
+      return config
+    },
+    // 控制底部标签栏是否显示
+    isTabBar () {
+      return this.tabBarList && this.tabBarList.length > 0
+    },
+    // 设置底部标签栏样式
+    tabBarStyle () {
+      let style = {}
+      if (this.navigationBarVisible && this.tabBar.position === 'top') {
+        style.top = this.headerHeight + 'px'
+      }
+      let scrollType = document.body.getAttribute('scroll-type')
+      style.position = scrollType === 'body' ? 'fixed' : 'absolute'
+      return style
+    },
+
+    bottom () {
+      return this.isTabBar ? `${this.tabBarHeight}px` : 0
+    },
+    // 底部标签栏应用app.json和page.json的设置
+    pageConfig () {
+      if (this.isTabBar) {
+        return this.tabBarList[this.tabIndex].pageConfig
+      } else {
+        return this.$route.meta.pageConfig || window.__$uiPageConfig
+      }
+    }
+  },
+  watch: {
+    '$route.path' (path) {
+      this.handleIosGesture()
+      this.initTab()
+      this.initBodyStyle()
+    },
+    wxUtil(n,o){//微信方法监听
+      console.log('数据监听*-*-*-*-*-*-*-');
+      if(n==null){
+        this.getWxJs()
+      }
+    }
+  },
+    // 初始化
+  created () {
+    //微信 ? 微信 ：App
+    //localStorage.setItem("projectType",false)
+
+
+    //微信js 初始化
+    this.getWxJs()
+    //微信js初始化END
+    //获取所有数据字典并且缓存
+    this.$http('post',ui.getApp().apis.PUBZDQUERYALL,{},(res)=>{
+        if(res.result){
+          localStorage.setItem("appZd",JSON.stringify(res.result))
+        }
+        
+    })
+
+    this.initTab()
+    this.initPaths()
+    this.$nextTick(() => {
+      this.handleIosGesture()
+    })
+  },
+  methods: {
+    handleNavIconTap () {
+      this.showSlideMenu = !this.showSlideMenu
+    },
+    // 初始化底部标签栏
+    initTab () {
+      this.tabBar = this.getTabBar()
+      this.tabBarList = this.tabBar.list
+      if (this.tabBar.paths) {
+        this.tabIndex = this.tabBar.paths.indexOf(this.$route.path)
+      }
+    },
+    // 初始化路由
+    initPaths () {
+      let routes = this.$router.options.routes
+      this.paths = routes.map((item) => {
+        return item.path
+      })
+    },
+    initBodyStyle () {
+      if (this.winConfig && this.winConfig.backgroundColor) {
+        document.body.style.backgroundColor = this.winConfig.backgroundColor
+      }
+    },
+    // iOS是否禁用侧滑退出
+    handleIosGesture () {
+      if (ui.IS_IOS) {
+        ui.setPagePopGesture && ui.setPagePopGesture({
+          openPagePopGesture: !this.pageConfig.disableIosGesture
+        })
+      }
+    },
+    // tabBar示例用到，底部标签栏切换前事件处理
+    handleTabBeforeChange ({
+      id,
+      index,
+      next
+    }) {
+      next()
+    },
+
+    // tabBar示例用到，底部标签栏切换后事件处理
+    handleTabChange ({
+      id,
+      index
+    }) {
+    },
+    // 回退处理
+    handleBack () {
+      ui.navigateBack()
+    },
+    getTabBar () {
+      let tabBars = [this.$router.options.tabBar, ...this.$router.options.pageTabBars]
+      for (let i = 0; i < tabBars.length; i++) {
+        if (tabBars[i].paths && tabBars[i].paths.indexOf(this.$route.path) > -1) {
+          return tabBars[i]
+        }
+      }
+      return {}
+    },
+  // ---------------------------
+    // 退出搜索
+    hideFullScreenSearch () {
+          this.globalData.searchShow = false
+          ui.setStatusBarStyle({ style: 'light' })
+    },
+    // 清空历史记录
+    deleteHistory () {
+        // this.historyContent = []
+    },
+    // 搜索退出还原状态栏颜色
+    searchHideHandle () {
+        // ui.setStatusBarStyle({ style: 'light' })
+    },
+    // 进入搜索设置状态栏颜色为黑色
+    searchShowHandle () {
+        // ui.setStatusBarStyle({ style: 'dark' })
+    },
+    // 提交搜索
+    searchSubmit (e) {
+        //   let value = e.search
+        //   if (value !== '') {
+        //   this.historyContent.unshift(value)
+        //   this.hideFullScreenSearch()
+        //   ui.showToast({ title: value })
+        // }    
+        //     this.searchValue = ''
+    },
+    // 点击热门搜索
+    hotTap (opt) {
+        // this.hideFullScreenSearch()
+        // ui.showToast({
+        //     title: this.hotList[opt].text
+        // })
+    },
+    // 点击搜索历史
+    historyTap (index) {
+        // this.hideFullScreenSearch()
+        // ui.showToast({
+        //     title: this.historyContent[index]
+        // })
+    }
+
+  },
+  mounted () {
+      //ui.closeSplashscreen()
+  }
+}
+</script>
+
+<template>
+  <ui-view id="ui-app">
+    <ui-slide-menu width="280" threshold="30" touch="{{ pageConfig.touchSlideMenu }}" ui:model="showSlideMenu">
+
+      <ui-view slot="menu" class="menu">
+        <ui-text block style="color:#fff;margin:10px">侧滑菜单</ui-text>
+      </ui-view>
+
+      <ui-view slot="panel">
+        <!-- 通用导航栏left1 -->
+          <ui-nav-bar
+            ui:if="pageConfig"
+            ui:show="navigationBarVisible"
+            style="{{ navStyle }}">
+            <ui-row>
+              <ui-col width="80">
+                <span class="back" bindtap="handleBack" ui:show="{{showBack}}">
+                  <ui-icon type="arrow-left" font-size="32"></ui-icon>
+                </span>
+                <span class="back" ui:show="{{!showBack}}" bindtap="handleNavIconTap">
+                  <ui-icon type="list" color="#2B333B" size="16"></ui-icon>
+                </span>
+              </ui-col>
+              <ui-col width="{{WIN_WIDTH-160}}" align="center" content-direction="row" class="nav-bar-center">
+                <ui-view class="nav-bar-center-loading" style="display: none;"></ui-view>
+                <span class="nav-bar-center-text">{{ $t(winConfig.navigationBarTitleText) }}</span>
+              </ui-col>
+              <ui-col width="80">
+
+              </ui-col>
+            </ui-row>
+      </ui-nav-bar>
+
+        <!-- 页面路由 -->
+        <keep-alive>
+          <router-view ui:if="{{ !isApp && pageConfig.cache }}" class="router-view"></router-view>
+        </keep-alive>
+        <router-view ui:if="{{ isApp || !pageConfig.cache }}" class="router-view"></router-view>
+
+        <!-- 底部标签栏 -->
+        <ui-tab-bar
+            bindbeforechange="handleTabBeforeChange"
+            bindchange="handleTabChange"
+            ui:if="isTabBar"
+            ui:model="tabIndex"
+            style="{{ tabBarStyle }}"
+            id="{{ tabBar.id }}"
+            group-id="{{ tabBar.groupId }}"
+            icon-size="{{ tabBar.iconSize }}"
+            font-size="{{ tabBar.fontSize }}"
+            position="{{ tabBar.position }}"
+            list="{{ tabBarList }}"
+            paths="{{ tabBar.paths }}"
+            background-color="{{ tabBar.backgroundColor }}"
+            border-color="{{ tabBar.borderColor }}"
+            color="{{ tabBar.color }}"
+            selected-color="{{ tabBar.selectedColor }}">
+        </ui-tab-bar>
+      </ui-view>
+    </ui-slide-menu>
+
+
+    <!-- 收索 -->
+      <ui-mask class="full-screen-box" top="0" ui:model="globalData.searchShow"  bindhide="searchHideHandle" bindshow="searchShowHandle">
+          <ui-view class="bar" style="{{{ height:barHeight+'px' }}}"></ui-view>
+          <ui-row height="46" class="search_bg">
+              <ui-col vertical-align="middle" align="center" space-left="15">
+                  <ui-view class="search">
+                      <ui-row height="30">
+                          <ui-col vertical-align="middle" align="center" width="30">
+                              <ui-icon type="magnifier" size="16" color="#B5B5B5"></ui-icon>
+                          </ui-col>
+                          <ui-col vertical-align="middle">
+                              <ui-form bindsubmit="searchSubmit" action="/search">
+                                  <ui-input type="search" name="search" ui:model="{{ searchValue }}"  placeholder="搜索" focus="{{ globalData.searchShow }}" show-clear="false"></ui-input>
+                              </ui-form>
+                          </ui-col>
+                      </ui-row>
+                  </ui-view>
+              </ui-col>
+              <ui-col vertical-align="middle" align="center" width="50" bindtap="hideFullScreenSearch">
+                  <ui-view class="cancel">取消</ui-view>
+              </ui-col>
+          </ui-row>
+          <!-- <ui-view class="search_content" style="{{{ height:height+'px' }}}"> -->
+              <!-- 历史搜索 -->
+              <!-- <ui-view class="search_history" ui:if="{{ historyContent.length<1 ? false : true }}">
+                  <ui-row height="20" space-bottom="20">
+                      <ui-col vertical-align="middle">历史搜索</ui-col>
+                      <ui-col vertical-align="middle" align="right" width="30" bindtap="deleteHistory">
+                          <ui-icon type="delete2" size="16" color="#C9C9C9"></ui-icon>
+                      </ui-col>
+                  </ui-row>
+                  <ui-view class="history_content">
+                      <ui-view ui:for="{{ historyContent }}" bindtap="historyTap(index)">{{ item }}</ui-view>
+                  </ui-view>
+              </ui-view>
+              <ui-view class="search_history">
+                  <ui-row height="20" space-bottom="20">
+                      <ui-col vertical-align="middle">大家都在搜</ui-col>
+                  </ui-row>
+                  <ui-view class="history_content">
+                      <ui-tags
+                              data="{{ hotList }}"
+                              bindchange="hotTap"
+                              selected-class="select-class"
+                              ></ui-tags>
+                  </ui-view>
+              </ui-view>
+          </ui-view> -->
+      </ui-mask>
+  </ui-view>
+</template>
+
+
+
+<style lang="less">
+ @import './static/css/cropper.min.css';
+ @import './static/css/animate.css';
+ @import './static/css/loading.less';
+ @import './static/font/iconfont.css';
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, 'Hiragino Sans GB', 'Microsoft YaHei', SimSun, sans-serif;
+    -webkit-touch-callout: none;
+}
+
+html,
+body {
+    font-size: 28px;
+}
+
+#ui-app {
+    width: 100%;
+    height: 100%;
+}
+
+.touchui-hover{
+  background-color: #eee !important;
+}
+.color-white{
+  color: white;
+}
+.bg-white{
+  background-color: white;
+}
+.iphonex-bottom{
+  height: env(safe-area-inset-bottom);
+  background-color: #fff;
+  width:100%;
+}
+.ui-nav-bar {
+  top: 0;
+  left: 0;
+  width: 100%;
+  .nav-bar-left, .nav-bar-right {
+    position: relative;
+    width: 66px;
+    text-align: center;
+  }
+  .back {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    i {
+      margin-left: 10px;
+    }
+  }
+  .nav-bar-center-text{
+    .mix-text-overflow();
+  }
+}
+
+.ui-tab-bar {
+  &.div-scroll {
+    position: absolute;
+  }
+  &.body-scroll {
+    position: fixed;
+  }
+}
+
+.router-view {
+  width: 100%;
+}
+
+// -----------------
+//全屏搜索
+.full-screen-box {
+  z-index: 500;
+  position: absolute!important;
+  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #fff;
+  .mix-1px(0, 0, 1, 0, #ccc);
+  .bar {
+    background-color: #fff;
+  }
+  .search_bg{
+    background-color: #fff;
+  }
+  .search {
+    width: 100%;
+    background: #F4F4F4;
+    border-radius: 3px;
+    .ui-input {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      .ui-input-inner {
+        height: 30px;
+      }
+    }
+    .cancel {
+      color: #909090;
+      font-size: 14px;
+    }
+  }
+
+  .search_content {
+    background-color: #F1F1F1;
+    .search_history {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 5px;
+      .ui-col {
+        font-size: 14px;
+        color: #868686;
+      }
+      .history_content {
+        .ui-view {
+          display: inline-flex;
+          padding: 5px 18px;
+          border-radius: 4px;
+          background-color: #F1F1F1;
+          color: #6B6B6B;
+          font-size: 13px;
+          margin: 10px 5px 0 0;
+          &.hot {
+            color: #E51C2F;
+          }
+        }
+        .tag-before {
+          padding: 5px 18px;
+          border-radius: 4px;
+          background-color: #F1F1F1;
+          color: #6B6B6B;
+          font-size: 13px;
+          margin: 5px 5px 0 0;
+          &.hot {
+            color: #E51C2F;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+//设置全局主题色，例如一些自定义样式
+.ui-nav-iconColor {
+  color: #39f !important;
+}
+// tabbar示例动画
+#tab-barIndex {
+  .ui-tab-bar-item.active {
+    animation-duration: .5s;
+    animation-fill-mode: both;
+    animation-name: zoomIn;
+  }
+}
+.cus-theme-color{
+  color: #3399ff;
+}
+.cus-borderBorder{
+  border-bottom:  1px solid rgba(231, 231, 231, 0.6);
+}
+.nav_title{
+  color: #666;
+  font-weight: bold;
+}
+.nav_left{
+  color: #39f;
+}
+
+</style>

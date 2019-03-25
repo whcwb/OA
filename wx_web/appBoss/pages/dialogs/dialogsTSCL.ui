@@ -1,0 +1,74 @@
+<!--投诉处理dialog界面-->
+<template>
+  <ui-page>
+      <ui-view class="weui-cells__title">处理结果</ui-view>
+      <ui-view class="sample_content">
+          <ui-textarea ui:model="{{textContent}}" placeholder="请填写投诉处理结果" rows="3" auto-height maxlength="125"></ui-textarea>
+      </ui-view>
+      <ui-view class="btn_win">
+          <ui-button type="primary" bindtap="confirmSelect">确认</ui-button>
+      </ui-view>
+  </ui-page>
+</template>
+
+
+<script>
+export default {
+  data () {
+    return {
+      textContent: '',//反馈内容
+      id:''//投诉id
+      
+    }
+  },
+  mounted () {
+    this.$DialogOpen((data) => {
+      if (data && data.id) {
+        this.id = data.id
+      }
+    })
+  },
+
+  methods: {
+    changeCountry (val) {
+      this.textContent = val
+    },
+    confirmSelect () {
+      if(this.textContent == '' || this.textContent ==null){
+        ui.showToast({ title: '请填写投诉处理!', duration: 2000 })
+        return
+      }
+      if(this.id == ''){
+        ui.showToast({ title: '缺少投诉记录id!', duration: 2000 })
+        return
+      }
+      let data = {
+           id:this.id,
+           feedback:this.textContent || '', 
+           complainStatus:'1'//0已经投诉  1处理成功   2受理投诉中
+          }
+      
+        //提交反馈
+      this.$http('POST',ui.getApp().apis.COMPLAINRECORDDEAL,data,(res)=>{
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            ui.hideDialog({type:true})
+            this.textContent = ''//关闭窗口时清除弹窗数据
+            this.id = ''
+      },(res)=>{
+            ui.showToast({ title: '处理失败！', duration: 2000 })
+      })
+
+    }
+  }
+}
+
+</script>
+
+<style lang="less">
+  .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+</style>

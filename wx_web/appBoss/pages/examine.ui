@@ -1,0 +1,96 @@
+<!--examine-->
+<template>
+  <ui-page style="overflow-y: hidden;" >
+     <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'solid 2px #f2f2f2','background-color':'rgba(255, 255, 255, 1)'} }}">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="60">
+          </ui-col>
+          <ui-col vertical-align="middle" align="center">
+            <ui-view class="nav_title">业务处理</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="60" >
+          </ui-col>
+        </ui-row>
+     </ui-nav-bar>
+
+     <ui-view class="modelBox">
+              <ui-view class="box_row boxListTit">
+                <ui-view class="tit">
+                  <ui-text class="text">
+                    审核查询
+                  </ui-text>
+                </ui-view>
+              </ui-view>
+              <ui-view class="box_row_list boxList">
+                  <ui-view class=" boxItem" bindtap = "gotoYH">
+                      <img src="static/img/box_list/00001.png" style="margin:auto;width:70%">
+                      <ui-view class="boxTit">
+                        优惠审核
+                      </ui-view>
+                  </ui-view>
+              </ui-view>
+      </ui-view> 
+    
+
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "业务处理",
+    navigationStyle: 'custom',
+    title:'业务处理'
+
+  },
+  data() {
+    return {
+      
+  }
+  },
+  methods: {
+    gotoYH:function(){
+      ui.navigateTo({
+        url: 'test?id=1'
+      })
+    }
+  },
+  created () {
+  },
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+.modelBox{
+  border-bottom: #f2f2f2 solid 12px;
+  .boxListTit{
+    margin-bottom: 26rpx;
+    .tit{
+      margin-left: 15rpx;
+      font-size: 34rpx;
+      font-weight: 900;
+      .text{
+        border-left: #2b85e4 solid 5px;
+        padding-left: 8rpx;
+      }
+    }
+  }
+  .boxList{
+    padding: 0 10rpx;
+    .boxItem{
+      width: 25%;
+      padding:30rpx;
+      text-align: center;
+      img{
+        margin: auto;
+      }
+      .boxTit{
+        padding: 12rpx 0;
+        font-size: 26rpx;
+      }
+    }
+  }
+}
+
+</style>

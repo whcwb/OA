@@ -1,0 +1,155 @@
+<!--用户审核-->
+<template>
+  <ui-page>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           姓名：
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+          {{uitem.name}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           车型：
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+          {{uitem.carType}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           报名点：
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+          {{uitem.jgmc}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           证件号：
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+          {{uitem.idCardNo}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           手机号：
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent cus-theme-color" bindtap = "calPhone(uitem.phone)">
+          {{uitem.phone}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           报名时间：
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+          {{uitem.registrationTime}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           推荐人：
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+          {{uitem.referrer}}
+         </ui-col>
+       </ui-row>
+       <ui-row  border-bottom	space-top=5 style="min-height:50px;">
+         <ui-col space-left=20 space-right=20  vertical-align="middle" class="listTitle">
+           
+           <ui-view>备注：</ui-view>
+           <ui-view>{{uitem.remark}}</ui-view>
+              
+          
+         </ui-col>
+         
+       </ui-row>
+       <ui-view class="btn_win" ui:show = "{{utype ==1}}">
+          <ui-button type="primary" bindtap="confirmSelect">审核通过</ui-button>
+      </ui-view>
+      <ui-view class="btn_win" ui:show = "{{utype ==2}}">
+          <ui-button type="primary" bindtap="confirmSelectCh">撤回审核</ui-button>
+      </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    
+  },
+  data() {
+    return {
+      uitem:{},
+      utype:""
+      
+    }
+  },
+  methods: {
+    confirmSelect:function(){
+      let data = {
+        id:this.uitem.id,
+        infoCheckStatus:'10'
+      }
+      this.$http('post',ui.getApp().apis.YWCL.USERINFOCHECK,data,(res)=>{
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            ui.hideDialog({type:true})
+            this.uitem = {}//关闭窗口时清除弹窗数据
+            this.utype = ""
+      },(res)=>{
+            ui.showToast({ title: '审核失败！', duration: 2000 })
+      })
+    },
+    confirmSelectCh:function(){//审核撤回
+      let data = {
+        traineeId:this.uitem.id
+      }
+      this.$http('post',ui.getApp().apis.YWCL.REVOKEINFO,data,(res)=>{
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            ui.hideDialog({type:true})
+            this.uitem = {}//关闭窗口时清除弹窗数据
+            this.utype = ""
+      },(res)=>{
+            ui.showToast({ title: '撤回失败！', duration: 2000 })
+      })
+    },
+    calPhone(phone){
+        if(phone){
+            ui.makePhoneCall({
+              phoneNumber: phone
+            })
+        }else{
+            ui.showToast({ title: '暂无手机号'})
+        }
+        
+    },
+  },
+  mounted() {
+    this.$DialogOpen((data) => {
+      if (data && data.userItem) {
+        this.uitem = data.userItem
+        this.utype = data.utype
+      }
+    })
+    
+  }
+}
+</script>
+
+<style lang="less">
+  .btn_win{
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+.listTitle{
+  font-size: 32rpx;
+  color:#888888;
+}
+.listContent{
+  font-size: 30rpx;
+}
+</style>

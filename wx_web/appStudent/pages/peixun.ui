@@ -1,0 +1,816 @@
+<!--peixun-->
+<template>
+  <ui-page page-load="{{ pageLoad }}">
+        <!--nav导航栏开始-->
+        <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'1px solid rgba(231, 231, 231, 0.6)','background-color':'#fff'} }}">
+        <ui-row height="46">
+        <ui-col vertical-align="middle" align="center" width="60">
+          
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">{{navTitle}}</ui-view>
+        </ui-col>
+        <ui-col width="60" align="center" bindtap="handleShowNavRightP">
+          <ui-popover ui:model="showNavRpover" position="bottom">
+            <ui-view>
+              <ui-view class="popover_item" ui:for="{{ptabItems}}">
+                <ui-row height="35" align="center" bindtap="handleHide(item)" border-bottom>
+                  
+                  <ui-col vertical-align="middle" space-left="5">{{item.name}}</ui-col>
+                </ui-row>
+              </ui-view>
+              
+            </ui-view>
+            <ui-icon  slot="content" type="liebiaoshitucaidan" size="16" color="#39f"></ui-icon>
+          </ui-popover>
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+    <!--nav导航栏结束-->
+    <!--选项卡开始-->
+    <ui-view class="cus-borderBorder">
+      <ui-view style="width:100%;margin:0 auto;" >
+        <ui-tabs class="cusUitabs" tab-style="{{tabStyle}}"  auto-width="{{false}}" index="{{ current3 }}"  bindchange="handleChange($event, 'current3')">
+          <ui-tab>
+            <ui-view>教练</ui-view>
+          </ui-tab>
+          <ui-tab>
+            <ui-view>培训</ui-view>
+          </ui-tab>
+        </ui-tabs>
+      </ui-view>
+    </ui-view>
+    <ui-swiper class="content" current="{{ current3 }}" bindchange="handleContentChange($event, 'current3')">
+      <ui-swiper-item>
+            <ui-row  class="top_tip" border-bottom>
+              <ui-col width="80" height="80" align="center" vertical-align="top" style="padding-top:8px">
+                <ui-image class="left_header" src="{{ iconSrcJL }}"  mode="simple"></ui-image>
+              </ui-col>
+              <ui-col class="text" align="left" vertical-align="middle" space="20">
+                <ui-view style="width: 100%;">
+                  <ui-row height="30">
+                    <ui-col  align="left" vertical-align="middle">
+                      <ui-text class="jlName">{{ nameJL }}</ui-text>
+                    </ui-col>
+                    <ui-col bindtap="showDialogTouSu()" align="right" width="36" vertical-align="middle" space-right="10" style="height:40px;">
+                       <ui-view  style="width:26px;height:26px;border-radius:13px;background-color:#39f;text-align: center;line-height:26px;">
+                       <!--<ui-icon  slot="content" type="tousu1" size="20" color="#FFFFFF" style="display:inline-block"></ui-icon>-->
+                       <ui-text class="color-white">诉</ui-text>
+                      </ui-view>
+                    </ui-col>
+                    <ui-col bindtap="showDialogPingJia()" align="right" width="36" vertical-align="middle" space-right="10" style="height:40px;">
+                      <ui-view  style="width:26px;height:26px;border-radius:13px;background-color:#39f;text-align: center;line-height:26px;">
+                       <!--<ui-icon  slot="content" type="pingjia" size="20" color="#FFFFFF" style="display:inline-block"></ui-icon>-->
+                       <ui-text class="color-white">评</ui-text>
+                         
+                       
+                      </ui-view>
+                    </ui-col>
+                    
+                    <ui-col bindtap="calPhone(phoneJL)" align="right" width="26" vertical-align="middle"  style="height:40px;">
+                      <ui-view  style="width:26px;height:26px;border-radius:13px;background-color:#39f;text-align: center;line-height:26px;">
+                       <ui-icon  slot="content" type="dianhua" size="20" color="#FFFFFF" style="display:inline-block"></ui-icon>
+                      </ui-view>
+                    </ui-col>
+                  </ui-row>
+                  <ui-view class="jljbxinxi">学员人数:{{ traineeNum }}</ui-view>
+                </ui-view>
+                <ui-view style="width: 100%;">
+                  <ui-row height="30">
+                    <ui-col align="left" vertical-align="middle">
+                      <ui-view class="jljbxinxi">{{labelbhJL}}:{{ bhJL }}</ui-view>
+                    </ui-col>
+                    <ui-col align="right" width="100" vertical-align="middle" space-right="10">
+                       <ui-mini-star ui:if="{{pfnumJL >-1 ?true:false}}" value="{{pfnumJL}}"></ui-mini-star>
+                    </ui-col>
+                  </ui-row>
+                </ui-view>
+                
+              </ui-col>
+            </ui-row>
+            <!--学员评价开始-->
+            <ui-view  class="sample_list">
+            <ui-view class="group-title">
+              <ui-row type="flex" border-bottom>
+                <ui-col width="5" align="center" vertical-align="middle">
+                  <ui-view class="sign"></ui-view>
+                </ui-col>
+                <ui-col align="left" vertical-align="middle" space-left="10">
+                  <ui-view >学员评价({{pjPage.total}})</ui-view>
+                </ui-col>
+              </ui-row>
+            </ui-view>
+            </ui-view>
+            <!--评价列表开始-->
+            <ui-scroll-view style="{{ {height:pullDownDivHeight+'px'} }}" scroll-y  pull-down="{{ pullDown }}"  enable-reach-bottom-load ="{{loadMore}}" on-load-more="{{ handleLoadMore }}" >
+            <ui-view slot="pull-down" class="pull-down-content" ui:if="{{proportion}}">
+              <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+                <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+              </ui-view>
+
+              <ui-view class="img-layer" ui:else>
+                <ui-view class="gauge-loader" ui:if="{{state === 2}}"></ui-view>
+                <ui-view class="gauge-loader" ui:show="{{state === 3 || state === 4}}"></ui-view>
+              </ui-view>
+            </ui-view>
+            <ui-list-view-item ui:for="{{props}}">
+            <ui-row class="content"  border-bottom  >
+                <ui-col width="50" align="center" vertical-align="top" style="padding-top:10px">
+                    <ui-view class="portrait">
+                        <ui-image src="{{item.headImg}}" width="100%" ></ui-image>
+                    </ui-view> 
+                </ui-col>
+                <ui-col class="pjRight" style="padding-top:10px;">
+                    <ui-view class="namePJ"> {{item.traineeName}}</ui-view>
+                    <!--<ui-view class="numPJ"><ui-mini-star value="{{item.rate}}"></ui-mini-star></ui-view>-->
+                    <ui-view class="contentPJ"> {{item.comment}}</ui-view>
+                    <ui-view>
+                        <ui-row height="40">
+                            <ui-col vertical-align="middle" align="left">
+                                <ui-view class="time">{{item.cjsj }}</ui-view>
+                            </ui-col>
+                            <ui-col vertical-align="middle" align="right" width="40" space-right="10">
+                                
+                            </ui-col>
+                        </ui-row>
+                    </ui-view>
+                </ui-col>
+            </ui-row>
+            
+            </ui-list-view-item>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(props && props.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+            <ui-view style="width:200px;margin:0 auto;">
+              <ui-divider ui:show="{{!loadMore}}">没有新数据了</ui-divider>
+            </ui-view>
+            </ui-scroll-view>
+            <!--评价列表结束-->
+            <!--学员评价结束-->
+            <!--投诉及评分悬浮按钮开始-->
+            <!--<ui-fixed-view style="z-index:1000" top="0">
+                <ui-pop-icon blur="light" mask-hide-delay="500" hide-on-tap="{{hideOnTap}}" bindhide="dismiss" bindmaskhide="maskhide" left="{{offsetX-48}}" ui:model="toggle" background="rgba(0, 0, 0, 0.1)" class="pop-icon-demo3" animate="bounce" >
+                     <ui-pop-icon-item item-color="#45ddd2" top="-70" left="-7" bindtap="showDialogTouSu()">
+                      <ui-text style="position: absolute;left: -57px;top: 11px;">投诉</ui-text>
+                      <ui-view class="icon_view">
+                        <ui-icon type="tousu1" size="20"></ui-icon>
+                      </ui-view>
+                    </ui-pop-icon-item>
+                    <ui-pop-icon-item item-color="#45ddd2" top="-120" left="-7" bindtap="showDialogPingJia()">
+                    <ui-text style="position: absolute;left: -57px;top: 11px;">评价</ui-text>
+                        <ui-view class="icon_view">
+                          <ui-icon type="pingjia" size="20"></ui-icon>
+                        </ui-view>
+                      </ui-pop-icon-item>
+                </ui-pop-icon>
+              </ui-fixed-view>
+              <ui-fixed-view ui:show="{{toppleShow}}" bindtap="togglepopicon" right="10" bottom="70" style="z-index:1000;">
+                    <ui-view class="btnbox">
+                      <ui-icon type="i-pingjia" size="24"></ui-icon>
+                    </ui-view>
+              </ui-fixed-view>-->
+            <!--投诉及评分悬浮按钮结束-->
+      </ui-swiper-item>
+      <ui-swiper-item >
+      <!--培训记录上下拉刷新开始-->
+      
+      <!--<ui-scroll-view style="{{ {height:pullDownDivHeight+120+'px'} }}" scroll-y height="{{height - imgHeight}}" pull-down="{{ pullDown }}"  enable-reach-bottom-load ="{{loadMore}}" on-load-more="{{ handleLoadMore }}" >-->
+          <ui-scroll-view style="{{ {height:pullDownDivHeight+120+'px'} }}" >
+          <ui-view slot="pull-down" class="pull-down-content" ui:if="{{proportion}}">
+            <ui-view class="img-layer" ui:if="{{proportion < 1}}">
+              <ui-view class="img_content" style="{{{ height : proportion * 100+'px' }}}"></ui-view>
+            </ui-view>
+
+            <ui-view class="img-layer" ui:else>
+              <ui-view class="gauge-loader" ui:if="{{state === 2}}"></ui-view>
+              <ui-view class="gauge-loader" ui:show="{{state === 3 || state === 4}}"></ui-view>
+            </ui-view>
+          </ui-view>
+          
+          <ui-view class="collect" ui:for="{{xunLianList}}">
+                <ui-row height="40" border-bottom style="background-color:#3399ff;color:white">
+                  <ui-col vertical-align="middle"  align="center" width="60">
+                   <ui-icon  slot="content" type="qichezhizao" size="22" color="#FFFFFF"></ui-icon>
+                  </ui-col>
+                  <ui-col vertical-align="middle">
+                    <ui-view class="name">日期:{{ item.nowtime }}</ui-view>
+                  </ui-col>
+                  <ui-col vertical-align="middle" align="right" space-right="15">
+                    <ui-view class="time">{{ item.allDayTime }}小时</ui-view>
+                  </ui-col>
+                </ui-row>
+                <ui-row height="60" ui:for="{{item.dayItem}}" ui:for-item="dayItem" border-bottom>
+                  <ui-col vertical-align="middle" align="center" width="60">
+                    <ui-icon  slot="content" type="queren" size="16" color="{{(dayItem.trainEndTime != null && dayItem.trainEndTime != '')?'#39f':'#555'}}"></ui-icon>
+                  </ui-col>
+                  <ui-col vertical-align="middle">
+                    <ui-view class="content">开始:{{ dayItem.trainStartTime }}</ui-view>
+                    <ui-view ui:if="{{dayItem.trainEndTime != null && dayItem.trainEndTime != ''}}">结束:{{ dayItem.trainEndTime}}</ui-view>
+                    <ui-view ui:else>结束:待确认</ui-view>
+                   
+                  </ui-col>
+                  <ui-col vertical-align="middle" align="right" space-right="15">
+                    <ui-view ui:if="{{dayItem.trainEndTime != null && dayItem.trainEndTime != ''}}"> {{ dayItem.trainTimes == ''? '0':  dayItem.trainTimes}} 小时</ui-view>
+                    <ui-view class="win" ui:else>
+                      <ui-button type="primary" size="mini" plain="true" bindtap="tapXunLianJS(item.nowtime,dayItem.id)">确认结束</ui-button>
+                    </ui-view>
+                  </ui-col>
+                </ui-row>
+          </ui-view>
+          
+          <!--<ui-view style="width:200px;margin:0 auto;">
+            <ui-divider ui:show="{{!loadMore}}">没有新数据了</ui-divider>
+          </ui-view>
+          </ui-scroll-view>-->
+          <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(xunLianList && xunLianList.length>0) ? false : true}}">
+            <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+          </ui-view>
+          </ui-scroll-view>
+      <!--培训记录上下拉刷新结束-->
+      </ui-swiper-item>
+    </ui-swiper>
+
+    
+    <!--选项卡结束-->
+    <!--列表数据开始-->
+    
+    <!--列表数据结束-->
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: '培训记录',
+    title:'培训记录',
+    navigationStyle:'custom',
+    disableScroll:true,
+    delay:false,//延迟加载
+  },
+  data() {
+    return {
+      current: 0,
+      navTitle:'科目二',
+      showNavRpover:false,//是否展示下来选择科目
+      ptabItems: [
+        { name: '科目二',value:'02'},
+        { name: '科目三',value:'03'}
+      ],
+      nowKM:{ name: '科目二',value:'02'},//当前选择的科目
+      //选项卡开始
+      tabStyle:{
+        'flex':'0 0 40px',
+        'width':'50%'
+      },
+      current3:0,
+      //选项卡结束
+      //上下拉刷新开始
+      items: [],
+      bottom: 30,
+      top: 0,
+      proportion: 0,
+      // 下拉刷新（初始状态）
+      state: 1,
+      count:0,
+      loadMore: true,
+      height: ui.DEFAULT_CONTENT_HEIGHT,
+      imgHeight: 70,
+      pullDown: {
+        distance: 60,
+        onBegin: this.handleBegin,
+        onActive: this.handleActive,
+        onAfter: this.handleAfter
+      },
+      pullDownDivHeight:100,//设置培训记录高度
+      
+      //上下拉刷新结束
+      //教练信息开始
+      
+      labelbhJL:'编号',
+      iconSrcJL:require('#/images/portrait_bg.png'),
+      nameJL:'',
+      pfnumJL:'',
+      bhJL:'',
+      phoneJL:'',
+      traineeNum:0,
+      coachId:'',//教练id
+      //教练信息结束
+      //评分及投诉按钮开始
+      toggle: false,
+      canClick: true,
+      hideOnTap: true,
+      offsetX: ui.WIN_WIDTH,
+      toppleShow:true,//显示或者隐藏悬浮功能按钮
+      //评分及投诉按钮结束
+      //评价列表开始
+      props:[],//评价列表信息
+      pjPage:{//返回分页信息存储
+          pageNum : '',
+          pageSize: '',
+          size : '',
+          startRow : '',
+          endRow : '',
+          total : '0',
+          pages : ''
+      },
+      pjDate:{
+        pageNum:1,//请求第几
+        pageSize:8,//每页个数
+        coachId:''//教练id
+      },//评价的提交参数
+      //评价列表结束
+      //训练列表开始
+      xunLianList:[],
+      //训练列表结束
+      pageLoad: {// 切换页面执行方法
+        trigger: 'always',
+        handle: () => {
+            if(this.getUser().status >= 30){
+                this.handleHide(this.ptabItems[1]) //查询我的教练信息
+                this.nowKM = { name: '科目三',value:'03'}
+            }else{
+                this.handleHide(this.ptabItems[0]) //查询我的教练信息
+            }
+            this.getMyPeiXunList() //查询我的培训记录
+        }
+      }
+    }
+  },
+  mounted(){
+    this.pullDownDivHeight=this.getSystemMessage().windowHeight-264
+   
+   
+  },
+  methods:{
+     handleShowNavRightP () {//点击nav左侧选择科目图形按钮事件
+      this.showNavRpover = true
+    },
+    handleHide (text) {//具体选择科目事件
+      this.pfnumJL = -1 //每当切换科目时教练评分设置为-1，解决星级评价不刷新的问题
+      this.nowKM = text
+      this.showNavRpover = false
+      this.navTitle = text.name//修改nav标题，显示具体选择的科目
+      this.loadMore = true
+        this.$http('GET',ui.getApp().apis.MYCOACH,{//查询教练信息
+            traineeId:this.getUser().id,allotSub:text.value
+            },(res)=>{
+              if(res.result){
+              let result = res.result
+              if(result.headImg){
+                   this.iconSrcJL = ui.getApp().imgUrlHeader+result.headImg
+              }else{
+                   this.iconSrcJL = require('#/images/portrait_bg.png')
+              }
+              this.nameJL = result.coachName || ''
+              this.pfnumJL = result.coachRate || '',
+              this.bhJL = result.coachNum || ''
+              this.phoneJL = result.phone || ''
+              this.traineeNum = result.traineeNum || 0
+              this.coachId = result.id
+              }else{
+                this.iconSrcJL = require('#/images/portrait_bg.png')
+                this.nameJL = ''
+                this.pfnumJL =  '',
+                this.bhJL = ''
+                this.phoneJL =  ''
+                this.traineeNum =  ''
+                this.coachId = ''
+              }
+              this.props = []//清空评价列表
+              this.pjDate.pageNum = 1
+              this.getPjList()//查询评价列表
+             
+
+        })
+     
+      this.xunLianList = []//清空我的培训记录
+      this.getMyPeiXunList() //查询我的培训记录
+    },
+    //选项卡开始
+    handleChange (index, key) {
+      if(index===1){//当选项卡为培训记录时隐藏悬浮功能按钮
+        this.toppleShow=false
+      }else{//当选项卡为教练时显示悬浮功能按钮
+        this.toppleShow=true
+      }
+     // this.loadMore = true
+      this[key] = index
+    },
+    handleContentChange (index, key) {
+      this[key] = index
+    },
+    //选项卡结束
+    //培训记录上下拉刷新开始
+    handleLoadMore () {//教练评价加载更多
+       
+          if(this.pjDate.pageNum<=this.pjPage.pages){
+              this.getPjList()
+           }else{
+             this.loadMore = false
+              return false
+           }
+     
+    },
+    getPjList (){//请求教练评价
+      if(this.coachId){
+        this.pjDate.coachId = this.coachId
+        this.$http('post',ui.getApp().apis.RATEDATAIL,this.pjDate,(res)=>{
+                    this.pjPage.pageNum = res.page.pageNum
+                    this.pjPage.pageSize = res.page.pageSize
+                    this.pjPage.size = res.page.size
+                    this.pjPage.startRow = res.page.startRow
+                    this.pjPage.endRow = res.page.endRow
+                    this.pjPage.total = res.page.total
+                    this.pjPage.pages = res.page.pages
+                    let list = res.page.list
+                    
+                    list.forEach((value,index) => {
+                      if(! value.headImg){
+                        value.headImg = require('../images/jiaolian1.jpg')
+                      }else{
+                        value.headImg = ui.getApp().imgUrlHeader+value.headImg
+                      }
+                    });
+                   this.props = this.props.concat(list)
+                   this.pjDate.pageNum ++
+                   if(this.pjDate.pageNum > this.pjPage.pages){
+                    
+                     this.loadMore = false
+                     return false
+                   }
+        })
+      }else{
+        this.props = []
+      }
+    },
+    handleBegin ({ distance, direction }) {
+      this.proportion = distance / 60
+      // 拉满60px
+      if (this.proportion >= 1) {
+        if (this.state === 1 && direction === 'down') {
+          // 释放刷新
+          this.state = 2
+
+          // 300ms吉祥物翻转时间
+          window.setTimeout(() => {
+            // 刷新中...
+            this.state = 3
+          }, 300)
+        }
+      } else {
+        this.state = 1
+      }
+    },
+    handleActive () {//评价下拉刷新
+           this.loadMore = true
+           this.props = []//清空评价列表
+           this.pjDate.pageNum = 1
+           this.getPjList ()
+           this.state = 4
+    },
+    handleAfter (flag) {//下拉刷新绑定数据
+      
+      this.proportion = 0
+      this.state = 1
+    },
+    getMyPeiXunList(){
+      //请求培训记录
+      let nowKeMu = ''
+      if(this.nowKM.value == '02'){
+        nowKeMu = 20
+      }
+      if(this.nowKM.value == '03'){
+        nowKeMu = 30
+      }
+       this.$http('GET',ui.getApp().apis.QUERYRECORDLIST,{
+           traineeId:this.getUser().id || '',sub:nowKeMu
+          },(res)=>{
+            	    //处理数据方法
+                  let arrayList = []
+                  let custemList = res.result && res.result.repList
+                  custemList.forEach(function(value,index){
+                      let obj = new Object()
+                      let array = []
+                      let listData = ''
+                      let oneDayPXTime = 0
+                      value.forEach((value2,index2) => {
+                          if(value2.trainStartTime && value2.trainStartTime.length>=19){
+                            listData = value2.trainStartTime.substring(0,10)
+                            value2.trainStartTime = value2.trainStartTime.substring(11)
+                          }
+                          if(value2.trainEndTime && value2.trainEndTime.length>=19){
+                            value2.trainEndTime = value2.trainEndTime.substring(11)
+                          }
+
+                          if(value2.trainTimes){
+                            value2.trainTimes = (Number(value2.trainTimes)/60).toFixed(2) 
+                            oneDayPXTime += Number(value2.trainTimes)
+                          }
+                          array.push(value2)
+                        
+                      }) 
+                      obj.nowtime = listData //培训日期，按每天计算
+                      obj.allDayTime = oneDayPXTime //每天的总共学时
+                      obj.dayItem = array
+                      arrayList.push(obj)
+                  })
+                 this.xunLianList = arrayList
+
+                 
+          },(res)=>{
+               
+                
+          })
+    },
+   
+    //培训记录上下拉刷新结束
+    //教练信息开始
+    calPhone(phone){
+        if(phone){
+            ui.makePhoneCall({
+              phoneNumber: phone
+            })
+        }else{
+            ui.showToast({ title: '暂无手机号'})
+        }
+        
+    },
+    //教练信息结束
+    //评分及投诉功能
+    togglepopicon () {
+
+      if (this.toggle) {
+        if (this.canClick) {
+          this.canClick = false
+          this.toggle = false
+        }
+      } else {
+        if (this.canClick) {
+          this.canClick = false
+          this.toggle = true
+          this.hideOnTap = false
+          setTimeout(() => {
+            this.canClick = true
+            this.hideOnTap = true
+          }, 1700)
+        }
+      }
+    },
+    // 点击遮罩触发，安卓回退时触发
+    dismiss () {
+      if (this.canClick) {
+        this.canClick = false
+        this.toggle = false
+      }
+    },
+    // 设置mask延时的情况下，mask关闭时触发，安卓回退时触发
+    maskhide () {
+      this.canClick = true
+    },
+    showDialogTouSu () {//打开投诉dialog
+     if(! this.coachId){
+        ui.showToast({ title: '暂无教练可投诉'})
+        return
+      }
+      //关闭功能按钮遮罩
+      this.canClick = false
+      this.toggle = false
+      //隐藏悬浮功能按钮
+      this.toppleShow = false
+      import(`#/pages/dialogs/dialogTouSu.ui`).then((content) => {
+        ui.showDialog({
+          // 窗体标题
+          title: '投诉',
+          content: content,
+          statusBarColor: 'black',
+          headerStyle: {//设置dialog  nav样式
+                color: '#666'
+            },
+          // 向dialog1.ui传入数据  
+          data: {
+            coachId3:this.coachId,//教练id
+            coachName:this.nameJL,//教练名称
+            coachNum:this.bhJL//教练编号
+           
+          },
+          // 接收ui.hideDialog回传的数据
+          onHide: (data) => {
+            this.toppleShow = true//显示悬浮功能按钮
+            if (data && data.type == true) {
+             
+              ui.showToast({ title: '投诉提交成功！', icon: 'success', duration: 2000 })
+              
+            }
+          }
+        })
+      })
+    },
+    showDialogPingJia () {//打开评价dialog
+      if(! this.coachId){
+        ui.showToast({ title: '暂无教练可评价'})
+        return
+      }
+      //关闭功能按钮遮罩
+      this.canClick = false
+      this.toggle = false
+      //隐藏悬浮功能按钮
+      this.toppleShow = false
+      let coachId = this.coachId
+      import(`#/pages/dialogs/dialogPingJia.ui`).then((content) => {
+        ui.showDialog({
+          // 窗体标题
+          title: '评价',
+          content: content,
+          statusBarColor: 'black',
+          headerStyle: {//设置dialog  nav样式
+                color: '#666'
+            },
+          // 向dialog1.ui传入数据
+          data: {
+            textPJ: '',
+            coachId2: this.coachId
+          },
+          // 接收ui.hideDialog回传的数据
+          onHide: (data) => {
+            this.toppleShow = true//显示悬浮功能按钮
+              if(data && data.result){
+              this.props = []//清空评价列表
+              this.pjDate.pageNum = 1
+              this.getPjList()//查询评价列表
+              this.loadMore = true //恢复上拉加载
+              }
+           
+          }
+        })
+      })
+
+    },
+    //确认结束训练按钮
+    tapXunLianJS(nowTime,itemId){//nowtime当前记录的日期  itemId是当前记录的id 
+      var v = this
+      ui.showConfirm({
+        title: '提示',
+        content: '确认结束训练？',
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        success (result) {
+          if(result.confirm){
+              v.$http('POST',ui.getApp().apis.TRAINNINGRECORDUPDATE,{
+                traineeId:v.getUser().id || '',trainEndTime:nowTime,id:itemId
+              },(res)=>{
+                v.getMyPeiXunList ()//刷新培训记录
+              })
+          }
+        }
+      })
+    }
+    
+  }
+}
+
+</script>
+
+<style lang="less">
+@import '~static/css/loading.less';
+//nav导航栏开始
+
+.grey-bg {
+  background-color: #f5f5f5;
+}
+.content-list {
+  list-style: none;
+  z-index: 10;
+  position: relative;
+  background-color: #fff;
+
+  .ui-view {
+    padding: 0 15px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+.ui-popover-overlay {
+  padding: 0;
+  width: 120px;
+}
+
+.popover_item{
+  padding: 0 10px;
+  &:active{
+    background-color: #eee;
+  }
+}
+.cusUitabs{
+  overflow-x:visible !important;
+  overflow-y:visible !important; 
+  .ui-scroll-view-content{
+    width: 100%;
+    .ui-tab{
+      padding-bottom: 8px;
+      padding-top: 8px;
+    }
+  }
+}
+//nav导航栏结束
+//上下拉刷新开始
+ .pull-down-content {
+  height: 60px;
+  margin-top: -60px;
+  display: flex;
+  align-items:flex-end;
+  padding-bottom: 8px;
+}
+
+
+.img-layer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+.img_content{
+    width: 182px;
+    background-position: -2px center;
+    background-size: 1149px 100%;
+    zoom: 0.5;
+  }
+}
+
+
+//上下拉刷新结束
+//教练信息开始
+.left_header{
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50%;
+    line-height: 50px;
+    
+  }
+  .jlName{
+    span{
+      font-weight: bolder !important;
+    }
+  }
+  .jljbxinxi{
+    font-size: 24rpx;
+    color: #999999;
+  }
+//教练信息结束
+
+//教练评价开始
+.sample_list{
+  padding-left: 6px;
+  height: 40px;
+  line-height: 40px;
+  .sign{
+    width: 5px;
+    height: 16px;
+    background-color: #168AFD;
+    border-radius: 5px;
+  }
+}
+//教练评价结束
+//评分及投诉功能相关开始
+.btnbox{
+  background-color:#45ddd2;
+  color:#fff;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  line-height:48px;
+  text-align:center
+}
+
+.pop-icon-demo3 {
+  .icon_view{
+    height: 100%;
+    z-index: 999;
+    .mix-flex-center();
+  }
+}
+
+.ui-icon-item{
+  width:40px;
+  height:40px;
+}
+.ui-mask.blur-light-android{
+  background-color: transparent !important;
+}
+//评分及投诉功能相关结束
+//评价列表开始
+.portrait .ui-image {
+  width: 30px !important;
+  height:30px !important;
+  border-radius:15px;
+  }
+.pjRight{
+  .numPJ,.contentPJ{
+    margin-top: 6px;
+  }
+}
+//评价列表结束
+</style>
+

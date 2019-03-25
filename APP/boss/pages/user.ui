@@ -1,0 +1,208 @@
+<template>
+    <ui-page top="0" style="overflow-y: hidden;"  pull-down="{{ pullDown }}">
+      <ui-nav-bar slot="nav-bar" custom-style="{{ {'background-color':'rgba(255, 255, 255, 0)'} }}">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="60">
+          </ui-col>
+          <ui-col vertical-align="middle" align="center">
+            <ui-view class="nav_title">ME</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="60" bindtap="goback">
+            <ui-icon type="tuichu1" size="22" color="#d0d0d0"></ui-icon>
+          </ui-col>
+        </ui-row>
+      </ui-nav-bar>
+      <ui-view class="box_col" style="{{ { height: pageHeight(0)+ 'px','background-color':'#fff'} }}">
+          <ui-view class="userTiTBox box_row">
+              <ui-image
+                src="{{ portraitUrl }}"
+                mode='aspectFill'
+                width="90"
+                height="90"
+                class="head_portrait"
+                ></ui-image>
+                <ui-view class="box_row_100 userMess">
+                  <ui-view class="userName">
+                      {{userMess.xm}}
+                  </ui-view>
+                  <ui-view class="userPO">
+                      -----
+                  </ui-view>
+                </ui-view>
+          </ui-view>
+          <ui-view class="box_col_auto" style="margin-bottom:20px">
+
+            <ui-view class="modelBox">
+              <ui-view class="box_row boxListTit">
+                <ui-view class="tit">
+                  <ui-text class="text">
+                    审核查询
+                  </ui-text>
+                </ui-view>
+              </ui-view>
+              <ui-view class="box_row_list boxList" ui:for={{1}}>
+                  <ui-view class=" boxItem">
+                      <img src="static/img/box_list/0000.png" style="margin:auto;width:70%">
+                      <ui-view class="boxTit">
+                        信息审核
+                      </ui-view>
+                  </ui-view>
+                  <ui-view class=" boxItem">
+                      <img src="static/img/box_list/00001.png" style="margin:auto;width:70%">
+                      <ui-view class="boxTit">
+                        优惠审核
+                      </ui-view>
+                  </ui-view>
+              </ui-view>
+            </ui-view>
+
+            <ui-view class="modelBox">
+              <ui-view class="box_row boxListTit">
+                <ui-view class="tit">
+                  <ui-text class="text">
+                    数据分析
+                  </ui-text>
+                </ui-view>
+              </ui-view>
+              <ui-view class="box_row_list boxList">
+                  <ui-view class="boxItem">
+                      <img src="static/img/box_list/tj0001.png" style="margin:auto;width:70%">
+                      <ui-view class="boxTit">
+                        招生报名
+                      </ui-view>
+                  </ui-view>
+                  <ui-view class="boxItem">
+                      <img src="static/img/box_list/tj0002.png" style="margin:auto;width:70%">
+                      <ui-view class="boxTit">
+                        优惠审核
+                      </ui-view>
+                  </ui-view>
+                  <ui-view class="boxItem">
+                        <img src="static/img/box_list/tj0005.png" style="margin:auto;width:70%">
+                        <ui-view class="boxTit">
+                          优惠审核
+                        </ui-view>
+                  </ui-view>
+                  <ui-view class="boxItem">
+                        <img src="static/img/box_list/tj0004.png" style="margin:auto;width:70%">
+                        <ui-view class="boxTit">
+                          优惠审核
+                        </ui-view>
+                  </ui-view>
+                  <ui-view class="boxItem">
+                        <img src="static/img/box_list/tj0006.png" style="margin:auto;width:70%">
+                        <ui-view class="boxTit">
+                          优惠审核
+                        </ui-view>
+                  </ui-view>
+              </ui-view>
+            </ui-view>
+
+          </ui-view>
+
+      </ui-view>
+
+    </ui-page>
+</template>
+
+<script>
+import mixin from '#/static/ajax/mixin'
+export default {
+  config: {
+    navigationStyle: 'custom',
+    navigationBarBackgroundColor:"#3399FF",
+    navigationBarTitleText: "我的",
+    navigationBarTextStyle:"white",
+    title:'我的',
+    backgroundColor:'#3399FF',
+    delay:false,//延迟加载
+  },
+  mixins:[mixin],
+  data () {
+    return {
+      portraitUrl:('http://img2.imgtn.bdimg.com/it/u=4163885218,1747615568&fm=27&gp=0.jpg'),
+      userMessL:{},
+      pullDown:{
+        distance: 100,
+        onActive:this.handleLoadMore
+      },
+    }
+  },
+  watch:{
+
+  },
+  methods: {
+      handleLoadMore(){
+      },
+      goback(){
+        ui.navigateTo({
+          url: '/pages/login'
+        })
+      }
+  },
+  mounted () {
+  },
+  created () {
+    this.userMess =JSON.parse(localStorage.getItem("userinfo"))
+    console.log('6666',this.userMess);
+    
+  }
+}
+
+</script>
+
+<style lang="less">
+.userTiTBox{
+  background: #c1a8a6;
+  padding-top: 46rpx;
+  height: 346rpx;
+  margin-bottom: 30rpx;
+  border-bottom: solid 3px #f2f2f2;
+  background:url('');
+  .head_portrait{
+    border-radius: 45px;
+    margin: auto 25rpx;
+  }
+  .userMess{
+    padding-top: 80rpx;
+    .userName{
+      font-size: 45rpx;
+      font-weight: 700;
+    }
+    .userPO{
+      font-size: 30rpx;
+      font-weight: 600;
+    }
+  }
+}
+.modelBox{
+  border-bottom: #f2f2f2 solid 12px;
+  .boxListTit{
+    margin-bottom: 26rpx;
+    .tit{
+      margin-left: 15rpx;
+      font-size: 34rpx;
+      font-weight: 900;
+      .text{
+        border-left: #2b85e4 solid 5px;
+        padding-left: 8rpx;
+      }
+    }
+  }
+  .boxList{
+    padding: 0 10rpx;
+    .boxItem{
+      width: 25%;
+      padding:30rpx;
+      text-align: center;
+      img{
+        margin: auto;
+      }
+      .boxTit{
+        padding: 12rpx 0;
+        font-size: 26rpx;
+      }
+    }
+  }
+}
+</style>

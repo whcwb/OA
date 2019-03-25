@@ -1,0 +1,222 @@
+<!--教练详情-->
+<template>
+  <ui-page>
+    <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'solid 2px #f2f2f2','background-color':'rgba(255, 255, 255, 1)'} }}">
+              <ui-row height="46">
+                <ui-col vertical-align="middle" align="center" width="60" bindtap="goback">
+                  <ui-icon type="arrow-left" font-size="24"></ui-icon>
+                </ui-col>
+                <ui-col vertical-align="middle" align="center">
+                  <span class="nav-bar-center-text">教练详情</span>
+                </ui-col>
+                <ui-col align="center" width="60" >
+                   
+                </ui-col>
+              </ui-row>
+    </ui-nav-bar>
+    <ui-view>
+       <ui-row height="120" class="header_top">
+          <ui-col vertical-align="middle" align="center" width="90">
+            <ui-view class="head_portrait">
+            </ui-view>
+            <ui-image
+              src="{{detail.headImg}}"
+              mode='aspectFill'
+              width="100"
+              height="100"
+              class="head_portrait"
+            ></ui-image>
+          </ui-col>
+        </ui-row>
+    </ui-view>
+    <ui-view>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           姓名
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.coachName}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           性别
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.gender ==  '00'?'女':'男'}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           学员数量
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.traineeNum}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           准驾车型
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.drivingType}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           手机号码
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent cus-theme-color" bindtap = "calPhone(detail.phone)">
+           {{detail.phone}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           培训科目
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{fanyiKeMu(detail.coachSub)}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           准驾车型
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.drivingType}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           教练证编号
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.coachNum}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           档案编号
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.recordNum}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           机构名称
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.jgmc}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           所属区域
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{fanyiAppZdFunc(detail.area)}}
+         </ui-col>
+       </ui-row>
+    </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    
+    title:'教练详情',
+    navigationStyle: 'custom',
+  },
+  data() {
+    return {
+      detail:{}
+    }
+  },
+  methods: {
+    goback(){
+       ui.navigateBack()
+    },
+    calPhone(phone){
+        if(phone){
+            ui.makePhoneCall({
+              phoneNumber: phone
+            })
+        }else{
+            ui.showToast({ title: '暂无手机号'})
+        }
+        
+    },
+    //翻译开始
+    fanyiKeMu (key){//翻译科目
+       let km = ''
+       let kmCodeArray = []
+       if(key){
+         if(key.indexOf(',') !=-1){
+            kmCodeArray = key.split(',')
+         }else{
+            kmCodeArray.push(key)
+         }
+       }
+       
+       kmCodeArray.forEach(function(value,index){
+          if(value == '01'){
+            km+='科一'
+          }
+          if(value == '02'){
+            km+='科二'
+          }
+          if(value == '03'){
+            km+='科三'
+          }
+          if(value == '04'){
+            km+='科四'
+          }
+          if(index != kmCodeArray.length-1){
+            km+=','
+          }
+       })
+       
+       return km
+       
+    },
+    fanyiAppZdFunc(value){
+        return this.fanyiAppZd("ZDCLK1009",value)
+    }
+  },
+  mounted() {
+     this.detail = JSON.parse(sessionStorage.getItem('bossCoachDetail'))
+  }
+}
+</script>
+
+<style lang="less">
+.header_top {
+    .head_portrait {
+      border-radius: 50%; 
+    }
+    .login {
+      color: rgb(114, 110, 110);
+      font-size: 16px;
+    }
+    .login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+}
+.button-style-demo1 {
+  background-color: #C01920;
+  border-radius: 20px;
+  border-color: #C01920;
+  box-shadow: 3px 3px 8px #E57A7E;
+  color: #fff;
+}
+.listTitle{
+  font-size: 32rpx;
+  color:#888888;
+}
+.listContent{
+  font-size: 30rpx;
+}
+</style>

@@ -1,0 +1,68 @@
+<!--意见反馈dialog界面-->
+<template>
+  <ui-page>
+      <ui-view class="weui-cells__title">意见反馈内容</ui-view>
+      <ui-view class="sample_content">
+          <ui-textarea ui:model="{{textContent}}" placeholder="请填写意见反馈内容" rows="3" auto-height maxlength="125"></ui-textarea>
+      </ui-view>
+      <ui-view class="btn_win">
+          <ui-button type="primary" bindtap="confirmSelect">确认</ui-button>
+      </ui-view>
+  </ui-page>
+</template>
+
+
+<script>
+export default {
+  data () {
+    return {
+      textContent: '',//反馈内容
+      
+    }
+  },
+  mounted () {
+    this.$DialogOpen((data) => {
+      //if (data && data.coachId3) {
+      //}
+    })
+  },
+
+  methods: {
+    changeCountry (val) {
+      this.textContent = val
+    },
+    confirmSelect () {
+      if(this.textContent == '' || this.textContent ==null){
+        ui.showToast({ title: '意见反馈不能为空!', duration: 2000 })
+        return
+      }
+      let data = {
+           traineeId:this.getUser().yhid || '',
+           traineeName:this.getUser().xm || '',
+           content:this.textContent || '', 
+           source:'2'//0 学员 1 教练 2 boss 
+          }
+      
+        //提交反馈
+      this.$http('POST',ui.getApp().apis.FEEDBACKSAVEENTITY,data,(res)=>{
+            // 调用ui.hideDialog关闭窗体，并回传数据
+            ui.hideDialog({type:true})
+            this.textContent = ''//关闭窗口时清除弹窗数据
+      },(res)=>{
+            ui.showToast({ title: '意见反馈提交失败！', duration: 2000 })
+      })
+
+    }
+  }
+}
+
+</script>
+
+<style lang="less">
+  .btn_win{
+  padding: 0 10px;
+}
+.ui-button {
+  margin-top: 20px;
+}
+</style>

@@ -1,0 +1,122 @@
+<template>
+    <ui-page >
+      <ui-nav-bar slot="nav-bar" class="nav_bar">
+        <ui-row height="46">
+          <ui-col vertical-align="middle" align="center" width="50">
+            <ui-icon name="ring" size="24" color="#fff"></ui-icon>
+          </ui-col>
+          <ui-col align="center">
+            <ui-view class="nav_title">个人中心</ui-view>
+          </ui-col>
+          <ui-col vertical-align="middle" align="center" width="50">
+            <ui-icon name="setting" size="24" color="#fff"></ui-icon>
+          </ui-col>
+        </ui-row>
+      </ui-nav-bar>
+      <ui-view class="user_content">
+        <ui-view>
+        <ui-row height="150" class="header_top">
+          <ui-col vertical-align="middle" align="center" width="90">
+            <ui-view class="head_portrait">
+            </ui-view>
+            <ui-image
+            src="{{ portraitUrl }}"
+            mode='aspectFill'
+            width="100"
+            height="100"
+            class="head_portrait"
+            ></ui-image>
+          </ui-col>
+        </ui-row>
+      </ui-view>
+          <ui-view class="header_top">
+            <ui-row class="login">
+              财务 · 张三 · 13344343421
+            </ui-row>
+            <ui-row class="login">
+              身份证号码 · 341232322332322
+            </ui-row>
+          </ui-view>
+        
+
+        <ui-view>
+          <ui-row space=40 style="font-size:22px">
+            <ui-col space=40>
+              移动办公 
+            </ui-col>
+          </ui-row>
+          <ui-row space=40>
+            <ui-col align="center">
+              <ui-image src="/static/img/sh.png"  mode=aspectFit width=50 height=50></ui-image>
+                学员信息
+            </ui-col>
+            <ui-col align="center">
+              <ui-image src="/static/img/yh.png" mode=aspectFit width=50 height=50></ui-image>
+              优惠审核
+            </ui-col>
+               <ui-col align="center">
+                  <ui-image src="/static/img/zs.png" mode=aspectFit width=50 height=50 bindtap="gorestudent"></ui-image>
+                  招生情况
+                </ui-col>
+                <ui-col align="center">
+                  <ui-image src="/static/img/bb.png" mode=aspectFit width=50 height=50></ui-image>
+                  财务报表
+                </ui-col>
+            </ui-row>
+        </ui-view>
+     </ui-view>
+    </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationStyle: 'custom',
+    navigationBarTextStyle: 'white',
+    backgroundColor: '#F4F4F4'
+  },
+  data () {
+    return {
+      portraitUrl:('http://img2.imgtn.bdimg.com/it/u=4163885218,1747615568&fm=27&gp=0.jpg')
+    }
+  },
+  methods: {
+     gorestudent(){
+      ui.navigateTo({
+        url: '/pages/recruit_student'
+      })
+    },
+
+  }
+}
+
+</script>
+
+<style lang="less">
+.user_content{
+  background-color: #ffffff;
+}
+
+.nav_bar {
+    
+    .nav_title {
+        color: rgb(8, 8, 8);
+    }
+}
+
+.header_top {
+   
+    .head_portrait {
+      border-radius: 50%; 
+    }
+    .login {
+      color: rgb(114, 110, 110);
+      font-size: 16px;
+    }
+    .login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+}
+
+</style>

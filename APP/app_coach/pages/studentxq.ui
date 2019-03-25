@@ -1,0 +1,198 @@
+<!--studentxq-->
+<template>
+  <ui-page>
+     <ui-view>
+       <ui-row style="background-color:#73c33a;font-size:18px" height=60 border-top=true border-bottom=true>
+         <ui-col span=2>
+           <ui-image
+              src="{{ portraitUrl }}"
+              mode='aspectFill'
+              width="60"
+              height="60"
+              class="head_portrait"
+              ></ui-image>
+         </ui-col>
+         <ui-col vertical-align="middle">
+           gogiong  13567789877
+         </ui-col>
+         <ui-col span=2 vertical-align="middle">
+           已结业
+         </ui-col>
+       </ui-row>
+       <ui-row border-top=true style="font-size:16px" space=20>
+         <ui-col align="center">分派日期</ui-col>
+         <ui-col align="center">科目</ui-col>
+         <ui-col align="center">车型</ui-col>
+         <ui-col align="center">学时</ui-col>
+       </ui-row>
+       <ui-row border-bottom=true space=20> 
+         <ui-col align="center">2018.9.8</ui-col>
+         <ui-col align="center">科目二</ui-col>
+         <ui-col align="center">C1</ui-col>
+         <ui-col align="center">1天</ui-col>
+       </ui-row>
+       
+        <ui-tab-view class="type-icon">
+          <template slot="header">
+            <ui-tab-view-header>
+              <ui-view class="item item-right">
+                <ui-icon name="mail"></ui-icon> 基础资料
+              </ui-view>
+            </ui-tab-view-header>
+            <ui-tab-view-header>
+              <ui-view class="item item-left">
+                <ui-icon name="api-data"></ui-icon> 培训记录
+              </ui-view>
+            </ui-tab-view-header>
+            <ui-tab-view-header>
+              <ui-view class="item item-left">
+                <ui-icon name="api-network"></ui-icon> 历史约考
+              </ui-view>
+            </ui-tab-view-header>
+          </template>
+          <template slot="body">
+            <ui-tab-view-body>
+              <ui-view class="tab-content">
+                <ui-row>
+                  <ui-col align="center">
+                    报名日期
+                  </ui-col>
+                  <ui-col align="center">
+                    2018年08月24日
+                  </ui-col>
+                </ui-row>
+                <ui-row>
+                  <ui-col align="center">
+                    性别
+                  </ui-col>
+                  <ui-col align="center">
+                    男
+                  </ui-col>
+                </ui-row>
+                <ui-row>
+                  <ui-col align="center">
+                    是否分期
+                  </ui-col>
+                  <ui-col align="center">
+                    否
+                  </ui-col>
+                </ui-row>
+                <ui-row>
+                  <ui-col align="center">
+                    有效期
+                  </ui-col>
+                  <ui-col align="center">
+                    2021年08月24日
+                  </ui-col>
+                </ui-row>
+                <ui-row>
+                  <ui-col align="center">
+                    培训时长
+                  </ui-col>
+                  <ui-col align="center">
+                    2018年08月24日
+                  </ui-col>
+                </ui-row>
+                <ui-row>
+                  <ui-col align="center">
+                    培训费
+                  </ui-col>
+                  <ui-col align="center">
+                    2800元
+                  </ui-col>
+                </ui-row>
+              </ui-view>
+            </ui-tab-view-body>
+            <ui-tab-view-body>
+              <ui-view class="tab-content">
+                <ui-row style="font-size:18px" border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    培训次数
+                  </ui-col>
+                  <ui-col align="center">
+                    2次
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年08月24日
+                  </ui-col>
+                  <ui-col align="center">
+                    2小时
+                  </ui-col>
+                </ui-row>
+                <ui-row border-top=true border-bottom=true space=20>
+                  <ui-col align="center">
+                    2018年09月25日
+                  </ui-col>
+                  <ui-col align="center">
+                    2小时
+                  </ui-col>
+                </ui-row>
+              </ui-view>
+            </ui-tab-view-body>
+            <ui-tab-view-body>
+              <ui-view class="tab-content">
+                <ui-row>
+                  <ui-col align="center">
+                    约考次数
+                  </ui-col>
+                  <ui-col align="center">
+                    3次
+                  </ui-col>
+                </ui-row>
+                <ui-row>
+                  <ui-col align="center">
+                    科二约考
+                    2018-8-8
+                  </ui-col>
+                  <ui-col align="center">
+                    明涛驾校
+                  </ui-col>
+                </ui-row>
+                <ui-row>
+                  <ui-col align="center">
+                    科二约考
+                    2018-8-18
+                  </ui-col>
+                  <ui-col align="center">
+                    明涛驾校
+                  </ui-col>
+                </ui-row>
+              </ui-view>
+            </ui-tab-view-body>
+          </template>
+        </ui-tab-view>
+     </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "学员详情"
+  },
+  data() {
+    return {
+      portraitUrl:require('#/static/img/123.png')
+    }
+  },
+  methods: {},
+  mounted() {}
+}
+</script>
+
+<style lang="less">
+.head_portrait {
+      border-radius: 50%; 
+}
+type-icon{
+  &.ui-tab-view-header{
+    text-align:center
+    .item {
+      position: relative;
+      width: 60px;
+    }
+  }
+}
+</style>

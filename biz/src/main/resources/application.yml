@@ -1,0 +1,57 @@
+spring:
+  profiles:
+    active: test #合并 application-test.yml 中的配置参数
+  #上传文件设置
+  http:
+    multipart:
+      max-file-size: 100Mb
+      max-request-size: 100Mb
+  #线程池配置信息
+  thread:
+    pool:
+      corePoolSize: 10
+      maxPoolSize: 20
+      keepAliveSeconds: 120
+      queueCapacity: 50
+  #数据库连接配置信息
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat,wall,log4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    cachePrepStmts: true
+#mybatis配置信息
+mybatis:
+  configLocation: classpath:mybatis/MapperConfig.xml
+
+logging:
+  config: classpath:log4j2.xml
+
+mapper:
+  identity: MYSQL
+
+qqj:
+  time: 1M
+  rs: 5
+  jg: 2000
+
+#测试调试 1 进行调试  0 正式  正式环境里不需要配置这个参数
+#debug_test: 1
+
+#车辆电子档案信息存放的地址
+carStaticPath: /opt/apiserver-webroot/img/
+#freeTime: 0
+
+ukey_pwd1: '02468246'
+ukey_pwd2: 'ABCDXYWZ'

@@ -1,0 +1,126 @@
+<!--教练详情-->
+<template>
+  <ui-page>
+    <ui-view>
+       <ui-row height="120" class="header_top">
+          <ui-col vertical-align="middle" align="center" width="90">
+            <ui-view class="head_portrait">
+            </ui-view>
+            <ui-image
+              src="{{detail.headImg}}"
+              mode='aspectFill'
+              width="100"
+              height="100"
+              class="head_portrait"
+            ></ui-image>
+          </ui-col>
+        </ui-row>
+    </ui-view>
+    <ui-view>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           姓名
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.coachName}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           性别
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.gender ==  '00'?'女':'男'}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           学员数量
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.traineeNum}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           准驾车型
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.drivingType}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           手机号码
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.phone}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           培训科目
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.coachSub}}
+         </ui-col>
+       </ui-row>
+       <ui-row height=50 border-bottom	space-top=5>
+         <ui-col space-left=20  vertical-align="middle" class="listTitle">
+           准驾车型
+         </ui-col>
+         <ui-col vertical-align="middle" align="right" space-right=20 class="listContent">
+           {{detail.drivingType}}
+         </ui-col>
+       </ui-row>
+    </ui-view>
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: "教练详情",
+    title:'教练详情'
+  },
+  data() {
+    return {
+      detail:{}
+    }
+  },
+  methods: {},
+  mounted() {
+     this.detail = JSON.parse(sessionStorage.getItem('coachDetail'))
+  }
+}
+</script>
+
+<style lang="less">
+.header_top {
+    .head_portrait {
+      border-radius: 50%; 
+    }
+    .login {
+      color: rgb(114, 110, 110);
+      font-size: 16px;
+    }
+    .login_after {
+        color: rgb(26, 24, 24);
+        font-size: 12px;
+    }
+}
+.button-style-demo1 {
+  background-color: #C01920;
+  border-radius: 20px;
+  border-color: #C01920;
+  box-shadow: 3px 3px 8px #E57A7E;
+  color: #fff;
+}
+.listTitle{
+  font-size: 32rpx;
+  color:#888888;
+}
+.listContent{
+  font-size: 30rpx;
+}
+</style>

@@ -1,0 +1,179 @@
+<!--userinfo.ui-->
+<template>
+  <ui-page>
+    <ui-nav-bar slot="nav-bar" class="nav_bar">
+      <ui-row height="46">
+        <ui-col vertical-align="middle" align="left" space-left="10"  width="50" bindtap="navigateBack">
+          <ui-icon type="arrow-left" size="16" color="#fff"></ui-icon>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">切换账户</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="50"></ui-col>
+      </ui-row>
+    </ui-nav-bar>
+
+    
+
+    <ui-view class="list_title">切换账户</ui-view>
+    <ui-check-list max="1" label-position="left" options="{{ countryList }}" type="plain" ui:model="{{ checklist }}" bindchange="changeZH"></ui-check-list>
+    
+    
+
+    <ui-view class="list_title">换个新账号</ui-view>
+    <ui-row height="50" class="userInfo_list2" bindtap="longinNew">
+      <ui-col vertical-align="middle" space-left="15">
+        换个新账号
+      </ui-col>
+      <ui-col vertical-align="middle" align="right" space-right="15">
+        <ui-view class="active">登录
+          <ui-icon type="xiayiyeqianjinchakangengduo" size="16" color="#656565"></ui-icon>
+        </ui-view>
+      </ui-col>
+    </ui-row>
+    <ui-row height="50" class="user_content_list3" space-top="20" bindtap="logOut">
+      <ui-col vertical-align="middle" align="center">
+        <ui-view class="log_out">清除所有用户缓存，并退出登录</ui-view>
+      </ui-col>
+    </ui-row>
+  </ui-page>
+</template>
+
+
+<script>
+// userinfo.js
+export default {
+  config: {
+    backgroundColor: '#F2F2F2',
+    delay:false,
+    title:'切换账户'
+  },
+  data () {
+    return {
+      portraitUrl: require('#/images/portrait_bg.png'),
+      tokenId: '',
+      countryList : [],
+      checklist:[]
+    }
+    
+  },
+  methods: {
+    navigateBack () {
+      ui.navigateBack()
+    },
+    longinNew () {
+      ui.navigateTo({
+              url: '/pages/login'
+      })
+    },
+    changeZH(valArray){
+      let userId = valArray[0]
+      let zhList =  localStorage.getItem('bossInfoList')
+      zhList = JSON.parse(zhList)
+
+      zhList.forEach(function (value,index) {
+          if(value.yhid == userId){
+          ui.getApp().Ajax.header.token = value.token 
+          ui.getApp().Ajax.header.userId = value.yhid 
+          ui.getApp().userInfo = value
+          localStorage.setItem("bossInfoList",JSON.stringify(value))
+          let token = {
+            "userId":value.yhid,
+            "username": value.name,
+            "token": value.token,
+            "expired_time": 0
+          }
+          localStorage.setItem("bossToken",JSON.stringify(token))
+          return
+
+        }
+         
+        })
+
+      
+    },
+    logOut(){
+      localStorage.clear()
+      sessionStorage.clear()
+      ui.showToast({ title: '清除成功', icon: 'success' })
+      setTimeout(() => {
+        ui.navigateTo({
+              url: '/pages/login'
+        })
+      }, 2000);
+    }
+  },
+  mounted () {
+     let userInfoList = localStorage.getItem('bossInfoList')
+     let userinfo  = localStorage.getItem('bossInfo')
+     let nowKey = []//选择列表默认选中当前登录用户
+     let chooseUser = []
+     if(userInfoList){
+        userInfoList = JSON.parse(userInfoList)
+        userInfoList.forEach(function (value,index) {
+          let obj = new Object()
+          obj.key = value.yhid
+          obj.value = value.sjh
+          chooseUser.push(obj)
+         
+        })
+
+        this.countryList = chooseUser
+        
+     }
+     userinfo = JSON.parse(userinfo)
+     nowKey[0] = userinfo.yhid
+     this.checklist = nowKey
+  }
+}
+
+</script>
+
+<style lang="less">
+
+// userinfo.less
+.nav_bar {
+  background: linear-gradient(to right, #1F97FE, #126DFE);
+  .nav_title{
+    color: #fff;
+  }
+}
+.userInfo_list{
+  background-color: #fff;
+  .active{
+    font-size: 14px;
+    color: #8C8C8C;
+  }
+  .active2{
+    font-size: 14px;
+    color: #1F95FF;
+  }
+}
+.userInfo_list2{
+  background-color: #fff;
+  .mix-1px(0, 0, 1, 0, #ccc);
+  .active{
+    font-size: 14px;
+    color: #8C8C8C;
+  }
+  .active2{
+    font-size: 14px;
+    color: #1F95FF;
+  }
+
+}
+
+.list_title{
+  font-size: 12px;
+  color: #656565;
+  padding-left: 15px;
+  line-height: 40px;
+}
+.user_content_list3{
+  background-color: #fff;
+  .mix-1px(0, 0, 1, 0, #ccc);
+}
+.log_out{
+  color: red;
+}
+</style>

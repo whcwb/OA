@@ -1,0 +1,496 @@
+<template>
+  <ui-page enable-reach-bottom-load="{{loadMore}}" on-load-more="{{ handleLoadMore }}" page-load="{{ pageLoad }}">
+    <ui-nav-bar slot="nav-bar" custom-style="{{ {'border-bottom':'1px solid rgba(231, 231, 231, 0.6)','background-color':'#fff'} }}">
+      <ui-row height="46">
+        <ui-col vertical-align="middle" align="center" width="60" bindtap="">
+         <!-- <ui-view class="nav_left"><ui-icon type="arrow-left" size="16" color="#39f"></ui-icon>返回</ui-view>-->
+        </ui-col>
+        <ui-col vertical-align="middle" align="center">
+          <ui-view class="nav_title">首页</ui-view>
+        </ui-col>
+        <ui-col vertical-align="middle" align="center" width="60" bindtap="qrCode">
+          <ui-icon type="QR" size="20" class="ui-nav-iconColor"></ui-icon>
+        </ui-col>
+      </ui-row>
+    </ui-nav-bar>
+    <!--轮播图开始-->
+    <ui-ex-swiper id="swiperdotsstyle5" pagination autoplay="true" ui:if="bannerList.length > 0">
+      <ui-ex-swiper-item ui:for="{{bannerList}}" ui:for-item="item" ui:for-index="index">
+        <ui-image bindtap="getImgDetail(item.jumpUrl)" src="{{ item.picUrl }}" mode="simple"></ui-image>
+      </ui-ex-swiper-item>
+    </ui-ex-swiper>
+    <!--轮播图开始结束-->
+    <!--消息通知-->
+    <ui-view class="sample_content">
+      <ui-row height="30">
+        <ui-col span="1" vertical-align="middle" class="text-alignC">
+          <ui-icon type="laba" size="14" class="ui-nav-iconColor"></ui-icon>
+        </ui-col>
+        <ui-col span="11" space-left="10">
+          <ui-roller autoplay="2000" speed="300">
+            <ui-roller-item ui:for="{{newsList}}" ui:for-item="itemNew">
+              <ui-row>
+                <ui-col span="12">
+                  <ui-text block class="roller-text">{{itemNew.title}}</ui-text>
+                </ui-col>
+              </ui-row>
+            </ui-roller-item>
+          </ui-roller>
+        </ui-col>
+      </ui-row>
+    </ui-view>
+    <!--消息通知结束-->
+    <!--教练筛选条件-->
+     <!--<ui-view class="sticky-in-relative-container" id="suggestion-title">
+      <ui-sticky class="header header1" stick-on-tap="stick-on-tap">
+        <ui-view>
+          <ui-row height="46" class="nav_top">
+            <ui-col vertical-align="middle" align="center" bindtap="openPopup(index)" ui:for="{{ navList }}" class="{{ item.active }}">
+              <ui-row height="46">
+                <ui-col vertical-align="middle" align="right" space-right="5">
+                  <ui-view>
+                    {{ item.name}}
+                  </ui-view>
+                </ui-col>
+                <ui-col vertical-align="middle" align="left" span="4" space-left="5">
+                  <ui-icon type="{{item.arrow}}" size="8" color="#878787;" class="{{ item.active }}"></ui-icon>
+                </ui-col>
+              </ui-row>
+            </ui-col>
+          </ui-row>
+        </ui-view>
+        <ui-view slot="sticky">
+          <ui-row height="46" class="nav_top">
+            <ui-col vertical-align="middle" align="center" bindtap="openPopup(index)" ui:for="{{ navList }}" class="{{ item.active }}">
+              <ui-row height="46">
+                <ui-col vertical-align="middle" align="right" space-right="5">
+                  <ui-view>
+                    {{ item.name}}
+                  </ui-view>
+                </ui-col>
+                <ui-col vertical-align="middle" align="left" span="4" space-left="5">
+                  <ui-icon type="{{item.arrow}}" size="8" color="#878787;" class="{{ item.active }}"></ui-icon>
+                </ui-col>
+              </ui-row>
+            </ui-col>
+          </ui-row>
+        </ui-view>
+      </ui-sticky>
+    </ui-view>-->
+    <!--教练筛选条件结束-->
+    <!--学生列表开始-->
+    <ui-view class="content_list" >
+      <ui-view slot="content">
+            <ui-row height="80" class="top_tip" border-bottom ui:for="{{ studentItems }}">
+              <ui-col width="80" align="center" vertical-align="middle" bindtap="gotoDetail(item.id)">
+                <ui-image class="left_header" src="{{ item.head_img }}"  mode="simple"></ui-image>
+              </ui-col>
+              <ui-col class="text" align="left" vertical-align="middle" space="20">
+                <ui-view style="width: 100%;">
+                  <ui-row height="40">
+                    <ui-col align="left" vertical-align="middle" bindtap="gotoDetail(item.id)">
+                      <ui-text>{{ item.trainee_name }}</ui-text>
+                      <ui-view>{{jlbh}}:{{ item.allotDay }}天</ui-view>
+                    </ui-col>
+                    <ui-col align="right" width="60" vertical-align="middle" space-right="10">
+                      <ui-icon bindtap="calPhone(item.phone)" type="dianhua-yuankuang" size="34" color="#3399FF"></ui-icon>
+                    </ui-col>
+                  </ui-row>
+                  
+                </ui-view>
+              </ui-col>
+            </ui-row>
+            <ui-view style="text-align:center;padding-top:20px"  ui:show="{{(studentItems && studentItems.length>0) ? false : true}}">
+              <ui-image src="{{require('#/static/img/errMessT.png')}}" mode="widthFix" width="130" style="display:inline-block;"></ui-image>
+           </ui-view>
+      </ui-view>
+      <ui-view style="width:200px;margin:0 auto;">
+        <ui-divider ui:show="{{!loadMore}}">没有新数据了</ui-divider>
+      </ui-view>
+    </ui-view>
+    <!--学生列表结束-->
+    <!--<ui-popup ui:model="{{show1 }}" position="top" top="{{ popupTop }}" height="{{ scroHeight }}" mask-style="{{{ top: popupTop+'px' }}}" bindhide="popHide" bindshow="popShow">
+      <ui-view class="top_pop">
+        <ui-scroll-view scroll-y="scroll-y" height="{{scroHeight}}">
+          <ui-check-list max="1" label-position="left" options="{{ kemuList }}" type="plain" ui:model="{{ checklist1 }}" bindchange="change" color="#3AC3B0"></ui-check-list>
+        </ui-scroll-view>
+      </ui-view>
+    </ui-popup>
+
+    <ui-popup ui:model="{{show2 }}" position="top" top="{{ popupTop }}" height="{{ scroHeight }}" mask-style="{{{ top: popupTop+'px' }}}" bindhide="popHide1" bindshow="popShow1">
+      
+        <ui-view class="top_pop">
+          <ui-scroll-view scroll-y="scroll-y" height="{{scroHeight}}">
+            <ui-check-list max="1" label-position="left" options="{{ xblist }}" type="plain" ui:model="{{ checklist2 }}" bindchange="change1" color="#3AC3B0"></ui-check-list>
+          </ui-scroll-view>
+        </ui-view>
+    </ui-popup>
+
+    <ui-popup ui:model="{{ show3 }}" position="top" top="{{ popupTop }}"  mask-style="{{{ top: popupTop+'px' }}}" bindhide="popHide2" bindshow="popShow2">
+      <ui-view class="top_pop">
+        <ui-scroll-view scroll-y="scroll-y" height="{{scroHeight}}">
+            <ui-check-list max="1" label-position="left" options="{{ sortList }}" type="plain" ui:model="{{ checklist3 }}" bindchange="change2" color="#3AC3B0"></ui-check-list>
+        </ui-scroll-view>
+      </ui-view>
+    </ui-popup>-->
+  </ui-page>
+</template>
+
+<script>
+export default {
+  config: {
+    navigationBarTitleText: '首页',
+    title:'首页',
+    navigationStyle:'custom',
+    scrollType:'body'
+  },
+  data () {
+    return {
+      bannerList:[],
+      jlbh: '报名时长',
+      typetype:ui.getApp().globalData.bannerAutoplay,
+      buttonText: '界面跳转',
+      isShow:false,
+      swiperHeight: ui.WIN_WIDTH / 1125 * 263,
+      newsList:[],//公告消息列表
+      studentItems: [],//学生数据
+      scroHeight: parseInt(ui.DEFAULT_CONTENT_HEIGHT * 0.8),
+      kemuList: ["科目一","科目二","科目三","科目四"],
+      xblist:["男","女"],
+      sortList: [
+        '智能排序', '好评优先', '人气最高','驾龄优先'
+      ],
+      checklist1: [],
+      checklist2: [],
+      checklist3: [],
+      navList: [
+        {
+          name: '科目',
+          active: '',
+          arrow: 'biaotou-daoxu',
+          bindtap: 'openPopup1'
+        }, {
+          name: '性别',
+          active: '',
+          arrow: 'biaotou-daoxu',
+          bindtap: 'openPopup2'
+        }, {
+          name: '排序',
+          active: '',
+          arrow: 'biaotou-daoxu',
+          bindtap: 'openPopup3'
+        }
+      ],
+      winWidth: ui.WIN_WIDTH,
+      popupTop: ui.DEFAULT_HEADER_HEIGHT + 46,
+      show1: false,
+      show2: false,
+      show3: false,
+      switch1: false,
+      switch2: false,
+      loadMore:true,//加载更多
+      count:0,//用于模拟数据后期可删除
+      wheight:ui.WIN_HEIGHT,
+      pageLoad: {// 切换页面执行方法
+        trigger: 'always',
+        handle: () => {
+            this.handleLoadMore()//加载出至今未结业的学生最长的十条记录
+            this.getBannerImg()
+            this.getMessage()//获取公告
+        }
+      }
+    }
+      
+    
+  },
+  methods: {
+    openPopup (index) {
+      
+      if (index === 0) {
+        this.show2 = false
+        this.show3 = false
+        this.show1 = !this.show1
+      } else if (index === 1) {
+        this.show1 = false
+        this.show3 = false
+        this.show2 = !this.show2
+      } else if (index === 2) {
+        this.show1 = false
+        this.show2 = false
+        this.show3 = !this.show3
+      }
+    },
+
+    change (val) {
+      this.navList[0].name = val.join('-')
+      this.show1 = false
+     
+    },
+    change1 (val) {
+      this.navList[1].name = val.join('-')
+      this.show2 = false
+    },
+    change2 (val) {
+      this.navList[2].name = val.join('-')
+      this.show3 = false
+    },
+    popHide () {
+      this.navList[0].active = ''
+    },
+    popShow () {
+      this.navList[0].active = 'active'
+    },
+    popHide1 () {
+      this.navList[1].active = ''
+    },
+    popShow1 () {
+      this.navList[1].active = 'active'
+    },
+    popHide2 () {
+      this.navList[2].active = ''
+    },
+    popShow2 () {
+      this.navList[2].active = 'active'
+    },
+    handleLoadMore () {//获取学生
+      this.$http('POST',ui.getApp().apis.TOP10,{
+           coachId:this.getUser().id
+          },(res)=>{
+            console.log("前十条数据"+JSON.stringify(res))
+            let result = res.result || []
+            
+            result.forEach((value,index) => {
+               if(! value.head_img){
+                  value.head_img = require('#/images/portrait_bg.png')
+               }else{
+                 value.head_img = ui.getApp().imgUrlHeader+value.head_img
+               }
+            });
+           
+           this.studentItems=result
+           this.loadMore = false
+            
+      })
+      
+    },
+    qrCode(){//显示教练二维码
+    let headerImg = this.getUser().headImg
+      if(headerImg){
+          headerImg = ui.getApp().imgUrlHeader+headerImg
+      }else{
+          headerImg = require('#/images/portrait_bg.png')
+      }
+
+    
+    this.$http('POST',ui.getApp().apis.GETQRCODE,{
+           id:this.getUser().id
+          },(res)=>{
+             console.log(JSON.stringify(res))
+            import(`#/pages/dialogs/qrCode.ui`).then((content) => {
+            ui.showDialog({
+              // 窗体标题
+              title: '扫我打卡',
+              content: content,
+              statusBarColor: 'black',
+              headerStyle: {//设置dialog  nav样式
+                    color: '#FFFFFF',
+                    'background-color':'#39f'
+                },
+              // 向dialog1.ui传入数据
+              data: {
+                name: this.getUser().coachName,
+                headerIcon:headerImg,
+                qrCode:res.message
+              },
+              // 接收ui.hideDialog回传的数据
+              onHide: (data) => {
+                
+              }
+            })
+          })
+
+           
+      })
+
+    },
+    //打电话方法
+   calPhone (phone){
+    
+     if(phone){
+     ui.makePhoneCall({
+        phoneNumber: phone
+     })
+     }else{
+        ui.showToast({ title: '手机号码为空!'})
+     }
+   },
+   getBannerImg (){//获取轮播图
+      this.$http('POST',ui.getApp().apis.PICROTATIONQUERYPIC,{type:'2'},(res)=>{
+              let result = res.result || []
+              result.forEach(function (value,index) {
+                 if(value.picUrl){
+                   value.picUrl = ui.getApp().imgUrlHeader+value.picUrl
+                 }else{
+                   value.picUrl = require("#/static/img/bank/card1.png")
+                 }
+              })
+              this.bannerList = result
+              
+      })
+    },
+    getMessage(){//获取公告
+      this.$http('post',ui.getApp().apis.MESSAGE,{id:this.getUser().id,pageNum:1,pageSize:10},(res)=>{
+         this.newsList = res.page.list
+      })
+    },
+    getImgDetail(url){//轮播图点击事件
+        if(url){
+        window.location.href = url
+        }else{
+        ui.showToast({ title: '跳转链接为空'})  
+        }
+    },
+    gotoDetail (stuId){//学生id 
+        
+        ui.navigateTo({
+          url: 'student/detail?id='+stuId
+        })
+    },
+  },
+  
+
+  mounted() {
+    //首屏页面需要在mounted中延时才能调用框架api，其他页面不需要延时
+    setTimeout(() => {
+      //关闭app启动图
+      ui.closeSplashscreen()
+    }, 1000);
+
+    
+    
+  }
+}
+
+</script>
+
+<style lang="less">
+.content{
+  .mix-flex-center();
+}
+.sliderContent{
+  padding:50px 50px 0px 50px;
+}
+.buttonContent{
+  padding:50px;
+}
+.text-alignC{
+  text-align: center;
+}
+
+//通知样式
+  .roller-text{
+    .mix-text-overflow();
+    color: rgb(122, 126, 131);
+    line-height:30px;
+  }
+//-------------------------------------------------------------------------控制筛选条件开始
+.sticky-in-relative-container {
+  position: relative;
+  height: 46px;
+}
+ .nav_top{//筛选条件部分
+  background: #fff;
+  font-size:14px;
+  color:#878787;
+  .ui-col.active{
+    color:#3399ff;
+  }
+  .ui-row{
+    width: 100%;
+    height: 100%;
+    .ui-view{
+      width: 100%;
+      .mix-text-overflow();
+    }
+  }
+}
+//展示选择项样式
+.top_pop{
+  background: #fff;
+}
+//筛选数据列表勾选时的颜色设置
+.is-checked .weui-cell__bd{
+  color:#3399ff 
+}
+//筛选框图标设置样式
+.ui-icon{
+  display: inline-block;
+  transform:rotate(0deg);
+  transition: all .3s ease-in;
+  &.active{
+    transform:rotate(180deg);
+    color:#3399ff !important;
+  }
+}
+
+.content {
+  height: 60px;
+  line-height: 60px;
+
+  .swiper-slide {
+    padding-left: 1em;
+    padding-right: 1em;
+    color: #333;
+  }
+}
+
+.tabs_head{
+  .mix-1px(0, 0, 1, 0, #ccc);
+  .ui-view{
+    width: 45px;
+    height: 100%;
+    line-height: 46px;
+    border-bottom: 2px solid transparent;
+    &.active{
+      border-bottom: 2px solid #3399ff;
+    }
+  }
+}
+
+.ui-cascader-content > .ui-cascader-item:nth-child(2n){
+  width: 65%;
+  flex: 0 0 60%;
+}
+//--------------------------------------------------------------------控制筛选条件结束
+.left_header{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    line-height: 50px;
+    
+  }
+  //轮播图样式
+.swiper-slide {
+    .ui-image {
+      width: 100%;
+      height: 300rpx;
+  }
+}
+#swiperdotsstyle5{
+    .swiper-pagination-bullet {
+      background-color: #efefef;
+      opacity: .8;
+      width: 4px;
+      height: 4px;
+      transition: all .2s ease-out;
+
+      &.swiper-pagination-bullet-active {
+        width: 12px;
+        height: 4px;
+        border-radius: 5px;
+        background-color: #fff;
+        opacity: 1;
+      }
+    }
+}
+</style>

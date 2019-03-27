@@ -392,9 +392,10 @@
       },
 
       BDNum() {
-        var v = this
+        var v = this;
+        var ids = this.messIdList.join(',');
         this.$http.post('/api/chargemanagement/savePjbh', {
-          ids: this.messIdList,
+          ids: ids,
           num: 'pjdy',
           pjbh: this.num
         }).then(res => {

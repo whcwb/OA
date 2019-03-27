@@ -434,8 +434,9 @@
         },300)
       },
       BDNum(){
-        var v = this
-        this.$http.post('/api/chargemanagement/savePjbh',{ids:this.messIdList,num:'signUp',pjbh:this.num}).then(res=>{
+        var v = this;
+        var ids = this.messIdList.join(',');
+        this.$http.post('/api/chargemanagement/savePjbh',{ids:ids,num:'signUp',pjbh:this.num}).then(res=>{
           if(!res.code == 200){
             return
           }else {

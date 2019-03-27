@@ -7,6 +7,7 @@ import com.ldz.sys.base.BaseController;
 import com.ldz.sys.base.BaseService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.commonUtil.JsonUtil;
+import com.ldz.util.exception.RuntimeCheck;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -151,8 +152,10 @@ public class ChargeManagementController extends BaseController<ChargeManagement,
      * 保存票据编号
      */
     @PostMapping("/savePjbh")
-    public ApiResponse<String> getPjbh(String [] ids, String num, String pjbh){
-        return service.getPjbh(Arrays.asList(ids),num,pjbh);
+    public ApiResponse<String> getPjbh(String  ids, String num, String pjbh){
+        RuntimeCheck.ifBlank(ids , "请选择需要打印的记录");
+        String[] split = ids.split(",");
+        return service.getPjbh(Arrays.asList(split),num,pjbh);
     }
 
     /**

@@ -324,16 +324,17 @@
         })
       },
       rem() {//重置
-        this.form = {traineeName: '', idCardNo: '', chargeSource: '', chargeType: '00'}
-        this.$Message.success('重置成功');
+        window.location.reload();
+        /*this.$Message.success('重置成功');*/
       },
       save() {
         this.$refs.saveForm.validate((valid) => {
           if (valid) {
             this.$http.post(this.apis.TJSDF.ADD, this.form).then((res) => {
               if (res.code == 200) {
-                this.getPagerList()
-                this.form = {traineeName: '', idCardNo: '', chargeSource: '', chargeType: '00'}
+                var chargeSource = this.form.chargeSource;
+                this.getPagerList();
+                this.form = {traineeName: '', idCardNo: '',chargeSource: chargeSource , chargeType: '00'}
               }
               this.$Message.info(res.message);
             }).catch((err) => {

@@ -183,7 +183,7 @@
     },
     watch: {
       'param': function (n, o) {
-        console.log('1236', n);
+        // console.log('1236', n);
       }
     },
     created() {
@@ -200,11 +200,11 @@
     },
     methods: {
       yichang(){
-        console.log('yichangchulidiankaosaolaoge');
+        // console.log('yichangchulidiankaosaolaoge');
         this.modal10 = true
       },
       ycok(){
-        console.log(this.reason);
+        // console.log(this.reason);
         if(this.reason == ''){
           this.swal({
             title: '请填写异常原因!',
@@ -298,8 +298,8 @@
         })
       },
       change(vaule, key) {
-        console.log('//////', vaule);
-        console.log(key);
+        // console.log('//////', vaule);
+        // console.log(key);
         this.param.orgPath = key[key.length - 1].value
       },
     }

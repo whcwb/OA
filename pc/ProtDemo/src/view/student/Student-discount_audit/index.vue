@@ -425,7 +425,7 @@
           }
         }).catch(err => {
           this.SpinShow = false
-          console.log(err);
+          // console.log(err);
         })
       },
       getPagerList1() {
@@ -439,7 +439,7 @@
           }
         }).catch(err => {
           this.SpinShow1 = false
-          console.log(err);
+          // console.log(err);
         })
       },
       //撤回

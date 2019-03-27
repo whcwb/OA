@@ -147,7 +147,7 @@
       getdata() {
         this.$http.get('/api/chargemanagement/pager', {params:this.param}).then(res => {
           if (res.code == 200) {
-            console.log(res);
+            // console.log(res);
             this.tableData = res.page.list
             this.total = res.page.total
           }

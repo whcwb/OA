@@ -70,7 +70,7 @@
       },
       methods:{
         winPrint(r){
-          console.log(r);
+          // console.log(r);
           if((r.chargeCode == '0004' || r.chargeCode == '0005') && r.inOutType == '00'){
             this.$emit('print',{traineeId:r.traineeId,id:r.id})
             return;

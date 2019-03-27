@@ -598,8 +598,8 @@
       }
     },
     created() {
-      console.log(this.selectRow);
-      console.log(this.selectRow.serialNum);
+      // console.log(this.selectRow);
+      // console.log(this.selectRow.serialNum);
       this.km()
 
     },
@@ -680,7 +680,7 @@
           return
         }
         this.selectRow.testInfos.forEach((item, index) => {
-          console.log(item);
+          // console.log(item);
           if (item.subject == "科目一") {
             this.fir.push(item)
           } else if (item.subject == "科目二") {

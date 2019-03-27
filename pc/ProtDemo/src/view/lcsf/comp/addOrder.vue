@@ -73,7 +73,7 @@
             this.readkar();
             return
           }
-          console.log(this.formData);
+          // console.log(this.formData);
           this.$http.post('/api/lcjl/kslc',this.formData).then((res)=>{
             if(res.code == 200){
               this.DrawerVal = false;
@@ -132,7 +132,7 @@
                   }
                 },200)
               }
-              console.log('v.showFQfzkp',v.showFQfzkp);
+              // console.log('v.showFQfzkp',v.showFQfzkp);
               if (v.showFQfzkp){
                 return;
               }
@@ -174,13 +174,13 @@
               this.CarList = res.page.list
             } else {
               this.$Message.info(res.message);
-              console.log(res);
+              // console.log(res);
             }
           })
         },
         getSafemanList(){
           this.$http.post('/api/zgjbxx/getAqy',{notShowLoading:'true'}).then((res)=>{
-            console.log(res);
+            // console.log(res);
             if(res.code == 200){
               this.sfaemanlist = res.result
             }else {
@@ -191,13 +191,13 @@
         show(){
           this.DrawerVal = true
           this.formData = this.$parent.formData;
-          console.log('open');
-          console.log(this.formData);
+          // console.log('open');
+          // console.log(this.formData);
           this.getSafemanList()
         },
         open(){},
         close() {
-          console.log('close');
+          // console.log('close');
           this.formData = {};
           this.DrawerVal = false;
           this.sfaemanlist = [];

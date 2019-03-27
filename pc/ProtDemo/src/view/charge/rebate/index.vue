@@ -201,8 +201,8 @@
       },
       keerkesan(val) {
         this.MenuItemName = val
-        console.log(this.MenuItemName);
-        console.log(val);
+        // console.log(this.MenuItemName);
+        // console.log(val);
         setTimeout(() => {
           $("#code input[type='text']").eq(0).focus();
         }, 200)

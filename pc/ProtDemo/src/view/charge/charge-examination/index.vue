@@ -204,7 +204,7 @@
     methods: {},
     watch:{
       param1Time:function (n,o) {
-        console.log(n);
+        // console.log(n);
         // this.param1.firSubPaymentTimeLike = n
         // this.param1.secSubPaymentTimeLike = n
         // this.param1.thirdSubPaymentTimeLike = n
@@ -364,7 +364,7 @@
                   },
                   on: {
                     click: () => {
-                      console.log(p.row.remark);
+                      // console.log(p.row.remark);
                       // console.log(this.payOk.remark);
                       this.payOk.traineeId = p.row.id
                       this.OKpay(p.index)

@@ -189,7 +189,7 @@
         let userInfoJson = sessionStorage.getItem("userInfo");
         let userInfo = JSON.parse(userInfoJson);
         let jgdm = userInfo.jgdm;
-        console.log('jgdm', jgdm);
+        // console.log('jgdm', jgdm);
         this.$http.get(this.apis.USER.QUERY, {
           params: {
             jgdmStartWith: jgdm,

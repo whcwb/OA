@@ -76,8 +76,14 @@ public class ExcelReader {
             Map<Integer,String> map = new HashMap<Integer, String>();
 
             while (j < colNum) {
-                map.put(j, getCellFormatValue(row.getCell((short) j)).trim().replaceAll("\t\r", ""));
-                j++;
+                try {
+                    map.put(j, getCellFormatValue(row.getCell((short) j)).trim().replaceAll("\t\r", ""));
+                    j++;
+                }catch (NullPointerException e){
+                    j++;
+                    continue;
+                }
+
             }
             list.add(map);
         }

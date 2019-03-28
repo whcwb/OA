@@ -23,4 +23,7 @@ public class BizCkServiceImpl extends BaseServiceImpl<BizCk, String> implements 
 	public boolean fillPagerCondition(LimitedCondition condition){
 		return true;
 	}
+
+
+
 }

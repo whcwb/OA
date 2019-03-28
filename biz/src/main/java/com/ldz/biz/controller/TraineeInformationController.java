@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 学生基本信息
@@ -118,7 +119,8 @@ public class TraineeInformationController extends BaseController<TraineeInformat
                 RuntimeCheck.ifFalse(list!=null&&list.size()>0&&list.get(0).size()>1,"请选择正确的受理确认模板");
                 RuntimeCheck.ifFalse(StringUtils.equals(list.get(0).get(0),"学员身份证"),"请上传正确的导入信息");
                 RuntimeCheck.ifFalse(StringUtils.equals(list.get(0).get(1),"学员流水号"),"导入文件中未找到学员流水号字段，请核实");
-                ret=service.impAcceptanceExcel(list,filename.substring(0,filename.lastIndexOf(".")));
+                List<Map<Integer, String>> collect = list.stream().filter(m -> StringUtils.isNotBlank(m.get(0))).collect(Collectors.toList());
+                ret=service.impAcceptanceExcel(collect,filename.substring(0,filename.lastIndexOf(".")));
             } catch (IOException e) {
                 e.printStackTrace();
             }

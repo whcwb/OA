@@ -79,7 +79,8 @@ export default {
 
 
   getPrintNum(num, ids, callback) {
-    $http.post('/api/chargemanagement/receiptNo', {num: num, ids: ids}).then((res) => {
+    var idList = ids.join(',');
+    $http.post('/api/chargemanagement/receiptNo', {num: num, ids: idList}).then((res) => {
       if (res.code == 200) {
         callback && callback(res.message)
       }

@@ -9,6 +9,7 @@ import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.commonUtil.JsonUtil;
 import com.ldz.util.exception.RuntimeCheck;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -137,8 +138,12 @@ public class ChargeManagementController extends BaseController<ChargeManagement,
      * 生成收据编号
      */
     @PostMapping("/receiptNo")
-    public ApiResponse<String> getReceiptNo(@RequestParam(value = "ids",required = false)String[] ids,@RequestParam("num") String num){
-        return service.getReceiptNo(ids,num);
+    public ApiResponse<String> getReceiptNo(@RequestParam(value = "ids",required = false)String ids,@RequestParam("num") String num){
+        String [] split = {} ;
+        if(StringUtils.isNotBlank(ids)){
+            split = ids.split(",");
+        }
+        return service.getReceiptNo(split,num);
     }
 
    /* @PostMapping("/pjnum")

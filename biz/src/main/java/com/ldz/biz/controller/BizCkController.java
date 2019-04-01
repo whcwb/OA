@@ -4,7 +4,9 @@ import com.ldz.biz.model.BizCk;
 import com.ldz.biz.service.BizCkService;
 import com.ldz.sys.base.BaseController;
 import com.ldz.sys.base.BaseService;
+import com.ldz.util.bean.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,4 +20,10 @@ public class BizCkController extends BaseController<BizCk, String> {
     protected BaseService<BizCk, String> getBaseService() {
         return service;
     }
+
+    @PostMapping("getPager")
+    public ApiResponse<String> getPager(String kcMc, String kcLx, Integer pageNum, Integer pageSize){
+        return service.getPager(kcMc, kcLx, pageNum, pageSize);
+    }
+
 }

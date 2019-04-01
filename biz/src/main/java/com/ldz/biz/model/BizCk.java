@@ -3,6 +3,7 @@ package com.ldz.biz.model;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 @Table(name = "biz_ck")
@@ -41,8 +42,45 @@ public class BizCk implements Serializable {
     @Column(name = "KC_ID")
     private String kcId;
 
+    /**
+     * 领用部门代码
+     */
+    private String jgdm;
+
+    /**
+     * 领用部门名称
+     */
+    private  String jgmc;
+
+    @Transient
+    private BizKc kc;
+
 
     private static final long serialVersionUID = 1L;
+
+    public String getJgdm() {
+        return jgdm;
+    }
+
+    public BizKc getKc() {
+        return kc;
+    }
+
+    public void setKc(BizKc kc) {
+        this.kc = kc;
+    }
+
+    public void setJgdm(String jgdm) {
+        this.jgdm = jgdm;
+    }
+
+    public String getJgmc() {
+        return jgmc;
+    }
+
+    public void setJgmc(String jgmc) {
+        this.jgmc = jgmc;
+    }
 
     public String getKcId() {
         return kcId;

@@ -15,7 +15,13 @@
           <Col>
             <Button type="info" style="margin-right: 8px"
                     @click="compName='newClass'"
-            >库存流水
+            >入库流水
+            </Button>
+          </Col>
+          <Col>
+            <Button type="info" style="margin-right: 8px"
+                    @click="compName='handout'"
+            >出库流水
             </Button>
           </Col>
         </Row>
@@ -42,7 +48,7 @@
 <script>
   import newClass from './comp/newClass'
   import batch from './comp/batch'
-
+  import handout from './comp/handout'
   import addnumber from './comp/add'
   import resuceNumber from './comp/reduce'
 
@@ -52,7 +58,7 @@
     components: {
       newClass, batch,
       addnumber, resuceNumber,
-      record
+      record, handout
     },
     data() {
       return {

@@ -12,7 +12,7 @@ public interface BizKcService extends BaseService<BizKc, String> {
 
     ApiResponse<String> add(String id, Integer sl, String bz,float rkDj);
 
-    ApiResponse<String> handOut(String id, Integer sl,String zgId, String bz);
+    ApiResponse<String> handOut(String id, Integer sl, String zgId, String bz, String jgdm);
 
     void removeEntity(String id);
 

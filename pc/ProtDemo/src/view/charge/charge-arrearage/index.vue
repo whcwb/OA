@@ -38,13 +38,23 @@
         </Col>
         <Col span="12" :lg="12" :md="24">
           <Row :gutter="10" type="flex" justify="end">
-            <Col span="8" :lg="8" :md="7">
+            <Col span="4" :lg="4" :md="3">
+              <div style="width:100%">
+                <Select v-model="param.jgdm"
+                        clearable
+                        placeholder="请选择报名点"
+                        @on-change="CasChange">
+                  <Option v-for="item in CascaderList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                </Select>
+              </div>
+            </Col>
+            <Col span="5" :lg="5" :md="5">
               <Input v-model="param.nameLike"
                      @on-enter="getPagerList"
                      placeholder="请输入学员姓名"/>
             </Col>
 
-            <Col span="8" :lg="8" :md="7">
+            <Col span="7" :lg="7" :md="6">
               <Input v-model="param.idCardNoLike"
                      @on-enter="getPagerList"
                      placeholder="证件号码"/>
@@ -330,7 +340,9 @@
         tableData: [],
         total: 0,//总数量
         allmoney: 0,
+        CascaderList: [],
         param: {
+          jgdm:'',
           nameLike: '',
           idCardNoLike: '',
           //分页数据
@@ -536,7 +548,8 @@
     created() {
       this.param1.timeGte = this.bmTime[0];
       this.param1.timeLte = this.bmTime[1];
-      this.getPagerList()
+      this.getPagerList();
+      this.getBmdList();
     }
     ,
     computed: {
@@ -550,6 +563,25 @@
       }
     },
     methods: {
+      CasChange(val) {
+        this.param.pageNum = 1,
+          this.getPagerList()
+      },
+      getBmdList() {
+        this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
+          if (res.code === 200) {
+            if(res.result[0].value.length==3){
+              this.CascaderList= res.result[0].children[0].children;
+            }else if(res.result[0].value.length==6){
+              this.CascaderList = res.result[0].children;
+            }else if(res.result[0].value.length==9){
+              this.CascaderList = res.result
+            }
+
+          }
+        }).catch((error) => {
+        })
+      },
       DatePickerC(data){
         if(data[0].length == 10){
           this.param1.timeGte = data[0] + ' 00:00:00' ;

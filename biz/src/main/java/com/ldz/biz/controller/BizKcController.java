@@ -39,9 +39,17 @@ public class BizKcController extends BaseController<BizKc, String> {
         return service.add(id,sl,bz,rkDj);
     }
 
+    /**
+     * 出库
+     * @param id 库存id
+     * @param sl 数量
+     * @param zgId 员工姓名
+     * @param bz 备注
+     * @return
+     */
     @PostMapping("/handOut")
-    public ApiResponse<String> handOut(String id, Integer sl,String zgId,String bz){
-        return service.handOut(id,sl,zgId,bz);
+    public ApiResponse<String> handOut(String id, Integer sl,String zgId,String bz,String jgdm){
+        return service.handOut(id,sl,zgId,bz,jgdm);
     }
 
 

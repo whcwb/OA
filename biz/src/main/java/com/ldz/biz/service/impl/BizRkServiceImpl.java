@@ -71,24 +71,12 @@ public class BizRkServiceImpl extends BaseServiceImpl<BizRk, String> implements 
 				simpleCondition.eq(BizRk.InnerColumn.pc,pc);
 				simpleCondition.setOrderByClause(" cjsj desc");
 				List<BizRk> rks = findByCondition(simpleCondition);
-
-
-
 				if(CollectionUtils.isNotEmpty(rks)){
 					SimpleCondition condition = new SimpleCondition(BizKc.class);
 					condition.in(BizKc.InnerColumn.id,rks.stream().map(BizRk::getKcId).collect(Collectors.toList()));
 					List<BizKc> kcs = kcService.findByCondition(condition);
 					Map<String, BizKc> collect = kcs.stream().collect(Collectors.toMap(BizKc::getId, bizKc -> bizKc));
-					Float total = 0f;
-					for (BizRk rk : rks) {
-						float v = rk.getRkSl() * rk.getRkDj();
-						total += v;
-					}
-
-
-
-					// Float aFloat1 = rks.stream().map(BizRk::getRkDj).reduce((aFloat, aFloat2) -> aFloat + aFloat2).get();
-
+					double total = rks.stream().mapToDouble(rk-> rk.getRkSl() * rk.getRkDj()).sum();
 					rks.stream().forEach(bizRk1 -> bizRk1.setBizKc(collect.get(bizRk1.getKcId())));
 					bizRk.setTotal(total);
 				}

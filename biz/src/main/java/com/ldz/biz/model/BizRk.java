@@ -57,17 +57,17 @@ public class BizRk implements Serializable {
     private BizKc bizKc;
 
     @Transient
-    private Float total;
+    private Double total;
 
 
 
     private static final long serialVersionUID = 1L;
 
-    public Float getTotal() {
+    public Double getTotal() {
         return total;
     }
 
-    public void setTotal(Float total) {
+    public void setTotal(Double total) {
         this.total = total;
     }
 

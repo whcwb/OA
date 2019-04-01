@@ -12,7 +12,9 @@ import com.ldz.biz.service.BizRkService;
 import com.ldz.biz.service.ZgjbxxService;
 import com.ldz.sys.base.BaseServiceImpl;
 import com.ldz.sys.base.LimitedCondition;
+import com.ldz.sys.model.SysJg;
 import com.ldz.sys.model.SysYh;
+import com.ldz.sys.service.JgService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.DateUtils;
@@ -34,7 +36,8 @@ public class BizKcServiceImpl extends BaseServiceImpl<BizKc, String> implements 
 	private BizRkService bizRkService;
 	@Autowired
 	private ZgjbxxService zgjbxxService;
-
+	@Autowired
+	private JgService jgService;
 	@Autowired
 	private BizCkService bizCkService;
 
@@ -170,13 +173,14 @@ public class BizKcServiceImpl extends BaseServiceImpl<BizKc, String> implements 
 	}
 
 	@Override
-	public ApiResponse<String> handOut(String id, Integer sl,String zgId,String bz) {
+	public ApiResponse<String> handOut(String id, Integer sl, String zgId, String bz, String jgdm) {
 		SysYh sysYh = getCurrentUser();
 		BizKc bizKc = findById(id);
 		Zgjbxx zgjbxx = zgjbxxService.findById(zgId);
 		RuntimeCheck.ifNull(zgjbxx, "员工信息未找到,请联系管理员");
 		RuntimeCheck.ifNull(bizKc, "该类库存不存在,请先添加该类库存");
 		RuntimeCheck.ifTrue(bizKc.getKcSl() - sl < 0,"当前物品库存不足,请联系管理员");
+
 		bizKc.setXgSj(DateUtils.getNowTime());
 		bizKc.setXgr(sysYh.getZh()+"-" + sysYh.getXm());
 		bizKc.setKcSl(bizKc.getKcSl() - sl);
@@ -184,6 +188,7 @@ public class BizKcServiceImpl extends BaseServiceImpl<BizKc, String> implements 
 
 		// 保存出库记录
 		BizCk bizCk = new BizCk();
+		SysJg jg = jgService.findByOrgCode(jgdm);
 		bizCk.setId(genId());
 		bizCk.setCjr(sysYh.getZh()+"-" + sysYh.getXm());
 		bizCk.setCjsj(DateUtils.getNowTime());
@@ -191,6 +196,8 @@ public class BizKcServiceImpl extends BaseServiceImpl<BizKc, String> implements 
 		bizCk.setLqSl(sl);
 		bizCk.setLqr(zgjbxx.getXm() +"-" + zgjbxx.getId());
 		bizCk.setBz(bz);
+		bizCk.setJgdm(jgdm);
+		bizCk.setJgmc(jg.getJgmc());
 		bizCkService.save(bizCk);
 
 		return ApiResponse.success();

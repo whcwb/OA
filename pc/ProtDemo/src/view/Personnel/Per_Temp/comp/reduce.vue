@@ -27,7 +27,14 @@
           </div>
           <div>
             <Row>
-              <Col span="8">
+              <Col span="6">
+                <FormItem prop="jgdm"  label="领用部门:">
+                  <Select v-model="addmess.jgdm" placeholder="领用部门" not-found-text="暂无信息" filterable clearable>
+                    <Option v-for="item in CascaderList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col span="6">
                 <FormItem prop="zgId" label='领用人：'>
                   <Select v-model="addmess.zgId" placeholder="领用人" not-found-text="暂无信息"
                           filterable clearable>
@@ -35,7 +42,7 @@
                   </Select>
                 </FormItem>
               </Col>
-              <Col span="8">
+              <Col span="4">
                 <FormItem label='领用数量：'>
                   <InputNumber style="width: 100%" :min="0" v-model="addmess.sl"></InputNumber>
                 </FormItem>
@@ -88,16 +95,21 @@
     },
     data() {
       return {
+        CascaderList:[],
         showModal: true,
         addmess: {
           id: '',
           zgId: '',
-          sl: 0
+          sl: 0,
+          jgdm:''
         },
         ruleInline: {
           zgId: [
-            {required: true, message: '请输选着领用人', trigger: 'change'}
+            {required: true, message: '请选择领用人', trigger: 'change'}
           ],
+          jgdm: [
+            {required: true, message: '请选择领用部门', trigger: 'change'}
+          ]
         },
         zgList: []
       }
@@ -106,9 +118,25 @@
       if (this.mess.id) {
         this.addmess.id = this.mess.id
       }
-      this.getZgList()
+      this.getZgList();
+      this.getBmdList();
     },
     methods: {
+      getBmdList() {
+        this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
+          if (res.code === 200) {
+            if(res.result[0].value.length==3){
+              this.CascaderList= res.result[0].children[0].children;
+            }else if(res.result[0].value.length==6){
+              this.CascaderList = res.result[0].children;
+            }else if(res.result[0].value.length==9){
+              this.CascaderList = res.result
+            }
+
+          }
+        }).catch((error) => {
+        })
+      },
       getZgList() {//获取推荐人
         this.$http.get('/api/zgjbxx/query', {params: {ls: '10', zzzt: '10'}}).then(res => {
           if (res.code == 200) {

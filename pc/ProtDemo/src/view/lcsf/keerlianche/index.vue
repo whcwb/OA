@@ -499,6 +499,11 @@
         // },1000)
         this.componentName = 'print'
       },
+      printHc(mess) {
+        this.hisPrintMess = mess
+        this.componentName = 'print'
+        // console.log('dayin')
+      },
       his(item) {//历史练车记录
         this.clId = item.id;
         this.componentName = 'carStatistics'

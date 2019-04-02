@@ -62,7 +62,7 @@ obj.overCar = (v,KM) => {
   obj.readCard((key, mess) => {
     if(!key){
       setTimeout(() => {
-        console.log(v.cancelFzkp);
+        console.log('v.cancekFzkp',v.cancelFzkp);
         if (v.cancelFzkp !== 'true') {
           console.log('setTimeout');
           obj.overCar(v,KM)

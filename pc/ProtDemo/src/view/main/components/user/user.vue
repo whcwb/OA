@@ -43,11 +43,18 @@
         <Icon type="md-print" size="24" color="#fff"/>
       </Button>
     </Tooltip>
-    <Tooltip content="读卡器驱动下载" style="margin-right: 16px">
+    <Tooltip content="读卡器驱动(练车)" style="margin-right: 16px">
       <Button type="warning"
               size="small"
               @click="xz">
         <Icon type="ios-card-outline" size="24" color="#fff"/>
+      </Button>
+    </Tooltip>
+    <Tooltip content="读卡器驱动(身份证)" style="margin-right: 16px">
+      <Button type="warning"
+              size="small"
+              @click="xzx">
+        <Icon type="ios-card" size="24" color="#fff"/>
       </Button>
     </Tooltip>
     <Tooltip content="密码修改" style="margin-right: 16px">
@@ -113,6 +120,9 @@
       },
       xz(){
         window.open('../读卡器驱动.zip', '_blank');
+      },
+      xzx(){
+        window.open('../SynCardReader.exe', '_blank');
       },
       ...mapActions([
         'handleLogOut'

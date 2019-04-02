@@ -207,6 +207,16 @@
               return h('div',s);
             }
           },
+          {
+            title: '操作',fixed:'right',width:80, render: (h, p) => {
+              let buttons = [];
+              buttons.push(this.util.buildButton(this, h, 'success', 'ios-print', '补打', () => {
+                this.hisPrintMess = p.row
+                this.componentName = 'print'
+              }));
+              return h('div', buttons);
+            }
+          }
         ],
         DrawerVal: false,
         compName: '',

@@ -49,7 +49,7 @@ public class BizCkServiceImpl extends BaseServiceImpl<BizCk, String> implements 
 
 
 	@Override
-	public ApiResponse<String> getPager(String kcMc, String kcLx, Integer pageNum, Integer pageSize) {
+	public ApiResponse<String> getPager(String kcMc, String kcLx, String lqr, Integer pageNum, Integer pageSize) {
 		SimpleCondition condition = new SimpleCondition(BizCk.class);
 		SimpleCondition kcCondition = new SimpleCondition(BizKc.class);
 		condition.setOrderByClause(" cjsj desc ");
@@ -58,6 +58,9 @@ public class BizCkServiceImpl extends BaseServiceImpl<BizCk, String> implements 
 		}
 		if (StringUtils.isNotBlank(kcLx)) {
 			kcCondition.like(BizKc.InnerColumn.kcLx, kcLx);
+		}
+		if (StringUtils.isNotBlank(lqr)) {
+			condition.like(BizCk.InnerColumn.lqr, lqr);
 		}
 		if (StringUtils.isNotBlank(kcLx) || StringUtils.isNotBlank(kcMc)) {
 			List<BizKc> kcs = kcService.findByCondition(kcCondition);

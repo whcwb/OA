@@ -22,8 +22,8 @@ public class BizCkController extends BaseController<BizCk, String> {
     }
 
     @PostMapping("getPager")
-    public ApiResponse<String> getPager(String kcMc, String kcLx, Integer pageNum, Integer pageSize){
-        return service.getPager(kcMc, kcLx, pageNum, pageSize);
+    public ApiResponse<String> getPager(String kcMc, String kcLx,String lqr, Integer pageNum, Integer pageSize){
+        return service.getPager(kcMc, kcLx, lqr, pageNum, pageSize);
     }
 
 }

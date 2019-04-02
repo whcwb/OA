@@ -116,20 +116,34 @@ public class BizMainController {
      * @return
      */
     @RequestMapping(value="/SMSlogin")
-    public ApiResponse<Map<String,Object>> SMSlogin(@RequestParam(name = "phone") String phone, @RequestParam(name = "userrole") String userrole, @RequestParam(name = "pollcode") String pollcode, @RequestParam(name = "openid",required = false) String openid){
+    public ApiResponse<Map<String,Object>> SMSlogin(@RequestParam(name = "phone") String phone, @RequestParam(name = "userrole") String userrole, @RequestParam(name = "pollcode") String pollcode, @RequestParam(name = "openid",required = false) String openid, String password, String loginType){
         RuntimeCheck.ifFalse(StringDivUtils.isPhoneValid(phone),"请填写正确的手机号");
         RuntimeCheck.ifTrue(StringUtils.isEmpty(pollcode),"验证号码不能为空");
         RuntimeCheck.ifTrue(StringUtils.isEmpty(userrole),"用户角色不能为空");
         RuntimeCheck.ifTrue(StringUtils.containsNone(userrole, new char[]{'1', '2','3'}),"请填写正确的用户角色！");
         //通过验证码校验，并返回用户的ID
-        ApiResponse<String> retValidate=bizMainSerivce.smsLoginGetUserId(phone,userrole,pollcode);
-        RuntimeCheck.ifFalse(retValidate.isSuccess(),retValidate.getMessage());
-
-        String userId=retValidate.getMessage();
+        String userId;
+        if (StringUtils.isBlank(loginType)) {
+            ApiResponse<String> retValidate=bizMainSerivce.smsLoginGetUserId(phone,userrole,pollcode);
+            RuntimeCheck.ifFalse(retValidate.isSuccess(),retValidate.getMessage());
+            userId = retValidate.getMessage();
+        }else if(StringUtils.equals(userrole, "2") && StringUtils.isNotBlank(loginType)){
+            RuntimeCheck.ifBlank(password, "请输入密码");
+            userId = bizMainSerivce.loginByPassword(phone,password);
+        }else {
+            userId = "";
+        }
         return bizMainSerivce.getUserInfo(userId,userrole,openid);
-
-
     }
+
+    /**
+     * 教练员密码修改
+     */
+    @PostMapping("editPwd")
+    public ApiResponse<String> editPwd(String oldPwd, String newPwd, String newPwd1, HttpServletRequest request){
+        return bizMainSerivce.editPwd(oldPwd,newPwd,newPwd1,request);
+    }
+
 
     /**
      * 教练获取二维码

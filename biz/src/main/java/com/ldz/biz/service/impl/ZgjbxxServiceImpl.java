@@ -13,6 +13,7 @@ import com.ldz.sys.service.JgService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.DateUtils;
+import com.ldz.util.commonUtil.EncryptUtil;
 import com.ldz.util.exception.RuntimeCheck;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -125,6 +126,10 @@ public class ZgjbxxServiceImpl extends BaseServiceImpl<Zgjbxx, String> implement
             coach.setPhone(entity.getSjhm());
             coach.setCoachNum(entity.getJlzh());
             coach.setRecordNum(entity.getDabh1());
+            if(StringUtils.isNotBlank(coach.getIdCardNo())){
+                String userPwd = EncryptUtil.encryptUserPwd(coach.getIdCardNo().substring(coach.getIdCardNo().length() - 6));
+                coach.setPassword(userPwd);
+            }
             coachService.save(coach);
             entity.setJlId(coach.getId());
         }

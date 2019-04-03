@@ -435,6 +435,7 @@
         window.open(http.url + this.apis.EXCEL.CHARGE +
           "?traineeNameLike=" + this.param.traineeNameLike +
           "&idCardNoLike=" + this.param.idCardNoLike +
+          "&chargeCode=" + this.param.chargeCode +
           // "&chargeSourceLike=" + this.param.chargeSourceLike +
           "&cjsjGte=" + this.param.cjsjGte +
           "&cjsjLte=" + this.param.cjsjLte +

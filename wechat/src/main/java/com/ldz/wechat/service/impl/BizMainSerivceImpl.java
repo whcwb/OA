@@ -10,6 +10,7 @@ import com.ldz.sys.model.SysYh;
 import com.ldz.sys.service.SysMessageService;
 import com.ldz.sys.service.YhService;
 import com.ldz.util.bean.ApiResponse;
+import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.*;
 import com.ldz.util.exception.RuntimeCheck;
 import com.ldz.util.redis.RedisTemplateUtil;
@@ -25,6 +26,7 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -405,6 +408,38 @@ public class BizMainSerivceImpl implements BizMainSerivce {
 
         }
         return null;
+    }
+
+    @Override
+    public String loginByPassword(String phone, String password) {
+        SimpleCondition condition = new SimpleCondition(CoachManagement.class);
+        condition.eq(CoachManagement.InnerColumn.phone, phone);
+        List<CoachManagement> managementList = coachService.findByCondition(condition);
+        if(CollectionUtils.isNotEmpty(managementList)){
+            CoachManagement management = managementList.get(0);
+            String userPwd = EncryptUtil.encryptUserPwd(password);
+            String pwd = management.getPassword();
+            if(StringUtils.equals(userPwd, pwd)){
+                return management.getId();
+            }
+        }
+
+        return "";
+    }
+
+    @Override
+    public ApiResponse<String> editPwd(String oldPwd, String newPwd, String newPwd1, HttpServletRequest request) {
+        String userid = request.getHeader("userid");
+        if (userid == null){
+            userid = request.getParameter("userid");
+        }
+        CoachManagement coach = coachService.findById(userid);
+        String oldUsrPwd = EncryptUtil.encryptUserPwd(oldPwd);
+        RuntimeCheck.ifTrue( StringUtils.equals(oldUsrPwd, coach.getPassword()), "原始密码错误");
+        RuntimeCheck.ifFalse(StringUtils.equals(newPwd ,newPwd1), "两次密码不一致");
+        coach.setPassword(EncryptUtil.encryptUserPwd(newPwd));
+        coachService.update(coach);
+        return ApiResponse.success();
     }
 
     /**

@@ -2,7 +2,7 @@ package com.ldz.wechat.service;
 
 import com.ldz.util.bean.ApiResponse;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 public interface BizMainSerivce {
@@ -39,4 +39,7 @@ public interface BizMainSerivce {
      */
     ApiResponse<String> sendMesageToUser(String messageId);
 
+    String loginByPassword(String phone, String password);
+
+    ApiResponse<String> editPwd(String oldPwd, String newPwd, String newPwd1, HttpServletRequest request);
 }

@@ -142,6 +142,20 @@ public class CoachManagement implements Serializable {
     @Column(name = "cjsj")
     private String cjsj;
 
+    /**
+     * 密码
+     * @return
+     */
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getCjr() {
         return cjr;
     }

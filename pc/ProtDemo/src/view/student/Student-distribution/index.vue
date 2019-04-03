@@ -4,11 +4,11 @@
       <div style="background-color: #19be6b;width: 3px;height: 30px">
       </div>
       <div class="tit">
-        <Select v-model="pData.km" filterable style="width: 15%;font-size: 24px;" @on-change="changeKm">
+        <!--<Select v-model="pData.km" filterable style="width: 15%;font-size: 24px;" @on-change="changeKm">
           <Option value="02">科目二</Option>
           <Option value="03">科目三</Option>
-        </Select>
-        <Select v-model="param.carType" filterable style="width: 10%;font-size: 24px"
+        </Select>-->
+        <Select v-model="param.carType" filterable style="width: 15%;font-size: 24px"
                 @on-change="(e)=>{v.util.getPageData(v)}">
           <Option v-for="item in pData.dictList.carType.data" :value="item.key" :key="item.key">{{ item.val }}</Option>
         </Select>
@@ -105,7 +105,7 @@
         v: this,
         pData: {
           drivingType: 'C1',//车型。取字典：ZDCLK0040
-          km: '02',
+          // km: '02',
           selectRows: [],
           dictList: {
             carType: {
@@ -126,10 +126,11 @@
           idCardNoLike: '',
           bmd: [],//报名点代码
           carType: 'C1',//车型。取字典：ZDCLK0040
-          km: '02',
+          // km: '02',
+          statusIn:'00,10,20,30',
           bmTime: '',//报名日期范围值
-          acceptStatus: '20',//只有已受理的学员才进行分配操作
-          firSub: '40',
+          // acceptStatus: '20',//只有已受理的学员才进行分配操作
+          // firSub: '40',
           secondSubjectCoachFlag: '',
           thirdSubjectCoachFlag: '',
           //分页数据
@@ -150,11 +151,11 @@
             data: []
           }
         },
-        tabTit: [],
-        tabKm2Tit: [
-          {type: 'index', width: 60, align: 'center'},
-          {title: '#', type: 'selection',align: 'center', width: 60},
-          {title: '姓名', key: 'name', align: 'center',width: 120},
+       /* tabTit: [],*/
+        tabTit: [
+          {type: 'index', width: 60, align: 'center',fixed:'left'},
+          {title: '#', type: 'selection',align: 'center', width: 60,fixed:'left'},
+          {title: '姓名', key: 'name', align: 'center',width: 120,fixed:'left'},
           {title: '证件号码', key: 'idCardNo',align: 'center', width: 200},
           {
             title: '性别', width: 80, key: 'gender',align: 'center', render: (h, p) => {
@@ -241,7 +242,6 @@
               ]);
             }
           },
-          {title: '档案位置', width: 140,align: 'center', key: 'recordLib'},
           {title: '有效期', width: 150,align: 'center', key: 'indateEndTime'},
           {
             title: '车型', key: 'carType',align: 'center', width: 80, render: (h, p) => {
@@ -265,7 +265,7 @@
             }
           },
           {
-            title: '科二教练员', width: 180,align: 'center', key: 'secondSubjectCoach', render: (h, p) => {
+            title: '科二教练员', width: 180,align: 'center', key: 'secondSubjectCoach',fixed:'right', render: (h, p) => {
               let msg = p.row.secondSubjectCoach;
               if (msg == '') {
                 msg = '未分配';
@@ -290,9 +290,37 @@
 
               return true;
             }
-          }
+          },
+          {
+            title: '科三教练员', width: 180,align: 'center', key: 'thirdSubjectCoach',fixed:'right', render: (h, p) => {
+              let msg = p.row.thirdSubjectCoach;
+              if (msg == '') {
+                msg = '未分配';
+              }
+
+              return h('div', msg);
+            },
+            filterMultiple: false,
+            filters: [
+              {
+                label: '未分配',
+                value: 1
+              },
+              {
+                label: '已分配',
+                value: 2
+              }
+            ],
+            filterRemote: (value, filterParamValue, parent) => {
+              this.param.thirdSubjectCoachFlag = value;
+              this.util.getPageData(this);
+
+              return true;
+            }
+          },
+          {title: '档案位置', width: 140,align: 'center', key: 'recordLib'},
         ],
-        tabKm3Tit: [
+        /*tabKm3Tit: [
           {title: '#', type: 'selection',align: 'center', width: 60},
           {title: '姓名', key: 'name',align: 'center', width: 120},
           {title: '证件号码', key: 'idCardNo',align: 'center', width: 200},
@@ -385,41 +413,15 @@
               }, carModel);
             }
           },
-          {
-            title: '科三教练员', width: 180,align: 'center', key: 'thirdSubjectCoach', render: (h, p) => {
-              let msg = p.row.thirdSubjectCoach;
-              if (msg == '') {
-                msg = '未分配';
-              }
 
-              return h('div', msg);
-            },
-            filterMultiple: false,
-            filters: [
-              {
-                label: '未分配',
-                value: 1
-              },
-              {
-                label: '已分配',
-                value: 2
-              }
-            ],
-            filterRemote: (value, filterParamValue, parent) => {
-              this.param.thirdSubjectCoachFlag = value;
-              this.util.getPageData(this);
-
-              return true;
-            }
-          }
-        ],
+        ],*/
       }
     },
     created() {
       this.getDictList();
       this.getBmdList();
       this.util.initTable(this);
-      this.changeKm(this.pData.km);
+      // this.changeKm(this.pData.km);
     },
     methods: {
       //获取当前用户可操作的报名点
@@ -452,13 +454,13 @@
       pageSizeChange(n) {
         this.util.pageSizeChange(this, n);
       },
-      changeKm(val) {
+      /*changeKm(val) {
         if (val == '02') {
           this.tabTit = this.tabKm2Tit;
         } else {
           this.tabTit = this.tabKm3Tit;
         }
-      },
+      },*/
       allocCoach() {
 
         this.pData.selectRows = this.$refs.studentRef.getSelection();

@@ -5,7 +5,7 @@
         <div style="background-color: #19be6b;width: 3px;height: 30px">
         </div>
         <div class="tit">
-          <Select v-model="param.km" style="width: 80px;font-size: 24px;" disabled>
+          <Select v-model="param.km" style="width: 80px;font-size: 24px;" @on-change="initTabled">
             <Option  value="02">科目二</Option>
             <Option  value="03">科目三</Option>
           </Select>
@@ -88,7 +88,7 @@
           coachNameLike: '',//姓名
           area:'',
           cx:this.pData.drivingType,//培训车型
-          km:this.pData.km,//培训科目
+          km:'02',//培训科目
           //分页数据
           orderBy:'area asc',
           total:1,//总数量
@@ -155,7 +155,7 @@
             return h('Rate', {
               props: {
                 disabled: true,
-                value:p.row.coachRate
+                value:parseFloat(p.row.coachRate)
               }
             });
           }},
@@ -166,7 +166,7 @@
                 props: {
                   icon:'md-checkmark-circle-outline',
                   type: 'text',
-                  ghost:'true',
+                  ghost: true,
                   shape:"circle",
                 },
                 style:{
@@ -190,6 +190,9 @@
       this.areaData = this.dictUtil.getByCode(this, 'ZDCLK1009');
     },
     methods: {
+      initTabled(){
+        this.util.initTable(this);
+      },
       close(){
         this.$parent.compName = ''
       },
@@ -244,6 +247,12 @@
             this.util.getPageData(this.$parent);
           },500);
         }
+      },
+      pageChange(n){
+        this.util.pageChange(this,n);
+      },
+      pageSizeChange(n){
+        this.util.pageSizeChange(this, n);
       }
     }
 }

@@ -7,5 +7,5 @@ import com.ldz.util.bean.ApiResponse;
 public interface BizCkService extends BaseService<BizCk, String> {
 
 
-    ApiResponse<String> getPager(String kcMc, String kcLx, Integer pageNum, Integer pageSize);
+    ApiResponse<String> getPager(String kcMc, String kcLx, String lqr, Integer pageNum, Integer pageSize);
 }

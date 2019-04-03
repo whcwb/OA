@@ -186,6 +186,20 @@ public class CoachManagement implements Serializable {
     @Column(name = "id_card_no")
     private String idCardNo;
 
+    /**
+     * 教练员登录密码
+     * @return
+     */
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getIdCardNo() {
         return idCardNo;
     }

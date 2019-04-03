@@ -46,8 +46,8 @@ public interface TraineeInformationMapper extends Mapper<TraineeInformation> {
     /**
      * 统计所有分期款
      */
-    @Select(" select sum(owe_amount) from trainee_information where arrearage ='10' and name like '%${nameLike}%' and id_card_no like '%${idCardNoLike}%'")
-    Long countStag(@Param("nameLike") String nameLike,@Param("idCardNoLike") String idCardNoLike);
-
+    /*@Select(" select sum(owe_amount) from trainee_information where arrearage ='10' and name like '%${nameLike}%' and id_card_no like '%${idCardNoLike}%' and jgdm = #{jgdm}")
+    Long countStag(@Param("nameLike") String nameLike,@Param("idCardNoLike") String idCardNoLike, @Param("jgdm")String jgdm);
+*/
 
 }

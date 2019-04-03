@@ -2272,11 +2272,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         condition.eq(TraineeInformation.InnerColumn.arrearage, "10");
         PageInfo<TraineeInformation> pageInfo = findPage(page, condition);
 
-        String nameLike = getRequestParamterAsString("nameLike");
-        String idCardNoLike = getRequestParamterAsString("idCardNoLike");
+        List<TraineeInformation> list = findByCondition(condition);
+        Long stag = list.stream().mapToLong(TraineeInformation::getOweAmount).sum();
 
-
-        Long stag = baseMapper.countStag(nameLike, idCardNoLike);
         result.setResult(stag);
         result.setPage(pageInfo);
         return result;

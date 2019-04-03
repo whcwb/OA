@@ -11,19 +11,29 @@
               出库流水
             </div>
           </Col>
-          <Col span="4" style="padding-left: 25px">
-            <Input v-model="Ckparam.kcMc" type="text" placeholder="请输入物品名称" @on-change="findCk" ></Input>
+          <Col span="3" style="padding-left: 10px">
+            <Input v-model="Ckparam.kcMc" type="text" placeholder="物品名称" @on-change="findCk"></Input>
           </Col>
-          <Col span="4" style="padding-left: 25px">
-            <Input v-model="Ckparam.kcLx" type="text" placeholder="请输入物品规格" @on-change="findCk"></Input>
+          <Col span="3" style="padding-left: 10px">
+            <Input v-model="Ckparam.kcLx" type="text" placeholder="物品规格" @on-change="findCk"></Input>
           </Col>
-          <Col span="4" align="right">
+          <Col span="2" style="padding-left: 10px">
+            <Input v-model="Ckparam.lqr" type="text" placeholder="领取人" @on-change="findCk"></Input>
+          </Col>
+          <Col span="1" style="padding-left: 10px">
+            <Tooltip content="导出Excel" placement="top">
+              <Button type="primary" @click="excel">
+                <Icon type="ios-cloud-download-outline"/>
+              </Button>
+            </Tooltip>
+          </Col>
+          <Col span="3" align="right">
             <Button type="warning" style="float: right" @click="close">关闭</Button>
           </Col>
         </Row>
       </div>
       <div style="height: 550px;overflow: auto">
-        <Table  stripe size="small"
+        <Table stripe size="small"
                :columns="CkTabTit" :data="CkTableData"></Table>
       </div>
       <div slot="footer">
@@ -46,28 +56,29 @@
 </template>
 
 <script>
+  import http from '@/axios/index';
   export default {
     name: "newClass",
     data() {
       return {
         showModal: true,
-        param1Loading:false,
+        param1Loading: false,
         addmess: {
-          kcSl:0
+          kcSl: 0
         },
         CkTabTit: [
           {
             title: '物品名称',
             align: 'center',
-            render: (h,p) => {
+            render: (h, p) => {
               let a = p.row.kc.kcMc;
-              return h('div',a)
+              return h('div', a)
             }
           },
           {
             title: '物品规格',
             align: 'center',
-            render: (h,p) => {
+            render: (h, p) => {
               let a = p.row.kc.kcLx;
               return h('div', a);
             }
@@ -76,14 +87,14 @@
             title: '领取时间',
             align: 'center',
             key: 'cjsj',
-            minWidth:60,
+            minWidth: 60,
             render: (h, p) => {
               let a = p.row.cjsj.substring(0, 16)
               return h('div', a)
             }
           },
           {
-            title:'领取部门',
+            title: '领取部门',
             align: 'center',
             key: 'jgmc'
           },
@@ -115,18 +126,24 @@
         CkTableData: [],
         Cktotal: 0,
         Ckparam: {
-          kcMc:'',
+          kcMc: '',
           kcLx: '',
+          lqr:'',
           pageNum: 1,//当前页码
           pageSize: 10//每页显示数
         },
       }
     },
-    created(){
+    created() {
       this.getCklist()
     },
-    methods:{
-      findCk(e){
+    methods: {
+
+      excel() {
+        window.open(http.url + '/pub/exportCK?kcMc=' + this.Ckparam.kcMc + '&kcLx=' + this.Ckparam.kcLx + '&lqr=' + this.Ckparam.lqr, '_blank');
+      },
+
+      findCk(e) {
         this.getCklist();
       },
       getCklist() {
@@ -134,7 +151,7 @@
           if (res.code == 200 && res.page) {
             this.Cktotal = res.page.total
             this.CkTableData = res.page.list
-          }else{
+          } else {
             this.CkTableData = [];
             this.Cktotal = 0;
           }
@@ -144,7 +161,7 @@
 
 
       },
-      close(){
+      close() {
         this.$parent.compName = ''
       },
       pageChange(n) {
@@ -162,12 +179,12 @@
   }
 </script>
 <style lang="less">
-  .vertical-center-modal{
+  .vertical-center-modal {
     display: flex;
     align-items: center;
     justify-content: center;
 
-    .ivu-modal{
+    .ivu-modal {
       top: 0;
     }
   }

@@ -144,7 +144,6 @@
                     :{{jgName}}_{{glyxm}} ( {{nameList}} )
                   </div>
                 </div>
-
                 <div class="messList">
                   <div class="messTit">
                     交來

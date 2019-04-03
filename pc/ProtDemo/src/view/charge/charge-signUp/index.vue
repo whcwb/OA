@@ -1092,7 +1092,7 @@
       winPrint() {
         var v = this
         if (this.printMess.length > 1) {
-          for (var i = 0; i < this.printMess.length - 1; i++) {
+          for (var i = 0; i < this.printMess.length - 1; i++){
             if (this.printMess[i].chargeRecord.pjbh != '' &&
               this.printMess[i + 1].chargeRecord.pjbh != '' &&
               this.printMess[i].chargeRecord.pjbh != this.printMess[i + 1].chargeRecord.pjbh != '') {

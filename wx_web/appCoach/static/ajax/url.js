@@ -1,5 +1,7 @@
 
-let ajaxUrl = "http://mt.xxpt123.com/wx";
+// let ajaxUrl = "http://mt.xxpt123.com/wx";
+let ajaxUrl = "http://192.168.123.6:8000";
+
 let weixinRedirect = "http://mt.xxpt123.com/wx-web"
  
 let imgUrl = "http://116.62.220.91:81/img/"

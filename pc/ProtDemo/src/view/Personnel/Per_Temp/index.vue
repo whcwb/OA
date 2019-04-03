@@ -51,14 +51,14 @@
   import handout from './comp/handout'
   import addnumber from './comp/add'
   import resuceNumber from './comp/reduce'
-
+  import PrintBx from './comp/PrintBx'
   import record from './comp/Record'
 
   export default {
     components: {
       newClass, batch,
       addnumber, resuceNumber,
-      record, handout
+      record, handout,PrintBx
     },
     data() {
       return {
@@ -112,6 +112,16 @@
                     }
                   }
                 }, '流水'),
+                h('Button', {
+                  props: {type: "warning", size: 'small'},
+                  style: {margin: '0 6px'},
+                  on: {
+                    click: () => {
+                      this.mess = p.row
+                      this.compName = 'PrintBx'
+                    }
+                  }
+                }, '报销打印'),
                 h('Button', {
                   props: {type: "error", size: 'small'},
                   style: {margin: '0 6px'},

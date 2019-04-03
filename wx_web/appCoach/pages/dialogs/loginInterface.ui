@@ -28,9 +28,14 @@
                       <ui-view>
                         <ui-input type="number" ui:model="{{ phone }}" name="name" placeholder="手机号" placeholder-style="color:#9C9C9C"></ui-input>
                       </ui-view>
-                      <ui-view>
+                      <ui-view ui:if="showyzm">
                         <ui-sms-input ui:model="{{ code }}" second="30" initText="获取验证码" bindsend="smsCode"></ui-sms-input>
                       </ui-view>
+                      <ui-view ui:if="showpassword">
+                        <ui-input type="password" ui:model="{{ password }}" placeholder="密码" placeholder-style="color:#9C9C9C"></ui-input>
+                      </ui-view>
+                      <ui-button formType="submit" plain="true" type="primary" bindtap="qh" ui:if='yaz == 1'>{{yamm}}</ui-button>
+                      <ui-button formType="submit" plain="true" type="primary" bindtap="qh1" ui:if='yaz == 2'>{{yamm}}</ui-button>
                       <ui-button formType="submit" type="primary" class="submit" bindtap="login">登录</ui-button>
                     </ui-form>
                   </ui-view>
@@ -142,6 +147,10 @@ export default {
   },
   data () {
     return {
+      yaz:1,
+      yamm:'切换为密码登录',
+      showpassword:false,
+      showyzm : true,
       loginHeader:require('#/images/loginHeader.png'),
       barHeight: ui.STATUS_BAR_HEIGHT,
       swiperHeight: ui.DEFAULT_CONTENT_HEIGHT,
@@ -157,10 +166,25 @@ export default {
       pwd: '',
       openid:'',
       unionid:'',
-      type:''
+      type:'',
+      password:'',
+      loginType:''
     }
   },
   methods: {
+    qh(){
+      this.yamm ='切换为验证码登录',
+      this.showyzm = false
+      this.showpassword = true
+      this.yaz = 2
+    },
+    qh1(){
+      this.yamm ='切换为密码登录',
+      this.showyzm = true
+      this.showpassword = false
+      this.yaz = 1
+    },
+
     navigateBack () {
       ui.navigateBack()
     },
@@ -204,8 +228,12 @@ export default {
       } else if ( ! myreg.test(this.phone)) {
         ui.showToast({ title: '手机号有误' })
       } else {
+        if(this.password!= ''){
+          this.loginType = 1
+        }
         let sendData = {
-           phone:this.phone,userrole:2,pollcode:this.code
+           phone:this.phone,userrole:2,pollcode:this.code,
+           password:this.password,loginType:this.loginType
           }
         let  urlGetOpenid =  sessionStorage.getItem("openid");//获取openid
         if(urlGetOpenid){

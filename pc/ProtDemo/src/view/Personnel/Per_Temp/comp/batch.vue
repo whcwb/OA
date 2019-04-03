@@ -133,7 +133,6 @@
         this.$parent.compName = ''
       },
       submit() {
-
         let a = JSON.stringify(this.AMess)
         this.$http.post('/api/bizkc/saveList',{kcs:a}).then(res=>{
           if(res.code == 200){
@@ -143,6 +142,7 @@
             })
             this.$parent.compName = ''
             this.$parent.getPagerList()
+
           }else {
             this.swal({
               type:'error',

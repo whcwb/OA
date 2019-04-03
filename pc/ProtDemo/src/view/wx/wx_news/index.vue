@@ -168,7 +168,12 @@
         })
       },
       pageSizeChange(n) {
-        this.getPagerList()
+        this.param.pageSize = n;
+        this.getPagerList();
+      },
+      pageChange(n){
+        this.param.pageNum = n;
+        this.getPagerList();
       }
     }
   }

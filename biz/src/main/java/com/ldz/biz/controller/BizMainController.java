@@ -174,7 +174,7 @@ public class BizMainController {
     @RequestMapping(value = "/chargemanagement/exportResult", method = {RequestMethod.GET})
     public void exportInfo(HttpServletRequest request, HttpServletResponse response, Page<ChargeManagement> pager) throws IOException {
 
-        pager.setPageSize(9999);
+        pager.setPageSize(99999);
         ApiResponse<List<ChargeManagement>> pagerList = service.pager(pager);
         List<Map<Integer, String>> data = new ArrayList<>();
         Map<Integer, String> map = new HashMap<>();

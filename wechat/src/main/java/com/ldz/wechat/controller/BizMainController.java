@@ -118,12 +118,13 @@ public class BizMainController {
     @RequestMapping(value="/SMSlogin")
     public ApiResponse<Map<String,Object>> SMSlogin(@RequestParam(name = "phone") String phone, @RequestParam(name = "userrole") String userrole, @RequestParam(name = "pollcode") String pollcode, @RequestParam(name = "openid",required = false) String openid, String password, String loginType){
         RuntimeCheck.ifFalse(StringDivUtils.isPhoneValid(phone),"请填写正确的手机号");
-        RuntimeCheck.ifTrue(StringUtils.isEmpty(pollcode),"验证号码不能为空");
+
         RuntimeCheck.ifTrue(StringUtils.isEmpty(userrole),"用户角色不能为空");
         RuntimeCheck.ifTrue(StringUtils.containsNone(userrole, new char[]{'1', '2','3'}),"请填写正确的用户角色！");
         //通过验证码校验，并返回用户的ID
         String userId;
         if (StringUtils.isBlank(loginType)) {
+            RuntimeCheck.ifTrue(StringUtils.isEmpty(pollcode),"验证号码不能为空");
             ApiResponse<String> retValidate=bizMainSerivce.smsLoginGetUserId(phone,userrole,pollcode);
             RuntimeCheck.ifFalse(retValidate.isSuccess(),retValidate.getMessage());
             userId = retValidate.getMessage();

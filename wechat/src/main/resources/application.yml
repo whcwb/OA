@@ -45,7 +45,7 @@ spring:
 
     url: jdbc:mysql://127.0.0.1:3306/oa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
     username: root
-    password: wangwei420
+    password: 123456
 #mybatis配置信息
 mybatis:
   configLocation: classpath:mybatis/MapperConfig.xml
@@ -83,3 +83,6 @@ app_user_login_register: app_user_login_register
 app_send_sms_register: app_send_sms_register
 
 staticPath: D:/static/common/
+
+ukey_pwd1: '02468246'
+ukey_pwd2: 'ABCDXYWZ'

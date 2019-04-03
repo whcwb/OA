@@ -105,7 +105,7 @@
         v: this,
         pData: {
           drivingType: 'C1',//车型。取字典：ZDCLK0040
-          km: '02',
+          // km: '02',
           selectRows: [],
           dictList: {
             carType: {
@@ -126,10 +126,11 @@
           idCardNoLike: '',
           bmd: [],//报名点代码
           carType: 'C1',//车型。取字典：ZDCLK0040
-          km: '02',
+          // km: '02',
+          statusIn:'00,10,20,30',
           bmTime: '',//报名日期范围值
-          acceptStatus: '20',//只有已受理的学员才进行分配操作
-          firSub: '40',
+          // acceptStatus: '20',//只有已受理的学员才进行分配操作
+          // firSub: '40',
           secondSubjectCoachFlag: '',
           thirdSubjectCoachFlag: '',
           //分页数据

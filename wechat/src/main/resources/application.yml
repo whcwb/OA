@@ -39,13 +39,13 @@ spring:
     filters: stat,wall,log4j
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
     cachePrepStmts: true
-#    url: jdbc:mysql://116.62.220.91:4389/oa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
-#    username: jxoa
-#    password: 'jxoa-18!**;'
+    url: jdbc:mysql://116.62.220.91:4389/oa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    username: jxoa
+    password: 'jxoa-18!**;'
 
-    url: jdbc:mysql://127.0.0.1:3306/oa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
-    username: root
-    password: 123456
+#    url: jdbc:mysql://127.0.0.1:3306/oa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+#    username: root
+#    password: 123456
 #mybatis配置信息
 mybatis:
   configLocation: classpath:mybatis/MapperConfig.xml

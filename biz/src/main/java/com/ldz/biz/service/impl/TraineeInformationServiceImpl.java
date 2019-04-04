@@ -2270,6 +2270,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         ApiResponse<Long> result = new ApiResponse<>();
         LimitedCondition condition = getQueryCondition();
         condition.eq(TraineeInformation.InnerColumn.arrearage, "10");
+        condition.in(TraineeInformation.InnerColumn.status, Arrays.asList("00","10","20","30","40","50"));
         PageInfo<TraineeInformation> pageInfo = findPage(page, condition);
 
         List<TraineeInformation> list = findByCondition(condition);

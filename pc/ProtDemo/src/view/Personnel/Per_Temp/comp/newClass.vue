@@ -22,6 +22,11 @@
           <div style="font-size: 16px;font-weight: 600;padding: 6px 0">
             批次：{{it.pc}} 合计:
             <span style="color: #fa541c;">{{it.total}}元</span>
+            <Tooltip content="打印" :transfer="tran" placement="top" style="padding-left: 20px">
+              <Button type="primary" @click="winPrint(it.bizRkList)" >
+                <Icon type="md-print"/>
+              </Button>
+            </Tooltip>
           </div>
           <Table stripe size="small"
                  :columns="tabTit" :data="it.bizRkList"></Table>
@@ -43,14 +48,20 @@
         </div>
       </div>
     </Modal>
+    <component :is="compName" :mess="mess"></component>
   </div>
 </template>
 
 <script>
+  import printBx from './PrintBx'
   export default {
     name: "newClass",
+    components: {printBx},
     data() {
       return {
+        mess:'',
+        compName:'',
+        tran:true,
         showModal: true,
         param1Loading: false,
         addmess: {
@@ -118,6 +129,11 @@
       this.gethisList()
     },
     methods: {
+      winPrint(value) {
+        this.mess = value;
+        console.log(this.mess);
+        this.compName = 'printBx';
+      },
       gethisList() {
         this.$http.post('/api/bizrk/getPc', this.param).then(res => {
           if (res.code == 200) {

@@ -113,16 +113,6 @@
                   }
                 }, '流水'),
                 h('Button', {
-                  props: {type: "warning", size: 'small'},
-                  style: {margin: '0 6px'},
-                  on: {
-                    click: () => {
-                      this.mess = p.row
-                      this.compName = 'PrintBx'
-                    }
-                  }
-                }, '报销打印'),
-                h('Button', {
                   props: {type: "error", size: 'small'},
                   style: {margin: '0 6px'},
                   on: {

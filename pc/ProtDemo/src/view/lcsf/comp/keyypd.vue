@@ -1,5 +1,6 @@
 <template>
   <div>
+    <audio v-if="aSrc" id="playTTS" autoplay="autoplay" :src="aSrc"></audio>
     <Modal
       height="700px"
       width="1200px"
@@ -31,6 +32,8 @@
         readingCard:false,
         giveCar:giveCar,
         modal1: true,
+        tok:'',
+        aSrc:'',
         formData: {
           jllx: '',
           jlid: '',
@@ -162,11 +165,21 @@
       }
     },
     created() {
+      this.getTok()
       this.getYYdj()
     },
     methods: {
+      getTok(){
+        this.$http.post('/pub/getvoicetkey').then(res=>{
+          if(res.code == 200){
+            this.tok = res.result
+          }
+        })
+      },
       JHvideo(row){
+        // console.log('row', this.tok);
         let text = encodeURIComponent(row.jlXm+",请来前台取卡!"+row.jlXm+",请来前台取卡!"+row.jlXm+",请来前台取卡!");
+        // console.log(text)
         this.aSrc = "https://tsn.baidu.com/text2audio?tok="+this.tok+"&per=0&spd=4&ctp=1&lan=zh&cuid=123456890987654321&tex=" + text;
         setTimeout(()=>{
           this.aSrc = ''

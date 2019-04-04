@@ -1,10 +1,10 @@
 
-// let ajaxUrl = "http://mt.xxpt123.com/wx";
-let ajaxUrl = "http://192.168.123.6:8000";
+let ajaxUrl = "http://mt.xxpt123.com/wx";
+// let ajaxUrl = "http://192.168.123.6:8000";
 
 let weixinRedirect = "http://mt.xxpt123.com/wx-web"
  
-let imgUrl = "http://116.62.220.91:81/img/"
+let imgUrl = "http://mt.xxpt123.com:81/img/"
 //let ajaxUrl = "http://j221w49004.iok.la"
 //测试
 /**let ajaxUrl = "http://j221w49004.iok.la"

@@ -634,16 +634,27 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifFalse(ParameterVerification.isPhoneValid(entity.getPhone()), "请填写正确的手机号");
         RuntimeCheck.ifBlank(entity.getIdCardNo(), "证件号码不能为空");
         entity.setName(entity.getName().trim());
-
+        String repeat = getRequestParamterAsString("repeat");
+        TraineeInformation info = null;
         SimpleCondition condition1 = new SimpleCondition(TraineeInformation.class);
         condition1.eq(TraineeInformation.InnerColumn.idCardNo, entity.getIdCardNo());
         List<TraineeInformation> informationList = findByCondition(condition1);
         for (TraineeInformation traineeInformation : informationList) {
 
             if (!StringUtils.containsAny(traineeInformation.getStatus(), "50", "60")) {
-                return ApiResponse.fail("该学员当前处于其他业务下，不能报名");
+                if (StringUtils.isBlank(repeat)) {
+                    return ApiResponse.fail("该学员当前处于其他业务下，不能报名");
+                }else{
+                    if(StringUtils.equals(traineeInformation.getStatus(), "99")){
+                        return ApiResponse.fail("该学员还未缴费 , 不能进行重学操作");
+                    }
+                    info = traineeInformation;
+                    break;
+                }
             }
-
+        }
+        if(info == null && StringUtils.isNotBlank(repeat)){
+            return ApiResponse.fail("该学员当前没有学车 , 请勿选择重学操作");
         }
 
         // 查看推荐人名额是否已满
@@ -721,7 +732,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (findUser != null) {
             String findUserStatus = findUser.getStatus();// 50：结业 60：退学
             //
-            if (StringUtils.indexOf(",50,60", findUserStatus) < 0) {
+            if (StringUtils.indexOf(",50,60", findUserStatus) < 0 && StringUtils.isBlank(repeat)) {
                 RuntimeCheck.ifTrue(true, "该学员车型：" + entity.getCarType() + "正在学习，无需申请");
             }
         }
@@ -742,7 +753,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
         if (entity.getRealPay() > 0) {
 
-            if (StringUtils.equals(jg.getJglx(), "10")) {
+            if (StringUtils.equals(jg.getJglx(), "10") || StringUtils.isNotBlank(repeat)) {
 
                 chargeItemManagement = new ChargeItemManagement();
                 chargeItemManagement.setAmount(entity.getRealPay());
@@ -753,7 +764,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
 
         if (chargeItemManagement != null) {
-            String chargeId = chargeItemManagement.getId();//收费项ID
             entity.setRegistrationFee(chargeItemManagement.getAmount());
             entity.setRegistrationTime(DateUtils.getNowTime());
         } else {
@@ -939,6 +949,13 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         }
 
         int i = baseMapper.insertSelective(entity);
+        if (info != null && StringUtils.isNotBlank(repeat)) {
+            String status = info.getStatus();
+            info.setStatus("70");
+            update(info);
+            traineeStatusService.saveEntity(info, "学员重新报名 未修改前状态 ,"+status, "00", "重新报名");
+
+        }
         if (i > 0) {
             if (StringUtils.isNotBlank(entity.getReferrer()) && StringUtils.contains(entity.getReferrer(), "-")) {
 

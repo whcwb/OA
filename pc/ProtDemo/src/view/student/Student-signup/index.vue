@@ -58,8 +58,11 @@
                                   style="width: 100% ;"></DatePicker>
                     </FormItem>
                   </Col>
-                  <Col span="6" style="padding-left: 10px;">
+                  <Col span="4" style="padding-left: 10px;">
                     <Button type="info" @click="readCard" icon="md-card">读卡</Button>{{AutoReadCard}}
+                  </Col>
+                  <Col span="4" style="padding-left: 10px;vertical-align: bottom">
+                    <Checkbox :checked.sync="repeat"  @on-change="CheckboxChange">重学优惠</Checkbox>
                   </Col>
                 </Row>
                 <Row>
@@ -245,6 +248,8 @@
 
     data() {
       return {
+        jjj:'',
+        repeat:false,
         compName: '',
         camSdkPreview: false,
         tempFolder: "c:\\camtemp",
@@ -259,6 +264,7 @@
         headImg: null,
         userRealyPay:false,
         user: {
+          repeat:null,
           name: '',//姓名
           idCardNo: '',//身份证号码
           phone: '',//手机号码
@@ -395,6 +401,19 @@
       this.initPenSign();
     },
     methods: {
+      CheckboxChange(){
+        // this.repeat = true
+        this.repeat = ! this.repeat
+        if (this.repeat == true){
+          this.userRealyPay = true
+          this.user.repeat = '1'
+        }else {
+          this.userRealyPay = false
+          this.user.repeat = null
+        }
+        console.log(this.user.repeat);
+        console.log(this.repeat);
+      },
       tjrChange(a){
         console.log(a);
         if(a){
@@ -424,6 +443,7 @@
         this.headImg = null;
         this.tjr = ''
         this.user = {
+          repeat:null,
           name: '',//姓名
           idCardNo: '',//身份证号码
           phone: '',//手机号码
@@ -805,7 +825,6 @@
       },
       submit(name) {
         var v = this
-
         this.$refs[name].validate((valid) => {
           if (valid) {
             v.loadingFlag = true;
@@ -832,7 +851,6 @@
             if (v.jxfwPenSign != null) {
               v.user.elecSign = v.jxfwPenSign.HWGetBase64Stream(1);
             }
-
             //debugger
             v.$http.post(v.apis.TRAINEE.SAVE, v.user).then((res) => {
               let msg = res.message;

@@ -273,6 +273,7 @@ export default {
              ui.getApp().Ajax.header.userId = res.result.accessToken.userId
              ui.getApp().userInfo = res.result && res.result.userInfo
              this.code = ''//清空填写的验证码数据
+             this.loginType = ''
              ui.redirectTo({
                 url: '/pages/index'
             })

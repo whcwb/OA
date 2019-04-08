@@ -253,7 +253,8 @@
               {label: '科目三待考', value: 30},
               {label: '科目四待考', value: 40},
               {label: '结业', value: 50},
-              {label: '退学', value: 60}
+              {label: '退学', value: 60},
+              {label: '重新学车', value: 70}
             ],
             filterRemote: (value, p, v) => {
               this.param.statusArray = value.join(',');
@@ -279,6 +280,8 @@
                 str = '结业';
               } else if (str == '60') {
                 str = '退学';
+              }else if (str == '70') {
+                str = '重新学车';
               }
               return h('Tag', {
                 style:{
@@ -353,6 +356,12 @@
                 mesLab = '结业';
               } else if (str == '60') {
                 mesLab = '退学';
+              }else if (str == '70') {
+                if (p.row.confirmTime != '') {
+                  mesLab = '报名费已缴'
+                } else {
+                  mesLab = '报名费待缴'
+                }
               }
               return h('Tag', {
                 style:{

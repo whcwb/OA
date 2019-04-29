@@ -79,9 +79,13 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
 		String url = request.getHeader("url");
 
 		if (token == null)
+		{
 			token = request.getParameter("token");
+		}
 		if (userid == null)
+		{
 			userid = request.getParameter("userid");
+		}
 
 		if (StringUtils.isEmpty(userid) || StringUtils.isEmpty(token)){
 			request.getRequestDispatcher("/authFiled").forward(request, response);
@@ -136,13 +140,19 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
 	}
 	private boolean checkPermissionNew(SysYh user, HttpServletRequest request) {
 		String redisVal = redisDao.boundValueOps(user.getYhid()+"-apiQz").get();
-		if (StringUtils.isEmpty(redisVal)) return false;
+		if (StringUtils.isEmpty(redisVal)) {
+			return false;
+		}
 
 		List<String> qzs = Arrays.asList(redisVal.split(","));
-		if (CollectionUtils.isEmpty(qzs)) return false;
+		if (CollectionUtils.isEmpty(qzs)){
+			return false;
+		}
 
 		String apiqz = getApiQz(request.getRequestURI());
-		if (StringUtils.isEmpty(apiqz)) return false;
+		if (StringUtils.isEmpty(apiqz)){
+			return false;
+		}
 		return qzs.contains(apiqz);
 	}
 
@@ -172,15 +182,21 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
 	private boolean checkPermissionOld(SysYh user, HttpServletRequest request) {
 		List<SysGn> functions = gnService.getUserFunctions(user);
 		if (functions == null || functions.size() == 0)
+		{
 			return false;
+		}
 
 		String uri = request.getRequestURI();
 		String apiPrefix = uri.substring(0, uri.indexOf("/", 5) + 1);
 		for (SysGn function : functions) {
 			if (StringUtils.isEmpty(function.getApiQz()))
+			{
 				continue;
+			}
 			if (function.getApiQz().contains(apiPrefix))
+			{
 				return true;
+			}
 		}
 		return false;
 	}

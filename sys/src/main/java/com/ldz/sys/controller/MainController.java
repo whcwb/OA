@@ -139,7 +139,7 @@ public class MainController {
 		ApiResponse<Map<String,Object>> result = new ApiResponse<>();
 
 		try {
-			String token = JwtUtil.createToken(user.getYhid(), new Date().getTime() + "");
+			String token = JwtUtil.createToken(user.getYhid(), System.currentTimeMillis() + "");
 			redisDao.boundValueOps(user.getYhid()).set(token, 1, TimeUnit.DAYS);
 			redisDao.boundValueOps(user.getYhid()+"-userInfo").set(mapper.writeValueAsString(user), 1, TimeUnit.DAYS);
 			AccessToken aToken = new AccessToken();
@@ -245,11 +245,15 @@ public class MainController {
         }
     }
 
-	//处理文件上传
+	/**
+	 * 处理文件上传
+	 */
 	@RequestMapping(value="/upload", method = RequestMethod.POST)
 	@ResponseBody
 	public ApiResponse<String> uploadImg(@RequestParam("file") MultipartFile file, String targetPath) {
-    	if (StringUtils.isEmpty(targetPath)) targetPath = "temp";
+    	if (StringUtils.isEmpty(targetPath)) {
+			targetPath = "temp";
+		}
 		targetPath = targetPath + "/";
 
 		String fileName = file.getOriginalFilename();

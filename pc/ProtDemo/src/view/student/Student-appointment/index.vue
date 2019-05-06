@@ -2,7 +2,7 @@
   <div class="box_col">
     <Row>
       <Col span="24">
-        <pager-tit title="约考导入"></pager-tit>
+        <pager-tit title="预约确认"></pager-tit>
       </Col>
     </Row>
     <Row style="padding-top: 20px">

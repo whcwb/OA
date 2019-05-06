@@ -636,6 +636,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 map.put(mapSize + 1, "处理备注");
                 map.put(mapSize + 2, "报名点");
                 map.put(mapSize + 3, "推荐人");
+                map.put(mapSize + 4, "报名时间");
                 resultList.add(map);
                 errorList.add(map);
             } else {
@@ -680,19 +681,29 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     String jgmc = "";//机构名称
                     String trainStatus = "";//培训状态
                     String subTestNums = "";//考试次数
+                    String reffer = ""; // 推荐人
+                    String registrationTime = ""; // 报名时间
                     String message = destineExcel.getMessage();
                     if (StringUtils.isNotEmpty(message)) {
-                        String[] messages = message.split("@sfgeeq@");
+                        String[] messages = message.split("@sfgeeq@",-1);
                         jgmc = messages[0];
                         if (messages.length >= 3) {
                             trainStatus = messages[1];
                             subTestNums = messages[2];
                         }
+                        if (messages.length >= 5) {
+                            reffer = messages[3];
+                            registrationTime = messages[4];
+                        }
                     }
                     map.put(mapSize + 2, jgmc);
+                    map.put(mapSize + 3 , reffer);
+                    map.put(mapSize + 4 , registrationTime);
                     webMap.put("jgmc", jgmc);
                     webMap.put("trainStatus", trainStatus);
                     webMap.put("subTestNums", subTestNums);
+                    webMap.put("reffer",reffer);
+                    webMap.put("registrationTime",registrationTime);
                     resultList.add(map);
                 } else {
                     webMap.put("success", "0");
@@ -1009,7 +1020,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         traineeStatusService.saveEntity(traineeInfo, type, status, "excel约考信息批量导入" + addEntity.toString());
 
 
-        return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);
+        return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime());
 
     }
 

@@ -442,6 +442,14 @@
         })
       },
       getExcleMess() {
+        let gte = '';
+        if(this.param.bmTime[0]){
+          gte = this.AF.trimDate(this.param.bmTime[0]) + ' 00:00:00';
+        }
+        let lte = '';
+        if(this.param.bmTime[1]){
+          lte = this.AF.trimDate(this.param.bmTime[1]) + ' 23:59:59';
+        }
         window.open(http.url + '/api/traineeinformation/exportResultNew' +
           // "?jgmcLike=" + this.param.jgmcLike +
           "?nameLike=" + this.param.nameLike +
@@ -451,10 +459,12 @@
           "&idCardNoLike=" + this.param.idCardNoLike +
           "&serialNumLike=" + this.param.serialNumLike +
           "&jgdmLike=" + this.param.bmd +
+          "&statusArray=" + this.param.statusArray +
+          "&carTypeArray=" + this.param.carTypeArray +
           // "&bmd=" + this.param.bmd +
           // "&bmTime=" + this.param.bmTime+
-          "&registrationTimeGte=" + this.AF.trimDate(this.param.bmTime[0]) + ' 00:00:00' +
-          "&registrationTimeLte=" + this.AF.trimDate(this.param.bmTime[1]) + ' 23:59:59'
+          "&registrationTimeGte=" + gte  +
+          "&registrationTimeLte=" + lte
           , "_blank");
       },
       getJTjx() {

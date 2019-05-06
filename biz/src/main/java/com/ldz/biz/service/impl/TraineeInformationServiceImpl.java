@@ -2775,6 +2775,17 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         tableName.put("forthSub", "科四状态");
         tableName.put("remark", "备注");
         LimitedCondition condition = getQueryCondition();
+        condition.setOrderByClause(" jgdm asc ");
+        String statusArray = getRequestParamterAsString("statusArray");
+        if (StringUtils.isNotBlank(statusArray)) {
+            List<String> list = Arrays.asList(statusArray.split(","));
+            condition.in(TraineeInformation.InnerColumn.status, list);
+        }
+        String carTypeArray = getRequestParamterAsString("carTypeArray");
+        if (StringUtils.isNotBlank(carTypeArray)) {
+            List<String> list = Arrays.asList(carTypeArray.split(","));
+            condition.in(TraineeInformation.InnerColumn.carType, list);
+        }
         List<TraineeInformation> dataList = findByCondition(condition);
         List<Map<String, String>> data = new ArrayList<>();
 
@@ -2785,7 +2796,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             m.put("name", l.getName());//姓名
             m.put("idCardNo", l.getIdCardNo());//证件号码
             List<String> list = Arrays.asList(l.getJgmc().split("/"));
-            m.put("jgmc", CollectionUtils.size(list) == 2 ? list.get(0) : list.get(1)); //报名点
+            m.put("jgmc", CollectionUtils.size(list) == 2 ? list.get(0) : list.size()==1?list.get(0):list.size()==3?list.get(1):"成功驾校"); //报名点
             String serialNum = l.getSerialNum();
             m.put("serialNum", org.apache.commons.lang.StringUtils.isBlank(serialNum) ? "待受理" : serialNum);//流水号
             String gender = l.getGender();

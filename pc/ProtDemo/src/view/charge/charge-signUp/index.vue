@@ -1085,7 +1085,6 @@
         })
       },
       tabcheck(arr) {
-        console.log(arr);
         this.printMess = arr
       }
       ,

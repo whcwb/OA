@@ -229,6 +229,7 @@
 </template>
 
 <script>
+  import swal from 'sweetalert2'
   import mixin from '@/mixins'
   // import Print from 'print-js'
   import {Printd} from 'printd'
@@ -277,6 +278,7 @@
       getNum(){
         var v = this
         for(var item of this.printMess){
+          console.log("log " , item.chargeRecord.pjbh);
           if(item.chargeRecord.pjbh){
             let arr = item.chargeRecord.pjbh.split('-');
             v.num = arr[0] + '-' + arr[1];
@@ -286,9 +288,15 @@
         setTimeout(()=>{
           v.AF.getPrintNum('signUp',this.studentIDS,num => {
             v.num = num
+            console.log("num -> " , num);
             // v.num = 0
             if(v.num == 0){
-              v.num = '网络异常!请关闭打印界面,重新打开获取票据号'
+              v.num = '网络异常!请点击取消按钮,重新打开获取票据号';
+              swal({
+                title: '网络异常!请点击取消按钮,重新打开获取票据号',
+                type: 'warning',
+                confirmButtonText: '确定'
+              })
             }
           })
         },100)

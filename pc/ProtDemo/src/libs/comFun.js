@@ -83,6 +83,8 @@ export default {
     $http.post('/api/chargemanagement/receiptNo', {num: num, ids: idList}).then((res) => {
       if (res.code == 200) {
         callback && callback(res.message)
+      }else if(res.code == 500){
+        callback && callback('0')
       }
     }).catch((err) => {
 
@@ -91,7 +93,7 @@ export default {
   WinPrint(v, mess, compName) {
     if (mess.length == 0) {
       swal({
-        title: '请先选着要打印的单据！！！',
+        title: '请先选择要打印的单据！！！',
         type: 'warning',
         confirmButtonText: '关闭'
       })

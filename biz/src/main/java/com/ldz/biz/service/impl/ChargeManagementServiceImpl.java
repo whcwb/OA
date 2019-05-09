@@ -485,8 +485,9 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
     public ApiResponse<String> getPjbh(List<String> ids, String num, String pjbh) {
 
 		RuntimeCheck.ifEmpty(ids,"请选择需要打印的记录");
-
-
+		String[] split = pjbh.split("-");
+		String yyyymmdd = DateUtils.getDateStr(new Date(), "yyyyMMdd");
+		RuntimeCheck.ifFalse(StringUtils.equals(yyyymmdd, split[0]), "票据编号异常,请重新获取票据编号");
 		baseMapper.updatePjbh(ids,pjbh+"-"+num);
 
 		return ApiResponse.success();

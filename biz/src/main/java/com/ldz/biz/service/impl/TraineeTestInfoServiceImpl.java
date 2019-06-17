@@ -638,6 +638,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 map.put(mapSize + 3, "推荐人");
                 map.put(mapSize + 4, "报名时间");
                 map.put(mapSize + 5, "报名金额");
+                map.put(mapSize + 6, "实收金额");
+                map.put(mapSize + 7, "欠费金额");
                 resultList.add(map);
                 errorList.add(map);
             } else {
@@ -685,6 +687,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     String reffer = ""; // 推荐人
                     String registrationTime = ""; // 报名时间
                     String regFee = "";
+                    String realFee = "";
+                    String arFee = "";
                     String message = destineExcel.getMessage();
                     if (StringUtils.isNotEmpty(message)) {
                         String[] messages = message.split("@sfgeeq@",-1);
@@ -695,6 +699,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                             reffer = messages[3];
                             registrationTime = messages[4];
                             regFee = messages[5];
+                            realFee = messages[6];
+                            arFee = messages[7];
                         }
 
 
@@ -703,12 +709,16 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     map.put(mapSize + 3 , reffer);
                     map.put(mapSize + 4 , registrationTime);
                     map.put(mapSize + 5, regFee);
+                    map.put(mapSize + 6 , realFee);
+                    map.put(mapSize + 7 , arFee);
                     webMap.put("jgmc", jgmc);
                     webMap.put("trainStatus", trainStatus);
                     webMap.put("subTestNums", subTestNums);
                     webMap.put("reffer",reffer);
                     webMap.put("registrationTime",registrationTime);
                     webMap.put("regFee", regFee);
+                    webMap.put("realFee",realFee);
+                    webMap.put("arFee",arFee);
                     resultList.add(map);
                 } else {
                     webMap.put("success", "0");
@@ -820,9 +830,13 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             }
         }
         String regFee =  "";
+        String realFee = "";
+        String arFee = "";
 
         if(traineeInfo.getCarType().equals("A1") ||traineeInfo.getCarType().equals("A2") ||traineeInfo.getCarType().equals("A3") ||traineeInfo.getCarType().equals("B2")  ){
             regFee = traineeInfo.getRegistrationFee() + "";
+            realFee = traineeInfo.getRealPay() + "";
+            arFee = traineeInfo.getOweAmount() + "";
         }
         cwjl.setTraineeId(traineeInfo.getId());
         cwjl.setTraineeName(traineeInfo.getName());
@@ -930,7 +944,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 traineeInfo.setForthSub("00");//科目四状态
             }
 
-            return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime() + "@sfgeeq@" + regFee);
+            return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime() + "@sfgeeq@" + regFee+ "@sfgeeq@" + realFee+ "@sfgeeq@" + arFee);
         }
 //		5、将约考信息插入约考表
         TraineeTestInfo addEntity = new TraineeTestInfo();
@@ -1029,7 +1043,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         traineeStatusService.saveEntity(traineeInfo, type, status, "excel约考信息批量导入" + addEntity.toString());
 
 
-        return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime() + "@sfgeeq@" + regFee);
+        return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime() + "@sfgeeq@" + regFee+ "@sfgeeq@" + realFee+ "@sfgeeq@" + arFee);
 
     }
 

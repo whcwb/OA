@@ -314,13 +314,14 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             return;
         }
         List<TraineeInformation> list = resultPage.getList();
-
+        Set<String> trainIds = list.stream().map(TraineeInformation::getId).collect(Collectors.toSet());
+        SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
+        simpleCondition.in(TraineeTestInfo.InnerColumn.traineeId, trainIds);
+        simpleCondition.setOrderByClause(" cjsj asc");
+        List<TraineeTestInfo> testInfoList = traineeTestInfoService.findByCondition(simpleCondition);
+        Map<String, List<TraineeTestInfo>> map = testInfoList.stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
         for (TraineeInformation traineeInformation : list) {
-            SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
-            simpleCondition.eq(TraineeTestInfo.InnerColumn.traineeId, traineeInformation.getId());
-            simpleCondition.setOrderByClause(" cjsj asc");
-            List<TraineeTestInfo> testInfos = traineeTestInfoService.findByCondition(simpleCondition);
-            traineeInformation.setTestInfos(testInfos);
+            traineeInformation.setTestInfos(map.get(traineeInformation.getId()));
         }
 
         HttpServletRequest requset = getRequset();
@@ -348,12 +349,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             if (CollectionUtils.isNotEmpty(managementList)) {
                 totalFee = managementList.stream().mapToInt(value -> value.getChargeFee()).reduce((l, r) -> l + r).getAsInt();
             }
-
-
+            condition.in(ChargeManagement.InnerColumn.traineeId.name(), trainIds);
+            List<ChargeManagement> chargeManagementList = chargeManagementService.findByCondition(condition);
+            Map<String, List<ChargeManagement>> collect = chargeManagementList.stream().collect(Collectors.groupingBy(ChargeManagement::getTraineeId));
             for (TraineeInformation traineeInformation : list) {
-                condition.eq(ChargeManagement.InnerColumn.traineeId.name(), traineeInformation.getId());
-
-                List<ChargeManagement> managements = chargeManagementService.findByCondition(condition);
+                List<ChargeManagement> managements = collect.get(traineeInformation.getId());
                 ChargeManagement chargeManagement = null;
                 if (CollectionUtils.isNotEmpty(managements)) {
                     chargeManagement = managements.get(0);
@@ -366,18 +366,21 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         }
 
         if (StringUtils.containsAny(sign, "2", "3", "5", "6", "7", "8", "9", "10")) {
+            SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
+            condition.in(TraineeTestInfo.InnerColumn.traineeId, trainIds);
+            if (StringUtils.containsAny(sign, "2", "5")) {
+                condition.eq(TraineeTestInfo.InnerColumn.subject, "科目二");
+            } else if (StringUtils.containsAny(sign, "3", "6")) {
+                condition.eq(TraineeTestInfo.InnerColumn.subject, "科目三");
+            } else if (StringUtils.containsAny(sign, "7", "8")) {
+                condition.eq(TraineeTestInfo.InnerColumn.subject, "科目一");
+            }
+            condition.setOrderByClause(" test_time desc ");
+            List<TraineeTestInfo> testInfos = traineeTestInfoService.findByCondition(condition);
+            Map<String, List<TraineeTestInfo>> collect = testInfos.stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
+
             for (TraineeInformation traineeInformation : list) {
-                SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
-                condition.eq(TraineeTestInfo.InnerColumn.traineeId, traineeInformation.getId());
-                if (StringUtils.containsAny(sign, "2", "5")) {
-                    condition.eq(TraineeTestInfo.InnerColumn.subject, "科目二");
-                } else if (StringUtils.containsAny(sign, "3", "6")) {
-                    condition.eq(TraineeTestInfo.InnerColumn.subject, "科目三");
-                } else if (StringUtils.containsAny(sign, "7", "8")) {
-                    condition.eq(TraineeTestInfo.InnerColumn.subject, "科目一");
-                }
-                condition.setOrderByClause(" test_time desc ");
-                List<TraineeTestInfo> testInfos = traineeTestInfoService.findByCondition(condition);
+                testInfos = collect.get(traineeInformation.getId());
                 if (CollectionUtils.isNotEmpty(testInfos)) {
                     TraineeTestInfo testInfo = testInfos.get(0);
                     if (DateUtils.getDateStr(new Date(), "yyyy-Mm-dd").compareTo(testInfo.getTestTime()) <= 0) {
@@ -388,10 +391,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         }
 
         if (StringUtils.equals(sign, "4")) {
+            Set<String> collect = list.stream().map(TraineeInformation::getJgdm).collect(Collectors.toSet());
+            List<SysJg> sysJgs = jgService.findIn(SysJg.InnerColumn.jgdm,collect);
+            Map<String, List<SysJg>> listMap = sysJgs.stream().collect(Collectors.groupingBy(SysJg::getJgdm));
             for (TraineeInformation traineeInformation : list) {
-                SimpleCondition condition = new SimpleCondition(SysJg.class);
-                condition.eq(SysJg.InnerColumn.jgdm, traineeInformation.getJgdm());
-                List<SysJg> sysJgs = jgService.findByCondition(condition);
+                sysJgs = listMap.get(traineeInformation.getJgdm());
                 if (CollectionUtils.isNotEmpty(sysJgs)) {
                     SysJg jg = sysJgs.get(0);
                     traineeInformation.setJgPhone(jg.getLxdh1());
@@ -641,7 +645,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         List<TraineeInformation> informationList = findByCondition(condition1);
         for (TraineeInformation traineeInformation : informationList) {
 
-            if (!StringUtils.containsAny(traineeInformation.getStatus(), "50", "60")) {
+            if (!StringUtils.equals(traineeInformation.getStatus(), "50") && !StringUtils.equals(traineeInformation.getStatus(), "60")) {
                 if (StringUtils.isBlank(repeat)) {
                     return ApiResponse.fail("该学员当前处于其他业务下，不能报名");
                 }else{
@@ -1255,6 +1259,23 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
     @Override
     public ApiResponse<String> confirmTestTo(String traineeId, String remark, String km) {
+        // 查询是否已经缴费
+        SimpleCondition chacondition = new SimpleCondition(ChargeManagement.class);
+        chacondition.eq(ChargeManagement.InnerColumn.traineeId, traineeId);
+        if(StringUtils.equals(km, "10")){
+            chacondition.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.FIR_SUB);
+        }else if(StringUtils.equals(km,"20")){
+            chacondition.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.SEC_SUB);
+        }else if(StringUtils.equals(km, "30")){
+            chacondition.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.THIRD_SUB);
+        }else{
+            return ApiResponse.success();
+        }
+        List<ChargeManagement> list = chargeManagementService.findByCondition(chacondition);
+        if(CollectionUtils.isNotEmpty(list)){
+            return ApiResponse.success();
+        }
+
         SysYh currentUser = getCurrentUser();
         RuntimeCheck.ifBlank(traineeId, "请选择缴费学员");
         RuntimeCheck.ifBlank(km, "请选择缴费科目");
@@ -1362,11 +1383,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             traineeTestInfo.setPayStatus("00");
             traineeTestInfoService.update(traineeTestInfo);
         });
-        if (StringUtils.equals(information.getStatus(), "10")) {
+        if (StringUtils.equals(km, "10")) {
             traineeStatusService.saveEntity(information, "科目一考试缴费确认", "00", "科目一考试缴费确认");
-        } else if (StringUtils.equals(information.getStatus(), "20")) {
+        } else if (StringUtils.equals(km, "20")) {
             traineeStatusService.saveEntity(information, "科目二考试缴费确认", "00", "科目二考试缴费确认");
-        } else if (StringUtils.equals(information.getStatus(), "30")) {
+        } else if (StringUtils.equals(km, "30")) {
             traineeStatusService.saveEntity(information, "科目三考试缴费确认", "00", "科目三考试缴费确认");
         }
 
@@ -2078,10 +2099,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         }
         ApiResponse<Long> result = new ApiResponse<>();
         LimitedCondition condition = getQueryCondition();
-
         condition.setOrderByClause(" confirm_time desc ");
-
-
 
         if (CollectionUtils.isNotEmpty(trainIds)) {
             condition.in(TraineeInformation.InnerColumn.id, trainIds);
@@ -2094,39 +2112,43 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         Page<ChargeManagement> page1 = new Page<>();
         page1.setPageNum(page.getPageNum());
         page1.setPageSize(page.getPageSize());
-        PageInfo<ChargeManagement> page2 = chargeManagementService.findPage(page1, condition1);
-        List<ChargeManagement> managements = page2.getList();
-        List<String> strings = managements.stream().map(ChargeManagement::getTraineeId).collect(Collectors.toList());
-        List<TraineeInformation> list = findIn(TraineeInformation.InnerColumn.id, strings);
-        pageInfo.setList(list);
-        List<String> jgdms = pageInfo.getList().stream().map(TraineeInformation::getJgdm).collect(Collectors.toList());
-        List<SysJg> jgs = jgService.findIn(SysJg.InnerColumn.jgdm, jgdms);
-        if(CollectionUtils.isNotEmpty(jgs)){
-            Map<String, SysJg> collect = jgs.stream().collect(Collectors.toMap(SysJg::getJgdm, s -> s));
-            pageInfo.getList().forEach(traineeInformation -> {
-                SysJg byOrgCode = collect.get(traineeInformation.getJgdm());
-                if (!ObjectUtils.isEmpty(byOrgCode)) {
-                    traineeInformation.setJgPhone(byOrgCode.getLxdh1());
-                    traineeInformation.setJgLx(byOrgCode.getLx());
-                }
-            });
+        if(CollectionUtils.isNotEmpty(pageInfo.getList())){
+            condition1.in(ChargeManagement.InnerColumn.traineeId,pageInfo.getList().stream().map(TraineeInformation::getId).collect(Collectors.toSet()));
+            PageInfo<ChargeManagement> page2 = chargeManagementService.findPage(page1, condition1);
+            List<ChargeManagement> managements = page2.getList();
+            List<String> strings = managements.stream().map(ChargeManagement::getTraineeId).collect(Collectors.toList());
+            List<TraineeInformation> list = findIn(TraineeInformation.InnerColumn.id, strings);
+            pageInfo.setList(list);
+            List<String> jgdms = pageInfo.getList().stream().map(TraineeInformation::getJgdm).collect(Collectors.toList());
+            List<SysJg> jgs = jgService.findIn(SysJg.InnerColumn.jgdm, jgdms);
+            if(CollectionUtils.isNotEmpty(jgs)){
+                Map<String, SysJg> collect = jgs.stream().collect(Collectors.toMap(SysJg::getJgdm, s -> s));
+                pageInfo.getList().forEach(traineeInformation -> {
+                    SysJg byOrgCode = collect.get(traineeInformation.getJgdm());
+                    if (!ObjectUtils.isEmpty(byOrgCode)) {
+                        traineeInformation.setJgPhone(byOrgCode.getLxdh1());
+                        traineeInformation.setJgLx(byOrgCode.getLx());
+                    }
+                });
+            }
+
+            List<TraineeInformation> info = findByCondition( condition);
+
+            if (CollectionUtils.isNotEmpty(info)) {
+                long asLong = info.stream().mapToLong(TraineeInformation::getRealPay).reduce((i1, i2) -> i1 + i2).getAsLong();
+                result.setResult(asLong);
+            }
+
+            for (TraineeInformation traineeInformation : pageInfo.getList()) {
+                managements.stream().filter(chargeManagement -> chargeManagement.getTraineeId().equals(traineeInformation.getId())).forEach(chargeManagement -> traineeInformation.setChargeRecord(chargeManagement));
+            }
+            if(StringUtils.equals(pj, "10")){
+                List<TraineeInformation> collect1 = pageInfo.getList().stream().sorted((o1, o2) -> o2.getChargeRecord().getPjbh().compareTo(o1.getChargeRecord().getPjbh())).collect(Collectors.toList());
+                pageInfo.setList(collect1);
+
+            }
         }
 
-        List<TraineeInformation> info = findByCondition( condition);
-
-        if (CollectionUtils.isNotEmpty(info)) {
-            long asLong = info.stream().mapToLong(TraineeInformation::getRealPay).reduce((i1, i2) -> i1 + i2).getAsLong();
-            result.setResult(asLong);
-        }
-
-        for (TraineeInformation traineeInformation : pageInfo.getList()) {
-            managements.stream().filter(chargeManagement -> chargeManagement.getTraineeId().equals(traineeInformation.getId())).forEach(chargeManagement -> traineeInformation.setChargeRecord(chargeManagement));
-        }
-        if(StringUtils.equals(pj, "10")){
-            List<TraineeInformation> collect1 = pageInfo.getList().stream().sorted((o1, o2) -> o2.getChargeRecord().getPjbh().compareTo(o1.getChargeRecord().getPjbh())).collect(Collectors.toList());
-            pageInfo.setList(collect1);
-
-        }
         result.setPage(pageInfo);
         return result;
     }

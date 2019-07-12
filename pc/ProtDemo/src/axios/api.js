@@ -1,7 +1,7 @@
 // let ajaxUrl = 'http://172.20.10.2:10010';
 // let ajaxUrl = 'http://192.168.43.206:10010';
 // let ajaxUrl = 'http://192.168.123.12:10010';//羊
-// let ajaxUrl ='http://192.168.123.13:8080'; // 陈伟
+// let ajaxUrl ='http://192.168.123.69:10010'; // 陈伟
 // let ajaxUrl ='http://192.168.123.6:10010';//宋
 // let ajaxUrl ='http://192.168.1.188:10010';//宋
 let ajaxUrl = 'http://mt.xxpt123.com:81';

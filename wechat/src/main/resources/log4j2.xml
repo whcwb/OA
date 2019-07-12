@@ -2,7 +2,7 @@
 <!-- 日志级别从低到高分为TRACE < DEBUG < INFO < WARN < ERROR < FATAL -->
 <Configuration status="DEBUG">
 	<properties>  
-        <property name="LOG_HOME">D:/tomcats/tomcat-oa/var/log/ldz/biz</property>
+        <property name="LOG_HOME">/var/log/ldz/wx</property>
         <!-- 日志备份目录 -->  
         <property name="BACKUP_HOME">${LOG_HOME}/backup</property>  
         <property name="STAT_NAME">{sys:catalina.home}</property>  

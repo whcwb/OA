@@ -513,7 +513,10 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         if (StringUtils.equals(testResult, "00")) {//成功
             if (StringUtils.equals(kmCode, "10")) {
                 //科目一成功后，系统自动跳到下一个科目中
-                traineeInfo.setStatus("20");
+                // 判断当前状态是否需要修改 , 可能成绩导入会在后面
+                if(StringUtils.equals(traineeInfo.getStatus(), "10")){
+                    traineeInfo.setStatus("20");
+                }
                 //科目一成功后，将状态修改为合格
                 traineeInfo.setFirSub("40");//00：已缴费 10：培训 20: 已约考 30：不合格 40：合格
 //				合格后，设置  学员有效期开始时间和结束时间
@@ -532,7 +535,6 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 } else {
                     traineeInfo.setStatus("30");
                 }
-                traineeInfo.setStatus("30");
                 traineeInfo.setSecSub("40");//00: 培训 10：已约考 20：已缴费 30：不合格 40：合格
                 messageBody = "{\"first\":\"尊敬的" + traineeInfo.getName() + userXb + "：\",\"keyword1\":\"科目二成绩合格确认\",\"keyword2\":\"科目二考试成绩已合格\",\"remark\":\"恭喜您，科目二考试成绩已合格。科目三培训请联系报名负责人，并可通过“学员助手”登录系统查看培训、考试状态。如需帮助，请致电客服热线：400-133-2133。\"}";
             } else if (StringUtils.equals(kmCode, "30")) {

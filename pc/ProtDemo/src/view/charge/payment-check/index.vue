@@ -29,7 +29,24 @@
           </Col>
           <Col span="12">
             <Row>
-              <Col span="8" style="padding-left: 20px;">
+              <Col span="6" style="padding-left: 20px;">
+                <Card class="successCard" dis-hover style="height: 148px;width: 100%;position: relative">
+                  <p slot="title" style="height: 50px;padding-top: 10px;color:white;">
+                    <!--<Icon type="md-close-circle" style="font-size: 36px;padding-left: 10px" />-->
+                    <span style="font-size: 22px;padding-left: 8px">记录总数</span>
+                  </p>
+                  <div style="text-align: center">
+                    <count-to :end="result.zs" count-class="count-style"/>
+                  </div>
+                  <div style="z-index: 9999;position: absolute;right: -10px;top: -10px">
+                    <Button long type="error" @click="expoerExcel" style="background-color: #fa541c;border-color: #fa541c">
+                      <div>导出</div>
+                      <div>Excel</div>
+                    </Button>
+                  </div>
+                </Card>
+              </Col>
+              <Col span="6" style="padding-left: 20px;">
                 <Card dis-hover class="successCard" style="height: 148px;width: 100%">
                   <p slot="title" style="height: 50px;padding-top: 10px;color:white;position: relative">
                     <!--<Icon type="md-checkmark-circle-outline" style="font-size: 36px;padding-left: 10px"/>-->
@@ -46,7 +63,7 @@
                   </div>
                 </Card>
               </Col>
-              <Col span="8" style="padding-left: 20px;">
+              <Col span="6" style="padding-left: 20px;">
                 <Card class="successCard" dis-hover style="height: 148px;width: 100%;position: relative">
                   <p slot="title" style="height: 50px;padding-top: 10px;color:white;">
                     <!--<Icon type="md-close-circle" style="font-size: 36px;padding-left: 10px" />-->
@@ -63,7 +80,7 @@
                   </div>
                 </Card>
               </Col>
-              <Col span="8" style="padding-left: 20px;">
+              <Col span="6" style="padding-left: 20px;">
                 <Card class="failCard" dis-hover style="height: 148px;width: 100%;position: relative">
                   <p slot="title" style="height: 50px;padding-top: 10px;color:white;">
                     <!--<Icon type="md-close-circle" style="font-size: 36px;padding-left: 10px" />-->
@@ -107,8 +124,10 @@
           chuKao: 0,
           data: [],
           fail: 0,
-          suc: 0
+          suc: 0,
+          zs:0
         },
+        key:"",
         showModal: false,
         compName: '',
         accessToken: {},
@@ -189,6 +208,7 @@
       successCallback(res, file, locDataName) {
         this.result = res.result;
         this.pageData = this.result.data;
+        this.key = this.result.key;
         this.$refs.upload.clearFiles();
         // this.result.code = res.code;
         // console.log(res.result.list);
@@ -226,6 +246,10 @@
           type: 'error'
         });
       },
+      expoerExcel(){
+        window.open(http.url+'/pub/exportResult/' + this.key
+          , "_blank");
+      }
     }
   }
 </script>

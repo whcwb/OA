@@ -5,6 +5,7 @@ import com.ldz.biz.model.TraineeInformation;
 import com.ldz.biz.service.TraineeInformationService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
+import com.ldz.util.commonUtil.JsonUtil;
 import com.ldz.util.exception.RuntimeCheck;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/pub/paycheck")
@@ -27,6 +30,9 @@ public class PaymentCheckController {
 
     @Autowired
     private TraineeInformationService informationService;
+
+    @Autowired
+    private StringRedisTemplate redisDao;
 
     /**
      * 账单查询
@@ -49,6 +55,17 @@ public class PaymentCheckController {
 
         List<Map> dataList = new ArrayList<>();
 
+        List<Map<Integer,String>> listData = new ArrayList<>();
+        Map<Integer,String> mm = new HashMap<>();
+        mm.put(0,"姓名");
+        mm.put(1, "身份证号");
+        mm.put(2,"报名点");
+        mm.put(3,"缴费金额");
+        listData.add(mm);
+
+        String key = System.currentTimeMillis()+"";
+
+
         int sucess = 0;
         int fail = 0;
         int chuKao = 0;
@@ -62,6 +79,7 @@ public class PaymentCheckController {
                 XWPFTableRow row = table.getRow(i);
                 //缴费人身份证号码
                 String sfzmhm = row.getCell(4).getText();
+                Float jfje = Float.parseFloat(row.getCell(6).getText());
                 if(StringUtils.equals(sfzmhm, "42011619900520245X")){
                     System.out.println("a");
                 }
@@ -71,6 +89,9 @@ public class PaymentCheckController {
                 List<TraineeInformation> list = informationService.findByCondition(condition);
                 SimpleCondition chCondition = new SimpleCondition(ChargeManagement.class);
                 chCondition.eq(ChargeManagement.InnerColumn.idCardNo,sfzmhm);
+
+                // 新建一个读取word文档 , 直接生成excel  , 不进行匹配 , 将word装换为excel
+                Map<Integer,String> daMap = new HashMap<>();
                 if(CollectionUtils.isEmpty(list)){
                     dataMap.put("xm","");
                     dataMap.put("zjhm",sfzmhm);
@@ -79,6 +100,13 @@ public class PaymentCheckController {
                     dataMap.put("jg", "系统中未找到该学员");
                     dataList.add(dataMap);
                     fail++;
+
+                    daMap.put(0,"");
+                    daMap.put(1,sfzmhm);
+                    daMap.put(2,"未找到学员信息");
+                    daMap.put(3,jfje+"");
+                    listData.add(daMap);
+
                     continue;
                 }
                 TraineeInformation information = list.get(0);
@@ -87,6 +115,13 @@ public class PaymentCheckController {
                 dataMap.put("bmd",information.getJgmc());
                 dataMap.put("zt","1");
 
+                daMap.put(0,information.getName());
+                daMap.put(1,information.getIdCardNo());
+                daMap.put(2, information.getJgmc());
+                daMap.put(3, jfje+ "");
+                listData.add(daMap);
+
+
                 //缴费金额
                 /*
                  * 科目一：120
@@ -94,7 +129,7 @@ public class PaymentCheckController {
                  * 科目三：230、232
                  * 如果金额是232表示是科目三初考缴费（2块钱制证费），230表示科目三补考缴费
                  * */
-                Float jfje = Float.parseFloat(row.getCell(6).getText());
+
                 dataMap.put("je",jfje+"");
 
                 if(StringUtils.equals(information.getStatus(),"50")){
@@ -278,6 +313,10 @@ public class PaymentCheckController {
         map.put("data",dataList);
         map.put("chuKao",chuKao);
         map.put("buKao", buKao);
+        map.put("zs", listData.size() -1);
+
+        map.put("key",key);
+        redisDao.boundValueOps(key).set(JsonUtil.toJson(listData),1, TimeUnit.DAYS);
         return ApiResponse.success(map);
     }
 

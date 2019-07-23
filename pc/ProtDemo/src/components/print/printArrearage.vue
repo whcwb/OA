@@ -407,7 +407,7 @@
 
         const d = new Printd();
         setTimeout(()=>{
-          d.print( document.getElementById('printDivSigUp'), cssText )
+          d.print( document.getElementById('printDivSigUp'), [cssText] )
         },50)
         setTimeout(()=>{
           v.close()

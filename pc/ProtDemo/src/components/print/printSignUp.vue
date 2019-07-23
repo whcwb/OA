@@ -202,19 +202,17 @@
               </div>
               <div style="font-size: 16px;padding-right: 6px;">
                 <Row>
-                  <Col span="8" align="left">
-                    <div>
+                  <div style="overflow: hidden">
+                    <div style="float: left;width: 33.33%">
                       {{payType}}
                     </div>
-                  </Col>
-                  <Col span="8">
-                    推荐人:{{tjr}}
-                  </Col>
-                  <Col span="8" align="right">
-                    <div>
+                    <div style="float: left;width: 33.33%">
+                      推荐人:{{tjr}}
+                    </div>
+                    <div style="float: right;width: 33.33%">
                       Tel:{{jgphone.length==11 ? '400-133-2133': jgphone}}
                     </div>
-                  </Col>
+                  </div>
                 </Row>
 
               </div>
@@ -434,7 +432,7 @@
 
         const d = new Printd();
         setTimeout(()=>{
-          d.print( document.getElementById('printDivSigUp'), cssText )
+          d.print( document.getElementById('printDivSigUp'), [cssText] )
         },50)
         setTimeout(()=>{
           v.close()

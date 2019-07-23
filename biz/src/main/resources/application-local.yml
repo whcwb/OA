@@ -1,16 +1,16 @@
 spring:
-  #redis配置信息
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    database: 0
-  #数据库连接配置信息
-  datasource:
-    url: jdbc:mysql://127.0.0.1:3306/oa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
-    username: root
-    password: womenxing2014
+                 #redis配置信息
+                 redis:
+                   host: 127.0.0.1
+                   port: 6379
+                   database: 0
+                 #数据库连接配置信息
+                 datasource:
+                   url: jdbc:mysql://127.0.0.1:3306/oa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+                   username: root
+                   password: womenxing2014
 
-server:
-  port: 8080
-staticPath:  D:/static/common/
-carStaticPath: C:/Tomcat6/webapps/img/
+                 server:
+                   port: 8080
+                 staticPath:  D:/static/common/
+                 carStaticPath: C:/Tomcat6/webapps/img/

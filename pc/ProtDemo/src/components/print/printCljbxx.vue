@@ -157,7 +157,7 @@
         `
         const d = new Printd();
         setTimeout(() => {
-          d.print(document.getElementById('printTable'), cssText)
+          d.print(document.getElementById('printTable'), [cssText])
         }, 50)
         setTimeout(() => {
           v.close()
@@ -190,7 +190,7 @@
         `
         const d = new Printd();
         setTimeout(() => {
-          d.print(document.getElementById('printCover'), cssText)
+          d.print(document.getElementById('printCover'), [cssText])
         }, 50)
         setTimeout(() => {
           v.close()

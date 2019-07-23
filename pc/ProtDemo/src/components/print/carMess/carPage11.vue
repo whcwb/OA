@@ -136,7 +136,7 @@
         `
       const d = new Printd();
       setTimeout(()=>{
-        d.print( document.getElementById('printddd'), cssText )
+        d.print( document.getElementById('printddd'), [cssText] )
       },50)
       setTimeout(()=>{
         v.close()

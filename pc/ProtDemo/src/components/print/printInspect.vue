@@ -372,7 +372,7 @@
         `
 
         const d = new Printd();
-        d.print( document.getElementById('printDivSigUp'), cssText )
+        d.print( document.getElementById('printDivSigUp'), [cssText] )
       },
       BDNum(){
         var v = this

@@ -642,6 +642,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 map.put(mapSize + 5, "报名金额");
                 map.put(mapSize + 6, "实收金额");
                 map.put(mapSize + 7, "欠费金额");
+                map.put(mapSize + 8, "初考/补考");
                 resultList.add(map);
                 errorList.add(map);
             } else {
@@ -713,6 +714,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     map.put(mapSize + 5, regFee);
                     map.put(mapSize + 6 , realFee);
                     map.put(mapSize + 7 , arFee);
+                    if(StringUtils.isNotBlank(subTestNums)){
+                        map.put(mapSize + 8 ,  Integer.parseInt(subTestNums) <=0 ?"初考":"补考");
+                    }
                     webMap.put("jgmc", jgmc);
                     webMap.put("trainStatus", trainStatus);
                     webMap.put("subTestNums", subTestNums);
@@ -730,8 +734,6 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     errorList.add(tableNameInfo);
                 }
             }
-
-
             if (webMap.size() > 0) {
                 webList.add(webMap);
             }

@@ -2114,8 +2114,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         page1.setPageSize(page.getPageSize());
         if(CollectionUtils.isNotEmpty(pageInfo.getList())){
             condition1.in(ChargeManagement.InnerColumn.traineeId,pageInfo.getList().stream().map(TraineeInformation::getId).collect(Collectors.toSet()));
-            PageInfo<ChargeManagement> page2 = chargeManagementService.findPage(page1, condition1);
-            List<ChargeManagement> managements = page2.getList();
+            List<ChargeManagement> page2 = chargeManagementService.findByCondition( condition1);
+            List<ChargeManagement> managements = page2;
             List<String> strings = managements.stream().map(ChargeManagement::getTraineeId).collect(Collectors.toList());
             List<TraineeInformation> list = findIn(TraineeInformation.InnerColumn.id, strings);
             pageInfo.setList(list);

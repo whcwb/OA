@@ -28,10 +28,7 @@ public class ParameterVerification {
             if (org.apache.commons.lang.StringUtils.isBlank(phonenumber)) {
                 return false;
             }
-            if (!phonenumber.matches("^((13[0-9])|(15[0-9])|(17[0-9])|(19[0-9])|(18[0-9]))\\d{8}$")) {
-                return false;
-            }
-            return true;
+            return phonenumber.matches("^((13[0-9])|(15[0-9])|(17[0-9])|(19[0-9])|(18[0-9])|(16[0-9]))\\d{8}$");
         } catch (Exception e) {
             return false;
         }

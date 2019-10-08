@@ -1,8 +1,6 @@
 package com.ldz.biz.controller;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import com.ldz.biz.constant.FeeType;
 import com.ldz.biz.constant.Status;
@@ -15,7 +13,6 @@ import com.ldz.util.commonUtil.DateUtils;
 import com.ldz.util.commonUtil.ExcelUtil;
 import com.ldz.util.commonUtil.HttpUtil;
 import com.ldz.util.commonUtil.JsonUtil;
-import javafx.scene.chart.XYChart;
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.BorderLineStyle;
@@ -33,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;

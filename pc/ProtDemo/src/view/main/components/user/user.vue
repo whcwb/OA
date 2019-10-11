@@ -149,7 +149,7 @@
                 meta:{
                   hideInMenu:true,
                   notCache:true,
-                  title:"首页"
+                  title:"工作台"
                 },
                 name:"home",
                 path:"/home",

@@ -19,14 +19,629 @@
     color: #fff;
     font-weight: 700;
   }
+
+  .cardBox{
+    .ivu-card-body{
+    position: relative;
+    .childerFooter{
+      background-color: #EEEEEE;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 58px;
+      }
+    }
+  }
 </style>
 <template>
-  <div class="HomeBox" style="position: relative;min-height: 100%">
-    <!--<div class="HomeMessTit">-->
-      <!--欢迎使用明涛驾校管理服务平台-->
-    <!--</div>-->
-    <!--<sel :option="option"  :opVal="['key','val']" @inputVal="inputVal"></sel>-->
-    <!--<radio-car></radio-car>-->
+  <div>
+    <div style="position: absolute;padding-top: 20px;padding-left: 20px">
+      <Tooltip :content="gxsj" placement="bottom-start">
+        <Button type="primary" shape="circle" icon="md-refresh" :loading="loadBtnFlag" @click="loadData"></Button>
+      </Tooltip>
+    </div>
+    <Row :gutter="20" type="flex" justify="center" align="middle" style="padding-top: 20px">
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="primary" style="font-weight: bold;font-size: 16px">报名审核</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @focus="console.log(1)">待办</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider/>
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+            &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="primary" style="font-weight: bold;font-size: 16px">收费确认</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待收</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+            &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="primary" style="font-weight: bold;font-size: 16px">受理确认</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+    </Row>
+    <Row :gutter="20" type="flex" justify="center" align="middle" style="padding-top: 20px">
+      <Col span="6">
+      <Card  :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目一预约</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">已约</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目一初考费</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待缴</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目一成绩确认</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+    </Row>
+    <Row :gutter="20" type="flex" justify="center" align="middle" style="padding-top: 20px">
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目二预约</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">已约</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目二初考费</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待缴</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目二成绩确认</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+    </Row>
+    <Row :gutter="20" type="flex" justify="center" align="middle" style="padding-top: 20px">
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目三预约</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">已约</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目三初考费</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待缴</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="6">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="success" style="font-weight: bold;font-size: 16px">科目三成绩确认</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+    </Row>
+    <Row :gutter="20" type="flex" justify="center" align="middle" style="padding-top: 20px;padding-bottom: 20px">
+      <Col span="9">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="info" style="font-weight: bold;font-size: 16px">科目四预约</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">已约</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+      <Col span="9">
+      <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
+        <div slot="title" style="text-align: center">
+          <Button type="info" style="font-weight: bold;font-size: 16px">科目四成绩确认</Button>
+        </div>
+        <Row style="text-align: center">
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+          <Col span="2" style="text-align: center;height:80px">
+          <div align="center" style="background: #e8eaec;width: 2px; height:70px;margin-left:50%;margin-top:50%;">&nbsp;</div>
+          </Col>
+          <Col span="10">
+          <Row>
+            <Col span="24">
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+            <count-to :end="0" count-class="count-style"/>
+            </Col>
+          </Row>
+          </Col>
+        </Row>
+        <Divider />
+        <Row class="childerFooter" type="flex" justify="center" align="middle">
+          <Col offset="1" span="22">
+          &nbsp;
+          </Col>
+        </Row>
+      </Card>
+      </Col>
+    </Row>
+  </div>
+
+  <!--<div class="HomeBox" style="position: relative;min-height: 100%">
     <Row :gutter="20" v-if="false">
       <i-col span="4" v-if="typNumlist.newborn">
 
@@ -115,7 +730,7 @@
       </i-col>
     </Row>
 
-  </div>
+  </div>-->
 </template>
 
 <script>
@@ -123,6 +738,7 @@
   import CountTo from '_c/count-to'
   import {ChartBar, ChartPie} from '_c/charts'
   import Example from './example.vue'
+  import moment from 'moment'
 
   // import RadioCar from '../../lcsf/comp/RadioCar'
 
@@ -142,6 +758,8 @@
       return {
         typNumlist: {},
         over:0,
+        gxsj:'',
+        loadBtnFlag:false,
         params:{
           startTime:'',
           endTime:this.AF.trimDate()
@@ -163,10 +781,15 @@
     created() {
     },
     mounted() {
+        this.gxsj = "数据更新时间:"+moment().format("YYYY-MM-DD HH:mm");
     },
     methods: {
       inputVal(val){
         // console.log('事件回调取值',val);
+      },
+      loadData(){
+          this.loadBtnFlag = true;
+          this.gxsj = "加载中";
       },
       getBM() {
         this.$http.post(this.apis.DATASTA.dateO,this.params).then((res) => {
@@ -210,6 +833,6 @@
 
 <style lang="less">
   .count-style {
-    font-size: 50px;
+    font-size: 38px;
   }
 </style>

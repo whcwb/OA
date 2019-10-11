@@ -35,7 +35,7 @@ export default [
         name: 'home',
         meta: {
           hideInMenu: true,
-          title: '首页',
+          title: '工作台',
           notCache: true
         },
         component: () => import('@/view/single-page/home')
@@ -204,7 +204,7 @@ export default [
         name: 'Student-signup',
         meta: {
           icon: 'md-trending-up',
-          title: '招生报名'
+          title: '信息录入'
         },
         component: () => import('@/view/student/Student-signup')
       },

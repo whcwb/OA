@@ -5,7 +5,7 @@
                  :menu-list="menuList">
         <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
         <div class="logo-con">
-          <img v-show="!collapsed" :src="maxLogo" key="max-logo"/>
+          <img v-show="!collapsed" :src="maxLogo" key="max-logo" width="312" height="85"/>
           <img v-show="collapsed" :src="minLogo" key="min-logo"/>
         </div>
       </side-menu>
@@ -25,11 +25,11 @@
           </div>
           <Content class="box_col_100 content-wrapper2">
             <keep-alive :include="cacheList" style="height: 100%">
-              <Card style="height: 100%" :style="{height:AF.getPageHeight()-68-40-36+'px'}">
+              <!--<Card style="height: 100%" :style="{height:AF.getPageHeight()-68-40-36+'px'}">-->
                 <!--{{textTime}}-->
 
                 <router-view/>
-              </Card>
+              <!--</Card>-->
             </keep-alive>
           </Content>
         </div>

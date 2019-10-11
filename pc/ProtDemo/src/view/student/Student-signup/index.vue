@@ -4,18 +4,18 @@
       <Row>
         <Col span="24">
           <Card dis-hover>
-            <div solt="title" style="height: 46px">
-
+            <div solt="title" style="height: 32px">
+              <pager-tit title="信息录入"></pager-tit>
             </div>
-            <div slot="extra">
+            <!--<div slot="extra">
                 <Button type="default" icon="md-refresh" style="font-size: 18px" @click="initPage">重置</Button>
                 &nbsp;
                 <Button type="success" icon="md-checkmark-circle-outline" style="font-size: 18px" @click="submit('userForm')">
                   保存
                 </Button>
-            </div>
+            </div>-->
             <Row>
-              <Col span="20">
+              <Col offset="3" span="20">
                 <Row>
                   <Col span="8">
                     <FormItem prop="idCardNo">
@@ -36,14 +36,29 @@
                       </Select>
                     </FormItem>
                   </Col>
-                  <Col span="4">
+                  <Col span="4" style="padding-left: 10px;">
+                    <Button type="info" @click="readCard" icon="md-card">读卡</Button>{{AutoReadCard}}
+                  </Col>
+                  <!--<Col span="4">
                     <FormItem>
                       <Input prefix=" iconfont icon-rili" disabled type="text" placeholder="出生日期"
                              v-model="user.birDay"/>
                     </FormItem>
-                  </Col>
+                  </Col>-->
                 </Row>
                 <Row>
+                  <Col span="6">
+                    <FormItem prop="phone">
+                      <Input type="text" placeholder="手机号码(必填)" v-model="user.phone" :maxlength="11"/>
+                    </FormItem>
+                  </Col>
+                  <Col span="14">
+                    <FormItem>
+                      <Input type="text" placeholder="备注" v-model="user.remark"/>
+                    </FormItem>
+                  </Col>
+                </Row>
+                <!--<Row>
                   <Col span="8">
                     <FormItem>
                       <Input prefix=" iconfont icon-dizhi" type="text" placeholder="居住地址" v-model="user.address"/>
@@ -64,7 +79,7 @@
                   <Col span="4" style="padding-left: 10px;vertical-align: bottom">
                     <Checkbox :checked.sync="repeat"  @on-change="CheckboxChange">重学优惠</Checkbox>
                   </Col>
-                </Row>
+                </Row>-->
                 <Row>
                   <Col span="3">
                     <FormItem prop="jgdm">   <!-- prop="jgdm"--> <!--v-model="fullJgdmPath"-->
@@ -130,8 +145,64 @@
                   </Col>
                 </Row>
                 <Row>
-                  <Col span="6">
-                    <Row>
+                  <Col span="20">
+                    <Card dis-hover style="background-color: #EEEEEE;height: 72px;">
+                      <Row>
+                        <Col span="6">
+                        <FormItem>
+                          <RadioGroup v-model="LO">
+                            <Radio label="local">本校人员</Radio>
+                            <Radio label="branch">分校人员</Radio>
+                            <Radio label="other">其他人员</Radio>
+                          </RadioGroup>
+                        </FormItem>
+                        </Col>
+                        <Col span="6">
+                        <Row v-if="LO=='other'">
+                          <Col span="24">
+                          <FormItem>
+                            <Input type="text" placeholder="推荐人" v-model="user.referrer"/>
+                          </FormItem>
+                          </Col>
+                        </Row>
+                        <Row v-else-if="LO=='branch'">
+                          <FormItem>
+                            <Select  placeholder="报名点选择" filterable clearable
+                                     v-model="user.referrer"
+                                     @on-query-change="bmdChangeFQ">
+                              <Option v-for="(item,index) in dictList.bmd.data"
+                                      :value="item.label" :key="index">{{item.label}}</Option>
+                            </Select>
+                          </FormItem>
+                        </Row>
+                        <Row v-else-if="LO=='local'">
+                          <Col span="24">
+                          <FormItem>
+                            <Select v-model="tjr" placeholder="推荐人" not-found-text="暂无信息"
+                                    @on-change="tjrChange" filterable clearable :label-in-value="true">
+                              <Option v-for="(item,index) in tjrList" :value="item.id" :key="index">{{item.xm}}</Option>
+                            </Select>
+                          </FormItem>
+                          </Col>
+                        </Row>
+                        </Col>
+                        <Col offset="1" span="4" style="padding-left: 10px;vertical-align: bottom;padding-top: 8px">
+                          <Checkbox :checked.sync="repeat"  @on-change="CheckboxChange">重学优惠</Checkbox>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                </Row>
+                <Row style="padding-left: 100px;padding-top: 20px">
+                  <Col offset="16" span="4">
+                    <Button type="default" icon="md-refresh" style="font-size: 18px" @click="initPage">重置</Button>
+                    &nbsp;
+                    <Button type="success" icon="md-checkmark-circle-outline" style="font-size: 18px" @click="submit('userForm')">
+                      保存
+                    </Button>
+                  </Col>
+                </Row>
+                    <!--<Row>
                       <Col span="24">
                         <FormItem prop="phone">
                           <Input type="text" placeholder="手机号码(必填)" v-model="user.phone" :maxlength="11"/>
@@ -149,52 +220,12 @@
                           </Select>
                         </FormItem>
                       </Col>
-                    </Row>
-                    <Row>
-                      <Col span="24">
-                        <FormItem>
-                          <RadioGroup v-model="LO">
-                            <Radio label="local">本校在职人员</Radio>
-                            <Radio label="branch">分校报名点</Radio>
-                            <Radio label="other">其他人员</Radio>
-                          </RadioGroup>
-                        </FormItem>
-                      </Col>
-                    </Row>
-                    <Row v-if="LO=='other'">
-                      <Col span="24">
-                        <FormItem>
-                          <Input type="text" placeholder="推荐人" v-model="user.referrer"/>
-                        </FormItem>
-                      </Col>
-                    </Row>
-                    <Row v-else-if="LO=='branch'">
-                      <FormItem>
-                        <Select  placeholder="报名点选择" filterable clearable
-                                 v-model="user.referrer"
-                                 @on-query-change="bmdChangeFQ">
-                          <Option v-for="(item,index) in dictList.bmd.data"
-                                  :value="item.label" :key="index">{{item.label}}</Option>
-                        </Select>
-                      </FormItem>
-                    </Row>
-                    <Row v-else-if="LO=='local'">
-                      <Col span="24">
-                        <FormItem>
-                          <Select v-model="tjr" placeholder="推荐人" not-found-text="暂无信息"
-                                  @on-change="tjrChange" filterable clearable :label-in-value="true">
-                            <Option v-for="(item,index) in tjrList" :value="item.id" :key="index">{{item.xm}}</Option>
-                          </Select>
-                        </FormItem>
-                      </Col>
-                    </Row>
-                  </Col>
-                  <Col span="18">
+                    </Row>-->
+                  <!--<Col span="18">
                     <FormItem>
                       <Input type="textarea" placeholder="备注" v-model="user.remark" :rows="10"/>
                     </FormItem>
-                  </Col>
-                </Row>
+                  </Col>-->
                 <Row>
                   <Col span="8">
                     <OBJECT id="JXFWPenSign"

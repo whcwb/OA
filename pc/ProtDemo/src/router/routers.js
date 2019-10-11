@@ -222,7 +222,7 @@ export default [
         name: 'Student-recruit_audit',
         meta: {
           icon: '_bear',
-          title: '招生审核'
+          title: '报名审核'
         },
         component: () => import('@/view/student/Student-recruit_audit')
       },
@@ -360,6 +360,15 @@ export default [
           title: '电子档案'
         },
         component: () => import('@/view/system/dictionaries')
+      },
+      {
+        path: 'Student-exception',
+        name: 'Student-exception',
+        meta: {
+          icon: 'md-notifications',
+          title: '异常查询'
+        },
+        component: () => import('@/view/student/exception')
       }
     ]
   },

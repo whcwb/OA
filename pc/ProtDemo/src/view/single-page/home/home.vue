@@ -51,7 +51,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @focus="console.log(1)">待办</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToDB">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -826,6 +826,9 @@
       }).catch((err) => {
 
       })
+      },
+      goToDB(){
+        this.$router.push({ name: 'Student-exception', query: { code: "001" }});
       }
     }
   }

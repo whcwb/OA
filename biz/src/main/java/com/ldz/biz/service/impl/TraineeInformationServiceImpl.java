@@ -31,6 +31,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.support.nativejdbc.OracleJdbc4NativeJdbcExtractor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -422,7 +423,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 condition.lte(TraineeInformation.InnerColumn.registrationTime.name(), endTime);
             }
         }
-
+        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50","60"));
         String[] jgdm = request.getParameterValues("bmd");
         if (jgdm != null && jgdm.length > 0) {
             //报名点，是级联组件，从前台传过来的是一个数组，数组最后一个数据是最终选择的报名点数据
@@ -431,9 +432,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 condition.eq(TraineeInformation.InnerColumn.jgdm.name(), jgdm[jgdm.length - 1]);
             }
         }
-
-//        condition.eq(TraineeInformation.InnerColumn.infoCheckStatus.name(), "00");
-
 
         PageInfo<TraineeInformation> resultPage = findPage(pager, condition);
         afterPager(resultPage);
@@ -581,6 +579,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             String status = "00";
             String type = "受理确认";
             traineeStatusService.saveEntity(obj, type, status, "受理确认");
+            BizException exception = new BizException();
+            exception.setXm(obj.getName());
+            exception.setSfzmhm(obj.getIdCardNo());
+            exception.setCode("003");
+            exception.setLsh(obj.getSerialNum());
             return ApiResponse.success();
         } else {
             return ApiResponse.fail("操作失败请重新尝试");
@@ -1018,7 +1021,12 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             String type = "学员基础资料审核";
             traineeStatusService.saveEntity(find, type, status, "学员基础资料审核");
         }
-
+        // 用户基础资料审核业务异常清理
+        BizException exception = new BizException();
+        exception.setXm(find.getName());
+        exception.setSfzmhm(find.getIdCardNo());
+        exception.setCode("001");
+        exceptionService.clearException(exception, "001");
         return i > 0 ? ApiResponse.success() : ApiResponse.fail("操作失败，請重新尝试");
     }
 
@@ -1094,6 +1102,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         message.setUserRole("1");//1、学员 2、教练 3、管理员
         messageService.sendMessage(message, information.getOpenId(), information.getPhone());
 
+        BizException exception = new BizException();
+        exception.setCode("002");
+        exception.setSfzmhm(information.getIdCardNo());
+        exception.setXm(information.getName());
+        exceptionService.clearException(exception, "002");
         return ApiResponse.success();
 
     }
@@ -1319,10 +1332,38 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             traineeTestInfoService.update(traineeTestInfo);
         });
         if (StringUtils.equals(km, "10")) {
+            // 科目一缴费异常处理
+            BizException exception = new BizException();
+            exception.setXm(information.getName());
+            exception.setKskm(km);
+            exception.setSfzmhm(information.getIdCardNo());
+            exception.setCode("101");
+            exception.setLsh(information.getSerialNum());
+            exceptionService.clearException(exception, exception.getCode());
+            exception.setCode("103");
+            exceptionService.clearException(exception, exception.getCode());
             traineeStatusService.saveEntity(information, "科目一考试缴费确认", "00", "科目一考试缴费确认");
         } else if (StringUtils.equals(km, "20")) {
+            BizException exception = new BizException();
+            exception.setXm(information.getName());
+            exception.setKskm(km);
+            exception.setSfzmhm(information.getIdCardNo());
+            exception.setCode("201");
+            exception.setLsh(information.getSerialNum());
+            exceptionService.clearException(exception, exception.getCode());
+            exception.setCode("203");
+            exceptionService.clearException(exception, exception.getCode());
             traineeStatusService.saveEntity(information, "科目二考试缴费确认", "00", "科目二考试缴费确认");
         } else if (StringUtils.equals(km, "30")) {
+            BizException exception = new BizException();
+            exception.setXm(information.getName());
+            exception.setKskm(km);
+            exception.setSfzmhm(information.getIdCardNo());
+            exception.setCode("301");
+            exception.setLsh(information.getSerialNum());
+            exceptionService.clearException(exception, exception.getCode());
+            exception.setCode("303");
+            exceptionService.clearException(exception, exception.getCode());
             traineeStatusService.saveEntity(information, "科目三考试缴费确认", "00", "科目三考试缴费确认");
         }
 
@@ -1484,17 +1525,37 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifTrue(StringUtils.equals(subjects, "4"), "科目四没有培训状态");
         RuntimeCheck.ifFalse(StringUtils.equals(subjects, "1") || StringUtils.equals(subjects, "2") || StringUtils.equals(subjects, "3") || StringUtils.equals(subjects, "4"), "科目不存在，请核实该状态");
 
-
         TraineeInformation obj = findById(id);
         RuntimeCheck.ifNull(obj, "该学员不存在，请核实");
         RuntimeCheck.ifTrue(StringUtils.equals(obj.getStatus(), "50"), "该学员已结业,无需修改状态");
         RuntimeCheck.ifTrue(StringUtils.equals(obj.getStatus(), "60"), "该学员退学,无需修改状态");
         if (StringUtils.equals(subjects, "1")) {
             obj.setFirSubTrainStatus(type);
+            BizException exception = new BizException();
+            exception.setCode("121");
+            exception.setLsh(obj.getSerialNum());
+            exception.setSfzmhm(obj.getIdCardNo());
+            exception.setKskm("10");
+            exception.setXm(obj.getName());
+            exceptionService.clearException(exception, exception.getCode());
         } else if (StringUtils.equals(subjects, "2")) {
             obj.setSecSubTrainStatus(type);
+            BizException exception = new BizException();
+            exception.setCode("221");
+            exception.setLsh(obj.getSerialNum());
+            exception.setSfzmhm(obj.getIdCardNo());
+            exception.setKskm("20");
+            exception.setXm(obj.getName());
+            exceptionService.clearException(exception, exception.getCode());
         } else if (StringUtils.equals(subjects, "3")) {
             obj.setThirdSubTrainStatus(type);
+            BizException exception = new BizException();
+            exception.setCode("321");
+            exception.setLsh(obj.getSerialNum());
+            exception.setSfzmhm(obj.getIdCardNo());
+            exception.setKskm("30");
+            exception.setXm(obj.getName());
+            exceptionService.clearException(exception, exception.getCode());
         }
         update(obj);
         return ApiResponse.success();

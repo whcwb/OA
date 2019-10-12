@@ -1,5 +1,7 @@
 package com.ldz.biz.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import com.ldz.biz.service.BizExceptionConfigService;
 import com.ldz.sys.base.BaseServiceImpl;
 
 import tk.mybatis.mapper.common.Mapper;
+import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class BizExceptionConfigServiceImpl extends BaseServiceImpl<BizExceptionConfig, java.lang.Long> implements BizExceptionConfigService {
@@ -20,6 +23,13 @@ public class BizExceptionConfigServiceImpl extends BaseServiceImpl<BizExceptionC
 	@Override
 	protected Mapper<BizExceptionConfig> getBaseMapper() {
 		return baseMapper;
+	}
+	
+	@Override
+	public List<BizExceptionConfig> findAll() {
+		Example condition = new Example(BizExceptionConfig.class);
+		condition.setOrderByClause(" order by code, name");
+		return baseMapper.selectByExample(condition);
 	}
 
 	@Override

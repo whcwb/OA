@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ldz.biz.mapper.BizExceptionMapper;
 import com.ldz.biz.model.BizException;
 import com.ldz.biz.model.BizExceptionConfig;
+import com.ldz.biz.model.TraineeInformation;
 import com.ldz.biz.service.BizExceptionConfigService;
 import com.ldz.biz.service.BizExceptionService;
 import com.ldz.sys.base.BaseServiceImpl;
@@ -54,5 +55,40 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		save(exception);
 		
 		return ApiResponse.success();
+	}
+
+	@Override
+	public void clearException(TraineeInformation info, String code) {
+		
+	}
+
+	@Override
+	public void expJobSave(BizExceptionConfig config) {
+		//SELECT * FROM `trainee_information` WHERE STATUS NOT IN ('50','60')
+		if ("001".equals(config.getCode())){
+			//报名审核
+			
+		}else if ("002".equals(config.getCode())){
+			//收费确认
+			
+		}else if ("003".equals(config.getCode())){
+			//受理确认
+			
+		}else if ("101".equals(config.getCode())){
+			//科目一约考
+			
+		}else if ("201".equals(config.getCode())){
+			//科目二约考
+			
+		}else if ("301".equals(config.getCode())){
+			//科目三约考
+			
+		}else if ("102".equals(config.getCode())){
+			//科目一成绩确认
+		}else if ("202".equals(config.getCode())){
+			//科目二成绩确认
+		}else if ("302".equals(config.getCode())){
+			//科目三成绩确认
+		}
 	}
 }

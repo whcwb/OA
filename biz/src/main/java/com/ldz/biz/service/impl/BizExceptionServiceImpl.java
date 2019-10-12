@@ -57,6 +57,13 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
 		exception.setZt("00");
 		save(exception);
+		//给学员标记异常备注
+		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(exception.getSfzmhm());
+		if (traineeInfo != null){
+			traineeInfo.setCode(exception.getCode());
+			traineeInfo.setErrorMessage(exception.getBz());
+			traineeInfoService.update(traineeInfo);
+		}
 		
 		return ApiResponse.success();
 	}
@@ -84,21 +91,36 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			//查询学员是否有相关类型未处理的异常信息
 			Example condition = new Example(BizException.class);
 			condition.and()
-					.andEqualTo(BizException.InnerColumn.code.name(), code)
 					.andEqualTo(BizException.InnerColumn.sfzmhm.name(), info.getSfzmhm())
 					.andEqualTo(BizException.InnerColumn.zt.name(), "00");
 			List<BizException> exps = baseMapper.selectByExample(condition);
 			if (CollectionUtils.isNotEmpty(exps)){
+				BizException otherEntity = null;
 				for (int i=0; i<exps.size(); i++){
 					BizException entity = exps.get(i);
-					entity.setGxsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
-					entity.setGxr(user.getZh()+"-"+user.getXm());
-					entity.setZt("10");
-					
-					baseMapper.updateByPrimaryKey(entity);
+					//将相同类型的异常标记为已处理
+					if (code.equals(entity.getCode())){
+						entity.setGxsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+						entity.setGxr(user.getZh()+"-"+user.getXm());
+						entity.setZt("10");
+						
+						baseMapper.updateByPrimaryKey(entity);
+					}else{
+						otherEntity = entity;
+					}
 				}
-				
-				//if (traineeInfo.)
+				//将学员主表信息异常也标记为已处理，如果学员同时有其他异常信息，则更新其他异常信息
+				if (code.equals(traineeInfo.getCode())){
+					if (otherEntity == null){
+						traineeInfo.setCode("");
+						traineeInfo.setErrorMessage("");
+					}else{
+						traineeInfo.setCode(otherEntity.getCode());
+						traineeInfo.setErrorMessage(otherEntity.getBz());
+					}
+					
+					traineeInfoService.update(traineeInfo);
+				}
 			}
 		}
 	}

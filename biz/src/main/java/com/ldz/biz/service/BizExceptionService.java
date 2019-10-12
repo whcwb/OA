@@ -1,6 +1,7 @@
 package com.ldz.biz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ldz.biz.model.BizException;
 import com.ldz.biz.model.BizExceptionConfig;
@@ -41,4 +42,10 @@ public interface BizExceptionService extends BaseService<BizException, java.lang
 	 * @param config
 	 */
 	public void expJobSave(BizExceptionConfig config);
+	
+	/**
+	 * 首页工作台统计详情
+	 * @return
+	 */
+	public ApiResponse<Map<String, Integer>> dashboard();
 }

@@ -40,7 +40,7 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
 	private StringRedisTemplate redisDao;
 
 	// 只要登录的用户都能访问
-	private List<String> whiteList = Arrays.asList("/api/traineeinformation/pager","/api/jg/getOrgPath","/api/gn/getPermissionTreeWithChecked","/api/gn/getRolePermissionTree","/api/jg/getCurrentOrgTree","/api/gn/getMenuTree","/api/jg/pager","/api/zd/pager","/api/jg/getTree","/api/gn/getMenuTree","/api/jg/pager","/api/jg/getOrgTree","/api/jg/getOrgTree","/api/clsbyxsjjl/history","/api/clsbyxsjjl/history","/api/jg/getCurrentUserOrgTree","/api/yh/mdfPwd","/api/traineeinformation/exportTestCharge");
+	private List<String> whiteList = Arrays.asList("/api/traineeinformation/pager","/api/jg/getOrgPath","/api/gn/getPermissionTreeWithChecked","/api/gn/getRolePermissionTree","/api/jg/getCurrentOrgTree","/api/gn/getMenuTree","/api/jg/pager","/api/zd/pager","/api/jg/getTree","/api/gn/getMenuTree","/api/jg/pager","/api/jg/getOrgTree","/api/jg/getOrgTree","/api/clsbyxsjjl/history","/api/clsbyxsjjl/history","/api/jg/getCurrentUserOrgTree","/api/yh/mdfPwd","/api/traineeinformation/exportTestCharge","/api/exception/dashboard");
 
 	public AccessInterceptor() {
 	}

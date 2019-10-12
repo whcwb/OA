@@ -1,6 +1,7 @@
 package com.ldz.biz.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -8,6 +9,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.ldz.biz.mapper.BizExceptionMapper;
 import com.ldz.biz.model.BizException;
 import com.ldz.biz.model.BizExceptionConfig;
@@ -50,6 +52,17 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		if (StringUtils.isBlank(exception.getCode())){
 			return ApiResponse.fail("异常码不能为空");
 		}
+		//查看是否有相同的异常未处理，如果有就不再重复创建
+		Example condition = new Example(BizException.class);
+		condition.and()
+				.andEqualTo(BizException.InnerColumn.sfzmhm.name(), exception.getSfzmhm())
+				.andEqualTo(BizException.InnerColumn.code.name(), exception.getCode())
+				.andEqualTo(BizException.InnerColumn.zt.name(), "00");
+		Integer num = baseMapper.selectCountByExample(condition);
+		if (num > 0){
+			return ApiResponse.success("异常已预警");
+		}
+		
 		SysYh user = getCurrentUser();
 		exception.setId(String.valueOf(idGenerator.nextId()));
 		exception.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
@@ -127,38 +140,63 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 
 	@Override
 	public void expJobSave(BizExceptionConfig config) {
-		//SELECT * FROM `trainee_information` WHERE STATUS NOT IN ('50','60')
+		List<TraineeInformation> students = Lists.newArrayList();
+		String kskm = "";
 		String curYmd = DateTime.now().plusDays(config.getDays()).toString("yyyy-MM-dd") + " 00:00:00";
 		if ("001".equals(config.getCode())){
 			//报名审核.超过7天报名信息未审核
-			baseMapper.countInfoByColumn("info_check_status", "='00'", "registration_time", curYmd);
+			students = baseMapper.getTraineeInfoByColumn("info_check_status", "='00'", "registration_time", curYmd);
 		}else if ("002".equals(config.getCode())){
 			//收费确认.超过7天报名已审核但未收费确认
-			baseMapper.countInfoByColumn("charge_status", "='00'", "info_check_time", curYmd);
+			students = baseMapper.getTraineeInfoByColumn("charge_status", "='00'", "info_check_time", curYmd);
 		}else if ("003".equals(config.getCode())){
 			//受理确认.超过7天已收费确认但未受理确认
-			baseMapper.countInfoByColumn("accept_status", "<>'20'", "confirm_time", curYmd);
+			students = baseMapper.getTraineeInfoByColumn("accept_status", "<>'20'", "confirm_time", curYmd);
 		}else if ("101".equals(config.getCode())){
+			kskm = "1";
 			//科目一约考.即将考试还未缴科目一初考费
-			baseMapper.countInfoByColumn("fir_sub", "='20'", "fir_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("fir_sub", "='20'", "fir_sub_payment_time", config.getDays().toString());
 		}else if ("201".equals(config.getCode())){
+			kskm = "2";
 			//科目二约考.即将考试还未缴科目二初考费
-			baseMapper.countInfoByColumn("sec_sub", "='10'", "sec_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("sec_sub", "='10'", "sec_sub_payment_time", config.getDays().toString());
 		}else if ("301".equals(config.getCode())){
+			kskm = "3";
 			//科目三约考.即将考试还未缴科目三初考费
-			baseMapper.countInfoByColumn("third_sub", "='10'", "third_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("third_sub", "='10'", "third_sub_payment_time", config.getDays().toString());
 		}else if ("102".equals(config.getCode())){
+			kskm = "1";
 			//科目一成绩确认.科目一考试成绩未确认
-			baseMapper.countInfoByColumn("fir_sub", " not in ('30', '40')", "fir_sub_test_time", curYmd);
+			students = baseMapper.getTraineeInfoByColumn("fir_sub", " not in ('30', '40')", "fir_sub_test_time", config.getDays().toString());
 		}else if ("202".equals(config.getCode())){
+			kskm = "2";
 			//科目二成绩确认.科目二考试成绩未确认
-			baseMapper.countInfoByColumn("sec_sub", " not in ('30', '40')", "sec_sub_test_time", curYmd);
+			students = baseMapper.getTraineeInfoByColumn("sec_sub", " not in ('30', '40')", "sec_sub_test_time", config.getDays().toString());
 		}else if ("302".equals(config.getCode())){
+			kskm = "3";
 			//科目三成绩确认.科目三考试成绩未确认
-			baseMapper.countInfoByColumn("third_sub", " not in ('30', '40')", "third_sub_test_time", curYmd);
+			students = baseMapper.getTraineeInfoByColumn("third_sub", " not in ('30', '40')", "third_sub_test_time", config.getDays().toString());
 		}else if ("402".equals(config.getCode())){
+			kskm = "4";
 			//科目四成绩确认.科目四考试成绩未确认
-			baseMapper.countInfoByColumn("forth_sub", " not in ('10', '20')", "third_sub_test_time", "");
+			students = baseMapper.getTraineeInfoByColumn("forth_sub", " not in ('10', '20')", "third_sub_test_time", config.getDays().toString());
 		}
+		
+		for (int i=0; i<students.size(); i++){
+			TraineeInformation item = students.get(i);
+			BizException expItem = new BizException();
+			expItem.setSfzmhm(item.getIdCardNo());
+			expItem.setXm(item.getName());
+			expItem.setLsh(item.getSerialNum());
+			expItem.setCode(config.getCode());
+			expItem.setKskm(kskm);
+			
+			saveException(expItem);
+		}
+	}
+	
+	@Override
+	public ApiResponse<Map<String, Integer>> dashboard() {
+		return ApiResponse.success(baseMapper.dashboard());
 	}
 }

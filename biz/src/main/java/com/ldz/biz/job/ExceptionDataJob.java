@@ -11,11 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ldz.biz.model.BizExceptionConfig;
 import com.ldz.biz.service.BizExceptionService;
 import com.ldz.util.bean.ApiResponse;
-import com.ldz.util.redis.RedisTemplateUtil;
 
 /*
  * 主动推送数据至合作方接口
@@ -27,15 +25,8 @@ import com.ldz.util.redis.RedisTemplateUtil;
 public class ExceptionDataJob implements Job {
 	
 	Logger errorLog = LoggerFactory.getLogger("error_info");
-	protected Logger accessLog = LoggerFactory.getLogger("access_info");
-	@Autowired
-	private RedisTemplateUtil redisUtil;
 	@Autowired
 	private BizExceptionService exceptionService;
-	//订单最大等待时长
-	int maxMinute = 20;
-	
-	ObjectMapper mapper = new ObjectMapper();
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {

@@ -92,8 +92,35 @@ public class TraineeTestInfo implements Serializable {
     @Column(name = "cjsj")
     private String cjsj;
 
+    /**
+     * 状态  0 正常  1 异常
+     */
+    private String zt;
+
+    /**
+     * 异常原因
+     */
+    private String ycyy;
+
     @Transient
     private String jgdm;
+
+
+    public String getZt() {
+        return zt;
+    }
+
+    public void setZt(String zt) {
+        this.zt = zt;
+    }
+
+    public String getYcyy() {
+        return ycyy;
+    }
+
+    public void setYcyy(String ycyy) {
+        this.ycyy = ycyy;
+    }
 
     public String getJgdm() {
         return jgdm;

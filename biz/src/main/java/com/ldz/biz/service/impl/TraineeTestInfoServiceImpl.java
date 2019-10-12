@@ -45,7 +45,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
     private CoachTraineeRercordService coachTraineeRercordService;//教练学员分配表
     @Autowired
     private CoachManagementService coachManagementService;//教练表
-
+    @Autowired
+    private BizExceptionService exceptionService;
 
     @Autowired
     private SysMessageService messageService;//消息下发
@@ -398,20 +399,20 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         TraineeInformation traineeInfo = traineeInformationService.queryUserStudyType(map.get(5), map.get(9));
         if (traineeInfo == null) {
             TraineeInformation information = traineeInformationService.findByIdCardNo(map.get(2));
-            if(information == null ){
+            if (information == null) {
                 return ApiResponse.fail("系统中，未找到该学员，请核实该学员是否是外校学员！");
-            }else if(!StringUtils.equals(map.get(4), information.getCarType())){
+            } else if (!StringUtils.equals(map.get(4), information.getCarType())) {
                 return ApiResponse.fail("车型与系统中车型不匹配 , 请确认车型");
-            }else if(StringUtils.equals(information.getStatus(), "99")){
+            } else if (StringUtils.equals(information.getStatus(), "99")) {
                 return ApiResponse.fail("学员未收报名费, 请在收费页面确认收费");
             }
         }
 //		3、学员ID有效性验证，必须未结业和未退学的，
         String findUserStatus = traineeInfo.getStatus();
-        if(StringUtils.equals(findUserStatus,"99")){
-            return  ApiResponse.fail("学员未确认缴费, 请在缴费页面确认缴费");
+        if (StringUtils.equals(findUserStatus, "99")) {
+            return ApiResponse.fail("学员未确认缴费, 请在缴费页面确认缴费");
         }
-        if(StringUtils.isBlank(traineeInfo.getSerialNum())){
+        if (StringUtils.isBlank(traineeInfo.getSerialNum())) {
             return ApiResponse.fail("未找到学员流水号,请先导入学员流水号");
         }
         if (StringUtils.equals(findUserStatus, "60")) {
@@ -460,7 +461,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             return ApiResponse.fail("没有找到该学员的预约记录, 请在预约确认界面导入该学员的预约信息");
 
         }
-        if(!StringUtils.equals(traineeInfo.getClassType(), "60")){
+        if (!StringUtils.equals(traineeInfo.getClassType(), "60")) {
             if (StringUtils.equals(kmCode, "10") && StringUtils.isBlank(traineeInfo.getFirSubPaymentTime()) && traineeInfo.getFirSubTestNum() <= 1) {
                 return ApiResponse.fail("该学员科目一的初考费显示未缴,请在考试缴费界面确认缴费情况");
             } else if (StringUtils.equals(kmCode, "20") && StringUtils.isBlank(traineeInfo.getSecSubPaymentTime()) && traineeInfo.getSecSubTestNum() <= 1) {
@@ -514,7 +515,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             if (StringUtils.equals(kmCode, "10")) {
                 //科目一成功后，系统自动跳到下一个科目中
                 // 判断当前状态是否需要修改 , 可能成绩导入会在后面
-                if(StringUtils.equals(traineeInfo.getStatus(), "10")){
+                if (StringUtils.equals(traineeInfo.getStatus(), "10")) {
                     traineeInfo.setStatus("20");
                 }
                 //科目一成功后，将状态修改为合格
@@ -628,6 +629,13 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         List<Map<String, String>> webList = new ArrayList<>();
         String errorKey = genId();
         List<Map<Integer, String>> errorList = new ArrayList<>();
+        // 根据身份证号查询到所有的在办学员信息
+        SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+        Set<String> idCards = list.stream().map(m -> m.get(2)).collect(Collectors.toSet());
+        condition.in(TraineeInformation.InnerColumn.idCardNo, idCards);
+        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50", "60"));
+        List<TraineeInformation> infos = traineeInformationService.findByCondition(condition);
+        Map<String, List<TraineeInformation>> listMap = infos.stream().collect(Collectors.groupingBy(TraineeInformation::getIdCardNo));
 
         for (Map<Integer, String> map : list) {
             Map<Integer, String> tableNameInfo = Maps.newLinkedHashMap();
@@ -646,13 +654,12 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 resultList.add(map);
                 errorList.add(map);
             } else {
-                SimpleCondition simpleCondition = new SimpleCondition(TraineeInformation.class);
-                simpleCondition.eq(TraineeInformation.InnerColumn.idCardNo, map.get(2));
-                List<TraineeInformation> informations = traineeInformationService.findByCondition(simpleCondition);
+                TraineeInformation information = null;
+                List<TraineeInformation> informations = listMap.get(map.get(2));
                 if (CollectionUtils.isNotEmpty(informations)) {
-                    TraineeInformation information = informations.get(0);
+                    information = informations.get(0);
                     map.put(mapSize + 2, information.getJgmc());
-                    if(StringUtils.isNotBlank(information.getReferrer())){
+                    if (StringUtils.isNotBlank(information.getReferrer())) {
                         map.put(mapSize + 3, information.getReferrer().split("-")[0]);
                     }
                 }
@@ -678,7 +685,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 tableNameInfo.put(8, map.get(8));//考试场次
                 tableNameInfo.put(9, map.get(9));//手机号码
 
-                ApiResponse<String> destineExcel = this.updateDestineExcel(map, sysUser);
+                ApiResponse<String> destineExcel = this.updateDestineExcel(map, sysUser, information);
+
                 if (destineExcel.isSuccess()) {
                     map.put(mapSize, "成功");
                     map.put(mapSize + 1, "处理成功");
@@ -694,37 +702,37 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     String arFee = "";
                     String message = destineExcel.getMessage();
                     if (StringUtils.isNotEmpty(message)) {
-                        String[] messages = message.split("@sfgeeq@",-1);
-                        jgmc = messages[0];
-                        if (messages.length >= 3) {
-                            trainStatus = messages[1];
-                            subTestNums = messages[2];
-                            reffer = messages[3];
-                            registrationTime = messages[4];
-                            regFee = messages[5];
-                            realFee = messages[6];
-                            arFee = messages[7];
+                        if(!message.equals("操作成功")){
+                            String[] messages = message.split("@sfgeeq@", -1);
+                            jgmc = messages[0];
+                            if (messages.length >= 3) {
+                                trainStatus = messages[1];
+                                subTestNums = messages[2];
+                                reffer = messages[3];
+                                registrationTime = messages[4];
+                                regFee = messages[5];
+                                realFee = messages[6];
+                                arFee = messages[7];
+                            }
                         }
-
-
                     }
                     map.put(mapSize + 2, jgmc);
-                    map.put(mapSize + 3 , reffer);
-                    map.put(mapSize + 4 , registrationTime);
+                    map.put(mapSize + 3, reffer);
+                    map.put(mapSize + 4, registrationTime);
                     map.put(mapSize + 5, regFee);
-                    map.put(mapSize + 6 , realFee);
-                    map.put(mapSize + 7 , arFee);
-                    if(StringUtils.isNotBlank(subTestNums)){
-                        map.put(mapSize + 8 ,  Integer.parseInt(subTestNums) <=0 ?"初考":"补考");
+                    map.put(mapSize + 6, realFee);
+                    map.put(mapSize + 7, arFee);
+                    if (StringUtils.isNotBlank(subTestNums)) {
+                        map.put(mapSize + 8, Integer.parseInt(subTestNums) <= 0 ? "初考" : "补考");
                     }
                     webMap.put("jgmc", jgmc);
                     webMap.put("trainStatus", trainStatus);
                     webMap.put("subTestNums", subTestNums);
-                    webMap.put("reffer",reffer);
-                    webMap.put("registrationTime",registrationTime);
+                    webMap.put("reffer", reffer);
+                    webMap.put("registrationTime", registrationTime);
                     webMap.put("regFee", regFee);
-                    webMap.put("realFee",realFee);
-                    webMap.put("arFee",arFee);
+                    webMap.put("realFee", realFee);
+                    webMap.put("arFee", arFee);
                     resultList.add(map);
                 } else {
                     webMap.put("success", "0");
@@ -773,7 +781,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
      * @param sysUser
      * @return
      */
-    private ApiResponse<String> updateDestineExcel(Map<Integer, String> map, SysYh sysUser) {
+    private ApiResponse<String> updateDestineExcel(Map<Integer, String> map, SysYh sysUser, TraineeInformation information) {
         Map<String, String> kmMap = new HashMap<>();
         kmMap.put("科目一", "10");
         kmMap.put("科目二", "20");
@@ -821,72 +829,110 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         String trainStatus = "";
         String subTestNums = "";
 //		2、查找到学员ID
-        TraineeInformation traineeInfo = traineeInformationService.queryUserStudyType(map.get(2), map.get(4));
-//		RuntimeCheck.ifNull(traineeInfo,"系统中，未找到该学员，请核实该学员是否是外校学员！");
-        if (traineeInfo == null) {
-            TraineeInformation information = traineeInformationService.findByIdCardNo(map.get(2));
-            if(information == null ){
-                return ApiResponse.fail("系统中，未找到该学员，请核实该学员是否是外校学员！");
-            }else if(!StringUtils.equals(map.get(4), information.getCarType())){
-                return ApiResponse.fail("车型与系统中车型不匹配 , 请确认车型");
-            }else if(StringUtils.equals(information.getStatus(), "99")){
-                return ApiResponse.fail("学员未收报名费, 请在收费页面确认收费");
-            }
+        if (information == null) {
+            // 未找到学员 记录异常 ， 不抛出异常
+            BizException exception = new BizException();
+            exception.setSfzmhm(map.get(2));
+            exception.setId(genId());
+            exception.setCode("991");
+            exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+            exception.setCjsj(DateUtils.getNowTime());
+            exception.setKskm(kmCode);
+            exception.setXm(map.get(0));
+            exceptionService.saveException(exception);
+        } else if (StringUtils.equals(information.getStatus(), "99")) {
+            BizException exception = new BizException();
+            exception.setSfzmhm(map.get(2));
+            exception.setId(genId());
+            exception.setCode("902");
+            exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+            exception.setCjsj(DateUtils.getNowTime());
+            exception.setKskm(kmCode);
+            exception.setXm(map.get(0));
+            exceptionService.saveException(exception);
+        } else if (StringUtils.equals(information.getArrearage(), "10")) {
+            BizException exception = new BizException();
+            exception.setSfzmhm(map.get(2));
+            exception.setId(genId());
+            exception.setCode("903");
+            exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+            exception.setCjsj(DateUtils.getNowTime());
+            exception.setKskm(kmCode);
+            exception.setXm(map.get(0));
+            exceptionService.saveException(exception);
         }
-        String regFee =  "";
+
+        String regFee = "";
         String realFee = "";
         String arFee = "";
 
-        if(traineeInfo.getCarType().equals("A1") ||traineeInfo.getCarType().equals("A2") ||traineeInfo.getCarType().equals("A3") ||traineeInfo.getCarType().equals("B2")  ){
-            regFee = traineeInfo.getRegistrationFee() + "";
-            realFee = traineeInfo.getRealPay() + "";
-            arFee = traineeInfo.getOweAmount() + "";
+        if (information.getCarType().equals("A1") || information.getCarType().equals("A2") || information.getCarType().equals("A3") || information.getCarType().equals("B2")) {
+            regFee = information.getRegistrationFee() + "";
+            realFee = information.getRealPay() + "";
+            arFee = information.getOweAmount() + "";
         }
-        cwjl.setTraineeId(traineeInfo.getId());
-        cwjl.setTraineeName(traineeInfo.getName());
+        cwjl.setTraineeId(information.getId());
+        cwjl.setTraineeName(information.getName());
         cwjl.setZt("00");
 //		3、学员ID有效性验证，必须未结业和未退学的，约考科目必须没有合格 非小车，需要检查本科目培训状态是否合格
-        String findUserStatus = traineeInfo.getStatus();
-        if(StringUtils.equals(findUserStatus, "99")){
-            return ApiResponse.fail("学员未确认缴费,请现在收费页面确认缴费");
-        }
-        if(StringUtils.isBlank(traineeInfo.getSerialNum())){
-            return ApiResponse.fail("未找到学员流水号,请先导入学员流水号");
-        }
-        if (StringUtils.equals(findUserStatus, "60")) {
-            return ApiResponse.fail("该学员已退学");
-        }
-        if (StringUtils.equals(findUserStatus, "50")) {
-            cwjl.setReason("学员状态为结业,无法约考");
-            yyCwjlService.save(cwjl);
-            return ApiResponse.fail("该学员已结业，无需约考");
+        String findUserStatus = information.getStatus();
+
+        if (StringUtils.isBlank(information.getSerialNum())) {
+            BizException exception = new BizException();
+            exception.setSfzmhm(map.get(2));
+            exception.setId(genId());
+            exception.setCode("904");
+            exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+            exception.setCjsj(DateUtils.getNowTime());
+            exception.setKskm(kmCode);
+            exception.setXm(map.get(0));
+            exceptionService.saveException(exception);
         }
 
-        if (!StringUtils.equals(traineeInfo.getName(), map.get(0))) {
-            cwjl.setReason("系统中的学员名称与excel不匹配");
-            yyCwjlService.save(cwjl);
-            return ApiResponse.fail("系统学员姓名:" + traineeInfo.getName() + " ,数据匹配失败！");
-        }
 
         //大车，需要判断培训，没有培训合格的大车，不能进行约考
-        if (StringUtils.indexOf(traineeInfo.getCarType(), "C") == -1) {
+        if (StringUtils.indexOf(information.getCarType(), "C") == -1) {
             if (StringUtils.equals(kmCode, "10")) {//科目一
-                if (StringUtils.equals(traineeInfo.getFirSubTrainStatus(), "10")) {
+                if (StringUtils.equals(information.getFirSubTrainStatus(), "10")) {
                     cwjl.setReason("该学员科目一培训处理不合格，不能进行约考");
                     yyCwjlService.save(cwjl);
-                    return ApiResponse.fail("该学员科目一培训处理不合格，不能进行约考");
+                    BizException exception = new BizException();
+                    exception.setSfzmhm(map.get(2));
+                    exception.setId(genId());
+                    exception.setCode("103");
+                    exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+                    exception.setCjsj(DateUtils.getNowTime());
+                    exception.setKskm(kmCode);
+                    exception.setXm(map.get(0));
+                    exceptionService.saveException(exception);
                 }
             } else if (StringUtils.equals(kmCode, "20")) {//科目二
-                if (StringUtils.equals(traineeInfo.getSecSubTrainStatus(), "10")) {
+                if (StringUtils.equals(information.getSecSubTrainStatus(), "10")) {
                     cwjl.setReason("该学员科目二培训处理不合格，不能进行约考");
                     yyCwjlService.save(cwjl);
-                    return ApiResponse.fail("该学员科目二培训处理不合格，不能进行约考");
+                    BizException exception = new BizException();
+                    exception.setSfzmhm(map.get(2));
+                    exception.setId(genId());
+                    exception.setCode("203");
+                    exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+                    exception.setCjsj(DateUtils.getNowTime());
+                    exception.setKskm(kmCode);
+                    exception.setXm(map.get(0));
+                    exceptionService.saveException(exception);
                 }
             } else if (StringUtils.equals(kmCode, "30")) {//科目三
-                if (StringUtils.equals(traineeInfo.getThirdSubTrainStatus(), "10")) {
+                if (StringUtils.equals(information.getThirdSubTrainStatus(), "10")) {
                     cwjl.setReason("该学员科目三培训处理不合格，不能进行约考");
                     yyCwjlService.save(cwjl);
-                    return ApiResponse.fail("该学员科目三培训处理不合格，不能进行约考");
+                    BizException exception = new BizException();
+                    exception.setSfzmhm(map.get(2));
+                    exception.setId(genId());
+                    exception.setCode("303");
+                    exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+                    exception.setCjsj(DateUtils.getNowTime());
+                    exception.setKskm(kmCode);
+                    exception.setXm(map.get(0));
+                    exceptionService.saveException(exception);
                 }
             }
         }
@@ -904,151 +950,153 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
 //		4、将学员ID、科目、考试场地、约考时间。查询数据库判断当前约考信息有没有重复
         SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
-        condition.eq(TraineeTestInfo.InnerColumn.traineeId, traineeInfo.getId());//学员ID
+        condition.eq(TraineeTestInfo.InnerColumn.traineeId, information.getId());//学员ID
         condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(3));//科目
         condition.eq(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(6)));//约考时间
         condition.setOrderByClause(TraineeTestInfo.InnerColumn.id.desc());
         List<TraineeTestInfo> orgs = findByCondition(condition);
         if (orgs != null && orgs.size() > 0) {
             if (StringUtils.equals(kmCode, "10")) {//科目一
-                traineeInfo.setFirSubTestTime(map.get(6));//科目一约考时间
-                Integer firSubTestNum = traineeInfo.getFirSubTestNum();
+                information.setFirSubTestTime(map.get(6));//科目一约考时间
+                Integer firSubTestNum = information.getFirSubTestNum();
                 if (firSubTestNum == null) {
                     firSubTestNum = 0;
                 }
-                traineeInfo.setFirSubTestNum(firSubTestNum);//科目一考试次数
-                traineeInfo.setFirSub("20");
+                information.setFirSubTestNum(firSubTestNum);//科目一考试次数
+                information.setFirSub("20");
                 subTestNums = firSubTestNum - 1 + "";
-                trainStatus = traineeInfo.getFirSubTrainStatus();//科目一培训状态
-            } else if (StringUtils.equals(kmCode, "20")) {//科目二
-                traineeInfo.setStatus("20");
-                traineeInfo.setSecSub("10");//科目二状态
-                traineeInfo.setSecSubTestTime(map.get(6));//科目二约考时间
-                Integer subTestNum = traineeInfo.getSecSubTestNum();
-                if (subTestNum == null) {
-                    subTestNum = 0;
-                }
-                traineeInfo.setSecSubTestNum(subTestNum);//科目二考试次数
-                subTestNums = subTestNum - 1 + "";
-                trainStatus = traineeInfo.getSecSubTrainStatus();//科目二培训状态
-
-            } else if (StringUtils.equals(kmCode, "30")) {//科目三
-                traineeInfo.setStatus("30");
-                traineeInfo.setThirdSub("10");//科目三状态
-                traineeInfo.setThirdSubTestTime(map.get(6));//科目三约考时间
-                Integer subTestNum = traineeInfo.getThirdSubTestNum();
-                if (subTestNum == null) {
-                    subTestNum = 0;
-                }
-                traineeInfo.setThirdSubTestNum(subTestNum);//科目三考试次数
-                subTestNums = subTestNum - 1 + "";
-                trainStatus = traineeInfo.getThirdSubTrainStatus();//科目三培训状态
-            } else if (StringUtils.equals(kmCode, "40")) {//科目四
-                traineeInfo.setStatus("40");
-                traineeInfo.setForthSub("00");//科目四状态
+                trainStatus = information.getFirSubTrainStatus();//科目一培训状态
+//            } else if (StringUtils.equals(kmCode, "20")) {//科目二
+//                information.setStatus("20");
+//                information.setSecSub("10");//科目二状态
+//                information.setSecSubTestTime(map.get(6));//科目二约考时间
+//                Integer subTestNum = traineeInfo.getSecSubTestNum();
+//                if (subTestNum == null) {
+//                    subTestNum = 0;
+//                }
+//                traineeInfo.setSecSubTestNum(subTestNum);//科目二考试次数
+//                subTestNums = subTestNum - 1 + "";
+//                trainStatus = traineeInfo.getSecSubTrainStatus();//科目二培训状态
+//
+//            } else if (StringUtils.equals(kmCode, "30")) {//科目三
+//                traineeInfo.setStatus("30");
+//                traineeInfo.setThirdSub("10");//科目三状态
+//                traineeInfo.setThirdSubTestTime(map.get(6));//科目三约考时间
+//                Integer subTestNum = traineeInfo.getThirdSubTestNum();
+//                if (subTestNum == null) {
+//                    subTestNum = 0;
+//                }
+//                traineeInfo.setThirdSubTestNum(subTestNum);//科目三考试次数
+//                subTestNums = subTestNum - 1 + "";
+//                trainStatus = traineeInfo.getThirdSubTrainStatus();//科目三培训状态
+//            } else if (StringUtils.equals(kmCode, "40")) {//科目四
+//                traineeInfo.setStatus("40");
+//                traineeInfo.setForthSub("00");//科目四状态
+//            }
+//
+//            return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime() + "@sfgeeq@" + regFee + "@sfgeeq@" + realFee + "@sfgeeq@" + arFee);
+//        }
+////		5、将约考信息插入约考表
+//        TraineeTestInfo addEntity = new TraineeTestInfo();
+//        addEntity.setId(genId());
+//        addEntity.setTraineeId(traineeInfo.getId());
+//        addEntity.setTraineeName(traineeInfo.getName());
+//        addEntity.setIdCardNo(traineeInfo.getIdCardNo());//身份证号码
+//        addEntity.setSubject(map.get(3));//科目
+//        addEntity.setTestPlace(map.get(7) + "-" + map.get(8));//考试场地
+//        addEntity.setTestTime(map.get(6));//约考时间
+//        addEntity.setOperateTime(DateUtils.getNowTime());//操作时间
+//        addEntity.setRemark("excel约考信息批量导入");//备注
+//        addEntity.setOperator(sysUser.getYhid());//操作人
+//        addEntity.setOperateTime(DateUtils.getNowTime());//操作時間
+//        addEntity.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+//        addEntity.setCjsj(DateUtils.getNowTime());
+//        if (!StringUtils.equals(map.get(3), "科目四")) {
+//            addEntity.setPayStatus("10");//00已缴费 10未缴费。
+//        } else {
+//            addEntity.setPayStatus("00");
+//        }
+//        int i = save(addEntity);
+//        if (i == 0) {
+//            return ApiResponse.fail("入库失败");
+//        }
+//
+////		6、插入将约考成功的消息插入消息表
+//        SysMessage message = new SysMessage();
+//        message.setTitle("您已约考成功");
+//        //学员姓名(0)|学习驾驶证明编号(1)|身份证明号码(2)|考试科目(3)|考试车型(4)|预约日期(5)|约考日期(6)|考试场地(7)|考试场次(8)|手机号码(9)|null(10)|
+////		科目一预约成功确认：【明涛驾校】尊敬的某某先生/女士：您预约的    年   月  日的科目一考试已受理成功，考试时间：上午8:30—10:30，下午13:30—15:00，请准时参加考试，预祝您考试顺利。缺考将视为不及格，再次约考需缴纳补考费。巩固练习请选择“服务学员”—“模拟考试”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133。
+//        //学员{userName}您好，你已经成功约考{yhkm}(考试科目)  {yksj}(约考日期) {ykcx}(考试车型)
+//        String messageBody = "{\"userName\":\"" + map.get(0) + "\",\"yksj\":\"" + map.get(6) + "\",\"ykkm\":\"" + map.get(6) + "\",\"ykcx\":\"" + map.get(4) + "\"}";
+//        String userXb = "先生";//性别 /* 00: 女  10: 男*/
+//        if (!StringUtils.equals(traineeInfo.getGender(), "10")) {
+//            userXb = "女士";
+//        }
+//        String kmCodeName = map.get(3);
+//        if (StringUtils.equals(kmCode, "40")) {
+//            kmCodeName = "科目三安全文明常识";
+//        }
+//        messageBody = "{\"first\":\"尊敬的" + traineeInfo.getName() + userXb + "：\",\"keyword1\":\"" + kmCodeName + "预约成功\",\"keyword2\":\"预约成功\",\"remark\":\"您预约的" + map.get(6) + "的" + kmCodeName + "考试已受理成功，考试时间：上午8:30—10:30，下午13:30—15:00，请准时参加考试，预祝您考试顺利。缺考将视为不及格，再次约考需缴纳补考费。巩固练习请选择“服务学员”—“模拟考试”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133\"}";
+//        message.setParameterBody(messageBody);//参数
+//        message.setBizId("xy001");//业务ID
+//        message.setUserId(traineeInfo.getId());//接收者USER_ID
+//        message.setUserName(traineeInfo.getName());//接收者USER_ID
+//        message.setUserRole("1");//1、学员 2、教练 3、管理员
+//        messageService.sendMessage(message, traineeInfo.getOpenId(), traineeInfo.getPhone());
+//
+////		7、修改学员表
+//        if (StringUtils.equals(kmCode, "10")) {//科目一
+//            traineeInfo.setFirSubTestTime(map.get(6));//科目一约考时间
+//            Integer firSubTestNum = traineeInfo.getFirSubTestNum();
+//            if (firSubTestNum == null) {
+//                firSubTestNum = 0;
+//            }
+//            traineeInfo.setFirSubTestNum(firSubTestNum + 1);//科目一考试次数
+//            traineeInfo.setFirSub("20");
+//            subTestNums = firSubTestNum + "";
+//            trainStatus = traineeInfo.getFirSubTrainStatus();//科目一培训状态
+//        } else if (StringUtils.equals(kmCode, "20")) {//科目二
+//            traineeInfo.setStatus("20");
+//            traineeInfo.setSecSub("10");//科目二状态
+//            traineeInfo.setSecSubTestTime(map.get(6));//科目二约考时间
+//            Integer subTestNum = traineeInfo.getSecSubTestNum();
+//            if (subTestNum == null) {
+//                subTestNum = 0;
+//            }
+//            traineeInfo.setSecSubTestNum(subTestNum + 1);//科目二考试次数
+//            subTestNums = subTestNum + "";
+//            trainStatus = traineeInfo.getSecSubTrainStatus();//科目二培训状态
+//
+//        } else if (StringUtils.equals(kmCode, "30")) {//科目三
+//            traineeInfo.setStatus("30");
+//            traineeInfo.setThirdSub("10");//科目三状态
+//            traineeInfo.setThirdSubTestTime(map.get(6));//科目三约考时间
+//            Integer subTestNum = traineeInfo.getThirdSubTestNum();
+//            if (subTestNum == null) {
+//                subTestNum = 0;
+//            }
+//            traineeInfo.setThirdSubTestNum(subTestNum + 1);//科目三考试次数
+//            subTestNums = subTestNum + "";
+//            trainStatus = traineeInfo.getThirdSubTrainStatus();//科目三培训状态
+//        } else if (StringUtils.equals(kmCode, "40")) {//科目四
+//            traineeInfo.setStatus("40");
+//            traineeInfo.setForthSub("00");//科目四状态
+//        }
+//        traineeInformationService.update(traineeInfo);
+//
+//        yyCwjlService.updateZt(traineeInfo.getId());
+//
+//
+////		8、插入学员状态表(学员日志表)
+//        String status = "00";
+//        String type = map.get(3) + "约考";
+//        traineeStatusService.saveEntity(traineeInfo, type, status, "excel约考信息批量导入" + addEntity.toString());
+//
+//
+//        return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime() + "@sfgeeq@" + regFee + "@sfgeeq@" + realFee + "@sfgeeq@" + arFee);
             }
-
-            return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime() + "@sfgeeq@" + regFee+ "@sfgeeq@" + realFee+ "@sfgeeq@" + arFee);
         }
-//		5、将约考信息插入约考表
-        TraineeTestInfo addEntity = new TraineeTestInfo();
-        addEntity.setId(genId());
-        addEntity.setTraineeId(traineeInfo.getId());
-        addEntity.setTraineeName(traineeInfo.getName());
-        addEntity.setIdCardNo(traineeInfo.getIdCardNo());//身份证号码
-        addEntity.setSubject(map.get(3));//科目
-        addEntity.setTestPlace(map.get(7) + "-" + map.get(8));//考试场地
-        addEntity.setTestTime(map.get(6));//约考时间
-        addEntity.setOperateTime(DateUtils.getNowTime());//操作时间
-        addEntity.setRemark("excel约考信息批量导入");//备注
-        addEntity.setOperator(sysUser.getYhid());//操作人
-        addEntity.setOperateTime(DateUtils.getNowTime());//操作時間
-        addEntity.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
-        addEntity.setCjsj(DateUtils.getNowTime());
-        if (!StringUtils.equals(map.get(3), "科目四")) {
-            addEntity.setPayStatus("10");//00已缴费 10未缴费。
-        } else {
-            addEntity.setPayStatus("00");
-        }
-        int i = save(addEntity);
-        if (i == 0) {
-            return ApiResponse.fail("入库失败");
-        }
-
-//		6、插入将约考成功的消息插入消息表
-        SysMessage message = new SysMessage();
-        message.setTitle("您已约考成功");
-        //学员姓名(0)|学习驾驶证明编号(1)|身份证明号码(2)|考试科目(3)|考试车型(4)|预约日期(5)|约考日期(6)|考试场地(7)|考试场次(8)|手机号码(9)|null(10)|
-//		科目一预约成功确认：【明涛驾校】尊敬的某某先生/女士：您预约的    年   月  日的科目一考试已受理成功，考试时间：上午8:30—10:30，下午13:30—15:00，请准时参加考试，预祝您考试顺利。缺考将视为不及格，再次约考需缴纳补考费。巩固练习请选择“服务学员”—“模拟考试”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133。
-        //学员{userName}您好，你已经成功约考{yhkm}(考试科目)  {yksj}(约考日期) {ykcx}(考试车型)
-        String messageBody = "{\"userName\":\"" + map.get(0) + "\",\"yksj\":\"" + map.get(6) + "\",\"ykkm\":\"" + map.get(6) + "\",\"ykcx\":\"" + map.get(4) + "\"}";
-        String userXb = "先生";//性别 /* 00: 女  10: 男*/
-        if (!StringUtils.equals(traineeInfo.getGender(), "10")) {
-            userXb = "女士";
-        }
-        String kmCodeName = map.get(3);
-        if (StringUtils.equals(kmCode, "40")) {
-            kmCodeName = "科目三安全文明常识";
-        }
-        messageBody = "{\"first\":\"尊敬的" + traineeInfo.getName() + userXb + "：\",\"keyword1\":\"" + kmCodeName + "预约成功\",\"keyword2\":\"预约成功\",\"remark\":\"您预约的" + map.get(6) + "的" + kmCodeName + "考试已受理成功，考试时间：上午8:30—10:30，下午13:30—15:00，请准时参加考试，预祝您考试顺利。缺考将视为不及格，再次约考需缴纳补考费。巩固练习请选择“服务学员”—“模拟考试”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133\"}";
-        message.setParameterBody(messageBody);//参数
-        message.setBizId("xy001");//业务ID
-        message.setUserId(traineeInfo.getId());//接收者USER_ID
-        message.setUserName(traineeInfo.getName());//接收者USER_ID
-        message.setUserRole("1");//1、学员 2、教练 3、管理员
-        messageService.sendMessage(message, traineeInfo.getOpenId(), traineeInfo.getPhone());
-
-//		7、修改学员表
-        if (StringUtils.equals(kmCode, "10")) {//科目一
-            traineeInfo.setFirSubTestTime(map.get(6));//科目一约考时间
-            Integer firSubTestNum = traineeInfo.getFirSubTestNum();
-            if (firSubTestNum == null) {
-                firSubTestNum = 0;
-            }
-            traineeInfo.setFirSubTestNum(firSubTestNum + 1);//科目一考试次数
-            traineeInfo.setFirSub("20");
-            subTestNums = firSubTestNum + "";
-            trainStatus = traineeInfo.getFirSubTrainStatus();//科目一培训状态
-        } else if (StringUtils.equals(kmCode, "20")) {//科目二
-            traineeInfo.setStatus("20");
-            traineeInfo.setSecSub("10");//科目二状态
-            traineeInfo.setSecSubTestTime(map.get(6));//科目二约考时间
-            Integer subTestNum = traineeInfo.getSecSubTestNum();
-            if (subTestNum == null) {
-                subTestNum = 0;
-            }
-            traineeInfo.setSecSubTestNum(subTestNum + 1);//科目二考试次数
-            subTestNums = subTestNum + "";
-            trainStatus = traineeInfo.getSecSubTrainStatus();//科目二培训状态
-
-        } else if (StringUtils.equals(kmCode, "30")) {//科目三
-            traineeInfo.setStatus("30");
-            traineeInfo.setThirdSub("10");//科目三状态
-            traineeInfo.setThirdSubTestTime(map.get(6));//科目三约考时间
-            Integer subTestNum = traineeInfo.getThirdSubTestNum();
-            if (subTestNum == null) {
-                subTestNum = 0;
-            }
-            traineeInfo.setThirdSubTestNum(subTestNum + 1);//科目三考试次数
-            subTestNums = subTestNum + "";
-            trainStatus = traineeInfo.getThirdSubTrainStatus();//科目三培训状态
-        } else if (StringUtils.equals(kmCode, "40")) {//科目四
-            traineeInfo.setStatus("40");
-            traineeInfo.setForthSub("00");//科目四状态
-        }
-        traineeInformationService.update(traineeInfo);
-
-        yyCwjlService.updateZt(traineeInfo.getId());
-
-
-//		8、插入学员状态表(学员日志表)
-        String status = "00";
-        String type = map.get(3) + "约考";
-        traineeStatusService.saveEntity(traineeInfo, type, status, "excel约考信息批量导入" + addEntity.toString());
-
-
-        return ApiResponse.success(traineeInfo.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + traineeInfo.getReferrer() + "@sfgeeq@" + traineeInfo.getRegistrationTime() + "@sfgeeq@" + regFee+ "@sfgeeq@" + realFee+ "@sfgeeq@" + arFee);
-
+            return ApiResponse.success();
     }
 
     /**
@@ -1107,7 +1155,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
 //		3、学员ID有效性验证，必须未结业和未退学的，
         String findUserStatus = traineeInfo.getStatus();
-        if(StringUtils.equals(findUserStatus, "99")){
+        if (StringUtils.equals(findUserStatus, "99")) {
             return ApiResponse.fail("学员未确认交费, 请在收费页面确认缴费");
         }
         if (StringUtils.equals(findUserStatus, "60")) {

@@ -63,9 +63,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     private ZgTjjlService zgTjjlService;
     @Autowired
     private ChargeItemManagementService chargeItemManagementService;
-    /**
-     *
-     */
+    @Autowired
+    private BizExceptionService exceptionService;
     @Autowired
     private ReduceManagementService reduceManagementService;
     @Autowired
@@ -110,8 +109,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     @Override
     public boolean fillPagerCondition(LimitedCondition condition) {
 
-        //condition.and().andCondition( " status != '60'");
-
         HttpServletRequest request = getRequset();
 
         String firSubTrainStatus = request.getParameter("firSubTrainStatus");
@@ -138,57 +135,32 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             // 未收费
             condition.eq(TraineeInformation.InnerColumn.chargeStatus, "00");
         } else if (StringUtils.equals(sign, "2")) {
-            // 查询科目二需要缴纳考试费的学员
-            // 未参加过考试
-            //condition.eq(TraineeInformation.InnerColumn.secSubTestNum,1);
-            condition.and().andCondition(" (sec_sub = '10' and status='20') or status = '30' or status = '40'  ");
+            // 科目二需要交费的学员  ： 只要有科目二的考试时间 ， 且 交费时间是空的 ， 就需要交费
+            condition.and().andCondition(" sec_sub_test_time is not null or sec_sub_test_time != ''");
+            condition.and().andCondition(" sec_sub_payment_time is null or sec_sub_payment_time = '' ");
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
-            // 已约考
-			/*condition.eq(TraineeInformation.InnerColumn.secSub,"10");
-			condition.eq(TraineeInformation.InnerColumn.status, "20");*/  // 科目二
-            condition.and().andCondition("sec_sub_payment_time is null or sec_sub_payment_time = ''"); // 考试费未缴过
+
         } else if (StringUtils.equals(sign, "3")) { // 查询科目三需要缴纳考试费的学员
-			/*condition.eq(TraineeInformation.InnerColumn.thirdSubTestNum,1); // 未参加考试
-			condition.eq(TraineeInformation.InnerColumn.thirdSub,"10"); // 已约考
-			condition.eq(TraineeInformation.InnerColumn.status,"30"); // 科目三*/
+            // 科三同理 ： 只要有 科三的考试时间 并且缴费时间是空 则需要交费
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
-            condition.and().andCondition("  (third_sub = '10' and status='30') or status = '40'  ");
+            condition.and().andCondition("  third_sub_test_time is not null or third_sub_test_time != '' ");
             condition.and().andCondition("third_sub_payment_time is null or third_sub_payment_time = ''"); // 考试费未缴纳
         } else if (StringUtils.equals(sign, "4")) { // 查询今日已缴纳报名费的学员
             condition.like(TraineeInformation.InnerColumn.confirmTime.name(), DateUtils.getDateStr(new Date(), "yyyy-MM-dd"));
             condition.eq(TraineeInformation.InnerColumn.chargeStatus.name(), "10");
-        } else if (StringUtils.equals(sign, "5")) { // 查询今日已缴纳科目二考试费的学员
-            // condition.eq(TraineeInformation.InnerColumn.status, "20");  // 科目二
-            // condition.eq(TraineeInformation.InnerColumn.secSubTestNum,1);
-            //  condition.like(TraineeInformation.InnerColumn.secSubPaymentTime, DateUtils.getDateStr(new Date(), "yyyy-MM-dd"));
-            //condition.eq(TraineeInformation.InnerColumn.secSub, "20"); //已缴费
-        } else if (StringUtils.equals(sign, "6")) {
-            // condition.eq(TraineeInformation.InnerColumn.thirdSubTestNum,1);
-            //  condition.like(TraineeInformation.InnerColumn.thirdSubPaymentTime, DateUtils.getDateStr(new Date(), "yyyy-MM-dd"));
-            // condition.eq(TraineeInformation.InnerColumn.thirdSub, "20"); //已缴费
-            // condition.eq(TraineeInformation.InnerColumn.status,"30"); // 科目三
         } else if (StringUtils.equals(sign, "7")) { // 查询科目一代缴费学员
-			/*condition.eq(TraineeInformation.InnerColumn.status,"10");
-			condition.eq(TraineeInformation.InnerColumn.firSubTestNum,0);*/
-            condition.and().andCondition(" (status='10' and ( fir_sub_test_num =0 or fir_sub_test_num =1 ) ) or status='20' or status ='30' or status = '40'  ");
+            //  科目一 也按照已经预约的来缴费
+            condition.and().andCondition(" fir_sub_test_time is not null or fir_sub_test_time != '' ");
             condition.and().andCondition("fir_sub_payment_time is  null or fir_sub_payment_time = '' ");
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
-            condition.eq(TraineeInformation.InnerColumn.acceptStatus, "20");
-        } else if (StringUtils.equals(sign, "8")) { // 今日已缴纳科目一学员
-            // condition.and().andCondition(" fir_sub = '00' or fir_sub = '20'");
-            // condition.eq(TraineeInformation.InnerColumn.firSub,"00");
-            // condition.like(TraineeInformation.InnerColumn.firSubPaymentTime, DateUtils.getDateStr(new Date(), "yyyy-MM-dd"));
-            // condition.eq(TraineeInformation.InnerColumn.status,"10");
+//            condition.eq(TraineeInformation.InnerColumn.acceptStatus, "20");
         } else if (StringUtils.equals(sign, "9")) {
             condition.in(TraineeInformation.InnerColumn.status, Arrays.asList("10", "20", "30"));
             condition.and().andCondition(" ( fir_sub_test_num = 0 or sec_sub_test_num = 1 or third_sub_test_num = 1 ) ");
             condition.and().andCondition("  ( (fir_sub is null or fir_sub = '') or sec_sub = '10' or third_sub = '10'  ) ");
             condition.and().andCondition(" ( (fir_sub_payment_time is  null or fir_sub_payment_time = '' ) or (sec_sub_payment_time is null or sec_sub_payment_time = '') or (third_sub_payment_time is null or third_sub_payment_time = '') ) ");
         } else if (StringUtils.equals(sign, "10")) {
-            // condition.and().andCondition(" ( fir_sub = '00' or sec_sub = '20' or third_sub = '20' )");
             condition.and().andCondition(" fir_sub_payment_time like '%" + DateUtils.getDateStr(new Date(), "yyyy-MM-dd") + "%' or sec_sub_payment_time like '%" + DateUtils.getDateStr(new Date(), "yyyy-MM-dd") + "%' or third_sub_payment_time like '%" + DateUtils.getDateStr(new Date(), "yyyy-MM-dd") + "%'");
-            // condition.in(TraineeInformation.InnerColumn.status, Arrays.asList("10","20","30"));
-            // condition.and().andCondition(" ( (fir_sub_test_num = 0 or fir_sub_test_num = 1) or sec_sub_test_num = 1 or third_sub_test_num = 1 ) ");
         }
 
 //		状态筛选  学员当前状态 99:报名中 00: 受理中  10：科一学习中 20：科二学习中 30：科三学习中 40：科四学习中 50：结业 60：退学
@@ -347,7 +319,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             }
             List<ChargeManagement> managementList = chargeManagementService.findByCondition(condition);
             if (CollectionUtils.isNotEmpty(managementList)) {
-                totalFee = managementList.stream().mapToInt(value -> value.getChargeFee()).reduce((l, r) -> l + r).getAsInt();
+                totalFee = managementList.stream().mapToInt(ChargeManagement::getChargeFee).reduce(Integer::sum).getAsInt();
             }
             condition.in(ChargeManagement.InnerColumn.traineeId.name(), trainIds);
             List<ChargeManagement> chargeManagementList = chargeManagementService.findByCondition(condition);
@@ -392,7 +364,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
         if (StringUtils.equals(sign, "4")) {
             Set<String> collect = list.stream().map(TraineeInformation::getJgdm).collect(Collectors.toSet());
-            List<SysJg> sysJgs = jgService.findIn(SysJg.InnerColumn.jgdm,collect);
+            List<SysJg> sysJgs = jgService.findIn(SysJg.InnerColumn.jgdm, collect);
             Map<String, List<SysJg>> listMap = sysJgs.stream().collect(Collectors.groupingBy(SysJg::getJgdm));
             for (TraineeInformation traineeInformation : list) {
                 sysJgs = listMap.get(traineeInformation.getJgdm());
@@ -534,12 +506,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
     @Override
     public ApiResponse<List<TraineeInformation>> traineeAcceptanceByIdCard(Page<TraineeInformation> pager) {
-
-
         HttpServletRequest requset = getRequset();
         String idCardNoLike = requset.getParameter("idCardNoLike");
-       /* List<TraineeInformation> result = pager.getResult();
-        TraineeInformation traineeInformation = result.get(0);*/
         RuntimeCheck.ifBlank(idCardNoLike, "用户身份证号不能为空");
         ApiResponse<List<TraineeInformation>> result1 = new ApiResponse<>();
         SimpleCondition simpleCondition = new SimpleCondition(TraineeInformation.class);
@@ -548,7 +516,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         afterPager(page);
         result1.setPage(page);
         return result1;
-
     }
 
 
@@ -568,19 +535,19 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (StringUtils.isBlank(entity.getSerialNum())) {
             return ApiResponse.fail("受理流水号不能为空");
         }
-
-//        RuntimeCheck.ifBlank(entity.getId(), "请选择要确认受理的学员");
-//        RuntimeCheck.ifBlank(entity.getSerialNum(), "受理流水号不能为空");
         TraineeInformation obj = findById(entity.getId());
-
         if (obj == null) {
-            return ApiResponse.fail("学员信息不存在，请确认该学员信息是否录入");
+            // 受理学员未找到 记录异常信息
+            BizException exception = new BizException();
+            exception.setLsh(entity.getSerialNum());
+            exception.setCjsj(DateUtils.getNowTime());
+            exception.setCjr(user.getZh() + " -" + user.getXm());
+            exception.setCode("990");
+            exception.setId(genId());
+            exception.setSfzmhm(entity.getIdCardNo());
+            exceptionService.saveException(exception);
+            return ApiResponse.success();
         }
-
-        if (StringUtils.equals(obj.getStatus(), "99")) {
-            return ApiResponse.fail("学员报名费未缴 , 请先确认是否缴费");
-        }
-
         obj.setSerialNum(entity.getSerialNum());
         if (StringUtils.equals(obj.getStatus(), "00")) {
             obj.setStatus("10");
@@ -590,19 +557,18 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         obj.setAcceptor(user.getZh() + "-" + user.getXm());
         int i = update(obj);
         if (i > 0) {
-//            2、受理确认：【明涛驾校】尊敬的某某先生/女士：您的报名受理已成功，您可通过“交管12123”预约科目一考试，考场请选择“新农科目一考场”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133。
-            //插入将约考成功的消息插入消息表
+            //  2、受理确认：【明涛驾校】尊敬的某某先生/女士：您的报名受理已成功，您可通过“交管12123”预约科目一考试，考场请选择“新农科目一考场”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133。
+            // 插入将约考成功的消息插入消息表
             SysMessage message = new SysMessage();
             message.setTitle("您已约考成功");
             //学员姓名(0)|学习驾驶证明编号(1)|身份证明号码(2)|考试科目(3)|考试车型(4)|预约日期(5)|约考日期(6)|考试场地(7)|考试场次(8)|手机号码(9)|null(10)|
-//		科目一预约成功确认：【明涛驾校】尊敬的某某先生/女士：您预约的    年   月  日的科目一考试已受理成功，考试时间：上午8:30—10:30，下午13:30—15:00，请准时参加考试，预祝您考试顺利。缺考将视为不及格，再次约考需缴纳补考费。巩固练习请选择“服务学员”—“模拟考试”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133。
+            //		科目一预约成功确认：【明涛驾校】尊敬的某某先生/女士：您预约的    年   月  日的科目一考试已受理成功，考试时间：上午8:30—10:30，下午13:30—15:00，请准时参加考试，预祝您考试顺利。缺考将视为不及格，再次约考需缴纳补考费。巩固练习请选择“服务学员”—“模拟考试”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133。
             //学员{userName}您好，你已经成功约考{yhkm}(考试科目)  {yksj}(约考日期) {ykcx}(考试车型)
             String messageBody = "";
             String userXb = "先生";//性别 /* 00: 女  10: 男*/
             if (!StringUtils.equals(obj.getGender(), "10")) {
                 userXb = "女士";
             }
-
             messageBody = "{\"first\":\"尊敬的" + obj.getName() + userXb + "：\",\"keyword1\":\"受理确认\",\"keyword2\":\"报名受理已成功\",\"remark\":\"您的报名受理已成功，您可通过“交管12123”预约科目一考试，考场请选择“新农科目一考场”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133。\"}";
             message.setParameterBody(messageBody);//参数
             message.setBizId("xy001");//业务ID
@@ -648,8 +614,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             if (!StringUtils.equals(traineeInformation.getStatus(), "50") && !StringUtils.equals(traineeInformation.getStatus(), "60")) {
                 if (StringUtils.isBlank(repeat)) {
                     return ApiResponse.fail("该学员当前处于其他业务下，不能报名");
-                }else{
-                    if(StringUtils.equals(traineeInformation.getStatus(), "99")){
+                } else {
+                    if (StringUtils.equals(traineeInformation.getStatus(), "99")) {
                         return ApiResponse.fail("该学员还未缴费 , 不能进行重学操作");
                     }
                     info = traineeInformation;
@@ -657,7 +623,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 }
             }
         }
-        if(info == null && StringUtils.isNotBlank(repeat)){
+        if (info == null && StringUtils.isNotBlank(repeat)) {
             return ApiResponse.fail("该学员当前没有学车 , 请勿选择重学操作");
         }
 
@@ -957,7 +923,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             String status = info.getStatus();
             info.setStatus("70");
             update(info);
-            traineeStatusService.saveEntity(info, "学员重新报名 未修改前状态 ,"+status, "00", "重新报名");
+            traineeStatusService.saveEntity(info, "学员重新报名 未修改前状态 ," + status, "00", "重新报名");
 
         }
         if (i > 0) {
@@ -1057,15 +1023,15 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     }
 
     @Override
-    public ApiResponse<String>  confirmSignUp(String traineeId, String chargeType, String remark) {
+    public ApiResponse<String> confirmSignUp(String traineeId, String chargeType, String remark) {
 
         SysYh currentUser = getCurrentUser();
         RuntimeCheck.ifBlank(traineeId, "学员id不能为空");
         String s = redisDao.boundValueOps("SignUp_" + traineeId).get();
-        if(StringUtils.isNotBlank(s)){
+        if (StringUtils.isNotBlank(s)) {
             return ApiResponse.fail("请勿重复操作");
         }
-        redisDao.boundValueOps("SignUp_" + traineeId).set("1",2,TimeUnit.SECONDS);
+        redisDao.boundValueOps("SignUp_" + traineeId).set("1", 2, TimeUnit.SECONDS);
         TraineeInformation information = findById(traineeId);
         // 确定学员基本信息审核是否通过
         RuntimeCheck.ifTrue(StringUtils.equals(information.getInfoCheckStatus(), "00"), "该学员的基本信息还未审核");
@@ -1260,59 +1226,41 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     @Override
     public ApiResponse<String> confirmTestTo(String traineeId, String remark, String km) {
         // 查询是否已经缴费
+        RuntimeCheck.ifBlank(traineeId, "请选择缴费学员");
+        RuntimeCheck.ifBlank(km, "请选择缴费科目");
         SimpleCondition chacondition = new SimpleCondition(ChargeManagement.class);
         chacondition.eq(ChargeManagement.InnerColumn.traineeId, traineeId);
-        if(StringUtils.equals(km, "10")){
+        if (StringUtils.equals(km, "10")) {
             chacondition.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.FIR_SUB);
-        }else if(StringUtils.equals(km,"20")){
+        } else if (StringUtils.equals(km, "20")) {
             chacondition.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.SEC_SUB);
-        }else if(StringUtils.equals(km, "30")){
+        } else if (StringUtils.equals(km, "30")) {
             chacondition.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.THIRD_SUB);
-        }else{
+        } else {
             return ApiResponse.success();
         }
         List<ChargeManagement> list = chargeManagementService.findByCondition(chacondition);
-        if(CollectionUtils.isNotEmpty(list)){
+        if (CollectionUtils.isNotEmpty(list)) {
             return ApiResponse.success();
         }
 
         SysYh currentUser = getCurrentUser();
-        RuntimeCheck.ifBlank(traineeId, "请选择缴费学员");
-        RuntimeCheck.ifBlank(km, "请选择缴费科目");
         TraineeInformation information = findById(traineeId);
         String chargeCode = "";
         ChargeManagement management = new ChargeManagement();
         if (StringUtils.equals(km, "10")) {
-            if (StringUtils.isBlank(information.getConfirmTime())) {
-                return ApiResponse.fail("该学员还未在系统中确认收费,请在系统中确认收费");
-            }
             // 科目一缴费
             chargeCode = FeeType.FIR_SUB;
-            if (!StringUtils.equals(information.getAcceptStatus(), "20")) {
-                return ApiResponse.fail("学员未受理成功");
-            }
+            // 判断学员科目一的状态是否为  已经考试或者已经 约考 ， 如果没有则将科目一的状态改成已缴费
             if (!StringUtils.equals(information.getFirSub(), "30") && !StringUtils.equals(information.getFirSub(), "40") && StringUtils.equals(information.getFirSub(), "20")) {
                 information.setFirSub("00");
             }
             information.setFirSubPaymentTime(DateUtils.getNowTime());
             management.setChargeTime(information.getFirSubPaymentTime());
             management.setChargeCode(chargeCode);
-
         } else if (StringUtils.equals(km, "20")) {
             // 科目二缴费
             chargeCode = FeeType.SEC_SUB;
-            if (!StringUtils.contains(information.getCarType(), "C")) {
-                if (StringUtils.equals(information.getArrearage(), "10")) {
-                    return ApiResponse.fail("学员学费未付清");
-                }
-                if (StringUtils.equals(information.getSecSubTrainStatus(), "10")) {
-                    return ApiResponse.fail("学员科目二培训未合格");
-                }
-            }
-            // 判断科目二是否已约考 ， 考试次数 ， 是否已缴费
-            /*if (information.getSecSubTestNum() > 1) {
-                return ApiResponse.fail("该学员已经参加过考试");
-            }*/
 
             if (StringUtils.isNotBlank(information.getThirdSubPaymentTime())) {
                 return ApiResponse.fail("该学员已于" + information.getThirdSubPaymentTime() + "交过考试费");
@@ -1321,22 +1269,12 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 information.setSecSub("20"); // 已缴费
             }
             information.setSecSubPaymentTime(DateUtils.getNowTime()); // 缴费时间
-            information.setSecSubTrainStatus("00"); // 科目二培训合格
             management.setChargeCode(chargeCode);
             management.setChargeTime(information.getSecSubPaymentTime());
         } else if (StringUtils.equals(km, "30")) {
             chargeCode = FeeType.THIRD_SUB;
-            // 科目三缴费
-            if (!StringUtils.contains(information.getCarType(), "C")) {
-                if (StringUtils.equals(information.getThirdSubTrainStatus(), "10")) {
-                    return ApiResponse.fail("学员科目三培训未合格");
-                }
-            }
-            // 判断科目二是否已约考 ， 考试次数 ， 是否已缴费
-            /*if (information.getThirdSubTestNum() > 1) {
-                return ApiResponse.fail("该学员已经参加过考试");
-            }*/
-
+            // 科目三缴费时 需要先交科目二的费用 ， 判断科目二是否已经缴纳费用
+            RuntimeCheck.ifTrue(StringUtils.isBlank(information.getSecSubPaymentTime()), "请先缴纳科目二的考试费用");
             if (StringUtils.isNotBlank(information.getThirdSubPaymentTime())) {
                 return ApiResponse.fail("该学员已于" + information.getThirdSubPaymentTime() + "交过考试费");
             }
@@ -1344,10 +1282,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 information.setThirdSub("20"); // 已缴费
             }
             information.setThirdSubPaymentTime(DateUtils.getNowTime()); // 缴费时间
-            information.setThirdSubTrainStatus("00"); // 科目三培训合格
             management.setChargeTime(information.getThirdSubPaymentTime()); // 缴费时间
         }
-
 
         information.setModifier(currentUser.getXm());
         information.setModifyTime(DateUtils.getNowTime());
@@ -1359,7 +1295,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             ChargeItemManagement itemManagement = managements.get(0);
             management.setChargeName(itemManagement.getChargeName()); // 缴费项名称
             management.setChargeFee(itemManagement.getAmount());
-
         }
         management.setTraineeSource("00"); // 本校
         management.setTraineeName(information.getName()); // 学员姓名
@@ -1425,10 +1360,57 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (ObjectUtils.isEmpty(information)) {
             return ApiResponse.fail("未找到该学员的信息");
         }
+
         ChargeManagement management = chargeManagementService.findById(chargeId);
         ChargeManagement chargeManagement = new ChargeManagement();
+        if (StringUtils.equals(management.getChargeCode(), FeeType.FIR_SUB)) {
+            // 科目一缴费撤回
+            if (StringUtils.equals(information.getFirSub(), "30") || StringUtils.equals(information.getFirSub(), "40")) {
+                // 科一已考试 , 不能撤回
+                return ApiResponse.fail("该学员已经完成科目学习,不能撤回");
+            }
+            chargeManagement.setChargeCode(FeeType.FIR_SUB);
+            chargeManagement.setChargeTime(information.getFirSubPaymentTime());
+            chargeManagement.setTraineeId(information.getId());
+            chargeManagementService.remove(chargeManagement);
+            information.setFirSubPaymentTime(null);
+            information.setFirSub(null);
+            baseMapper.updateByPrimaryKey(information);
+            traineeStatusService.saveEntity(information, "科目一缴费撤回", "00", "科目一缴费撤回");
+        } else if (StringUtils.equals(management.getChargeCode(), FeeType.SEC_SUB)) {
+            // 科目二缴费撤回
+            if (StringUtils.equals(information.getSecSub(), "30") || StringUtils.equals(information.getSecSub(), "40")) {
+                // 科二已考试 , 不能撤回
+                return ApiResponse.fail("该学员已经完成科目学习,不能撤回");
+            }
+            //
+            chargeManagement.setChargeCode(FeeType.SEC_SUB);
+            chargeManagement.setChargeTime(information.getSecSubPaymentTime());
+            chargeManagement.setTraineeId(information.getId());
+            chargeManagementService.remove(chargeManagement);
+            information.setSecSubPaymentTime(null);
+            information.setSecSub("10");
+            baseMapper.updateByPrimaryKey(information);
+            traineeStatusService.saveEntity(information, "科目二缴费撤回", "00", "科目二缴费撤回");
+        } else if (StringUtils.equals(management.getChargeCode(), FeeType.THIRD_SUB)) {
+            // 科目三缴费撤回
+            if (StringUtils.equals(information.getThirdSub(), "30") || StringUtils.equals(information.getThirdSub(), "40")) {
+                // 科三已考试 , 不能撤回
+                return ApiResponse.fail("该学员已经完成科目学习,不能撤回");
+            }
+            //
+            chargeManagement.setChargeCode(FeeType.THIRD_SUB);
+            chargeManagement.setChargeTime(information.getThirdSubPaymentTime());
+            chargeManagement.setTraineeId(information.getId());
+            chargeManagementService.remove(chargeManagement);
+            information.setThirdSubPaymentTime(null);
+            information.setThirdSub("10");
+            baseMapper.updateByPrimaryKey(information);
+            traineeStatusService.saveEntity(information, "科目二缴费撤回", "00", "科目二缴费撤回");
+        }
+
         // 判断当前学员是否处于 20 ， 30 状态
-        if (StringUtils.equals("20", information.getStatus())) {
+        /*if (StringUtils.equals("20", information.getStatus())) {
             if (!StringUtils.equals(management.getChargeCode(), FeeType.SEC_SUB)) {
                 return ApiResponse.fail("该学员已完成科目学习，不能撤回");
             }
@@ -1479,7 +1461,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             traineeStatusService.saveEntity(information, "科目一缴费撤回", "00", "科目一缴费撤回");
         } else {
             return ApiResponse.fail("未找到该学员的考试缴费信息");
-        }
+        }*/
 
         return ApiResponse.success();
     }
@@ -1836,7 +1818,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         Map<String, Object> retMap = new HashMap<>();
         String key = genId();
         retMap.put("key", key);
-//        SysYh sysUser = getCurrentUser();
         List<Map<Integer, String>> resultList = new ArrayList<>();
         List<Map<String, String>> webList = new ArrayList<>();
         long succeedCount = 0;
@@ -1845,8 +1826,15 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         String sucKey = genId();
         String sucName = System.currentTimeMillis() + "-suc.xls";
         List<Map<Integer, String>> sucList = new ArrayList<>();
-
         List<Map<Integer, String>> errorList = new ArrayList<>();
+
+        // 查询学员
+        List<String> collect = list.stream().map(m -> m.get(0)).collect(Collectors.toList());
+        SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+        condition.in(TraineeInformation.InnerColumn.idCardNo, collect);
+        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50", "60"));
+        List<TraineeInformation> informations = findByCondition(condition);
+        Map<String, List<TraineeInformation>> listMap = informations.stream().collect(Collectors.groupingBy(TraineeInformation::getIdCardNo));
 
         for (Map<Integer, String> map : list) {
 
@@ -1864,78 +1852,41 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 webMap.put("idCardNo", map.get(0));
                 webMap.put("serialNum", map.get(1)); // 学习驾驶证明编号
 
-
-                String traineeId = "";
+                String traineeId = "1";
                 String traineeName = "";
-                TraineeInformation queryTraineeInformation = null;
-                if (StringUtils.isNotEmpty(map.get(0))) {
-                    queryTraineeInformation = this.queryUserStudyType(map.get(0), null);
-                    if (queryTraineeInformation == null) {
-                        errorCount++;
-                        map.put(mapSize, "处理失败");
-                        map.put(mapSize + 1, "该学员未找到");
-                        resultList.add(map);
-                        webMap.put("success", "0");
-                        webMap.put("message", "该学员未找到");
-                        errorList.add(map);
-                        webList.add(webMap);
-                        continue;
-                    }
-                    // 结业或退学 也相当于没有找到
-                    if (StringUtils.indexOf(",50,60", queryTraineeInformation.getStatus()) > 0) {
-                        queryTraineeInformation = null;
-                    }
-                    if (queryTraineeInformation != null) {
-                        traineeId = queryTraineeInformation.getId();
-                        traineeName = queryTraineeInformation.getName();
-                    }
+                List<TraineeInformation> informationList = listMap.get(map.get(0));
+                if (CollectionUtils.isNotEmpty(informationList)) {
+                    traineeId = informationList.get(0).getId();
+                    traineeName = informationList.get(0).getName();
                 }
                 map.put(map.size(), traineeName);
                 webMap.put("userName", traineeName);
-                if (StringUtils.isEmpty(traineeId)) {
+                TraineeInformation traineeInformation = new TraineeInformation();
+                traineeInformation.setId(traineeId);
+                traineeInformation.setSerialNum(map.get(1));
+                ApiResponse<String> destineExcel = this.updateTraineeAcceptanceAuditing(traineeInformation);
+                if (destineExcel.isSuccess()) {
+                    String retMessage = "处理成功";
+                    succeedCount++;
+                    map.put(mapSize, "成功");
+                    map.put(mapSize + 1, retMessage);
+                    webMap.put("success", "1");
+                    webMap.put("message", retMessage);
+                    sucList.add(map);
+                } else {
                     errorCount++;
                     map.put(mapSize, "处理失败");
-                    map.put(mapSize + 1, "该学员未找到");
-                    resultList.add(map);
+                    map.put(mapSize + 1, destineExcel.getMessage());
                     webMap.put("success", "0");
-                    webMap.put("message", "该学员未找到");
+                    webMap.put("message", destineExcel.getMessage());
+                    resultList.add(map);
                     errorList.add(map);
-                } else {
-                    TraineeInformation traineeInformation = new TraineeInformation();
-                    traineeInformation.setId(traineeId);
-                    traineeInformation.setSerialNum(map.get(1));
-                    ApiResponse<String> destineExcel = this.updateTraineeAcceptanceAuditing(traineeInformation);
-                    if (destineExcel.isSuccess()) {
-                        String retMessage = "处理成功";
-                        String originalNum = queryTraineeInformation.getSerialNum();//原始受理流水号
-                        if (StringUtils.isNotEmpty(originalNum)) {
-                            retMessage = "该学员原始流水号：" + originalNum + " 新受理流水号为：" + map.get(1);
-                        }
-                        succeedCount++;
-                        map.put(mapSize, "成功");
-                        map.put(mapSize + 1, retMessage);
-                        webMap.put("success", "1");
-                        webMap.put("message", retMessage);
-
-                        sucList.add(map);
-
-                    } else {
-                        errorCount++;
-                        map.put(mapSize, "处理失败");
-                        map.put(mapSize + 1, destineExcel.getMessage());
-                        webMap.put("success", "0");
-                        webMap.put("message", destineExcel.getMessage());
-                        resultList.add(map);
-                        errorList.add(map);
-                    }
                 }
             }
-
             if (webMap.size() > 0) {
                 webList.add(webMap);
             }
         }
-
 
         retMap.put("errorCount", errorCount);
         retMap.put("succeedCount", succeedCount);
@@ -2112,16 +2063,16 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         Page<ChargeManagement> page1 = new Page<>();
         page1.setPageNum(page.getPageNum());
         page1.setPageSize(page.getPageSize());
-        if(CollectionUtils.isNotEmpty(pageInfo.getList())){
-            condition1.in(ChargeManagement.InnerColumn.traineeId,pageInfo.getList().stream().map(TraineeInformation::getId).collect(Collectors.toSet()));
-            List<ChargeManagement> page2 = chargeManagementService.findByCondition( condition1);
+        if (CollectionUtils.isNotEmpty(pageInfo.getList())) {
+            condition1.in(ChargeManagement.InnerColumn.traineeId, pageInfo.getList().stream().map(TraineeInformation::getId).collect(Collectors.toSet()));
+            List<ChargeManagement> page2 = chargeManagementService.findByCondition(condition1);
             List<ChargeManagement> managements = page2;
             List<String> strings = managements.stream().map(ChargeManagement::getTraineeId).collect(Collectors.toList());
             List<TraineeInformation> list = findIn(TraineeInformation.InnerColumn.id, strings);
             pageInfo.setList(list);
             List<String> jgdms = pageInfo.getList().stream().map(TraineeInformation::getJgdm).collect(Collectors.toList());
             List<SysJg> jgs = jgService.findIn(SysJg.InnerColumn.jgdm, jgdms);
-            if(CollectionUtils.isNotEmpty(jgs)){
+            if (CollectionUtils.isNotEmpty(jgs)) {
                 Map<String, SysJg> collect = jgs.stream().collect(Collectors.toMap(SysJg::getJgdm, s -> s));
                 pageInfo.getList().forEach(traineeInformation -> {
                     SysJg byOrgCode = collect.get(traineeInformation.getJgdm());
@@ -2132,7 +2083,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 });
             }
 
-            List<TraineeInformation> info = findByCondition( condition);
+            List<TraineeInformation> info = findByCondition(condition);
 
             if (CollectionUtils.isNotEmpty(info)) {
                 long asLong = info.stream().mapToLong(TraineeInformation::getRealPay).reduce((i1, i2) -> i1 + i2).getAsLong();
@@ -2142,7 +2093,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             for (TraineeInformation traineeInformation : pageInfo.getList()) {
                 managements.stream().filter(chargeManagement -> chargeManagement.getTraineeId().equals(traineeInformation.getId())).forEach(chargeManagement -> traineeInformation.setChargeRecord(chargeManagement));
             }
-            if(StringUtils.equals(pj, "10")){
+            if (StringUtils.equals(pj, "10")) {
                 List<TraineeInformation> collect1 = pageInfo.getList().stream().sorted((o1, o2) -> o2.getChargeRecord().getPjbh().compareTo(o1.getChargeRecord().getPjbh())).collect(Collectors.toList());
                 pageInfo.setList(collect1);
 
@@ -2309,7 +2260,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         ApiResponse<Long> result = new ApiResponse<>();
         LimitedCondition condition = getQueryCondition();
         condition.eq(TraineeInformation.InnerColumn.arrearage, "10");
-        condition.in(TraineeInformation.InnerColumn.status, Arrays.asList("00","10","20","30","40","50"));
+        condition.in(TraineeInformation.InnerColumn.status, Arrays.asList("00", "10", "20", "30", "40", "50"));
         PageInfo<TraineeInformation> pageInfo = findPage(page, condition);
 
         List<TraineeInformation> list = findByCondition(condition);
@@ -2818,7 +2769,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             m.put("name", l.getName());//姓名
             m.put("idCardNo", l.getIdCardNo());//证件号码
             List<String> list = Arrays.asList(l.getJgmc().split("/"));
-            m.put("jgmc", CollectionUtils.size(list) == 2 ? list.get(0) : list.size()==1?list.get(0):list.size()==3?list.get(1):"成功驾校"); //报名点
+            m.put("jgmc", CollectionUtils.size(list) == 2 ? list.get(0) : list.size() == 1 ? list.get(0) : list.size() == 3 ? list.get(1) : "成功驾校"); //报名点
             String serialNum = l.getSerialNum();
             m.put("serialNum", org.apache.commons.lang.StringUtils.isBlank(serialNum) ? "待受理" : serialNum);//流水号
             String gender = l.getGender();

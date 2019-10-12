@@ -468,6 +468,11 @@ public class TraineeInformation implements Serializable {
     @Transient
     private List<TraineeStatus> statuses;
 
+    private String code;
+
+    @Column(name = "error_message")
+    private String errorMessage;
+
 
 
     private static final long serialVersionUID = 1L;
@@ -516,6 +521,22 @@ public class TraineeInformation implements Serializable {
      * 欠费总金额
      */
     private long totalOwe;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
     public String getJgLx() {
         return jgLx;

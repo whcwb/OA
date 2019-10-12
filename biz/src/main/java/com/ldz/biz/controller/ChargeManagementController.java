@@ -170,4 +170,13 @@ public class ChargeManagementController extends BaseController<ChargeManagement,
     public ApiResponse<List<Map<String, Long>>> findTodayCharge(Page<ChargeManagement> page){
         return service.findTodayCharge(page);
     }
+
+    /**
+     * 打印票据作废
+     */
+    @PostMapping("/removePjbh")
+    public ApiResponse<String> removePjbh(String pjbh){
+        return service.removePjbh(pjbh);
+    }
+
 }

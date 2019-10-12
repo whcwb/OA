@@ -296,7 +296,7 @@
             minWidth: 100,
             align: 'center',
             render: (h, p) => {
-              let val = this.dictUtil.getValByCode(this, 'ZDCLK1010', p.row.status)
+              let val = this.dictUtil.getValByCode(this, 'ZDCLK1010', this.payOk.km)
               return h('div', val)
             }
           }, {
@@ -305,7 +305,7 @@
             align: 'center',
             render: (h, p) => {
               let a = ''
-              switch (p.row.status) {
+              switch (this.payOk.km) {
                 case '10':
                   a = '-'
                   break;
@@ -523,7 +523,7 @@
             minWidth: 100,
             align: 'center',
             render: (h, p) => {
-              let val = this.dictUtil.getValByCode(this, 'ZDCLK1010', p.row.status)
+              let val = this.dictUtil.getValByCode(this, 'ZDCLK1010', this.payOk.km)
               return h('div', val)
             }
           },
@@ -533,7 +533,7 @@
             align: 'center',
             render: (h, p) => {
               let a = ''
-              switch (p.row.status) {
+              switch (this.payOk.km) {
                 case '10':
                   a = '-'
                   break;

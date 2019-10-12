@@ -6,7 +6,6 @@ import javax.persistence.*;
 @Table(name = "biz_exception")
 public class BizException implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     /**

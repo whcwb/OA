@@ -10,4 +10,6 @@ import com.ldz.util.bean.ApiResponse;
 public interface BizExceptionService extends BaseService<BizException, java.lang.String> {
 
 	public ApiResponse<List<BizExceptionConfig>> getAllConfig();
+	
+	public ApiResponse<String> saveException(BizException exception);
 }

@@ -2,6 +2,7 @@ package com.ldz.biz.service.impl;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +32,16 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	@Override
 	public ApiResponse<List<BizExceptionConfig>> getAllConfig() {
 		return ApiResponse.success(exceptionConfigService.findAll());
+	}
+	
+	@Override
+	public ApiResponse<String> saveException(BizException exception) {
+		exception.setId(String.valueOf(idGenerator.nextId()));
+		exception.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+		exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
+		exception.setZt("00");
+		save(exception);
+		
+		return ApiResponse.success();
 	}
 }

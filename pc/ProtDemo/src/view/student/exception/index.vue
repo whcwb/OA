@@ -17,8 +17,8 @@
                    v-model="param.xmLike"/>
           </Col>
           <Col span="4" style="padding-left: 10px">
-            <Select v-model="param.code">
-
+            <Select v-model="param.code" @on-change="changeExpCode">
+              <Option v-for="item in expsConfig" :value="item.code" :key="item.code">{{ item.bz }}</Option>
             </Select>
           </Col>
           <Col span="2" style="padding-left: 10px">
@@ -63,15 +63,10 @@
     components:{studentCardList},
     data() {
       return {
-        headImg: null,
-        userMsg: '',
-        orgTree: [],//机构
-        CascaderData: [],
         iconName: 'ios-search',
         iconColor: '#b3b3b3',
         message: '',
-        stuMes: {},
-        money: '',
+        expsConfig:[],
         param: {
           sfzmhm: '',
           xmLike:'',
@@ -105,7 +100,7 @@
       }
     },
     created() {
-        console.log(this.$route.query.code);
+      this.loadConfig();
     },
     methods: {
       pageChange(n) {
@@ -114,13 +109,30 @@
       pageSizeChange(n) {
         this.util.pageSizeChange(this, n);
       },
+      loadConfig(){
+        this.$http.get('/api/exception/loadConfig').then(res => {
+          if (res.code == 200) {
+            this.expsConfig = res.result;
+          }
+        }).catch(err => {
+        }).then(()=>{
+          if (this.$route.query.code){
+            sessionStorage.setItem("queryExpCode", this.$route.query.code);
+            this.param.code = this.$route.query.code;
+          } else {
+            var code = sessionStorage.getItem("queryExpCode");
+            if (code){
+              this.param.code = code;
+            }
+          }
+        })
+      },
+      changeExpCode(val){
+          console.log(val);
+        sessionStorage.removeItem("queryExpCode");
+      },
       queryInfo() {
-        if (this.money == '') {
-          this.swal({
-            text: '请输入退费金额,最少退费0元',
-            type: 'warning'
-          });
-        } else {
+
           this.$http.post('/api/exception/pager', this.param).then(res => {
             if (res.code == 200) {
               this.$Message.success(res.message);
@@ -142,7 +154,7 @@
               type: 'error'
             });
           })
-        }
+
       }
     }
   }

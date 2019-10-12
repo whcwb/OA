@@ -1,5 +1,6 @@
 package com.ldz.biz.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +20,21 @@ public class BizExceptionConfigServiceImpl extends BaseServiceImpl<BizExceptionC
 	@Override
 	protected Mapper<BizExceptionConfig> getBaseMapper() {
 		return baseMapper;
+	}
+
+	@Override
+	public String getExpNameByCode(String code) {
+		if (StringUtils.isEmpty(code)){
+			return code;
+		}
+		
+		BizExceptionConfig entity = new BizExceptionConfig();
+		entity.setCode(code);
+		BizExceptionConfig expConfig = baseMapper.selectOne(entity);
+		if (expConfig == null){
+			return code;
+		}
+		
+		return expConfig.getBz();
 	}
 }

@@ -272,7 +272,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             listMap.put(7, "");
             listMap.put(8, "");
             TraineeInformation information = traineeInformationService.findById(testInfo.getTraineeId());
-            if(information != null ){
+            if (information != null) {
                 listMap.put(9, information.getCarType());
             }
             listMap.put(10, "");
@@ -1152,16 +1152,37 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setSfzmhm(information.getIdCardNo());
             exception.setKskm(kmCode);
             exception.setXm(information.getName());
-            if(StringUtils.equals(kmCode, "10")){
+            if (StringUtils.equals(kmCode, "10")) {
                 exception.setCode("102");
-            }else if(StringUtils.equals(kmCode, "20")){
+            } else if (StringUtils.equals(kmCode, "20")) {
                 exception.setCode("202");
-            }else if(StringUtils.equals(kmCode , "30")){
+            } else if (StringUtils.equals(kmCode, "30")) {
                 exception.setCode("302");
             }
             exceptionService.clearException(exception, exception.getCode());
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + information.getReferrer() + "@sfgeeq@" + information.getRegistrationTime() + "@sfgeeq@" + regFee + "@sfgeeq@" + realFee + "@sfgeeq@" + arFee);
         } else {
+            // 如果学员信息为空 ， 直接将约考信息插入约考信息表中
+            TraineeTestInfo testInfo = new TraineeTestInfo();
+            testInfo.setId(genId());
+            testInfo.setTraineeId("");
+            testInfo.setTraineeName(map.get(0));
+            testInfo.setIdCardNo(map.get(2));//身份证号码
+            testInfo.setSubject(map.get(3));//科目
+            testInfo.setTestPlace(map.get(7) + "-" + map.get(8));//考试场地
+            testInfo.setTestTime(map.get(6));//约考时间
+            testInfo.setOperateTime(DateUtils.getNowTime()); //操作时间
+            testInfo.setRemark("excel约考信息批量导入"); //备注
+            testInfo.setOperator(sysUser.getZh() + "-" + sysUser.getXm()); //操作人
+            testInfo.setOperateTime(DateUtils.getNowTime()); //操作时间
+            testInfo.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+            testInfo.setCjsj(DateUtils.getNowTime());
+            if (!StringUtils.equals(map.get(3), "科目四")) {
+                testInfo.setPayStatus("10");//00已缴费 10未缴费。
+            } else {
+                testInfo.setPayStatus("00");
+            }
+            save(testInfo);
             return ApiResponse.success();
         }
     }

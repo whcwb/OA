@@ -475,10 +475,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         }
         condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList(Status.WIND, Status.QUIT));
         condition.setOrderByClause(" registration_time desc");
-        condition.eq(TraineeInformation.InnerColumn.status.name(), "00");//学员当前状态 99:报名中 00: 受理中  10：科一学习中 20：科二学习中 30：科三学习中 40：科四学习中 50：结业 60：退学
-        condition.eq(TraineeInformation.InnerColumn.chargeStatus.name(), "10");//收费状态 00:未收费 10：已收费
-        condition.eq(TraineeInformation.InnerColumn.acceptStatus.name(), "10");//受理状态  00：未受理 10：受理中 20：已受理
+//        condition.eq(TraineeInformation.InnerColumn.status.name(), "00");//学员当前状态 99:报名中 00: 受理中  10：科一学习中 20：科二学习中 30：科三学习中 40：科四学习中 50：结业 60：退学
+//        condition.eq(TraineeInformation.InnerColumn.chargeStatus.name(), "10");//收费状态 00:未收费 10：已收费
+//        condition.eq(TraineeInformation.InnerColumn.acceptStatus.name(), "10");//受理状态  00：未受理 10：受理中 20：已受理
         condition.and().andIsNull(TraineeInformation.InnerColumn.serialNum.name());//学员流水号
+        condition.eq(TraineeInformation.InnerColumn.infoCheckStatus, "10");
 
         PageInfo<TraineeInformation> resultPage = findPage(pager, condition);
         if (CollectionUtils.isNotEmpty(resultPage.getList())) {
@@ -1059,7 +1060,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (StringUtils.equals("99", information.getStatus()) || StringUtils.isBlank(information.getSerialNum())) {
             information.setStatus("00");  // 收费完成，进入受理状态
         }
-        information.setAcceptStatus("10"); // 受理状态进入受理中
+        if(StringUtils.equals(information.getAcceptStatus(), "00") || StringUtils.isBlank(information.getAcceptStatus())){
+            information.setAcceptStatus("10"); // 受理状态进入受理中
+        }
         information.setConfirmer(currentUser.getZh() + "-" + currentUser.getXm());
 //        information.setRemark(remark);
         update(information);

@@ -33,7 +33,7 @@ public interface BizExceptionService extends BaseService<BizException, java.lang
 	/**
 	 * 学员的异常已处置，将异常数据修改为已关闭
 	 */
-	public void clearException(TraineeInformation info, String code);
+	public void clearException(BizException info, String code);
 	
 	/**
 	 * 根据异常类型将异常学员统计并记录到异常表中

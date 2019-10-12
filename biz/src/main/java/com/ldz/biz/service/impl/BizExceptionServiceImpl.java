@@ -58,7 +58,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	}
 
 	@Override
-	public void clearException(TraineeInformation info, String code) {
+	public void clearException(BizException info, String code) {
 		
 	}
 

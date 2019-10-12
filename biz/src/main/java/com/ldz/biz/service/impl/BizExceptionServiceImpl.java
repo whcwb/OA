@@ -128,33 +128,37 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	@Override
 	public void expJobSave(BizExceptionConfig config) {
 		//SELECT * FROM `trainee_information` WHERE STATUS NOT IN ('50','60')
+		String curYmd = DateTime.now().plusDays(config.getDays()).toString("yyyy-MM-dd") + " 00:00:00";
 		if ("001".equals(config.getCode())){
-			//报名审核
-			
+			//报名审核.超过7天报名信息未审核
+			baseMapper.countInfoByColumn("info_check_status", "='00'", "registration_time", curYmd);
 		}else if ("002".equals(config.getCode())){
-			//收费确认
-			
+			//收费确认.超过7天报名已审核但未收费确认
+			baseMapper.countInfoByColumn("charge_status", "='00'", "info_check_time", curYmd);
 		}else if ("003".equals(config.getCode())){
-			//受理确认
-			
+			//受理确认.超过7天已收费确认但未受理确认
+			baseMapper.countInfoByColumn("accept_status", "<>'20'", "confirm_time", curYmd);
 		}else if ("101".equals(config.getCode())){
-			//科目一约考
-			
+			//科目一约考.即将考试还未缴科目一初考费
+			baseMapper.countInfoByColumn("fir_sub", "='20'", "fir_sub_payment_time", config.getDays().toString());
 		}else if ("201".equals(config.getCode())){
-			//科目二约考
-			
+			//科目二约考.即将考试还未缴科目二初考费
+			baseMapper.countInfoByColumn("sec_sub", "='10'", "sec_sub_payment_time", config.getDays().toString());
 		}else if ("301".equals(config.getCode())){
-			//科目三约考
-			
+			//科目三约考.即将考试还未缴科目三初考费
+			baseMapper.countInfoByColumn("third_sub", "='10'", "third_sub_payment_time", config.getDays().toString());
 		}else if ("102".equals(config.getCode())){
-			//科目一成绩确认
-			
+			//科目一成绩确认.科目一考试成绩未确认
+			baseMapper.countInfoByColumn("fir_sub", " not in ('30', '40')", "fir_sub_test_time", curYmd);
 		}else if ("202".equals(config.getCode())){
-			//科目二成绩确认
-			
+			//科目二成绩确认.科目二考试成绩未确认
+			baseMapper.countInfoByColumn("sec_sub", " not in ('30', '40')", "sec_sub_test_time", curYmd);
 		}else if ("302".equals(config.getCode())){
-			//科目三成绩确认
-			
+			//科目三成绩确认.科目三考试成绩未确认
+			baseMapper.countInfoByColumn("third_sub", " not in ('30', '40')", "third_sub_test_time", curYmd);
+		}else if ("402".equals(config.getCode())){
+			//科目四成绩确认.科目四考试成绩未确认
+			baseMapper.countInfoByColumn("forth_sub", " not in ('10', '20')", "third_sub_test_time", "");
 		}
 	}
 }

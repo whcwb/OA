@@ -40,6 +40,7 @@ public class ExceptionDataJob implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		try {
+			System.out.println("开启计划任务");
 			ApiResponse<List<BizExceptionConfig>> exps = exceptionService.getAllConfig();
 			if (exps.getCode() == ApiResponse.SUCCESS && exps.getResult().size() > 0){
 				List<BizExceptionConfig> configs = exps.getResult();

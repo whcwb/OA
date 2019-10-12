@@ -28,7 +28,7 @@ public class BizExceptionConfigServiceImpl extends BaseServiceImpl<BizExceptionC
 	@Override
 	public List<BizExceptionConfig> findAll() {
 		Example condition = new Example(BizExceptionConfig.class);
-		condition.setOrderByClause(" order by code, name");
+		condition.setOrderByClause(" code, name");
 		return baseMapper.selectByExample(condition);
 	}
 

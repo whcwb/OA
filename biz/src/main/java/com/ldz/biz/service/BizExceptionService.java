@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.ldz.biz.model.BizException;
 import com.ldz.biz.model.BizExceptionConfig;
-import com.ldz.biz.model.TraineeInformation;
 import com.ldz.sys.base.BaseService;
 import com.ldz.util.bean.ApiResponse;
 
@@ -15,6 +14,8 @@ public interface BizExceptionService extends BaseService<BizException, java.lang
 	 * @return
 	 */
 	public ApiResponse<List<BizExceptionConfig>> getAllConfig();
+	
+	public List<BizException> findByCode(String code);
 	
 	/**
 	 * 发生异常时调用该方法进行异常保存

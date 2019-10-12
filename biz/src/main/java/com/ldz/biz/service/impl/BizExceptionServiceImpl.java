@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import com.ldz.biz.mapper.BizExceptionMapper;
 import com.ldz.biz.model.BizException;
 import com.ldz.biz.model.BizExceptionConfig;
-import com.ldz.biz.model.TraineeInformation;
 import com.ldz.biz.service.BizExceptionConfigService;
 import com.ldz.biz.service.BizExceptionService;
+import com.ldz.biz.service.TraineeInformationService;
 import com.ldz.sys.base.BaseServiceImpl;
 import com.ldz.util.bean.ApiResponse;
 
@@ -25,6 +25,8 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	private BizExceptionMapper baseMapper;
 	@Autowired
 	private BizExceptionConfigService exceptionConfigService;
+	@Autowired
+	private TraineeInformationService traineeInfoService;
 	
 	@Override
 	protected Mapper<BizException> getBaseMapper() {
@@ -38,9 +40,6 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	
 	@Override
 	public ApiResponse<String> saveException(BizException exception) {
-		if (StringUtils.isBlank(exception.getXm())){
-			return ApiResponse.fail("学员姓名不能为空");
-		}
 		if (StringUtils.isBlank(exception.getSfzmhm())){
 			return ApiResponse.fail("证件号码不能为空");
 		}
@@ -59,7 +58,16 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 
 	@Override
 	public void clearException(BizException info, String code) {
-		
+		if (StringUtils.isBlank(info.getXm())){
+			return;
+		}
+		if (StringUtils.isBlank(info.getSfzmhm())){
+			return;
+		}
+		if (StringUtils.isBlank(info.getCode())){
+			return;
+		}
+		//1.查询在办学员
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.ldz.biz.service.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,16 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	
 	@Override
 	public ApiResponse<String> saveException(BizException exception) {
+		if (StringUtils.isBlank(exception.getXm())){
+			return ApiResponse.fail("学员姓名不能为空");
+		}
+		if (StringUtils.isBlank(exception.getSfzmhm())){
+			return ApiResponse.fail("证件号码不能为空");
+		}
+		if (StringUtils.isBlank(exception.getCode())){
+			return ApiResponse.fail("异常码不能为空");
+		}
+		
 		exception.setId(String.valueOf(idGenerator.nextId()));
 		exception.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
 		exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));

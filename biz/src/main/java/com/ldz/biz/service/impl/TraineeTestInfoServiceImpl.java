@@ -195,7 +195,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 TraineeInformation information = null;
                 List<TraineeInformation> traineeInformations = infoMap.get(map.get(5));
                 if (CollectionUtils.isNotEmpty(informations)) {
-                    information = informations.get(0);
+                    information = traineeInformations.get(0);
                 }
                 ApiResponse<String> destineExcel = this.newUpdateResultExcel(map, sysUser, information);
 
@@ -388,8 +388,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         kmMap.put("20","2");
         kmMap.put("30","3");
         kmMap.put("40","4");
-        SysYh user = getCurrentUser();
-//		1、有效性验证
+        //		1、有效性验证
         if (StringUtils.isBlank(map.get(2))) {
             return ApiResponse.fail("学员姓名不能为空");
         }
@@ -450,7 +449,6 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         }
         if (information != null) {
 //		3、学员ID有效性验证，必须未结业和未退学的，
-            String findUserStatus = information.getStatus();
 
             if (StringUtils.isBlank(information.getSerialNum())) {
                 BizException exception = new BizException();
@@ -550,7 +548,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             obj.setTestResult(testResult);//考试结果
 
             TraineeTestInfo info = findById(obj.getId());
-            int i = 0;
+            int i;
             if (ObjectUtils.isEmpty(info)) {
                 i = save(obj);
             } else {
@@ -940,7 +938,6 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             cwjl.setTraineeName(information.getName());
             cwjl.setZt("00");
 //		3、学员ID有效性验证，必须未结业和未退学的，约考科目必须没有合格 非小车，需要检查本科目培训状态是否合格
-            String findUserStatus = information.getStatus();
 
             if (StringUtils.isBlank(information.getSerialNum())) {
                 BizException exception = new BizException();

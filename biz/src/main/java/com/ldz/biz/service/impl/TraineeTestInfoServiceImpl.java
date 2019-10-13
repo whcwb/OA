@@ -384,6 +384,10 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         kmMap.put("科目三", "30");
         kmMap.put("科目四", "40");
         kmMap.put("科目三安全文明常识考试", "40");
+        kmMap.put("10","1");
+        kmMap.put("20","2");
+        kmMap.put("30","3");
+        kmMap.put("40","4");
         SysYh user = getCurrentUser();
 //		1、有效性验证
         if (StringUtils.isBlank(map.get(2))) {
@@ -419,7 +423,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setCode("991");
             exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
             exception.setCjsj(DateUtils.getNowTime());
-            exception.setKskm(kmCode);
+            exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(2));
             exceptionService.saveException(exception);
         } else if (StringUtils.equals(information.getStatus(), "99")) {
@@ -430,7 +434,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setCode("902");
             exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
             exception.setCjsj(DateUtils.getNowTime());
-            exception.setKskm(kmCode);
+            exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(2));
             exceptionService.saveException(exception);
         } else if (StringUtils.equals(information.getArrearage(), "10")) {
@@ -440,7 +444,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setCode("903");
             exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
             exception.setCjsj(DateUtils.getNowTime());
-            exception.setKskm(kmCode);
+            exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(2));
             exceptionService.saveException(exception);
         }
@@ -455,7 +459,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 exception.setCode("904");
                 exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                 exception.setCjsj(DateUtils.getNowTime());
-                exception.setKskm(kmCode);
+                exception.setKskm(kmMap.get(kmCode));
                 exception.setXm(map.get(2));
                 exceptionService.saveException(exception);
             }
@@ -499,7 +503,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     exception.setCode("103");
                     exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                     exception.setCjsj(DateUtils.getNowTime());
-                    exception.setKskm(kmCode);
+                    exception.setKskm(kmMap.get(kmCode));
                     exception.setXm(map.get(2));
                     exceptionService.saveException(exception);
                 } else if (StringUtils.equals(kmCode, "20") && StringUtils.isBlank(information.getSecSubPaymentTime()) && information.getSecSubTestNum() <= 1) {
@@ -509,7 +513,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     exception.setCode("203");
                     exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                     exception.setCjsj(DateUtils.getNowTime());
-                    exception.setKskm(kmCode);
+                    exception.setKskm(kmMap.get(kmCode));
                     exception.setXm(map.get(2));
                     exceptionService.saveException(exception);
                 } else if (StringUtils.equals(kmCode, "30") && StringUtils.isBlank(information.getThirdSubPaymentTime()) && information.getThirdSubTestNum() <= 1) {
@@ -519,7 +523,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     exception.setCode("303");
                     exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                     exception.setCjsj(DateUtils.getNowTime());
-                    exception.setKskm(kmCode);
+                    exception.setKskm(kmMap.get(kmCode));
                     exception.setXm(map.get(2));
                     exceptionService.saveException(exception);
                 }
@@ -844,6 +848,10 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         kmMap.put("科目三", "30");
         kmMap.put("科目四", "40");
         kmMap.put("科目三安全文明常识考试", "40");
+        kmMap.put("10","1");
+        kmMap.put("20","2");
+        kmMap.put("30", "3");
+        kmMap.put("40","4");
         // 预约错误记录
         YyCwjl cwjl = new YyCwjl();
         cwjl.setId(genId());
@@ -893,7 +901,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setCode("991");
             exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
             exception.setCjsj(DateUtils.getNowTime());
-            exception.setKskm(kmCode);
+            exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(0));
             exceptionService.saveException(exception);
         } else if (StringUtils.equals(information.getStatus(), "99")) {
@@ -903,7 +911,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setCode("902");
             exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
             exception.setCjsj(DateUtils.getNowTime());
-            exception.setKskm(kmCode);
+            exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(0));
             exceptionService.saveException(exception);
         } else if (StringUtils.equals(information.getArrearage(), "10")) {
@@ -913,7 +921,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setCode("903");
             exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
             exception.setCjsj(DateUtils.getNowTime());
-            exception.setKskm(kmCode);
+            exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(0));
             exceptionService.saveException(exception);
         }
@@ -941,7 +949,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 exception.setCode("904");
                 exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                 exception.setCjsj(DateUtils.getNowTime());
-                exception.setKskm(kmCode);
+                exception.setKskm(kmMap.get(kmCode));
                 exception.setXm(map.get(0));
                 exceptionService.saveException(exception);
             }
@@ -987,7 +995,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                         exception.setCode("321");
                         exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                         exception.setCjsj(DateUtils.getNowTime());
-                        exception.setKskm(kmCode);
+                        exception.setKskm(kmMap.get(kmCode));
                         exception.setXm(map.get(0));
                         exceptionService.saveException(exception);
                     }
@@ -1150,7 +1158,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             BizException exception = new BizException();
             exception.setLsh(information.getSerialNum());
             exception.setSfzmhm(information.getIdCardNo());
-            exception.setKskm(kmCode);
+            exception.setKskm(kmMap.get(kmCode));
             exception.setXm(information.getName());
             if (StringUtils.equals(kmCode, "10")) {
                 exception.setCode("102");

@@ -1338,7 +1338,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             // 科目一缴费异常处理
             BizException exception = new BizException();
             exception.setXm(information.getName());
-            exception.setKskm(km);
+            exception.setKskm("1");
             exception.setSfzmhm(information.getIdCardNo());
             exception.setCode("101");
             exception.setLsh(information.getSerialNum());
@@ -1349,7 +1349,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         } else if (StringUtils.equals(km, "20")) {
             BizException exception = new BizException();
             exception.setXm(information.getName());
-            exception.setKskm(km);
+            exception.setKskm("2");
             exception.setSfzmhm(information.getIdCardNo());
             exception.setCode("201");
             exception.setLsh(information.getSerialNum());
@@ -1360,7 +1360,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         } else if (StringUtils.equals(km, "30")) {
             BizException exception = new BizException();
             exception.setXm(information.getName());
-            exception.setKskm(km);
+            exception.setKskm("3");
             exception.setSfzmhm(information.getIdCardNo());
             exception.setCode("301");
             exception.setLsh(information.getSerialNum());
@@ -1538,7 +1538,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             exception.setCode("121");
             exception.setLsh(obj.getSerialNum());
             exception.setSfzmhm(obj.getIdCardNo());
-            exception.setKskm("10");
+            exception.setKskm("1");
             exception.setXm(obj.getName());
             exceptionService.clearException(exception, exception.getCode());
         } else if (StringUtils.equals(subjects, "2")) {
@@ -1547,7 +1547,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             exception.setCode("221");
             exception.setLsh(obj.getSerialNum());
             exception.setSfzmhm(obj.getIdCardNo());
-            exception.setKskm("20");
+            exception.setKskm("2");
             exception.setXm(obj.getName());
             exceptionService.clearException(exception, exception.getCode());
         } else if (StringUtils.equals(subjects, "3")) {
@@ -1556,7 +1556,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             exception.setCode("321");
             exception.setLsh(obj.getSerialNum());
             exception.setSfzmhm(obj.getIdCardNo());
-            exception.setKskm("30");
+            exception.setKskm("3");
             exception.setXm(obj.getName());
             exceptionService.clearException(exception, exception.getCode());
         }

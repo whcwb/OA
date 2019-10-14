@@ -184,7 +184,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		}else if ("402".equals(config.getCode())){
 			kskm = "4";
 			//科目四成绩确认.科目四考试成绩未确认
-			students = baseMapper.getTraineeInfoByColumn("forth_sub", " not in ('10', '20')", "third_sub_test_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("forth_sub", " not in ('10', '20')", "forth_sub_test_time", config.getDays().toString());
 		}
 		
 		for (int i=0; i<students.size(); i++){

@@ -4,7 +4,7 @@
       <Row>
         <Col span="24">
           <Card dis-hover>
-            <div solt="title" style="height: 32px">
+            <div solt="title" style="height: 32px;">
               <pager-tit title="信息录入"></pager-tit>
             </div>
             <!--<div slot="extra">
@@ -14,8 +14,8 @@
                   保存
                 </Button>
             </div>-->
-            <Row>
-              <Col offset="3" span="20">
+            <Row style="padding-top:10px">
+              <Col offset="1" span="24">
                 <Row>
                   <Col span="8">
                     <FormItem prop="idCardNo">
@@ -193,10 +193,12 @@
                     </Card>
                   </Col>
                 </Row>
-                <Row style="padding-left: 100px;padding-top: 20px">
-                  <Col offset="16" span="4">
-                    <Button type="default" icon="md-refresh" style="font-size: 18px" @click="initPage">重置</Button>
-                    &nbsp;
+                <Row style="padding-top: 20px">
+                  <Col span="2">
+                  <Button type="default" icon="md-refresh" style="font-size: 18px" @click="initPage">重置</Button>
+
+                  </Col>
+                  <Col offset="16" span="2">
                     <Button type="success" icon="md-checkmark-circle-outline" style="font-size: 18px" @click="submit('userForm')">
                       保存
                     </Button>

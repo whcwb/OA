@@ -1,5 +1,5 @@
-let ajaxUrl = 'http://127.0.0.1:10010';
-// let ajaxUrl = 'http://192.168.43.206:10010';
+// let ajaxUrl = 'http://127.0.0.1:8080';
+let ajaxUrl = 'http://192.168.0.101:8080';
 // let ajaxUrl = 'http://192.168.123.12:10010';//羊
 // let ajaxUrl ='http://192.168.123.69:10010'; // 陈伟
 // let ajaxUrl ='http://192.168.123.6:10010';//宋
@@ -21,6 +21,9 @@ export default {
   },
   USERROOT:{
     MODIFY_PSD: '/api/yh/mdfPwd'
+  },
+  HOME:{
+    DASHBOARD:'/api/exception/dashboard'
   },
   DATASTA: {
     // （统计收费或缴费的人数）   参数 chargeCode 收费代码，字典可见 0000 为报名 ， 0001 为体检,9996 （科目三初考）,9997（科目二初考）,9998（科目一初考）等   startTime 开始时间 例：2018-09-09 ，endTime 结束时间 ， 例：2018-09-09  （开始结束时间可不填，不填默认为当天时间）

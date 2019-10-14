@@ -140,9 +140,10 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             condition.and().andCondition(" sec_sub_test_time is not null or sec_sub_test_time != ''");
             condition.and().andCondition(" sec_sub_payment_time is null or sec_sub_payment_time = '' ");
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
-
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
         } else if (StringUtils.equals(sign, "3")) { // 查询科目三需要缴纳考试费的学员
             // 科三同理 ： 只要有 科三的考试时间 并且缴费时间是空 则需要交费
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
             condition.and().andCondition("  third_sub_test_time is not null or third_sub_test_time != '' ");
             condition.and().andCondition("third_sub_payment_time is null or third_sub_payment_time = ''"); // 考试费未缴纳
@@ -153,6 +154,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             //  科目一 也按照已经预约的来缴费
             condition.and().andCondition(" fir_sub_test_time is not null or fir_sub_test_time != '' ");
             condition.and().andCondition("fir_sub_payment_time is  null or fir_sub_payment_time = '' ");
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
 //            condition.eq(TraineeInformation.InnerColumn.acceptStatus, "20");
         } else if (StringUtils.equals(sign, "9")) {

@@ -72,7 +72,23 @@ public class BizMainController {
 
     @Autowired
     private BizKcService kcService;
+    @Autowired
+    private BizExceptionService exceptionService;
 
+    @GetMapping("/test")
+    public  ApiResponse<String> test(){
+        ApiResponse<List<BizExceptionConfig>> exps = exceptionService.getAllConfig();
+        if (exps.getCode() == ApiResponse.SUCCESS && exps.getResult().size() > 0){
+            List<BizExceptionConfig> configs = exps.getResult();
+            for (int i=0; i<configs.size(); i++){
+                BizExceptionConfig config = configs.get(i);
+                if (config.getDays() != null){
+                    exceptionService.expJobSave(config);
+                }
+            }
+        }
+        return ApiResponse.success();
+    }
 
 
     @RequestMapping(value = "/getTime", method = {RequestMethod.GET,RequestMethod.POST})

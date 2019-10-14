@@ -40,6 +40,10 @@ public class ChargePrintlog implements Serializable {
     @Column(name = "charge_id")
     private String chargeId;
 
+    private String jgdm;
+
+    private String jgmc;
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -155,6 +159,22 @@ public class ChargePrintlog implements Serializable {
         return chargeId;
     }
 
+    public String getJgdm() {
+        return jgdm;
+    }
+
+    public void setJgdm(String jgdm) {
+        this.jgdm = jgdm;
+    }
+
+    public String getJgmc() {
+        return jgmc;
+    }
+
+    public void setJgmc(String jgmc) {
+        this.jgmc = jgmc;
+    }
+
     /**
      * 设置收费唯一标识
      *
@@ -171,7 +191,9 @@ public class ChargePrintlog implements Serializable {
         cjr("cjr"),
         zfsj("zfsj"),
         zfr("zfr"),
-        chargeId("charge_id");
+        chargeId("charge_id"),
+        jgdm("jgdm"),
+        jgmc("jgmc");
 
         private final String column;
 

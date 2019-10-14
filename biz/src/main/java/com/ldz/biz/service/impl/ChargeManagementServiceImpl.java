@@ -498,6 +498,10 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         String yyyymmdd = DateUtils.getDateStr(new Date(), "yyyyMMdd");
         RuntimeCheck.ifFalse(StringUtils.equals(yyyymmdd, split[0]), "票据编号异常,请重新获取票据编号");
         baseMapper.updatePjbh(ids, pjbh + "-" + num);
+        String s = ids.get(0);
+        ChargeManagement management = findById(s);
+        String jgdm = management.getJgdm();
+        String jgmc = management.getChargeSource();
         SysYh user = getCurrentUser();
         // 存储票据打印日志
         if (user != null) {
@@ -507,6 +511,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             printlog.setCjr(user.getZh() + "-" + user.getXm());
             printlog.setCjsj(DateUtils.getNowTime());
             printlog.setPjbh(pjbh);
+
             printlogService.save(printlog);
         }
         return ApiResponse.success();

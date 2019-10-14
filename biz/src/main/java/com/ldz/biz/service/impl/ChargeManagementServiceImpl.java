@@ -1,6 +1,7 @@
 package com.ldz.biz.service.impl;
 
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.ldz.biz.constant.FeeType;
@@ -24,6 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -210,7 +212,6 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             exceptionService.clearException(exception, exception.getCode());
             statusService.saveEntity(traineeInformation, "分期尾款收费", "00", "分期尾款收费");
         }
-
         return ApiResponse.success();
     }
 
@@ -218,7 +219,6 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
     public ApiResponse<String> confirmCharge(Map<String, String> collect) {
         SysYh currentUser = getCurrentUser();
         Set<String> chargeIds = collect.keySet();
-
         SimpleCondition condition = new SimpleCondition(ChargeManagement.class);
         condition.in(ChargeManagement.InnerColumn.id, chargeIds);
         List<ChargeManagement> managements = findByCondition(condition);
@@ -738,6 +738,32 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
 		printlog.setZfsj(DateUtils.getNowTime());
 		printlogService.update(printlog);
 		return ApiResponse.success();
+    }
+
+    @Override
+    public ApiResponse<String> getPrintLog(int pageNum, int pageSize) {
+        SimpleCondition condition = new SimpleCondition(ChargePrintlog.class);
+        condition.setOrderByClause(" id desc ");
+        String jgdm = getRequestParamterAsString("jgdm");
+        if(StringUtils.isNotBlank(jgdm)){
+            condition.eq(ChargePrintlog.InnerColumn.jgdm, jgdm);
+        }
+
+        String time = getRequestParamterAsString("time");
+        if(StringUtils.isBlank(time)){
+            time = DateTime.now().toString("yyyy-MM-dd");
+            condition.startWith(ChargePrintlog.InnerColumn.cjsj, time);
+        }else{
+            condition.startWith(ChargePrintlog.InnerColumn.cjsj, time);
+        }
+        String pjbh = getRequestParamterAsString("pjbh");
+        if(StringUtils.isNotBlank(pjbh)){
+            condition.like(ChargePrintlog.InnerColumn.pjbh, pjbh);
+        }
+        PageInfo<Object> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> findByCondition(condition));
+        ApiResponse<String> res = new ApiResponse<>();
+        res.setPage(info);
+        return res;
     }
 
 

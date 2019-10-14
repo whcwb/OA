@@ -586,8 +586,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             exception.setCode("003");
             exception.setLsh(obj.getSerialNum());
             exceptionService.clearException(exception, "003");
-            exception.setCode("904");
-            exceptionService.clearException(exception, exception.getCode());
+           /* exception.setCode("904");
+            exceptionService.clearException(exception, exception.getCode());*/
             return ApiResponse.success();
         } else {
             return ApiResponse.fail("操作失败请重新尝试");
@@ -1113,8 +1113,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         exception.setSfzmhm(information.getIdCardNo());
         exception.setXm(information.getName());
         exceptionService.clearException(exception, exception.getCode());
-        exception.setCode("902");
-        exceptionService.clearException(exception, exception.getCode());
+       /* exception.setCode("902");
+        exceptionService.clearException(exception, exception.getCode());*/
 
         return ApiResponse.success();
 

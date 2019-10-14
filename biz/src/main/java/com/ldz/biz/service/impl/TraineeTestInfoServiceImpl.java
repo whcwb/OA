@@ -256,6 +256,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         condition.like(TraineeTestInfo.InnerColumn.testTime, appendZero(testTime));
         condition.like(TraineeTestInfo.InnerColumn.subject, list.get(3).get(4));
         condition.and().andIsNull(TraineeTestInfo.InnerColumn.testResult.name());
+        condition.and().andCondition(" trainee_id is not null or trainee_id != '' ");
         List<TraineeTestInfo> testInfoList = findByCondition(condition); // 缺考学员按不合格处理
 
         int size = resultList.get(1).size();
@@ -430,7 +431,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             BizException exception = new BizException();
             exception.setSfzmhm(map.get(5));
             exception.setId(genId());
-            exception.setCode("902");
+            exception.setCode("002");
             exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
             exception.setCjsj(DateUtils.getNowTime());
             exception.setKskm(kmMap.get(kmCode));
@@ -454,7 +455,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 BizException exception = new BizException();
                 exception.setSfzmhm(map.get(5));
                 exception.setId(genId());
-                exception.setCode("904");
+                exception.setCode("003");
                 exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                 exception.setCjsj(DateUtils.getNowTime());
                 exception.setKskm(kmMap.get(kmCode));
@@ -466,14 +467,15 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             String subTestNums = "";
             //		4、找到约考记录
             SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
-            condition.eq(TraineeTestInfo.InnerColumn.traineeId, information.getId());//学员ID
+            condition.eq(TraineeTestInfo.InnerColumn.idCardNo, map.get(5));
+//            condition.eq(TraineeTestInfo.InnerColumn.traineeId, information.getId());//学员ID
             condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(4));//科目
+            condition.and().andCondition(" test_result is null or test_result =''");
             if (StringUtils.isNotBlank(map.get(15)) && map.get(15).length() > 10) {
                 condition.like(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(15).substring(0, 10)));//约考时间
             } else {
                 condition.like(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(15)));
             }
-
             condition.setOrderByClause(TraineeTestInfo.InnerColumn.id.desc());
             List<TraineeTestInfo> orgs = findByCondition(condition);
             TraineeTestInfo obj;
@@ -491,14 +493,14 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     subTestNums = information.getThirdSubTestNum() + "";
                 }
             } else {
-                return ApiResponse.success();
+                return ApiResponse.fail("未找到学员的约考记录 ， 请检查约考时间，身份证号码 ， 考试科目是否正确");
             }
             if (!StringUtils.equals(information.getClassType(), "60")) {
                 if (StringUtils.equals(kmCode, "10") && StringUtils.isBlank(information.getFirSubPaymentTime()) && information.getFirSubTestNum() <= 1) {
                     BizException exception = new BizException();
                     exception.setSfzmhm(map.get(5));
                     exception.setId(genId());
-                    exception.setCode("103");
+                    exception.setCode("101");
                     exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                     exception.setCjsj(DateUtils.getNowTime());
                     exception.setKskm(kmMap.get(kmCode));
@@ -508,7 +510,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     BizException exception = new BizException();
                     exception.setSfzmhm(map.get(5));
                     exception.setId(genId());
-                    exception.setCode("203");
+                    exception.setCode("201");
                     exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                     exception.setCjsj(DateUtils.getNowTime());
                     exception.setKskm(kmMap.get(kmCode));
@@ -518,7 +520,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     BizException exception = new BizException();
                     exception.setSfzmhm(map.get(5));
                     exception.setId(genId());
-                    exception.setCode("303");
+                    exception.setCode("301");
                     exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                     exception.setCjsj(DateUtils.getNowTime());
                     exception.setKskm(kmMap.get(kmCode));
@@ -535,7 +537,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             }
 
             //		5、修改考试表状态
-            String testResult = "00";//00已缴费  10未缴费
+            String testResult = "00";//00 合格  10不合格
             if (StringUtils.isNotEmpty(map.get(16))) {
                 if (StringUtils.equals(map.get(16), "不合格") || StringUtils.equals(map.get(16), "缺考")) {
                     testResult = "10";
@@ -543,6 +545,14 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     obj.setPayStatus("00");
                 } else {
                     return ApiResponse.fail("考试结果状态不对。考试结果：" + map.get(16));
+                }
+            }
+            if(CollectionUtils.isNotEmpty(orgs)){
+                for (TraineeTestInfo org : orgs) {
+                    org.setTestResult(testResult);
+                    org.setOperator(sysUser.getZh() + "-" + sysUser.getXm());
+                    org.setOperateTime(DateUtils.getNowTime());
+                    update(org);
                 }
             }
             obj.setTestResult(testResult);//考试结果
@@ -556,6 +566,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 obj.setOperateTime(DateUtils.getNowTime());
                 i = update(obj);
             }
+
             if (i == 0) {
                 return ApiResponse.fail("修改数据库失败");
             }
@@ -657,8 +668,45 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 coachTraineeRercord.setModifyTime(DateUtils.getNowTime());
                 coachTraineeRercordService.update(coachTraineeRercord);
             }
+            BizException exception = new BizException();
+            exception.setSfzmhm(map.get(5));
+            exception.setCode("102");
+            exception.setKskm(kmMap.get(kmCode));
+            exception.setXm(map.get(2));
+            exceptionService.clearException(exception,exception.getCode());
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);
         } else {
+            //		4、找到约考记录
+            SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
+            condition.eq(TraineeTestInfo.InnerColumn.idCardNo, map.get(5));
+//            condition.eq(TraineeTestInfo.InnerColumn.traineeId, information.getId());//学员ID
+            condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(4));//科目
+            condition.and().andCondition(" test_result is null or test_result =''");
+            if (StringUtils.isNotBlank(map.get(15)) && map.get(15).length() > 10) {
+                condition.like(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(15).substring(0, 10)));//约考时间
+            } else {
+                condition.like(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(15)));
+            }
+            condition.setOrderByClause(TraineeTestInfo.InnerColumn.id.desc());
+            List<TraineeTestInfo> orgs = findByCondition(condition);
+            //		5、修改考试表状态
+            String testResult = "00"; //00 合格  10不合格
+            if (StringUtils.isNotEmpty(map.get(16))) {
+                if (StringUtils.equals(map.get(16), "不合格") || StringUtils.equals(map.get(16), "缺考")) {
+                    testResult = "10";
+                }  else {
+                    return ApiResponse.fail("考试结果状态不对。考试结果：" + map.get(16));
+                }
+            }
+            if(CollectionUtils.isNotEmpty(orgs)){
+                for (TraineeTestInfo org : orgs) {
+                    org.setTestResult(testResult);
+                    org.setOperator(sysUser.getZh() + "-" + sysUser.getXm());
+                    org.setOperateTime(DateUtils.getNowTime());
+                    update(org);
+                }
+            }
+
             return ApiResponse.success();
         }
 
@@ -906,7 +954,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             BizException exception = new BizException();
             exception.setSfzmhm(map.get(2));
             exception.setId(genId());
-            exception.setCode("902");
+            exception.setCode("002");
             exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
             exception.setCjsj(DateUtils.getNowTime());
             exception.setKskm(kmMap.get(kmCode));
@@ -943,7 +991,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 BizException exception = new BizException();
                 exception.setSfzmhm(map.get(2));
                 exception.setId(genId());
-                exception.setCode("904");
+                exception.setCode("003");
                 exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
                 exception.setCjsj(DateUtils.getNowTime());
                 exception.setKskm(kmMap.get(kmCode));
@@ -1012,7 +1060,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
 //		4、将学员ID、科目、考试场地、约考时间。查询数据库判断当前约考信息有没有重复
             SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
-            condition.eq(TraineeTestInfo.InnerColumn.traineeId, information.getId());//学员ID
+            if(information != null){
+                condition.eq(TraineeTestInfo.InnerColumn.traineeId, information.getId());//学员ID
+            }
             condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(3));//科目
             condition.eq(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(6)));//约考时间
             condition.setOrderByClause(TraineeTestInfo.InnerColumn.id.desc());

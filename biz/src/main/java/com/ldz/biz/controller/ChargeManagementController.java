@@ -174,9 +174,17 @@ public class ChargeManagementController extends BaseController<ChargeManagement,
     /**
      * 打印票据作废
      */
-    @PostMapping("/removePjbh")
+    @GetMapping("/removePjbh")
     public ApiResponse<String> removePjbh(String pjbh){
         return service.removePjbh(pjbh);
+    }
+
+    /**
+     * 票据记录查询
+     */
+    @GetMapping("/getPrintLog")
+    public ApiResponse<String> getPrintLog(@RequestParam(defaultValue = "1") int pageNum,@RequestParam(defaultValue = "8") int pageSize){
+        return service.getPrintLog(pageNum, pageSize);
     }
 
 }

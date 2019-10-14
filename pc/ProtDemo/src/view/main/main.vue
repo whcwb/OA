@@ -126,6 +126,11 @@
         this.collapsed = state
       },
       handleCloseTag(res, type, name) {
+          //2019年10月14日。关闭异常界面，清理缓存值
+          if (name == "Student-exception"){
+            sessionStorage.removeItem("queryExpCode");
+            sessionStorage.removeItem("queryExpKskm");
+          }
         const nextName = getNextName(this.tagNavList, name)
         this.setTagNavList(res)
         if (type === 'all') this.turnToPage('home')

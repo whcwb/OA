@@ -60,22 +60,26 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 				.andEqualTo(BizException.InnerColumn.sfzmhm.name(), exception.getSfzmhm())
 				.andEqualTo(BizException.InnerColumn.code.name(), exception.getCode())
 				.andEqualTo(BizException.InnerColumn.zt.name(), "00");
-		Integer num = baseMapper.selectCountByExample(condition);
-		if (num > 0){
-			return ApiResponse.success("异常已预警");
+		BizException exist = baseMapper.selectOneByExample(condition);
+		if (exist != null){
+			exist.setKskm(exception.getKskm());
+			exist.setLsh(exception.getLsh());
+			
+			update(exist);
+		}else{
+			SysYh user = getCurrentUser();
+			exception.setId(String.valueOf(idGenerator.nextId()));
+			exception.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+			if(user != null){
+				exception.setCjr(user.getZh()+"-"+user.getXm());
+			}else{
+				exception.setCjr("系统");
+			}
+			exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
+			exception.setZt("00");
+			save(exception);
 		}
 		
-		SysYh user = getCurrentUser();
-		exception.setId(String.valueOf(idGenerator.nextId()));
-		exception.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
-		if(user != null){
-			exception.setCjr(user.getZh()+"-"+user.getXm());
-		}else{
-			exception.setCjr("系统");
-		}
-		exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
-		exception.setZt("00");
-		save(exception);
 		//给学员标记异常备注
 		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(exception.getSfzmhm());
 		if (traineeInfo != null){

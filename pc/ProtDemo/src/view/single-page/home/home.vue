@@ -56,7 +56,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.BMDSH == null ? 0 : dashboard.BMDSH" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -71,7 +71,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.BMSHYC == null ? 0 : dashboard.BMSHYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -98,7 +98,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.SFDQR == null ? 0 : dashboard.SFDQR" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -113,7 +113,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.SFQRYC == null ? 0 : dashboard.SFQRYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -140,7 +140,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.SLDQR == null ? 0 : dashboard.SLDQR" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -155,7 +155,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.SLQRYC == null ? 0 : dashboard.SLQRYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -184,7 +184,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -199,7 +199,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM1YYYC == null ? 0 : dashboard.KM1YYYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -226,7 +226,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM1JF == null ? 0 : dashboard.KM1JF" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -241,7 +241,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM1JFYC == null ? 0 : dashboard.KM1JFYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -268,7 +268,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -283,7 +283,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM1QRYC == null ? 0 : dashboard.KM1QRYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -312,7 +312,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -327,7 +327,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM2YYYC == null ? 0 : dashboard.KM2YYYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -354,7 +354,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM2JF == null ? 0 : dashboard.KM2JF" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -369,7 +369,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM2JFYC == null ? 0 : dashboard.KM2JFYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -396,7 +396,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -411,7 +411,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM2QRYC == null ? 0 : dashboard.KM2QRYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -440,7 +440,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -455,7 +455,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM3YYYC == null ? 0 : dashboard.KM3YYYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -482,7 +482,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM3JF == null ? 0 : dashboard.KM3JF" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -497,7 +497,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM3JFYC == null ? 0 : dashboard.KM3JFYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -524,7 +524,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -539,7 +539,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM3QRYC == null ? 0 : dashboard.KM3QRYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -568,7 +568,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -583,7 +583,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM4YYYC == null ? 0 : dashboard.KM4YYYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -610,7 +610,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -625,7 +625,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="0" count-class="count-style"/>
+            <count-to :end="dashboard.KM4QRYC == null ? 0 : dashboard.KM4QRYC" count-class="count-style"/>
             </Col>
           </Row>
           </Col>
@@ -760,6 +760,7 @@
         over:0,
         gxsj:'',
         loadBtnFlag:false,
+        dashboard:{},
         params:{
           startTime:'',
           endTime:this.AF.trimDate()
@@ -778,10 +779,8 @@
         ]
       }
     },
-    created() {
-    },
     mounted() {
-        this.gxsj = "数据更新时间:"+moment().format("YYYY-MM-DD HH:mm");
+        this.loadData();
     },
     methods: {
       inputVal(val){
@@ -790,42 +789,18 @@
       loadData(){
           this.loadBtnFlag = true;
           this.gxsj = "加载中";
-      },
-      getBM() {
-        this.$http.post(this.apis.DATASTA.dateO,this.params).then((res) => {
-          if (res.code == 200) {
-            this.typNumlist = {
-              newborn:{
-                max:res.result['大车报名人数'],
-                min:res.result['小车报名人数']
-              },
-              SL:{
-                max:res.result['大车已受理学员'],
-                min:res.result['小车已受理学员']
-              },
-              KS:{
-                one:res.result['科目一合格学员'],
-                two:res.result['科目二合格人数'],
-                thr:res.result['科目三合格人数']
+          this.$http.get(this.apis.HOME.DASHBOARD).then((res) => {
+              this.loadBtnFlag = false;
+              if (res.code == 200) {
+                this.gxsj = "数据更新时间:"+moment().format("YYYY-MM-DD HH:mm");
+                this.dashboard = res.result;
+              }else{
+                this.gxsj = "数据更新失败";
               }
-            }
-          }
-        }).catch((err) => {
-
-        })
-      },
-      getData(){
-        this.$http.post(this.apis.DATASTA.dateP,this.params).then((res) => {
-        if (res.code == 200 && res.result) {
-          res.result.forEach((item,index)=>{
-            if(item.name == '已结业人数'){
-              this.over = item.value
-            }
+          }).catch((err) => {
+            this.loadBtnFlag = false;
+            this.gxsj = "数据加载失败";
           })
-        }
-      }).catch((err) => {
-
-      })
       },
       goToDB(){
         this.$router.push({ name: 'Student-exception', query: { code: "001" }});

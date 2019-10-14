@@ -17,8 +17,22 @@
                    v-model="param.xmLike"/>
           </Col>
           <Col span="4" style="padding-left: 10px">
-            <Select v-model="param.code" @on-change="changeExpCode">
+            <Select v-model="param.code" @on-change="changeExpCode" clearable>
               <Option v-for="item in expsConfig" :value="item.code" :key="item.code">{{ item.bz }}</Option>
+            </Select>
+          </Col>
+          <Col span="4" style="padding-left: 10px">
+            <Select v-model="param.kskm" @on-change="changeExpCode">
+              <Option :value="1" :key="1">科目一</Option>
+              <Option :value="2" :key="2">科目二</Option>
+              <Option :value="3" :key="3">科目三</Option>
+              <Option :value="4" :key="4">科目四</Option>
+            </Select>
+          </Col>
+          <Col span="4" style="padding-left: 10px">
+            <Select v-model="param.zt">
+              <Option value="00">未处理</Option>
+              <Option value="10">已处理</Option>
             </Select>
           </Col>
           <Col span="2" style="padding-left: 10px">
@@ -71,6 +85,8 @@
           sfzmhm: '',
           xmLike:'',
           code:'',
+          kskm:'',
+          zt:'00',
           pageNum: 1,//当前页码
           pageSize: 30//每页显示数
         },
@@ -93,8 +109,12 @@
             }
           },
           {title: '姓名', key: 'xm', align: 'center', width: 120},
-          {title: '证件号码', width: 180, key: 'sfzmhm', align: 'center'},
+          {title: '证件号码', width: 200, key: 'sfzmhm', align: 'center'},
           {title: '异常时间', width: 180, key: 'cjsj', align: 'center'},
+          {title: '异常状态', width: 120, key: 'zt', align: 'center',
+            render: (h, params) => {
+              return h('span', params.row.zt == '00' ? '未处理' : '已处理');
+            }},
           {title: '异常描述', key: 'bz', align: 'center'}
         ]
       }
@@ -125,23 +145,27 @@
               this.param.code = code;
             }
           }
+          if (this.$route.query.kskm){
+            sessionStorage.setItem("queryExpKskm", this.$route.query.kskm);
+            this.param.kskm = this.$route.query.kskm;
+          } else {
+            var kskm = sessionStorage.getItem("queryExpKskm");
+            if (kskm){
+              this.param.kskm = kskm;
+            }
+          }
+
+          this.queryInfo();
         })
       },
       changeExpCode(val){
-          console.log(val);
         sessionStorage.removeItem("queryExpCode");
+        sessionStorage.removeItem("queryExpKskm");
       },
       queryInfo() {
-
           this.$http.post('/api/exception/pager', this.param).then(res => {
             if (res.code == 200) {
-              this.$Message.success(res.message);
-              this.swal({
-                title: res.message,
-                type: 'success'
-              })
-              this.stuMes = {}
-              this.param.idCardNo = ''
+                this.pageData = res.page.list;
             } else {
               this.swal({
                 text: res.message,

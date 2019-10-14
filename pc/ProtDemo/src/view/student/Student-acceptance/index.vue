@@ -183,7 +183,7 @@
               // return h('div', res);
             }
           },
-          {title: '手机号码',align:'center', key: 'phone'},
+//          {title: '手机号码',align:'center', key: 'phone'},
           {
             title: '车型',align:'center', key: 'carType',
             render: (h, p) => {
@@ -199,20 +199,9 @@
           },
           {
             title: '报名时间',align:'center', key: 'registrationTime',
-            /*render: (h, params) => {
-              return h('div', [
-                h('Tooltip',
-                  {props: {placement: 'top', content: params.row.registrationTime,}},
-                  [
-                    h('Time', {
-                      props: {
-                        time: new Date(params.row.registrationTime.replace(/-/g, "/"))
-                      }
-                    })
-                  ]
-                )
-              ]);
-            }*/
+            render: (h, params) => {
+              return h('div', params.row.registrationTime.substr(0, 10));
+            }
           },
           {
             title: '流水号',align:'center', width: 240, render: (h, p) => {

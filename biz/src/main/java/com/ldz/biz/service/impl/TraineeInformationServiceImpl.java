@@ -549,6 +549,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             exceptionService.saveException(exception);
             return ApiResponse.success();
         }
+        if(StringUtils.isBlank(obj.getInfoCheckTime())){
+            return ApiResponse.fail("学员信息未审核 ， 请先审核");
+        }
         obj.setSerialNum(entity.getSerialNum());
         if (StringUtils.equals(obj.getStatus(), "00")) {
             obj.setStatus("10");

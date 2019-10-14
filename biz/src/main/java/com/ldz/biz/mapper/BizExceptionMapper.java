@@ -56,7 +56,7 @@ public interface BizExceptionMapper extends Mapper<BizException> {
 	@Select("SELECT SUM( CASE WHEN info_check_status = '00' THEN 1 ELSE 0 END ) 'BMDSH', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE = '001' AND zt = '00') 'BMSHYC', "
 			+ "SUM( CASE WHEN charge_status = '00' AND info_check_status = '10' THEN 1 ELSE 0 END ) 'SFDQR', "
-			+ "(select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE (CODE = '002' or CODE = '903') AND zt = '00' GROUP BY sfzmhm) t) 'SFQRYC', "
+			+ "(select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE (CODE = '002' ) AND zt = '00' GROUP BY sfzmhm) t) 'SFQRYC', "
 			+ "SUM( CASE WHEN accept_status <> '20' and info_check_status='10' THEN 1 ELSE 0 END ) 'SLDQR', "
 			+ "( select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE CODE = '003'  AND zt = '00' GROUP BY sfzmhm) t ) 'SLQRYC', "
 			+ "( SELECT COUNT(1) FROM trainee_test_info where subject ='科目一' and  (test_result is null or test_result = '') ) 'KM1YY', "
@@ -80,7 +80,9 @@ public interface BizExceptionMapper extends Mapper<BizException> {
 			+ "( SELECT COUNT(1) FROM trainee_test_info where subject ='科目四' and  (test_result is null or test_result = '') ) 'KM4YY', "
 			+ "(SELECT COUNT(1) FROM trainee_test_info m JOIN biz_exception c ON m.id_card_no=c.sfzmhm where subject ='科目四' and  (test_result is null or test_result = '') and c.zt='00') 'KM4YYYC', "
 			+ "SUM( CASE WHEN forth_sub NOT IN ('10', '20') THEN 1 ELSE 0 END ) 'KM4DQR'  , "
-			+ "(select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE CODE = '402' AND kskm = '4' AND zt = '00' GROUP BY sfzmhm) t) 'KM4QRYC' "
+			+ "(select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE CODE = '402' AND kskm = '4' AND zt = '00' GROUP BY sfzmhm) t) 'KM4QRYC' ,"
+			+"( SELECT COUNT(1) FROM TRAINEE_INFORMATION WHERE ARREARAGE ='10' ) 'FQDQR' ,"
+			+" (select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE CODE = '903'  AND zt = '00' GROUP BY sfzmhm) t) 'FQQRYC'  "
 			+ "FROM trainee_information m WHERE STATUS NOT IN ('50', '60')")
     public Map<String, Integer> dashboard();
 }

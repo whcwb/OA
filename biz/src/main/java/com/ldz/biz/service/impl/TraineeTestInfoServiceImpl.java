@@ -218,6 +218,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                         if (StringUtils.equals(message, "操作成功")) {
                             String[] messages = message.split("@sfgeeq@");
                             jgmc = messages[0];
+                            if(StringUtils.isNotBlank(jgmc)){
+                                jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/","").trim();
+                            }
                             if (messages.length >= 3) {
                                 trainStatus = messages[1];
                                 subTestNums = messages[2];
@@ -255,8 +258,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         condition = new SimpleCondition(TraineeTestInfo.class);
         condition.like(TraineeTestInfo.InnerColumn.testTime, appendZero(testTime));
         condition.like(TraineeTestInfo.InnerColumn.subject, list.get(3).get(4));
-        condition.and().andIsNull(TraineeTestInfo.InnerColumn.testResult.name());
-        condition.and().andCondition(" trainee_id is not null or trainee_id != '' ");
+        condition.and().andCondition(" test_result is null or test_result = ''");
+        condition.and().andCondition(" trainee_id is not null and trainee_id != '' ");
         List<TraineeTestInfo> testInfoList = findByCondition(condition); // 缺考学员按不合格处理
 
         int size = resultList.get(1).size();
@@ -318,6 +321,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 if (StringUtils.isNotEmpty(message)) {
                     String[] messages = message.split("@sfgeeq@");
                     jgmc = messages[0];
+                    if(StringUtils.isNotBlank(jgmc)){
+                        jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/","").trim();
+                    }
                     if (messages.length >= 3) {
                         trainStatus = messages[1];
                         subTestNums = messages[2];
@@ -350,7 +356,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         if (CollectionUtils.size(sucList) >= 2) {
             Map<Integer, String> integerStringMap = sucList.get(0);
             collect.add(integerStringMap);
-            collect.addAll(sucList.subList(1, sucList.size()).stream().sorted(Comparator.comparing(o -> o.get(size1 - 1))).collect(Collectors.toList()));
+            collect.addAll(sucList.subList(1, sucList.size()).stream().filter(integerStringMap1 -> StringUtils.isNotBlank(integerStringMap1.get(size1 -1 ))).sorted(Comparator.comparing(o -> o.get(size1 - 1))).collect(Collectors.toList()));
         }
         //  放到redis中去
         redisDao.boundValueOps(errorKey).set(JsonUtil.toJson(errorList), 30, TimeUnit.DAYS);
@@ -470,7 +476,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             condition.eq(TraineeTestInfo.InnerColumn.idCardNo, map.get(5));
 //            condition.eq(TraineeTestInfo.InnerColumn.traineeId, information.getId());//学员ID
             condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(4));//科目
-            condition.and().andCondition(" test_result is null or test_result =''");
+//            condition.and().andCondition(" test_result is null or test_result =''");
             if (StringUtils.isNotBlank(map.get(15)) && map.get(15).length() > 10) {
                 condition.like(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(15).substring(0, 10)));//约考时间
             } else {
@@ -742,11 +748,11 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50", "60"));
         List<TraineeInformation> infos = traineeInformationService.findByCondition(condition);
         Map<String, List<TraineeInformation>> listMap = infos.stream().collect(Collectors.groupingBy(TraineeInformation::getIdCardNo));
-
+        int mapSize = 0;
         for (Map<Integer, String> map : list) {
             Map<Integer, String> tableNameInfo = Maps.newLinkedHashMap();
             Map<String, String> webMap = new HashMap<>();
-            int mapSize = map.size();
+             mapSize = map.size();
             if (StringUtils.equals(map.get(0), "学员姓名")) {
                 map.put(mapSize, "处理结果");
                 map.put(mapSize + 1, "处理备注");
@@ -811,6 +817,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                         if (!message.equals("操作成功")) {
                             String[] messages = message.split("@sfgeeq@", -1);
                             jgmc = messages[0];
+                            if(StringUtils.isNotBlank(jgmc)){
+                                jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/","").trim();
+                            }
                             if (messages.length >= 3) {
                                 trainStatus = messages[1];
                                 subTestNums = messages[2];
@@ -857,10 +866,16 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         retMap.put("succeedCount", resultList.size() - 1);
         retMap.put("list", webList);
         retMap.put("errorKey", errorKey);
+        int finalMapSize = mapSize;
 
         redisDao.boundValueOps(errorKey).set(JsonUtil.toJson(errorList), 30, TimeUnit.DAYS);
         redisDao.boundValueOps(errorKey + "_name").set(DateUtils.getToday("yyyy-MM-dd") + "-appoint-fail", 30, TimeUnit.DAYS);
-
+        List<Map<Integer, String>> subList = resultList.subList(1, resultList.size());
+        List<Map<Integer, String>> maps = subList.stream().filter(integerStringMap -> StringUtils.isNotBlank(integerStringMap.get(finalMapSize + 2))).sorted(Comparator.comparing(o -> o.get(finalMapSize + 2))).collect(Collectors.toList());
+        Map<Integer, String> map = resultList.get(0);
+        resultList = new ArrayList<>();
+        resultList.add(map);
+        resultList.addAll(maps);
         //放到redis中去
         redisDao.boundValueOps(key).set(JsonUtil.toJson(resultList), 30, TimeUnit.DAYS);
 

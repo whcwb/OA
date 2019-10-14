@@ -17,12 +17,12 @@
                    v-model="param.xmLike"/>
           </Col>
           <Col span="4" style="padding-left: 10px">
-            <Select v-model="param.code" @on-change="changeExpCode" clearable>
+            <Select v-model="param.code" @on-change="changeExpCode" clearable multiple>
               <Option v-for="item in expsConfig" :value="item.code" :key="item.code">{{ item.bz }}</Option>
             </Select>
           </Col>
           <Col span="4" style="padding-left: 10px">
-            <Select v-model="param.kskm" @on-change="changeExpCode">
+            <Select v-model="param.kskm" @on-change="changeExpCode" clearable>
               <Option :value="1" :key="1">科目一</Option>
               <Option :value="2" :key="2">科目二</Option>
               <Option :value="3" :key="3">科目三</Option>
@@ -138,11 +138,11 @@
         }).then(()=>{
           if (this.$route.query.code){
             sessionStorage.setItem("queryExpCode", this.$route.query.code);
-            this.param.code = this.$route.query.code;
+            this.param.code = this.$route.query.code.split(",");
           } else {
             var code = sessionStorage.getItem("queryExpCode");
             if (code){
-              this.param.code = code;
+              this.param.code = code.split(",");
             }
           }
           if (this.$route.query.kskm){

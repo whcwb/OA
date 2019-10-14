@@ -51,7 +51,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToDB">待办</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-recruit_audit')">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -66,7 +66,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('001', null)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -93,7 +93,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待收</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-signUp')">待收</Button>
             </Col>
           </Row>
           <Row>
@@ -108,7 +108,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('002,903', null)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -135,7 +135,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-acceptance')">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -150,7 +150,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('003', null)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -179,7 +179,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">已约</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-appointment')">已约</Button>
             </Col>
           </Row>
           <Row>
@@ -194,7 +194,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage(null, 1)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -221,7 +221,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待缴</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-examination')">待缴</Button>
             </Col>
           </Row>
           <Row>
@@ -236,7 +236,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('101', 1)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -263,7 +263,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-examination')">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -278,7 +278,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('102', 1)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -307,7 +307,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">已约</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-appointment')">已约</Button>
             </Col>
           </Row>
           <Row>
@@ -322,7 +322,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage(null, 2)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -349,7 +349,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待缴</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-examination')">待缴</Button>
             </Col>
           </Row>
           <Row>
@@ -364,7 +364,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('201', 2)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -391,7 +391,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-examination')">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -406,7 +406,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('202', 2)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -435,7 +435,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">已约</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-appointment')">已约</Button>
             </Col>
           </Row>
           <Row>
@@ -450,7 +450,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage(null, 3)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -477,7 +477,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待缴</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-examination')">待缴</Button>
             </Col>
           </Row>
           <Row>
@@ -492,7 +492,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('301', 3)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -519,7 +519,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-examination')">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -534,7 +534,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('302', 3)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -563,7 +563,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">已约</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-appointment')">已约</Button>
             </Col>
           </Row>
           <Row>
@@ -578,7 +578,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage(null, 4)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -605,7 +605,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待办</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-examination')">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -620,7 +620,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="error"  ghost style="font-weight: bold;font-size: 14px">异常</Button>
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('402', 4)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -802,8 +802,14 @@
             this.gxsj = "数据加载失败";
           })
       },
-      goToDB(){
-        this.$router.push({ name: 'Student-exception', query: { code: "001" }});
+      goToPage(pageName){
+          var permission = JSON.stringify(this.$store.state.app.permissionMenuList);
+          if (permission.indexOf(pageName) != -1){
+              this.$router.push({ name: pageName });
+          }
+      },
+      goToExceptionPage(code ,kskm){
+          this.$router.push({ name: 'Student-exception', query:{code: code, kskm:kskm} });
       }
     }
   }

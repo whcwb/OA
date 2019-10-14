@@ -478,11 +478,13 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 //        condition.eq(TraineeInformation.InnerColumn.status.name(), "00");//学员当前状态 99:报名中 00: 受理中  10：科一学习中 20：科二学习中 30：科三学习中 40：科四学习中 50：结业 60：退学
 //        condition.eq(TraineeInformation.InnerColumn.chargeStatus.name(), "10");//收费状态 00:未收费 10：已收费
 //        condition.eq(TraineeInformation.InnerColumn.acceptStatus.name(), "10");//受理状态  00：未受理 10：受理中 20：已受理
-        condition.and().andIsNull(TraineeInformation.InnerColumn.serialNum.name());//学员流水号
+//        condition.and().andIsNull(TraineeInformation.InnerColumn.serialNum.name());//学员流水号
         condition.eq(TraineeInformation.InnerColumn.infoCheckStatus, "10");
+        condition.and().andCondition(" serial_num is null or serial_num = ''");
 
         PageInfo<TraineeInformation> resultPage = findPage(pager, condition);
-        if (CollectionUtils.isNotEmpty(resultPage.getList())) {
+        String idCardNo = getRequestParamterAsString("idCardNo");
+        if (CollectionUtils.isNotEmpty(resultPage.getList())|| StringUtils.isBlank(idCardNo)) {
             afterPager(resultPage);
             result.setPage(resultPage);
             return result;
@@ -494,7 +496,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 result.setPage(page);
                 result.setMessage("当前学员已经有流水号");
             } else {
-                result.setCode(500);
+//                result.setCode(500);
                 result.setPage(new PageInfo());
                 result.setMessage("该学员信息不在系统中");
             }

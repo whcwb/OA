@@ -8,6 +8,6 @@ import com.ldz.util.cache.MybatisRedisCache;
 
 import tk.mybatis.mapper.common.Mapper;
 
-@CacheNamespace(implementation=MybatisRedisCache.class, eviction=FifoCache.class)
+//@CacheNamespace(implementation=MybatisRedisCache.class, eviction=FifoCache.class)
 public interface BizExceptionConfigMapper extends Mapper<BizExceptionConfig> {
 }

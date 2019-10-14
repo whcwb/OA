@@ -311,6 +311,12 @@ public class TraineeInformation implements Serializable {
     private String thirdSubTrainStatus;
 
     /**
+     * 科目四 考试时间
+     */
+    @Column(name = "forth_sub_test_time")
+    private String forthSubTestTime;
+
+    /**
      * 科目四状态
      * 00：已约考 :10: 不合格 20：合格
      */

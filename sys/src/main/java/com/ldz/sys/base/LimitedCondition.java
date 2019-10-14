@@ -21,7 +21,7 @@ public class LimitedCondition extends SimpleCondition {
     /**
      * 有些对象在查询的时候并不需要做机构权限处理   BizCarGas "CoachValuation","ComplainRecord",  BizCarAnnualExam
      */
-    private static final List<String> excludeEntityName = Arrays.asList("SysZdxm","BizLcFd","BizCarGas","BizCarInsuranceJq","BizCarWarn","BizCarAnnualExam","BizCarUsage","WxModule","WxModuleSys","SysMessage","FeedBack","CoachValuation","ComplainRecord","InviteFriends","PicRotation","RecordManagement","ChargeItemManagement","ReduceManagement","ChargeManagement","SysGn","SysYjfk","SysRz","ClZnzp","ClLsdw","ClLsc","ClDzwlCl","ClSbyxsjjl","SysHsgs","SysZdlm","TrainingRecord","TraineeTestInfo","RateDetail","ComplainRecord","FeedBack","InviteFriends","CoachValuation","Zgjbxx","BizKc","BizCk","BizRk","BizLcCl","BizLcJl","BizLcJlXy","BizLcWxjl","BizKcLb");
+    private static final List<String> excludeEntityName = Arrays.asList("SysZdxm","BizLcFd","BizCarGas","BizCarInsuranceJq","BizCarWarn","BizCarAnnualExam","BizCarUsage","WxModule","WxModuleSys","SysMessage","FeedBack","CoachValuation","ComplainRecord","InviteFriends","PicRotation","RecordManagement","ChargeItemManagement","ReduceManagement","ChargeManagement","SysGn","SysYjfk","SysRz","ClZnzp","ClLsdw","ClLsc","ClDzwlCl","ClSbyxsjjl","SysHsgs","SysZdlm","TrainingRecord","TraineeTestInfo","RateDetail","ComplainRecord","FeedBack","InviteFriends","CoachValuation","Zgjbxx","BizKc","BizCk","BizRk","BizLcCl","BizLcJl","BizLcJlXy","BizLcWxjl","BizKcLb","BizException");
     private static final List<String> jgdmsList = Arrays.asList("TraineeInformation","CoachManagement");
     public LimitedCondition(Class<?> entityClass) {
         super(entityClass);

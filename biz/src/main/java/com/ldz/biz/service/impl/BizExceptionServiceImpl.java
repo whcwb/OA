@@ -66,7 +66,11 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		SysYh user = getCurrentUser();
 		exception.setId(String.valueOf(idGenerator.nextId()));
 		exception.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
-		exception.setCjr(user.getZh()+"-"+user.getXm());
+		if(user != null){
+			exception.setCjr(user.getZh()+"-"+user.getXm());
+		}else{
+			exception.setCjr("系统");
+		}
 		exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
 		exception.setZt("00");
 		save(exception);
@@ -77,7 +81,6 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			traineeInfo.setErrorMessage(exception.getBz());
 			traineeInfoService.update(traineeInfo);
 		}
-		
 		return ApiResponse.success();
 	}
 	
@@ -123,16 +126,18 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 					}
 				}
 				//将学员主表信息异常也标记为已处理，如果学员同时有其他异常信息，则更新其他异常信息
+				TraineeInformation information = new TraineeInformation();
+				information.setId(traineeInfo.getId());
 				if (code.equals(traineeInfo.getCode())){
 					if (otherEntity == null){
-						traineeInfo.setCode("");
-						traineeInfo.setErrorMessage("");
+						information.setCode("");
+						information.setErrorMessage("");
 					}else{
-						traineeInfo.setCode(otherEntity.getCode());
-						traineeInfo.setErrorMessage(otherEntity.getBz());
+						information.setCode(otherEntity.getCode());
+						information.setErrorMessage(otherEntity.getBz());
 					}
 					
-					traineeInfoService.update(traineeInfo);
+					traineeInfoService.update(information);
 				}
 			}
 		}

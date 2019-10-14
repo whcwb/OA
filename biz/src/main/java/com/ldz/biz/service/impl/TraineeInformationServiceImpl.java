@@ -585,6 +585,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             exception.setSfzmhm(obj.getIdCardNo());
             exception.setCode("003");
             exception.setLsh(obj.getSerialNum());
+            exceptionService.clearException(exception, "003");
+            exception.setCode("904");
+            exceptionService.clearException(exception, exception.getCode());
             return ApiResponse.success();
         } else {
             return ApiResponse.fail("操作失败请重新尝试");
@@ -1109,7 +1112,10 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         exception.setCode("002");
         exception.setSfzmhm(information.getIdCardNo());
         exception.setXm(information.getName());
-        exceptionService.clearException(exception, "002");
+        exceptionService.clearException(exception, exception.getCode());
+        exception.setCode("902");
+        exceptionService.clearException(exception, exception.getCode());
+
         return ApiResponse.success();
 
     }
@@ -1376,7 +1382,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     @Override
     public ApiResponse<String> revokeSignUp(String traineeId) {
         TraineeInformation information = findById(traineeId);
-        if (StringUtils.equals(information.getAcceptStatus(), "20") || !StringUtils.equals(information.getStatus(), "00")) {
+        if (StringUtils.equals(information.getAcceptStatus(), "20")) {
             return ApiResponse.fail("当前学员已经受理成功，不能撤回");
         }
         if (StringUtils.isNotBlank(information.getConfirmTime()) && information.getConfirmTime().compareTo(DateUtils.getDateStr(new Date(), "yyyy-MM-dd")) < 0) {

@@ -44,7 +44,7 @@ public interface BizExceptionMapper extends Mapper<BizException> {
 		        "AND third_sub_test_time &lt; CURRENT_DATE AND DATE_FORMAT(DATE_ADD(third_sub_test_time, INTERVAL ${tvalue} DAY), '%Y-%m-%d') &lt;= CURRENT_DATE",
 		    "</when>",
 		    "<otherwise>",
-		    	"AND ${tcolumn} >= #{tvalue}",
+		    	"AND ${tcolumn} &lt;= #{tvalue}",
 		    "</otherwise>",
         "</choose>",
         "</script>"})
@@ -54,17 +54,17 @@ public interface BizExceptionMapper extends Mapper<BizException> {
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE = '001' AND zt = '00') 'BMSHYC', "
 			+ "SUM( CASE WHEN charge_status = '00' AND info_check_status = '10' THEN 1 ELSE 0 END ) 'SFDQR', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE = '002' AND zt = '00') 'SFQRYC', "
-			+ "SUM( CASE WHEN accept_status <> '20' THEN 1 ELSE 0 END ) 'SLDQR', "
+			+ "SUM( CASE WHEN accept_status <> '20' and info_check_status='10' THEN 1 ELSE 0 END ) 'SLDQR', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE = '003' AND zt = '00') 'SLQRYC', "
-			+ "SUM( CASE WHEN fir_sub = '20' THEN 1 ELSE 0 END ) 'KM1YY', "
+			+ "( SELECT COUNT(1) FROM trainee_test_info where subject ='科目一' and  (test_result is null or test_result = '') ) 'KM1YY', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE LIKE '9__' AND kskm = '1' AND zt = '00') 'KM1YYYC', "
 			+ "SUM( CASE WHEN fir_sub = '20' AND fir_sub_payment_time is null THEN 1 ELSE 0 END ) 'KM1JF', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE = '101' AND kskm = '1' AND zt = '00') 'KM1JFYC', "
-			+ "SUM( CASE WHEN sec_sub = '10' THEN 1 ELSE 0 END ) 'KM2YY', "
+			+ "( SELECT COUNT(1) FROM trainee_test_info where subject ='科目二' and  (test_result is null or test_result = '') ) 'KM2YY', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE LIKE '9__' AND kskm = '2' AND zt = '00') 'KM2YYYC', "
 			+ "SUM( CASE WHEN sec_sub = '10' AND sec_sub_payment_time is null THEN 1 ELSE 0 END ) 'KM2JF', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE = '201' AND kskm = '2' AND zt = '00') 'KM2JFYC', "
-			+ "SUM( CASE WHEN third_sub = '10' THEN 1 ELSE 0 END ) 'KM3YY', "
+			+ "( SELECT COUNT(1) FROM trainee_test_info where subject ='科目三' and  (test_result is null or test_result = '') ) 'KM3YY', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE LIKE '9__' AND kskm = '3' AND zt = '00') 'KM3YYYC', "
 			+ "SUM( CASE WHEN third_sub = '10' AND third_sub_payment_time is null THEN 1 ELSE 0 END ) 'KM3JF', "
 			+ "(SELECT COUNT(1) FROM biz_exception WHERE CODE = '301' AND kskm = '3' AND zt = '00') 'KM3JFYC', "

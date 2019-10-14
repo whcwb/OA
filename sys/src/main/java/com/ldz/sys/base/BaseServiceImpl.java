@@ -13,6 +13,7 @@ import com.ldz.util.exception.RuntimeCheck;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import tk.mybatis.mapper.common.Mapper;
@@ -372,10 +373,16 @@ public abstract class BaseServiceImpl<T, PK extends Serializable> implements Bas
     }
 
     public static SysYh getCurrentUser(boolean require) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        SysYh userInfo = (SysYh) request.getAttribute("userInfo");
-        RuntimeCheck.ifTrue(require && userInfo == null, "当前登录用户未空！");
-        return userInfo;
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if(requestAttributes != null){
+            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+            SysYh userInfo = (SysYh) request.getAttribute("userInfo");
+            RuntimeCheck.ifTrue(require && userInfo == null, "当前登录用户未空！");
+            return userInfo;
+        }else{
+            return null;
+        }
+
     }
 
     public static String getOperateUser() {

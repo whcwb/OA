@@ -404,9 +404,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         if (StringUtils.isBlank(kmCode)) {
             return ApiResponse.fail("考试科目:" + map.get(4) + " 转换考试科目编码异常，请联系管理人员");
         }
-        if (StringUtils.isBlank(map.get(9))) {
+       /* if (StringUtils.isBlank(map.get(9))) {
             return ApiResponse.fail("考试车型不能为空");
-        }
+        }*/
 
         if (StringUtils.isBlank(map.get(15))) {
             return ApiResponse.fail("约考日期不能为空");
@@ -871,9 +871,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         if (StringUtils.isBlank(kmCode)) {
             return ApiResponse.fail("考试科目:" + map.get(3) + " 转换考试科目编码异常，请联系管理人员");
         }
-        if (StringUtils.isBlank(map.get(4))) {
+    /*    if (StringUtils.isBlank(map.get(4))) {
             return ApiResponse.fail("考试车型不为空");
-        }
+        }*/
 
         if (StringUtils.isBlank(map.get(5))) {
             return ApiResponse.fail("预约日期不为空");
@@ -1223,9 +1223,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         if (StringUtils.isBlank(kmCode)) {
             return ApiResponse.fail("考试科目:" + map.get(3) + " 转换考试科目编码异常，请联系管理人员");
         }
-        if (StringUtils.isBlank(map.get(4))) {
+       /* if (StringUtils.isBlank(map.get(4))) {
             return ApiResponse.fail("考试车型不为空");
-        }
+        }*/
 
         if (StringUtils.isBlank(map.get(5))) {
             return ApiResponse.fail("预约日期不为空");

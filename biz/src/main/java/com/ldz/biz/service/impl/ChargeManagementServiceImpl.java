@@ -5,10 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.ldz.biz.constant.FeeType;
 import com.ldz.biz.mapper.ChargeManagementMapper;
-import com.ldz.biz.model.ChargeItemManagement;
-import com.ldz.biz.model.ChargeManagement;
-import com.ldz.biz.model.ChargePrintlog;
-import com.ldz.biz.model.TraineeInformation;
+import com.ldz.biz.model.*;
 import com.ldz.biz.service.*;
 import com.ldz.sys.base.BaseServiceImpl;
 import com.ldz.sys.base.LimitedCondition;
@@ -62,6 +59,8 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
     private ZdxmService zdxmService;
     @Autowired
     private ChargePrintlogService printlogService;
+    @Autowired
+    private BizExceptionService exceptionService;
 
     @Override
     protected Mapper<ChargeManagement> getBaseMapper() {
@@ -202,6 +201,13 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         save(entity);
         if (entity.getChargeCode().equalsIgnoreCase(FeeType.STAGING)) {
             TraineeInformation traineeInformation = traineeInformationService.findById(entity.getTraineeId());
+
+            BizException exception = new BizException();
+            exception.setXm(traineeInformation.getName());
+            exception.setSfzmhm(traineeInformation.getIdCardNo());
+            exception.setCode("903");
+            exception.setLsh(traineeInformation.getSerialNum());
+            exceptionService.clearException(exception, exception.getCode());
             statusService.saveEntity(traineeInformation, "分期尾款收费", "00", "分期尾款收费");
         }
 

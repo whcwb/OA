@@ -54,6 +54,14 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		if (StringUtils.isBlank(exception.getCode())){
 			return ApiResponse.fail("异常码不能为空");
 		}
+		//给学员标记异常备注
+		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(exception.getSfzmhm());
+		if (traineeInfo != null){
+			traineeInfo.setCode(exception.getCode());
+			traineeInfo.setErrorMessage(exception.getBz());
+			traineeInfoService.update(traineeInfo);
+		}
+		
 		//查看是否有相同的异常未处理，如果有就不再重复创建
 		Example condition = new Example(BizException.class);
 		condition.and()
@@ -77,16 +85,11 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			}
 			exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
 			exception.setZt("00");
+			exception.setBz1(traineeInfo.getJgmc());
 			save(exception);
 		}
 		
-		//给学员标记异常备注
-		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(exception.getSfzmhm());
-		if (traineeInfo != null){
-			traineeInfo.setCode(exception.getCode());
-			traineeInfo.setErrorMessage(exception.getBz());
-			traineeInfoService.update(traineeInfo);
-		}
+		
 		return ApiResponse.success();
 	}
 	

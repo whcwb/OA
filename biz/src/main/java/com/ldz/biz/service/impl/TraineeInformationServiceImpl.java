@@ -1,6 +1,7 @@
 package com.ldz.biz.service.impl;
 
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import com.ldz.biz.constant.FeeType;
@@ -28,6 +29,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -482,7 +484,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 //        condition.eq(TraineeInformation.InnerColumn.acceptStatus.name(), "10");//受理状态  00：未受理 10：受理中 20：已受理
 //        condition.and().andIsNull(TraineeInformation.InnerColumn.serialNum.name());//学员流水号
         condition.eq(TraineeInformation.InnerColumn.infoCheckStatus, "10");
-        condition.and().andCondition(" serial_num is null or serial_num = ''");
+        condition.and().andCondition(" accept_status <> '20' ");
 
         PageInfo<TraineeInformation> resultPage = findPage(pager, condition);
         String idCardNo = getRequestParamterAsString("idCardNo");
@@ -2580,28 +2582,44 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
     @Override
     public ApiResponse<String> getAppointed(Page<TraineeInformation> entity) {
+        Map<String, String> kmMap = new HashMap<>();
+        kmMap.put("10","科目一");
+        kmMap.put("20", "科目二");
+        kmMap.put("30", "科目三");
+        kmMap.put("40","科目四");
         ApiResponse<String> result = new ApiResponse<>();
-        LimitedCondition condition = getQueryCondition();
+//        LimitedCondition condition = getQueryCondition();
+        SimpleCondition  condition = new SimpleCondition(TraineeTestInfo.class);
+        condition.and().andCondition(" test_result is null or test_result = ''");
         String statu = getRequestParamterAsString("statu");
-        if (StringUtils.isBlank(statu)) {
-            condition.and().andCondition(" status ='10' or status='20' or status = '30'");
-        } else {
-            condition.eq(TraineeInformation.InnerColumn.status, statu);
+        if (StringUtils.isNotBlank(statu)) {
+            condition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(statu) );
         }
-        condition.and().andCondition(" status !='99' and status!='00' and status!='50' and status!='60'");
-        condition.and().andCondition(" fir_Sub = '20' or sec_Sub = '10' or third_Sub = '10' or forth_sub = '00'");
-        PageInfo<TraineeInformation> page = findPage(entity, condition);
-        page.getList().forEach(traineeInformation -> {
-            String id = traineeInformation.getId();
-            SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
-            simpleCondition.eq(TraineeTestInfo.InnerColumn.traineeId, id);
-            List<TraineeTestInfo> testInfos = traineeTestInfoService.findByCondition(simpleCondition);
-            if (CollectionUtils.isNotEmpty(testInfos)) {
-                traineeInformation.setTestInfo(testInfos.get(0));
-            }
+        condition.setOrderByClause(" id desc ");
+        SimpleCondition finalCondition = condition;
+        PageInfo<TraineeTestInfo> testInfoPageInfo = PageHelper.startPage(entity.getPageNum(), entity.getPageSize()).doSelectPageInfo(() -> traineeTestInfoService.findByCondition(finalCondition));
 
+        List<String> collect = testInfoPageInfo.getList().stream().filter(p -> StringUtils.isNotBlank(p.getTraineeId())).map(TraineeTestInfo::getTraineeId).collect(Collectors.toList());
+        Map<String, List<TraineeTestInfo>> listMap = testInfoPageInfo.getList().stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
+
+        List<TraineeInformation> page = findByIds(collect);
+        Map<String, TraineeInformation> map = page.stream().collect(Collectors.toMap(TraineeInformation::getId, p -> p));
+
+        List<TraineeInformation> infos = new ArrayList<>();
+        testInfoPageInfo.getList().forEach(traineeTestInfo -> {
+            TraineeInformation traineeInformation = map.get(traineeTestInfo.getTraineeId());
+            if (traineeInformation == null) {
+                traineeInformation = new TraineeInformation();
+                traineeInformation.setIdCardNo(traineeTestInfo.getIdCardNo());
+                traineeInformation.setName(traineeTestInfo.getTraineeName());
+            }
+            traineeInformation.setTestInfo(traineeTestInfo);
+            infos.add(traineeInformation);
         });
-        result.setPage(page);
+        PageInfo<TraineeInformation> pageInfo = new PageInfo<>();
+        BeanUtils.copyProperties(testInfoPageInfo, pageInfo, "list");
+        pageInfo.setList(infos);
+        result.setPage(pageInfo);
         return result;
     }
 
@@ -2610,19 +2628,24 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         ApiResponse<String> result = new ApiResponse<>();
         String statu = getRequestParamterAsString("statu");
         LimitedCondition condition = getQueryCondition();
-        condition.and().andCondition(" status !='99' and status!='00' and status!='50' and status!='60'");
+        condition.and().andCondition(" info_check_status ='10' and  status!='50' and status!='60'");
 
         if (StringUtils.isNotBlank(statu)) {
             condition.eq(TraineeInformation.InnerColumn.status, statu);
             if (StringUtils.equals(statu, "10")) {
-                condition.and().andCondition(" fir_sub !='20'");
+                // 科目一待办条件   科目一未合格 或科目一的考试时间为空
+                condition.and().andCondition(" (fir_sub !='40' or fir_sub_test_time is null) and accept_Status ='20' ");
             } else if (StringUtils.equals(statu, "20")) {
-                condition.and().andCondition(" sec_sub !='10'");
+                // 科目二待办条件   科目一合格 ， 且 科目二未合格
+                condition.and().andCondition(" fir_sub = '40' and sec_sub != '40'  ");
             } else if (StringUtils.equals(statu, "30")) {
-                condition.and().andCondition(" third_sub !='10'");
+                // 科目三待办条件 科目一合格 且 科目三未合格
+                condition.and().andCondition(" third_sub !='40' and fir_sub = '40' ");
+            }else if(StringUtils.equals(statu, "40")){
+                condition.and().andCondition(" fir_sub = '40' and sec_sub = '40' and third_sub = '40' and forth_sub != '20'");
             }
         } else {
-            condition.and().andCondition(" (status ='10' and fir_sub !='20') or (status='20' and sec_sub != '10') or (status = '30' and third_sub !='10') or status ='40'");
+            condition.and().andCondition(" ((fir_sub !='40' or fir_sub_test_time is null) and accept_Status ='20' ) or (fir_sub = '40' and sec_sub != '40') or (third_sub !='40' and fir_sub = '40' ) or (fir_sub = '40' and sec_sub = '40' and third_sub = '40' and forth_sub != '20')");
         }
 
         PageInfo<TraineeInformation> page = findPage(entity, condition);

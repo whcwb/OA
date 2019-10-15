@@ -194,7 +194,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 webMap.put("dn", "");//手机号码
                 TraineeInformation information = null;
                 List<TraineeInformation> traineeInformations = infoMap.get(map.get(5));
-                if (CollectionUtils.isNotEmpty(informations)) {
+                if (CollectionUtils.isNotEmpty(traineeInformations)) {
                     information = traineeInformations.get(0);
                 }
                 ApiResponse<String> destineExcel = this.newUpdateResultExcel(map, sysUser, information);
@@ -218,8 +218,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                         if (StringUtils.equals(message, "操作成功")) {
                             String[] messages = message.split("@sfgeeq@");
                             jgmc = messages[0];
-                            if(StringUtils.isNotBlank(jgmc)){
-                                jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/","").trim();
+                            if (StringUtils.isNotBlank(jgmc)) {
+                                jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/", "").trim();
                             }
                             if (messages.length >= 3) {
                                 trainStatus = messages[1];
@@ -321,8 +321,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 if (StringUtils.isNotEmpty(message)) {
                     String[] messages = message.split("@sfgeeq@");
                     jgmc = messages[0];
-                    if(StringUtils.isNotBlank(jgmc)){
-                        jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/","").trim();
+                    if (StringUtils.isNotBlank(jgmc)) {
+                        jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/", "").trim();
                     }
                     if (messages.length >= 3) {
                         trainStatus = messages[1];
@@ -356,7 +356,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         if (CollectionUtils.size(sucList) >= 2) {
             Map<Integer, String> integerStringMap = sucList.get(0);
             collect.add(integerStringMap);
-            collect.addAll(sucList.subList(1, sucList.size()).stream().filter(integerStringMap1 -> StringUtils.isNotBlank(integerStringMap1.get(size1 -1 ))).sorted(Comparator.comparing(o -> o.get(size1 - 1))).collect(Collectors.toList()));
+            collect.addAll(sucList.subList(1, sucList.size()).stream().filter(integerStringMap1 -> StringUtils.isNotBlank(integerStringMap1.get(size1 - 1))).sorted(Comparator.comparing(o -> o.get(size1 - 1))).collect(Collectors.toList()));
         }
         //  放到redis中去
         redisDao.boundValueOps(errorKey).set(JsonUtil.toJson(errorList), 30, TimeUnit.DAYS);
@@ -391,10 +391,10 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         kmMap.put("科目三", "30");
         kmMap.put("科目四", "40");
         kmMap.put("科目三安全文明常识考试", "40");
-        kmMap.put("10","1");
-        kmMap.put("20","2");
-        kmMap.put("30","3");
-        kmMap.put("40","4");
+        kmMap.put("10", "1");
+        kmMap.put("20", "2");
+        kmMap.put("30", "3");
+        kmMap.put("40", "4");
         //		1、有效性验证
         if (StringUtils.isBlank(map.get(2))) {
             return ApiResponse.fail("学员姓名不能为空");
@@ -422,16 +422,27 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         // 如果是科目四 并且合格的话 会将状态改为 结业
 //		2、查找到学员ID
         if (information == null) {
-            // 未找到学员 记录异常 ， 不抛出异常
-            BizException exception = new BizException();
-            exception.setSfzmhm(map.get(5));
-            exception.setId(genId());
-            exception.setCode("991");
-            exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
-            exception.setCjsj(DateUtils.getNowTime());
-            exception.setKskm(kmMap.get(kmCode));
-            exception.setXm(map.get(2));
-            exceptionService.saveException(exception);
+            if (StringUtils.equals(kmCode, "40")) {
+                SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+                condition.eq(TraineeInformation.InnerColumn.idCardNo, map.get(5));
+                condition.setOrderByClause(" id  desc ");
+                List<TraineeInformation> list = traineeInformationService.findByCondition(condition);
+                if (CollectionUtils.isNotEmpty(list)) {
+                    information = list.get(0);
+                }
+            }
+            if (information == null) {
+                // 未找到学员 记录异常 ， 不抛出异常
+                BizException exception = new BizException();
+                exception.setSfzmhm(map.get(5));
+                exception.setId(genId());
+                exception.setCode("991");
+                exception.setCjr(sysUser.getZh() + "-" + sysUser.getXm());
+                exception.setCjsj(DateUtils.getNowTime());
+                exception.setKskm(kmMap.get(kmCode));
+                exception.setXm(map.get(2));
+                exceptionService.saveException(exception);
+            }
         } else if (StringUtils.equals(information.getStatus(), "99")) {
             // 未找到学员 记录异常 ， 不抛出异常
             BizException exception = new BizException();
@@ -545,15 +556,15 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             //		5、修改考试表状态
             String testResult = "00";//00 合格  10不合格
             if (StringUtils.isNotEmpty(map.get(16))) {
-                if (StringUtils.equals(map.get(16), "不合格") || StringUtils.equals(map.get(16), "缺考")) {
+                if (StringUtils.equals(map.get(16).trim(), "不合格") || StringUtils.equals(map.get(16).trim(), "缺考")) {
                     testResult = "10";
-                } else if (StringUtils.equals(map.get(16), "合格")) {
+                } else if (StringUtils.equals(map.get(16).trim(), "合格")) {
                     obj.setPayStatus("00");
                 } else {
                     return ApiResponse.fail("考试结果状态不对。考试结果：" + map.get(16));
                 }
             }
-            if(CollectionUtils.isNotEmpty(orgs)){
+            if (CollectionUtils.isNotEmpty(orgs)) {
                 for (TraineeTestInfo org : orgs) {
                     org.setTestResult(testResult);
                     org.setOperator(sysUser.getZh() + "-" + sysUser.getXm());
@@ -679,7 +690,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setCode("102");
             exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(2));
-            exceptionService.clearException(exception,exception.getCode());
+            exceptionService.clearException(exception, exception.getCode());
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);
         } else {
             //		4、找到约考记录
@@ -700,11 +711,11 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             if (StringUtils.isNotEmpty(map.get(16))) {
                 if (StringUtils.equals(map.get(16), "不合格") || StringUtils.equals(map.get(16), "缺考")) {
                     testResult = "10";
-                }  else {
+                } else {
                     return ApiResponse.fail("考试结果状态不对。考试结果：" + map.get(16));
                 }
             }
-            if(CollectionUtils.isNotEmpty(orgs)){
+            if (CollectionUtils.isNotEmpty(orgs)) {
                 for (TraineeTestInfo org : orgs) {
                     org.setTestResult(testResult);
                     org.setOperator(sysUser.getZh() + "-" + sysUser.getXm());
@@ -752,7 +763,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         for (Map<Integer, String> map : list) {
             Map<Integer, String> tableNameInfo = Maps.newLinkedHashMap();
             Map<String, String> webMap = new HashMap<>();
-             mapSize = map.size();
+            mapSize = map.size();
             if (StringUtils.equals(map.get(0), "学员姓名")) {
                 map.put(mapSize, "处理结果");
                 map.put(mapSize + 1, "处理备注");
@@ -817,8 +828,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                         if (!message.equals("操作成功")) {
                             String[] messages = message.split("@sfgeeq@", -1);
                             jgmc = messages[0];
-                            if(StringUtils.isNotBlank(jgmc)){
-                                jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/","").trim();
+                            if (StringUtils.isNotBlank(jgmc)) {
+                                jgmc = jgmc.replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/", "").trim();
                             }
                             if (messages.length >= 3) {
                                 trainStatus = messages[1];
@@ -909,10 +920,10 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         kmMap.put("科目三", "30");
         kmMap.put("科目四", "40");
         kmMap.put("科目三安全文明常识考试", "40");
-        kmMap.put("10","1");
-        kmMap.put("20","2");
+        kmMap.put("10", "1");
+        kmMap.put("20", "2");
         kmMap.put("30", "3");
-        kmMap.put("40","4");
+        kmMap.put("40", "4");
         // 预约错误记录
         YyCwjl cwjl = new YyCwjl();
         cwjl.setId(genId());
@@ -1075,7 +1086,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
 //		4、将学员ID、科目、考试场地、约考时间。查询数据库判断当前约考信息有没有重复
             SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
-            if(information != null){
+            if (information != null) {
                 condition.eq(TraineeTestInfo.InnerColumn.traineeId, information.getId());//学员ID
             }
             condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(3));//科目

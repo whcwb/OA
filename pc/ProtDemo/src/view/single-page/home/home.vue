@@ -135,7 +135,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-signUp')">待收</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-arrearage')">待收</Button>
             </Col>
           </Row>
           <Row>

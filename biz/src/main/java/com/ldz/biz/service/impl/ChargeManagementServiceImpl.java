@@ -510,8 +510,9 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             printlog.setChargeId(join);
             printlog.setCjr(user.getZh() + "-" + user.getXm());
             printlog.setCjsj(DateUtils.getNowTime());
-            printlog.setPjbh(pjbh);
-
+            printlog.setPjbh(pjbh+num);
+            printlog.setJgdm(jgdm);
+            printlog.setJgmc(jgmc);
             printlogService.save(printlog);
         }
         return ApiResponse.success();
@@ -760,7 +761,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         if(StringUtils.isNotBlank(pjbh)){
             condition.like(ChargePrintlog.InnerColumn.pjbh, pjbh);
         }
-        PageInfo<Object> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> findByCondition(condition));
+        PageInfo<ChargePrintlog> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> printlogService.findByCondition(condition));
         ApiResponse<String> res = new ApiResponse<>();
         res.setPage(info);
         return res;

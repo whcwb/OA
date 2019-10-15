@@ -132,7 +132,7 @@
     data() {
       return {
         bmTime:[this.AF.trimDate()+' 00:00:00',this.AF.trimDate() + ' 23:59:59'],
-        activeName: '1',
+        activeName: '2',
         compName: '',
         userAudit: {},
         v: this,
@@ -348,6 +348,7 @@
         param1: {
           // reduceCheckTimeLike: this.AF.trimDate,
           // reduceCheckTimeLike: '',
+          reduceStatus: '10',
           jgmcLike: '',
           nameLike: '',//姓名
           idCardNoLike: '',

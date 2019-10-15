@@ -125,7 +125,7 @@
                     props: {
                       placement: 'top',
                       content: params.row.zfr + ' ' + params.row.zfsj,
-                      disabled: params.row.zfsj ? false : true
+                      disabled: true
                     }
                   },
                   [
@@ -139,9 +139,7 @@
           },
           {
             title: '操作',
-            fixed: 'right',
             align: 'center',
-            minWidth: 120,
             render: (h, p) => {
               return h('div', [
                 h('Tooltip',
@@ -150,7 +148,8 @@
                       {
                         placement: 'top',
                         transfer: true,
-                        content: p.row.zfsj ?'已作废':'作废',
+                        disabled: p.row.zfsj ? false : true,
+                        content: p.row.zfr + ' ' + p.row.zfsj,
                       }
                   },
                   [
@@ -171,7 +170,8 @@
                             confirmButtonText: '确定',
                             cancelButtonText: '取消'
                           }).then((val) => {
-                            if (val) {
+                            // console.log(val)
+                            if (val.value===true) {
                               this.remove(p.row.pjbh)
                             }
                           });
@@ -238,13 +238,14 @@
         this.$http.get(this.apis.PJJL.ZF, {params: param}).then((res) => {
           if (res.code === 200) {
             this.getData()
-            this.swal({
-              title: '已作废',
-              type: 'success',
-              showCancelButton: true,
-              confirmButtonText: '确定',
-              cancelButtonText: '取消'
-            })
+            this.$Message.success(res.message);
+            // this.swal({
+            //   title: '已作废',
+            //   type: 'success',
+              // showCancelButton: false,
+              // confirmButtonText: '确定',
+              // cancelButtonText: '取消'
+            // })
           }
         }).catch((error) => {
         })

@@ -76,11 +76,11 @@
           </Button>
         </Col>
         <Col span="2" :lg="2" :md="3">
-            <Tooltip content="导出Excel" placement="top">
-              <Button type="primary" @click="excel">
-                <Icon type="ios-cloud-download-outline"/>
-              </Button>
-            </Tooltip>
+          <Tooltip content="导出Excel" placement="top">
+            <Button type="primary" @click="excel">
+              <Icon type="ios-cloud-download-outline"/>
+            </Button>
+          </Tooltip>
         </Col>
 
       </Row>
@@ -121,22 +121,22 @@
         <Col span="3" :lg="3" :md="4">
           <DatePicker v-model="param1Time" split-panels format="yyyy-MM-dd"
                       :clearable="false"
-          type="date" placeholder="科目一缴费时间"
-          @on-change="getPagerList1"></DatePicker>
+                      type="date" placeholder="科目一缴费时间"
+                      @on-change="getPagerList1"></DatePicker>
           <!--<div v-if="TagDot==0">-->
-            <!--<DatePicker v-model="param1.firSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
-                        <!--type="date" placeholder="科目一缴费时间"-->
-                        <!--@on-change="getPagerList1"></DatePicker>-->
+          <!--<DatePicker v-model="param1.firSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
+          <!--type="date" placeholder="科目一缴费时间"-->
+          <!--@on-change="getPagerList1"></DatePicker>-->
           <!--</div>-->
           <!--<div v-else-if="TagDot==1">-->
-            <!--<DatePicker v-model="param1.secSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
-                        <!--type="date" placeholder="科目二缴费时间"-->
-                        <!--@on-change="getPagerList1"></DatePicker>-->
+          <!--<DatePicker v-model="param1.secSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
+          <!--type="date" placeholder="科目二缴费时间"-->
+          <!--@on-change="getPagerList1"></DatePicker>-->
           <!--</div>-->
           <!--<div v-else-if="TagDot==2">-->
-            <!--<DatePicker v-model="param1.thirdSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
-                        <!--type="date" placeholder="科目三缴费时间"-->
-                        <!--@on-change="getPagerList1"></DatePicker>-->
+          <!--<DatePicker v-model="param1.thirdSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
+          <!--type="date" placeholder="科目三缴费时间"-->
+          <!--@on-change="getPagerList1"></DatePicker>-->
           <!--</div>-->
         </Col>
         <Col span="3" :lg="3" :md="4">
@@ -167,7 +167,7 @@
           </Button>
           <Tooltip content="数据导出" style="float: right">
             <Button type="primary" @click="winPrint">
-              <Icon type="md-cloud-download" />
+              <Icon type="md-cloud-download"/>
             </Button>
           </Tooltip>
 
@@ -194,11 +194,14 @@
 
     <Modal
       v-model="confirm"
-      title="确认"
-      @on-ok="OKpay()"
-      @on-cancel="cancel">
-      <Input v-model="value2" placeholder="" style="width: 200px"/>
-
+      title="确认">
+      <p v-if="confirmText" style="font-size: 18px;color: red">科目二考试不合格，请核对补考费已缴</p>
+      <Input v-model="payOk.amount" placeholder="请输入修改金额" style="width: 200px"/>
+      <Input v-model="payOk.remark" type="textarea" :autosize="{minRows: 5,maxRows: 5}" placeholder="请输入备注"/>
+      <div slot="footer">
+        <Button @click="confirm=confirmText=false">取消</Button>
+        <Button type="info" @click="OKpay">确认</Button>
+      </div>
     </Modal>
 
     <component :is="compName" :printMess='printMess'></component>
@@ -211,8 +214,8 @@
   export default {
     name: "index",
     methods: {},
-    watch:{
-      param1Time:function (n,o) {
+    watch: {
+      param1Time: function (n, o) {
         // console.log(n);
         // this.param1.firSubPaymentTimeLike = n
         // this.param1.secSubPaymentTimeLike = n
@@ -221,7 +224,8 @@
     },
     data: function () {
       return {
-        confirm:true,
+        confirm: false,
+        confirmText:false,
         activeName: '1',
         compName: '',
         printMess: [],
@@ -302,12 +306,20 @@
             }
           },
           {
-            title: '考试科目',
+            title: '考试地点',
             minWidth: 100,
             align: 'center',
             render: (h, p) => {
-              let val = this.dictUtil.getValByCode(this, 'ZDCLK1010', this.payOk.km)
-              return h('div', val)
+              console.log(this.payOk.km)
+              let arr=p.row.testInfos;
+              let place=''
+              let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
+              arr.map((val,index,arr)=>{
+                if(val.testTime===km){
+                  place=val.testPlace
+                }
+              })
+              return h('div', place)
             }
           }, {
             title: '考试时间',
@@ -317,7 +329,7 @@
               let a = ''
               switch (this.payOk.km) {
                 case '10':
-                  a = '-'
+                  a = p.row.firSubTestTime
                   break;
                 case '20':
                   a = p.row.secSubTestTime
@@ -339,7 +351,7 @@
                   value: '',
                   type: 'textarea',
                   placeholder: '备注信息',
-                  rows:1
+                  rows: 1
                 },
                 style: {
                   marginTop: '8px',
@@ -370,29 +382,31 @@
                         placement: 'top',
                         transfer: true,
                         content: p.row.errorMessage,
-                        disabled: p.row.code!==''&&p.row.code!==null ? false : true
+                        disabled: p.row.code !== '' && p.row.code !== null ? false : true
                       }
                   },
                   [
                     h('Button', {
                       props: {
-                        type: p.row.code!==''&&p.row.code!==null? 'error':'primary',
+                        type: p.row.code !== '' && p.row.code !== null ? 'error' : 'primary',
                         size: 'small',
-                        icon: p.row.code!==''&&p.row.code!==null? '':'md-checkmark'
+                        icon: p.row.code !== '' && p.row.code !== null ? '' : 'md-checkmark'
                       },
                       style: {
                         marginRight: '10px'
                       },
                       on: {
-                            click: () => {
-                              // console.log(p.row.remark);
-                              // console.log(this.payOk.remark);
-                              if (p.row.code!==''&&p.row.code!==null) return
-                              this.payOk.traineeId = p.row.id
-                              // this.OKpay(p.index)
-                            }
-                          }
-                    }, p.row.code!==''&&p.row.code!==null? '异':'')
+                        click: () => {
+                          // console.log(p.row.remark);
+                          // console.log(this.payOk.remark);
+                          if (p.row.code !== '' && p.row.code !== null) return
+                          this.payOk.traineeId = p.row.id
+                          this.payOk.amount = this.kmMoney
+                          this.confirm = true
+                          // this.OKpay(p.index)
+                        }
+                      }
+                    }, p.row.code !== '' && p.row.code !== null ? '异' : '')
                   ]
                 ),
               ])
@@ -498,7 +512,7 @@
                     h('Button', {
                       props: {
                         type: "warning",
-                        size:'small'
+                        size: 'small'
                       },
                       on: {
                         click: () => {
@@ -543,12 +557,20 @@
             }
           },
           {
-            title: '考试科目',
+            title: '考试地点',
             minWidth: 100,
             align: 'center',
             render: (h, p) => {
-              let val = this.dictUtil.getValByCode(this, 'ZDCLK1010', this.payOk.km)
-              return h('div', val)
+              console.log(this.payOk.km)
+              let arr=p.row.testInfos;
+              let place=''
+              let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
+              arr.map((val,index,arr)=>{
+                if(val.testTime===km){
+                  place=val.testPlace
+                }
+              })
+              return h('div', place)
             }
           },
           {
@@ -579,7 +601,7 @@
               return h('Input', {
                 props: {
                   value: '',
-                  rows:1,
+                  rows: 1,
                   type: 'textarea',
                   placeholder: '备注信息'
                 },
@@ -605,42 +627,65 @@
             fixed: 'right',
             render: (h, p) => {
               return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small',
-                    icon: 'md-checkmark'
-                  },
-                  style: {
-                    marginRight: '10px'
-                  },
-                  on: {
-                    click: () => {
-                      if (p.row.secSubPaymentTime == '') {
-                        this.swal({
-                          text: '请先确定缴纳科二初考费',
-                          type: 'warning'
-                        });
-                      } else if (p.row.secSub == '30') {
-                        this.swal({
-                          text: '学员考试不合格，请缴纳并核对核对科二补考费',
-                          type: 'warning',
-                          showCancelButton: true,
-                          confirmButtonText: '确定',
-                          cancelButtonText: '取消',
-                        }).then((willDelete) => {
-                          if (willDelete.value) {
-                            this.payOk.traineeId = p.row.id
-                            this.OKpay(p.index)
-                          }
-                        });
-                      } else {
-                        this.payOk.traineeId = p.row.id
-                        this.OKpay(p.index)
+
+                h('Tooltip',
+                  {
+                    props:
+                      {
+                        placement: 'top',
+                        transfer: true,
+                        content: p.row.errorMessage,
+                        disabled: p.row.code !== '' && p.row.code !== null ? false : true
                       }
-                    }
-                  }
-                })
+                  },
+                  [
+                    h('Button', {
+                      props: {
+                        type: p.row.code !== '' && p.row.code !== null ? 'error' : 'primary',
+                        size: 'small',
+                        icon: p.row.code !== '' && p.row.code !== null ? '' : 'md-checkmark'
+                      },
+                      style: {
+                        marginRight: '10px'
+                      },
+                      on: {
+                        click: () => {
+                          if (p.row.secSubPaymentTime == '') {
+                            this.swal({
+                              text: '请先确定缴纳科二初考费',
+                              type: 'warning'
+                            });
+                            return
+                          }
+                          // } else if (p.row.secSub == '30') {
+                          //   this.swal({
+                          //     text: '学员考试不合格，请缴纳并核对核对科二补考费',
+                          //     type: 'warning',
+                          //     showCancelButton: true,
+                          //     confirmButtonText: '确定',
+                          //     cancelButtonText: '取消',
+                          //   }).then((willDelete) => {
+                          //     if (willDelete.value) {
+                          //       if (p.row.code !== '' && p.row.code !== null) return
+                          //       this.payOk.traineeId = p.row.id
+                          //       this.payOk.amount = this.kmMoney
+                          //       this.confirm = true
+                          //       // this.payOk.traineeId = p.row.id
+                          //       // this.OKpay(p.index)
+                          //     }
+                          //   });}
+                          else {
+                            if (p.row.code !== '' && p.row.code !== null) return
+                            if (p.row.secSub == '30') this.confirmText=true
+                            this.payOk.traineeId = p.row.id
+                            this.payOk.amount = this.kmMoney
+                            this.confirm = true
+                            // this.OKpay(p.index)
+                          }
+                        }
+                      }
+                    }, p.row.code !== '' && p.row.code !== null ? '异' : '')
+                  ])
               ])
             }
           }
@@ -664,7 +709,7 @@
         },
         payOk: {
           // chargeType: '10',//支付方式
-
+          amount: '',
           index: '',
           traineeId: '',//学员ID
           remark: '',//备注
@@ -784,7 +829,7 @@
             minWidth: 120,
             align: 'center',
             render: (h, p) => {
-              return h('div', p.row.chargeRecord.chargeTime.substring(0,10))
+              return h('div', p.row.chargeRecord.chargeTime.substring(0, 10))
             }
           },
           {
@@ -796,7 +841,7 @@
                 props: {
                   value: p.row.chargeRecord.remark,
                   type: 'textarea',
-                  rows:1,
+                  rows: 1,
                   placeholder: '',
                   readonly: 'readonly'
                 },
@@ -832,9 +877,9 @@
         ],
         tableData1: [],
         total1: 0,//总数量
-        param1Time:'',
+        param1Time: '',
         param1: {
-          firSubPaymentTimeLike:'',
+          firSubPaymentTimeLike: '',
           secSubPaymentTimeLike: '',
           thirdSubPaymentTimeLike: '',
           jgmcLike: '',
@@ -843,7 +888,7 @@
           sign: '8',
           //分页数据
           pageNum: 1,//当前页码
-          pageSize:10//每页显示数
+          pageSize: 10//每页显示数
         },
 
         kmMoney: 0,
@@ -873,20 +918,20 @@
       }
     },
     methods: {
-      pageSizeChange(n){
-        if(this.activeName == '1'){
+      pageSizeChange(n) {
+        if (this.activeName == '1') {
           this.param.pageSize = n;
           this.getPagerList();
-        }else{
+        } else {
           this.param1.pageSize = n;
           this.getPagerList1();
         }
       },
-      pageChange(n){
-        if(this.activeName == '1'){
+      pageChange(n) {
+        if (this.activeName == '1') {
           this.param.pageNum = n;
           this.getPagerList();
-        }else{
+        } else {
           this.param1.pageNum = n;
           this.getPagerList1();
         }
@@ -904,10 +949,10 @@
         this.jx = this.dictUtil.getByCode(this, 'ZDCLK1019');
       },
       CasChange(val) {
-          this.getPagerList()
+        this.getPagerList()
       },
       CasChange1(val,) {
-          this.getPagerList1()
+        this.getPagerList1()
       },
       getBmdList() {
         this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
@@ -920,11 +965,11 @@
               }
             }
             this.CascaderList = tree(res.result)*/
-            if(res.result[0].value.length==3){
-              this.CascaderList= res.result[0].children[0].children;
-            }else if(res.result[0].value.length==6){
+            if (res.result[0].value.length == 3) {
+              this.CascaderList = res.result[0].children[0].children;
+            } else if (res.result[0].value.length == 6) {
               this.CascaderList = res.result[0].children;
-            }else if(res.result[0].value.length==9){
+            } else if (res.result[0].value.length == 9) {
               this.CascaderList = res.result
             }
           }
@@ -959,13 +1004,22 @@
         })
       },
       OKpay(index) {
-        console.log(this.payOk);
+        if ((this.payOk.amount === 0 || this.payOk.amount === '0') && this.payOk.remark == '') {
+          this.$Notice.warning({
+            title: '请填写备注',
+          });
+          return
+        }
+
         this.$http.post(this.apis.KSSF.OKPAY, this.payOk).then((res) => {
+          this.payOk.remark = ''
           if (res.code == 200) {
+            this.confirm=false
             this.swal({
-              type:'success',
-              title:'操作成功'
+              type: 'success',
+              title: '操作成功'
             })
+            this.confirmText=false
             this.getPagerList();
             this.$Message.success(res.message);
           } else {
@@ -979,11 +1033,11 @@
         if (this.TagDot == 0) {
           this.param1.firSubPaymentTimeLike = this.AF.trimDate(this.param1Time);
           this.param1.secSubPaymentTimeLike = '';
-          this.param1.thirdSubPaymentTimeLike ='';
+          this.param1.thirdSubPaymentTimeLike = '';
         } else if (this.TagDot == 1) {
           this.param1.firSubPaymentTimeLike = '';
           this.param1.secSubPaymentTimeLike = this.AF.trimDate(this.param1Time);
-          this.param1.thirdSubPaymentTimeLike ='';
+          this.param1.thirdSubPaymentTimeLike = '';
         } else if (this.TagDot == 2) {
           this.param1.firSubPaymentTimeLike = '';
           this.param1.secSubPaymentTimeLike = '';
@@ -1026,8 +1080,8 @@
         this.$http.post(this.apis.KSSF.RETRACT, {traineeId: id, chargeId: chargeId}).then((res) => {
           if (res.code == 200) {
             this.swal({
-              type:'success',
-              title:'撤销成功'
+              type: 'success',
+              title: '撤销成功'
             })
             this.getPagerList1()
             this.$Message.success(res.message);
@@ -1042,20 +1096,20 @@
       ,
       winPrint() {
         window.open(http.url + '/pub/exportTestCharge?jgmcLike=' + this.param1.jgmcLike + '&nameLike=' + this.param1.nameLike +
-          '&idCardNoLike=' + this.param1.idCardNoLike + '&sign=' + this.param1.sign+'&firSubPaymentTimeLike=' + this.param1.firSubPaymentTimeLike
-          +'&secSubPaymentTimeLike='+this.param1.secSubPaymentTimeLike + '&thirdSubPaymentTimeLike=' + this.param1.thirdSubPaymentTimeLike, '_blank');
+          '&idCardNoLike=' + this.param1.idCardNoLike + '&sign=' + this.param1.sign + '&firSubPaymentTimeLike=' + this.param1.firSubPaymentTimeLike
+          + '&secSubPaymentTimeLike=' + this.param1.secSubPaymentTimeLike + '&thirdSubPaymentTimeLike=' + this.param1.thirdSubPaymentTimeLike, '_blank');
       },
-      excel(){
+      excel() {
         window.open(http.url + '/pub/exportTestExcel?sign=' + this.param.sign + '&jgmcLike=' + this.param.jgmcLike + '&jgdm=' + this.param.jgdm + '&idCardNoLike=' + this.param.idCardNoLike
-         + '&firSubTestTimeLike=' + this.param.firSubTestTimeLike + '&secSubTestTimeLike=' + this.param.secSubTestTimeLike + '&thirdSubTestTimeLike=' + this.param.thirdSubTestTimeLike, '_blank');
+          + '&firSubTestTimeLike=' + this.param.firSubTestTimeLike + '&secSubTestTimeLike=' + this.param.secSubTestTimeLike + '&thirdSubTestTimeLike=' + this.param.thirdSubTestTimeLike, '_blank');
       },
       kmCheck(index, item) {
         this.payOk.km = item.key
         this.TagDot = index
-        this.param1.pageNum =1;
+        this.param1.pageNum = 1;
         this.param.pageNum = 1;
         if (index == 0) {
-          this.param1.pageNum =1;
+          this.param1.pageNum = 1;
           this.param.pageNum = 1;
           this.param.sign = 7
           this.param1.sign = 8
@@ -1071,7 +1125,7 @@
           this.param.sign = 3;
           this.param1.sign = 6;
           this.chargeCode = '9996';
-          console.log("科目三",this.param1)
+          console.log("科目三", this.param1)
           this.tabTit = this.tabTitS
         }
         this.getKmMoney()

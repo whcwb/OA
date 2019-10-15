@@ -1217,6 +1217,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 subTestNums = subTestNum + "";
                 trainStatus = information.getThirdSubTrainStatus();//科目三培训状态
             } else if (StringUtils.equals(kmCode, "40")) {//科目四
+                information.setForthSubTestTime(map.get(6));
                 information.setStatus("40");
                 information.setForthSub("00");//科目四状态
             }
@@ -1528,6 +1529,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
         return split[0] + "-" + split[1] + "-" + split[2];
     }
+
 
 
 }

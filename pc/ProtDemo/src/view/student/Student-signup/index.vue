@@ -189,6 +189,9 @@
                         <Col offset="1" span="4" style="padding-left: 10px;vertical-align: bottom;padding-top: 8px">
                           <Checkbox :checked.sync="repeat"  @on-change="CheckboxChange">重学优惠</Checkbox>
                         </Col>
+                        <Col offset="1" span="4" style="padding-left: 10px;vertical-align: bottom;padding-top: 8px">
+                          <Checkbox :checked.sync="free"  @on-change="CheckboxFreeChange">免单优惠</Checkbox>
+                        </Col>
                       </Row>
                     </Card>
                   </Col>
@@ -283,6 +286,7 @@
       return {
         jjj:'',
         repeat:false,
+        free:false,
         compName: '',
         camSdkPreview: false,
         tempFolder: "c:\\camtemp",
@@ -298,6 +302,7 @@
         userRealyPay:false,
         user: {
           repeat:null,
+          free:null,
           name: '',//姓名
           idCardNo: '',//身份证号码
           phone: '',//手机号码
@@ -444,8 +449,15 @@
           this.userRealyPay = false
           this.user.repeat = null
         }
-        console.log(this.user.repeat);
-        console.log(this.repeat);
+      },
+      CheckboxFreeChange(){
+        this.free = ! this.free
+        if (this.free == true){
+          this.user.realPay = 0;
+          this.user.free = '1'
+        } else {
+          this.user.free = null
+        }
       },
       tjrChange(a){
         console.log(a);

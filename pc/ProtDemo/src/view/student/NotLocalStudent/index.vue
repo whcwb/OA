@@ -1,6 +1,6 @@
 <template>
   <div class="box_col">
-    <pager-tit title="非本校学员管理"></pager-tit>
+    <pager-tit title="其他学员"></pager-tit>
     <Time :time="time1" />
     <Form :label-width="20">
       <Row type="flex" justify="end">
@@ -116,7 +116,7 @@
                       on: {
                         click: () => {
                           this.swal({
-                            title:'確定XXX？',
+                            title:'確定删除学员？',
                             showCancelButton: true,
                             confirmButtonText: '确定',
                             cancelButtonText:'取消'

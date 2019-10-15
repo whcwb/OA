@@ -35,9 +35,14 @@
               <Option value="10">已处理</Option>
             </Select>
           </Col>
-          <Col span="2" style="padding-left: 10px">
+          <Col span="1" style="padding-left: 10px">
             <Button type="primary" @click="queryInfo" size="large">
               <Icon type="md-search" style="font-size: 24px"></Icon>
+            </Button>
+          </Col>
+          <Col span="2" style="padding-left: 10px">
+            <Button type="primary" @click="downloadExcel" size="large">
+              <Icon type="ios-cloud-download"  style="font-size: 24px"/>
             </Button>
           </Col>
         </Row>
@@ -71,12 +76,11 @@
 </template>
 
 <script>
-  import studentCardList from '@/components/GetStudentM'
-
   import Cookies from 'js-cookie'
+  import http from '@/axios/index';
+
   export default {
     name: "index",
-    components:{studentCardList},
     data() {
       return {
         iconName: 'ios-search',
@@ -89,6 +93,7 @@
           code:'',
           kskm:'',
           zt:'00',
+          bz2:'',
           pageNum: 1,//当前页码
           pageSize: 30//每页显示数
         },
@@ -112,6 +117,7 @@
           },
           {title: '姓名', key: 'xm', align: 'center', width: 120},
           {title: '证件号码', width: 200, key: 'sfzmhm', align: 'center'},
+          {title: '报名点', width: 200, key: 'bz1'},
           {title: '异常时间', width: 180, key: 'cjsj', align: 'center'},
           {title: '异常状态', width: 120, key: 'zt', align: 'center',
             render: (h, params) => {
@@ -187,7 +193,17 @@
               type: 'error'
             });
           })
-
+      },
+      downloadExcel(){
+        window.open(http.url + '/api/exception/export' +
+          "?sfzmhm=" + this.param.sfzmhm +
+          "&userid=" + JSON.parse(sessionStorage.getItem('userInfo')).yhid +
+          "&token=" + JSON.parse(Cookies.get('accessToken')).token +
+          "&code=" + this.param.code +
+          "&kskm=" + this.param.kskm +
+          "&zt=" + this.param.zt +
+          "&bz2=" + this.param.bz2
+          , "_blank");
       }
     }
   }

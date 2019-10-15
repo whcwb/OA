@@ -140,9 +140,10 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             condition.and().andCondition(" sec_sub_test_time is not null or sec_sub_test_time != ''");
             condition.and().andCondition(" sec_sub_payment_time is null or sec_sub_payment_time = '' ");
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
-
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
         } else if (StringUtils.equals(sign, "3")) { // 查询科目三需要缴纳考试费的学员
             // 科三同理 ： 只要有 科三的考试时间 并且缴费时间是空 则需要交费
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
             condition.and().andCondition("  third_sub_test_time is not null or third_sub_test_time != '' ");
             condition.and().andCondition("third_sub_payment_time is null or third_sub_payment_time = ''"); // 考试费未缴纳
@@ -153,6 +154,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             //  科目一 也按照已经预约的来缴费
             condition.and().andCondition(" fir_sub_test_time is not null or fir_sub_test_time != '' ");
             condition.and().andCondition("fir_sub_payment_time is  null or fir_sub_payment_time = '' ");
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
 //            condition.eq(TraineeInformation.InnerColumn.acceptStatus, "20");
         } else if (StringUtils.equals(sign, "9")) {
@@ -478,11 +480,13 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 //        condition.eq(TraineeInformation.InnerColumn.status.name(), "00");//学员当前状态 99:报名中 00: 受理中  10：科一学习中 20：科二学习中 30：科三学习中 40：科四学习中 50：结业 60：退学
 //        condition.eq(TraineeInformation.InnerColumn.chargeStatus.name(), "10");//收费状态 00:未收费 10：已收费
 //        condition.eq(TraineeInformation.InnerColumn.acceptStatus.name(), "10");//受理状态  00：未受理 10：受理中 20：已受理
-        condition.and().andIsNull(TraineeInformation.InnerColumn.serialNum.name());//学员流水号
+//        condition.and().andIsNull(TraineeInformation.InnerColumn.serialNum.name());//学员流水号
         condition.eq(TraineeInformation.InnerColumn.infoCheckStatus, "10");
+        condition.and().andCondition(" serial_num is null or serial_num = ''");
 
         PageInfo<TraineeInformation> resultPage = findPage(pager, condition);
-        if (CollectionUtils.isNotEmpty(resultPage.getList())) {
+        String idCardNo = getRequestParamterAsString("idCardNo");
+        if (CollectionUtils.isNotEmpty(resultPage.getList())|| StringUtils.isBlank(idCardNo)) {
             afterPager(resultPage);
             result.setPage(resultPage);
             return result;
@@ -494,7 +498,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 result.setPage(page);
                 result.setMessage("当前学员已经有流水号");
             } else {
-                result.setCode(500);
+//                result.setCode(500);
                 result.setPage(new PageInfo());
                 result.setMessage("该学员信息不在系统中");
             }
@@ -546,6 +550,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             exception.setSfzmhm(entity.getIdCardNo());
             exceptionService.saveException(exception);
             return ApiResponse.success();
+        }
+        if(StringUtils.isBlank(obj.getInfoCheckTime())){
+            return ApiResponse.fail("学员信息未审核 ， 请先审核");
         }
         obj.setSerialNum(entity.getSerialNum());
         if (StringUtils.equals(obj.getStatus(), "00")) {

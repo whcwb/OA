@@ -20,7 +20,7 @@ public class ServerJobRunner implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
 		//每日0点执行异常统计计划任务
-		//schedule.addJobAndStart(ExceptionDataJob.class, "0 0 0 1/1 * ? ", ExceptionDataJob.class.getName());
-		schedule.addJobAndStart(ExceptionDataJob.class, "0/5 * * * * ? ", ExceptionDataJob.class.getName());
+//		schedule.addJobAndStart(ExceptionDataJob.class, "0 0 0 1/1 * ? ", ExceptionDataJob.class.getName());
+		schedule.addJobAndStart(ExceptionDataJob.class, "0/59 * * * * ? ", ExceptionDataJob.class.getName());
 	}
 }

@@ -16,14 +16,14 @@ export default {
   LOGIN: {
     QUERY: 'login',
     YZ: '/pub/image/Kaptcha/',
-    getUKeyPwd:'/getUKeyPwd',
-    getUserLoginType:'/getUserLoginType',
+    getUKeyPwd: '/getUKeyPwd',
+    getUserLoginType: '/getUserLoginType',
   },
-  USERROOT:{
+  USERROOT: {
     MODIFY_PSD: '/api/yh/mdfPwd'
   },
-  HOME:{
-    DASHBOARD:'/api/exception/dashboard'
+  HOME: {
+    DASHBOARD: '/api/exception/dashboard'
   },
   DATASTA: {
     // （统计收费或缴费的人数）   参数 chargeCode 收费代码，字典可见 0000 为报名 ， 0001 为体检,9996 （科目三初考）,9997（科目二初考）,9998（科目一初考）等   startTime 开始时间 例：2018-09-09 ，endTime 结束时间 ， 例：2018-09-09  （开始结束时间可不填，不填默认为当天时间）
@@ -38,7 +38,13 @@ export default {
     dateP: '/api/traineeinformation/countTest'
 
   },
-
+  FBXXY: {    //非本校学员
+    PAGER: 'api/exception/pager',
+  },
+  PJJL:{
+    PAGER:'/api/chargemanagement/getPrintLog',
+    ZF:'/api/chargemanagement/removePjbh'
+  },
   SFX: {//收费项
     PAGER: '/api/chargeitemmanagement/pager',//inOutType 00收  10 支出
     SAVE: '/api/chargeitemmanagement/save',
@@ -270,25 +276,25 @@ export default {
     CLDEL: '/api/lccl/remove/', // 删除车辆
     CLGX: '/api/lccl/update' // 更新车辆
   },
-    lcjl: { //练车历史
-        QUERY: 'api/lcjl/pager',//功能管理
-        statistics: 'api/lcjl/statistics',//功能管理
-        ADD: '/api/lcjl/save',
-        CHANGE: '/api/lcjl/update',
-        DELE: '/api/lcjl/removeIds',
-        GET: '/api/lcjl/',
-        updateFdZt: '/api/lcjl/updateFdZt',
-        getFdZt: '/api/lcjl/getFdZt',
-        getOneLog: '/api/lcjl/getOneLog',
-        jlTj: '/api/lcjl/jlTj',
-        jxtj: '/api/lcjl/jxtj',
-        getAllLog: '/api/lcjl/getAllLog',
+  lcjl: { //练车历史
+    QUERY: 'api/lcjl/pager',//功能管理
+    statistics: 'api/lcjl/statistics',//功能管理
+    ADD: '/api/lcjl/save',
+    CHANGE: '/api/lcjl/update',
+    DELE: '/api/lcjl/removeIds',
+    GET: '/api/lcjl/',
+    updateFdZt: '/api/lcjl/updateFdZt',
+    getFdZt: '/api/lcjl/getFdZt',
+    getOneLog: '/api/lcjl/getOneLog',
+    jlTj: '/api/lcjl/jlTj',
+    jxtj: '/api/lcjl/jxtj',
+    getAllLog: '/api/lcjl/getAllLog',
   },
-zgjbxx: { //练车历史
-        QUERY: 'api/zgjbxx/pager',//功能管理
-        ADD: '/api/zgjbxx/save',
-        CHANGE: '/api/zgjbxx/update',
-        DELE: '/api/zgjbxx/removeIds',
+  zgjbxx: { //练车历史
+    QUERY: 'api/zgjbxx/pager',//功能管理
+    ADD: '/api/zgjbxx/save',
+    CHANGE: '/api/zgjbxx/update',
+    DELE: '/api/zgjbxx/removeIds',
     setaqrqd: '/api/zgjbxx/setaqrqd',
   }
 }

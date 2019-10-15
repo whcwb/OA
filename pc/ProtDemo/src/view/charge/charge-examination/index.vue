@@ -192,6 +192,15 @@
       </div>
     </div>
 
+    <Modal
+      v-model="confirm"
+      title="确认"
+      @on-ok="OKpay()"
+      @on-cancel="cancel">
+      <Input v-model="value2" placeholder="" style="width: 200px"/>
+
+    </Modal>
+
     <component :is="compName" :printMess='printMess'></component>
   </div>
 </template>
@@ -212,6 +221,7 @@
     },
     data: function () {
       return {
+        confirm:true,
         activeName: '1',
         compName: '',
         printMess: [],
@@ -353,24 +363,38 @@
             fixed: 'right',
             render: (h, p) => {
               return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small',
-                    icon: 'md-checkmark'
+                h('Tooltip',
+                  {
+                    props:
+                      {
+                        placement: 'top',
+                        transfer: true,
+                        content: p.row.errorMessage,
+                        disabled: p.row.code!==''&&p.row.code!==null ? false : true
+                      }
                   },
-                  style: {
-                    marginRight: '10px'
-                  },
-                  on: {
-                    click: () => {
-                      // console.log(p.row.remark);
-                      // console.log(this.payOk.remark);
-                      this.payOk.traineeId = p.row.id
-                      this.OKpay(p.index)
-                    }
-                  }
-                })
+                  [
+                    h('Button', {
+                      props: {
+                        type: p.row.code!==''&&p.row.code!==null? 'error':'primary',
+                        size: 'small',
+                        icon: p.row.code!==''&&p.row.code!==null? '':'md-checkmark'
+                      },
+                      style: {
+                        marginRight: '10px'
+                      },
+                      on: {
+                            click: () => {
+                              // console.log(p.row.remark);
+                              // console.log(this.payOk.remark);
+                              if (p.row.code!==''&&p.row.code!==null) return
+                              this.payOk.traineeId = p.row.id
+                              // this.OKpay(p.index)
+                            }
+                          }
+                    }, p.row.code!==''&&p.row.code!==null? '异':'')
+                  ]
+                ),
               ])
             }
           }
@@ -640,6 +664,7 @@
         },
         payOk: {
           // chargeType: '10',//支付方式
+
           index: '',
           traineeId: '',//学员ID
           remark: '',//备注

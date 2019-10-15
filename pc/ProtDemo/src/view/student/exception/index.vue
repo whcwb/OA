@@ -72,6 +72,8 @@
 
 <script>
   import studentCardList from '@/components/GetStudentM'
+
+  import Cookies from 'js-cookie'
   export default {
     name: "index",
     components:{studentCardList},
@@ -124,10 +126,15 @@
     },
     methods: {
       pageChange(n) {
-        this.util.pageChange(this, n);
+        // this.util.pageChange(this, n);
+        this.param.pageNum = e
+        this.queryInfo()
       },
       pageSizeChange(n) {
-        this.util.pageSizeChange(this, n);
+        // this.util.pageSizeChange(this, n);
+        Cookies.set("pageSize",n);
+        this.param.pageSize = n;
+        this.queryInfo()
       },
       loadConfig(){
         this.$http.get('/api/exception/loadConfig').then(res => {
@@ -166,6 +173,8 @@
           this.$http.post('/api/exception/pager', this.param).then(res => {
             if (res.code == 200) {
                 this.pageData = res.page.list;
+                this.param.total=res.page.total
+
             } else {
               this.swal({
                 text: res.message,

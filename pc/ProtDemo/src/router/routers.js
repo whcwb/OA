@@ -200,6 +200,15 @@ export default [
     component: Main,
     children: [
       {
+        path: 'NotLocalStudent',
+        name: 'NotLocalStudent',
+        meta: {
+          icon: 'md-trending-up',
+          title: '非本校学员'
+        },
+        component: () => import('@/view/student/NotLocalStudent')
+      },
+      {
         path: 'Student-signup',
         name: 'Student-signup',
         meta: {
@@ -389,6 +398,15 @@ export default [
           title: '优惠审核'
         },
         component: () => import('@/view/student/Student-discount_audit')
+      },
+      {
+        path: 'PaperRecords',
+        name: 'PaperRecords',
+        meta: {
+          icon: 'md-trending-up',
+          title: '票据记录'
+        },
+        component: () => import('@/view/charge/PaperRecords')
       },
       {
         path: 'charge-signUp',

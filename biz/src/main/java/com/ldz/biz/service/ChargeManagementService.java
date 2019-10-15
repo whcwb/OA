@@ -61,4 +61,6 @@ public interface ChargeManagementService extends BaseService<ChargeManagement, S
     ApiResponse<String> warnInspect(String id, String reason);
 
     ApiResponse<String> removePjbh(String pjbh);
+
+    ApiResponse<String> getPrintLog(int pageNum, int pageSize);
 }

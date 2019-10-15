@@ -3,6 +3,8 @@ package com.ldz.biz.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.github.pagehelper.PageHelper;
+import com.ldz.util.bean.SimpleCondition;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -52,28 +54,6 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		if (StringUtils.isBlank(exception.getCode())){
 			return ApiResponse.fail("异常码不能为空");
 		}
-		//查看是否有相同的异常未处理，如果有就不再重复创建
-		Example condition = new Example(BizException.class);
-		condition.and()
-				.andEqualTo(BizException.InnerColumn.sfzmhm.name(), exception.getSfzmhm())
-				.andEqualTo(BizException.InnerColumn.code.name(), exception.getCode())
-				.andEqualTo(BizException.InnerColumn.zt.name(), "00");
-		Integer num = baseMapper.selectCountByExample(condition);
-		if (num > 0){
-			return ApiResponse.success("异常已预警");
-		}
-		
-		SysYh user = getCurrentUser();
-		exception.setId(String.valueOf(idGenerator.nextId()));
-		exception.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
-		if(user != null){
-			exception.setCjr(user.getZh()+"-"+user.getXm());
-		}else{
-			exception.setCjr("系统");
-		}
-		exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
-		exception.setZt("00");
-		save(exception);
 		//给学员标记异常备注
 		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(exception.getSfzmhm());
 		if (traineeInfo != null){
@@ -81,6 +61,35 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			traineeInfo.setErrorMessage(exception.getBz());
 			traineeInfoService.update(traineeInfo);
 		}
+		
+		//查看是否有相同的异常未处理，如果有就不再重复创建
+		Example condition = new Example(BizException.class);
+		condition.and()
+				.andEqualTo(BizException.InnerColumn.sfzmhm.name(), exception.getSfzmhm())
+				.andEqualTo(BizException.InnerColumn.code.name(), exception.getCode())
+				.andEqualTo(BizException.InnerColumn.zt.name(), "00");
+		BizException exist = baseMapper.selectOneByExample(condition);
+		if (exist != null){
+			exist.setKskm(exception.getKskm());
+			exist.setLsh(exception.getLsh());
+			
+			update(exist);
+		}else{
+			SysYh user = getCurrentUser();
+			exception.setId(String.valueOf(idGenerator.nextId()));
+			exception.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+			if(user != null){
+				exception.setCjr(user.getZh()+"-"+user.getXm());
+			}else{
+				exception.setCjr("系统");
+			}
+			exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
+			exception.setZt("00");
+			exception.setBz1(traineeInfo.getJgmc());
+			save(exception);
+		}
+		
+		
 		return ApiResponse.success();
 	}
 	
@@ -204,4 +213,5 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	public ApiResponse<Map<String, Integer>> dashboard() {
 		return ApiResponse.success(baseMapper.dashboard());
 	}
+
 }

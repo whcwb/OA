@@ -402,13 +402,13 @@
 
 <style lang="less">
   .count-style{
-    font-size: 38px;
+    font-size: 50px;
   }
 
   .successCard{
   .ivu-card-head{
     border-bottom: 1px solid #e8eaec;
-    padding: 0;
+    padding: 0px;
     line-height: 1;
     background-color: #2d8cf0;
   }

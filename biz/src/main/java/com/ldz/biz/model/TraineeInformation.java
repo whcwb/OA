@@ -484,6 +484,14 @@ public class TraineeInformation implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    public String getForthSubTestTime() {
+        return forthSubTestTime;
+    }
+
+    public void setForthSubTestTime(String forthSubTestTime) {
+        this.forthSubTestTime = forthSubTestTime;
+    }
+
     public String getInfoChecker() {
         return infoChecker;
     }

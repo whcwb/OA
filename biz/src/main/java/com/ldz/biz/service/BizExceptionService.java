@@ -48,4 +48,5 @@ public interface BizExceptionService extends BaseService<BizException, java.lang
 	 * @return
 	 */
 	public ApiResponse<Map<String, Integer>> dashboard();
+
 }

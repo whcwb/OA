@@ -4,12 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.github.pagehelper.PageHelper;
-import com.ldz.biz.mapper.NotSchoolTestInfoMapper;
-import com.ldz.biz.model.*;
-import com.ldz.biz.service.TraineeTestInfoService;
-import com.ldz.util.bean.SimpleCondition;
-import com.ldz.util.exception.RuntimeCheck;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -19,12 +13,21 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.ldz.biz.mapper.BizExceptionMapper;
+import com.ldz.biz.mapper.NotSchoolTestInfoMapper;
+import com.ldz.biz.model.BizException;
+import com.ldz.biz.model.BizExceptionConfig;
+import com.ldz.biz.model.NotSchoolTestInfo;
+import com.ldz.biz.model.TraineeInformation;
+import com.ldz.biz.model.TraineeTestInfo;
 import com.ldz.biz.service.BizExceptionConfigService;
 import com.ldz.biz.service.BizExceptionService;
 import com.ldz.biz.service.TraineeInformationService;
+import com.ldz.biz.service.TraineeTestInfoService;
 import com.ldz.sys.base.BaseServiceImpl;
 import com.ldz.sys.model.SysYh;
 import com.ldz.util.bean.ApiResponse;
+import com.ldz.util.bean.SimpleCondition;
+import com.ldz.util.exception.RuntimeCheck;
 
 import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.entity.Example;
@@ -61,11 +64,12 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		if (StringUtils.isBlank(exception.getCode())){
 			return ApiResponse.fail("异常码不能为空");
 		}
+		String bz = exceptionConfigService.getExpNameByCode(exception.getCode());
 		//给学员标记异常备注
 		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(exception.getSfzmhm());
 		if (traineeInfo != null){
 			traineeInfo.setCode(exception.getCode());
-			traineeInfo.setErrorMessage(exception.getBz());
+			traineeInfo.setErrorMessage(bz);
 			traineeInfoService.update(traineeInfo);
 		}
 		
@@ -90,7 +94,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			}else{
 				exception.setCjr("系统");
 			}
-			exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
+			exception.setBz(bz);
 			exception.setZt("00");
 			if(traineeInfo != null){
 				exception.setBz1(traineeInfo.getJgmc());

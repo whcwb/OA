@@ -81,9 +81,11 @@ public class BizExceptionController extends BaseController<BizException, String>
         titleMap.put(1, "姓名");
         titleMap.put(2, "证件号码");
         titleMap.put(3, "报名点");
-        titleMap.put(4, "异常时间");
-        titleMap.put(5, "异常描述");
-        titleMap.put(6, "异常状态");
+        titleMap.put(4, "报名时间");
+        titleMap.put(5,"准驾车型");
+        titleMap.put(6, "异常时间");
+        titleMap.put(7, "异常描述");
+        titleMap.put(8, "异常状态");
         dataList.add(titleMap);
         AtomicInteger i = new AtomicInteger();
         exceptions.forEach(e -> {
@@ -93,9 +95,11 @@ public class BizExceptionController extends BaseController<BizException, String>
                     dataMap.put(1,e.getXm());
                     dataMap.put(2,e.getSfzmhm());
                     dataMap.put(3,e.getBz1());
-                    dataMap.put(4,e.getCjsj());
-                    dataMap.put(5, e.getBz());
-                    dataMap.put(6, StringUtils.equals(e.getZt(), "00")?"未处理":"已处理");
+                    dataMap.put(4,e.getBmsj());
+                    dataMap.put(5,e.getZjcx());
+                    dataMap.put(6,e.getCjsj());
+                    dataMap.put(7, e.getBz());
+                    dataMap.put(8, StringUtils.equals(e.getZt(), "00")?"未处理":"已处理");
                     dataList.add(dataMap);
                 }
         );

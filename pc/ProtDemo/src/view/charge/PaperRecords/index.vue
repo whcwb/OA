@@ -12,7 +12,7 @@
         </Col>
         <Col span="3">
           <FormItem>
-            <DatePicker v-model="time" split-panels type="date" placement="bottom-end" placeholder="打印时间"
+            <DatePicker v-model="time" split-panels type="date" format="yyyy-MM-dd" placement="bottom-end" placeholder="打印时间"
                         style="width: 100% ;"></DatePicker>
           </FormItem>
         </Col>
@@ -189,12 +189,17 @@
     created() {
       this.getDictList();
       this.getBmdList();
+
       // this.util.initTable(this);
       this.util.initPageSize(this);
       this.util.initTableHeight(this);
       this.util.fillTableColumns(this)
       this.getData()
       this.getJTjx()
+    },
+    mounted(){
+      console.log(moment().format('YYYY-MM-DD'));
+      this.time = '2019-10-16';
     },
     methods: {
       //获取当前用户可操作的报名点

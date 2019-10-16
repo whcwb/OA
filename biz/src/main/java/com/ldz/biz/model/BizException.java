@@ -73,6 +73,12 @@ public class BizException implements Serializable {
      */
     private String bz2;
 
+    private String zjcx;
+
+    private String bmsj;
+
+    private String xyid;
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -87,6 +93,30 @@ public class BizException implements Serializable {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getXyid() {
+        return xyid;
+    }
+
+    public void setXyid(String xyid) {
+        this.xyid = xyid;
+    }
+
+    public String getZjcx() {
+        return zjcx;
+    }
+
+    public void setZjcx(String zjcx) {
+        this.zjcx = zjcx;
+    }
+
+    public String getBmsj() {
+        return bmsj;
+    }
+
+    public void setBmsj(String bmsj) {
+        this.bmsj = bmsj;
     }
 
     /**

@@ -8,12 +8,12 @@
         <Row type="flex" align="bottom" style="padding:20px 0 10px 0;">
           <Col span="4" style="padding-left: 10px">
             <Input type="text" placeholder="证件号码" size="large" clearable
-                   @on-enter="queryInfo"
+                   @on-enter="getPagerList"
                    v-model="param.sfzmhm"/>
           </Col>
           <Col span="4" style="padding-left: 10px">
             <Input type="text" placeholder="姓名" size="large" clearable
-                   @on-enter="queryInfo"
+                   @on-enter="getPagerList"
                    v-model="param.xmLike"/>
           </Col>
           <Col span="4" style="padding-left: 10px">
@@ -36,7 +36,7 @@
             </Select>
           </Col>
           <Col span="1" style="padding-left: 10px">
-            <Button type="primary" @click="queryInfo" size="large">
+            <Button type="primary" @click="param.pageNum = 1,getPagerList()" size="large">
               <Icon type="md-search" style="font-size: 24px"></Icon>
             </Button>
           </Col>
@@ -72,19 +72,31 @@
             @on-change='pageChange'>
       </Page>
     </div>
+    <component
+      :is="compName"
+      :selectRow="selectRow"
+    >
+    </component>
   </div>
 </template>
 
 <script>
   import Cookies from 'js-cookie'
   import http from '@/axios/index';
+  import detail from '../Student-query/comp/detail'
 
   export default {
     name: "index",
+    components: {
+      detail
+    },
     data() {
       return {
         iconName: 'ios-search',
         iconColor: '#b3b3b3',
+        pagerUrl: '/api/exception/pager',
+        compName: '',
+        selectRow: {},
         message: '',
         expsConfig:[],
         param: {
@@ -116,14 +128,55 @@
             }
           },
           {title: '姓名', key: 'xm', align: 'center', width: 120},
-          {title: '证件号码', width: 200, key: 'sfzmhm', align: 'center'},
-          {title: '报名点', width: 200, key: 'bz1'},
-          {title: '异常时间', width: 180, key: 'cjsj', align: 'center'},
-          {title: '异常状态', width: 120, key: 'zt', align: 'center',
+          {title: '证件号码', width: 180, key: 'sfzmhm', align: 'center'},
+          {title: '车型', width: 100, key: 'zjcx'},
+          {title: '报名点', width: 150, key: 'bz1'},
+          {title: '报名时间', width: 120, key: 'bmsj',
             render: (h, params) => {
-              return h('span', params.row.zt == '00' ? '未处理' : '已处理');
+              return h('span', params.row.bmsj.substring(0, 10));
             }},
-          {title: '异常描述', key: 'bz', align: 'center'}
+          {title: '异常时间', width: 180, key: 'cjsj', align: 'center'},
+          {title: '异常描述', key: 'bz', align: 'center'},
+          {title: '详情', width: 80, align: 'center', render: (h, params) => {
+            if (params.row.xyid == null || params.row.xyid == ''){
+              return h('span', "-");
+            }
+            return h('div', [
+              h('Button', {
+                props: {
+                  icon: 'md-clipboard',
+                  type: 'text',
+                  ghost: true,
+                  shape: "circle",
+
+                },
+                style: {
+                  fontSize: '24px',
+                  color: '#2db7f5'
+                },
+                on: {
+                  click: () => {
+                    this.$http.get('/api/traineeinformation/'+params.row.xyid).then(res => {
+                      if (res.code == 200) {
+                        this.selectRow = res.result;
+                        this.compName = 'detail';
+                      } else {
+                        this.swal({
+                          text: res.message,
+                          type: 'error'
+                        });
+                      }
+                    }).catch(err => {
+                      this.swal({
+                        text: err.message,
+                        type: 'error'
+                      });
+                    });
+                  }
+                }
+              })
+            ]);
+          }}
         ]
       }
     },
@@ -132,15 +185,10 @@
     },
     methods: {
       pageChange(n) {
-        // this.util.pageChange(this, n);
-        this.param.pageNum = e
-        this.queryInfo()
+        this.util.pageChange(this, n);
       },
       pageSizeChange(n) {
-        // this.util.pageSizeChange(this, n);
-        Cookies.set("pageSize",n);
-        this.param.pageSize = n;
-        this.queryInfo()
+        this.util.pageSizeChange(this, n);
       },
       loadConfig(){
         this.$http.get('/api/exception/loadConfig').then(res => {
@@ -168,14 +216,14 @@
             }
           }
 
-          this.queryInfo();
+          this.getPagerList();
         })
       },
       changeExpCode(val){
         sessionStorage.removeItem("queryExpCode");
         sessionStorage.removeItem("queryExpKskm");
       },
-      queryInfo() {
+      getPagerList() {
           this.$http.post('/api/exception/pager', this.param).then(res => {
             if (res.code == 200) {
                 this.pageData = res.page.list;

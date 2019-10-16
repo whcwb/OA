@@ -571,7 +571,8 @@
                         click: () => {
                           let a = {
                             traineeId: p.row.id,//学员ID
-                            remark: '',//备注
+                            remark: '先预约科目三考试，补交科目二初考费',//备注
+                            amount: 150,//科目二金额默认为150
                             km: '20'
                           }
                           this.swal({

@@ -248,6 +248,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			BeanUtils.copyProperties(information,testInfo);
 			schoolTestInfoMapper.insertSelective(testInfo);
 		}
+		update(exception);
 		return ApiResponse.success();
 	}
 

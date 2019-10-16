@@ -956,7 +956,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             entity.setReduceName("重学优惠");
             entity.setReduceRemark("重学优惠");
         }
-
+        entity.setIdCardNo(entity.getIdCardNo().toUpperCase());
         int i = baseMapper.insertSelective(entity);
         if (info != null && StringUtils.isNotBlank(repeat)) {
             String status = info.getStatus();

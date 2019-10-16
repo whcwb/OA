@@ -116,12 +116,12 @@
                       on: {
                         click: () => {
                           this.swal({
-                            title:'確定删除学员？',
+                            title:'確定删除该信息？',
                             showCancelButton: true,
                             confirmButtonText: '确定',
                             cancelButtonText:'取消'
                           }).then((val)=>{
-                              if(val){
+                              if(val.value===true){
                                 //操作
                               }
                           });
@@ -192,7 +192,8 @@
         }).catch((error) => {
           this.$Message.error(this.apis.NETWORK_ERR_STR);
         });
-      }
+      },
+
     }
   }
 </script>

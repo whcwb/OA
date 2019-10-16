@@ -346,7 +346,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         }
 
         retMap.put("errorCount", errorList.size() - 1);
-        retMap.put("succeedCount", sucList.size() - 1);
+
         retMap.put("list", webList);
         retMap.put("errorKey", errorKey);
 
@@ -356,9 +356,39 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         if (CollectionUtils.size(sucList) >= 2) {
             Map<Integer, String> integerStringMap = sucList.get(0);
             collect.add(integerStringMap);
-            collect.addAll(sucList.subList(1, sucList.size()).stream().filter(integerStringMap1 -> StringUtils.isNotBlank(integerStringMap1.get(size1 - 1))).sorted(Comparator.comparing(o -> o.get(size1 - 1))).collect(Collectors.toList()));
+            List<Map<Integer, String>> maps = sucList.subList(1, sucList.size());
+            maps.forEach(integerStringMap1 -> {
+                integerStringMap1.put(size1-1,integerStringMap.get(size1 -1).replace("A", "998"));
+                integerStringMap1.put(size1,integerStringMap.get(size1 -1).replace("B", "999"));
+            });
+            List<Map<Integer, String>> collect1 =
+                    maps.stream().filter(integerStringMap1 -> StringUtils.isNotBlank(integerStringMap1.get(size1 - 1))).sorted(Comparator.comparing(o -> Integer.parseInt(o.get(size1 - 1)))).collect(Collectors.toList());
+            collect1.forEach(integerStringMap1 -> {
+                integerStringMap1.put(size1-1,integerStringMap.get(size1 -1).replace("998", "A"));
+                integerStringMap1.put(size1,integerStringMap.get(size1 -1).replace("999", "B"));
+            });
+            collect.addAll(collect1);
         }
+        // 将 报名点的记录放在第一条 ， 其余依次往后排
+        List<Map<Integer,String>> tempList = new ArrayList<>();
+        for (Map<Integer, String> integerStringMap : collect) {
+            Map<Integer,String> tempMap = new HashMap<>();
+            for (Map.Entry<Integer, String> entry : integerStringMap.entrySet()) {
+                Integer entryKey = entry.getKey();
+                String value = entry.getValue();
+                if(entryKey < (size1-1)){
+                    tempMap.put(entryKey+1, value);
+                }else if (entryKey == (size1- 1)){
+                    tempMap.put(0,value);
+                }else{
+                    tempMap.put(entryKey, value);
+                }
+            }
+            tempList.add(tempMap);
+        }
+        collect = tempList;
         //  放到redis中去
+        retMap.put("succeedCount", collect.size() - 1);
         redisDao.boundValueOps(errorKey).set(JsonUtil.toJson(errorList), 30, TimeUnit.DAYS);
 
         redisDao.boundValueOps(errorKey + "_name").set(DateUtils.getToday("yyyy-MM-dd") + "-test-fail", 30, TimeUnit.DAYS);
@@ -876,7 +906,6 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         }
 
         retMap.put("errorCount", errorList.size() - 1);
-        retMap.put("succeedCount", resultList.size() - 1);
         retMap.put("list", webList);
         retMap.put("errorKey", errorKey);
         int finalMapSize = mapSize;
@@ -884,12 +913,41 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         redisDao.boundValueOps(errorKey).set(JsonUtil.toJson(errorList), 30, TimeUnit.DAYS);
         redisDao.boundValueOps(errorKey + "_name").set(DateUtils.getToday("yyyy-MM-dd") + "-appoint-fail", 30, TimeUnit.DAYS);
         List<Map<Integer, String>> subList = resultList.subList(1, resultList.size());
-        List<Map<Integer, String>> maps = subList.stream().filter(integerStringMap -> StringUtils.isNotBlank(integerStringMap.get(finalMapSize + 2))).sorted(Comparator.comparing(o -> o.get(finalMapSize + 2))).collect(Collectors.toList());
+        subList.forEach(integerStringMap -> {
+            integerStringMap.put(finalMapSize+2,integerStringMap.get(finalMapSize + 2).replace("A", "998"));
+            integerStringMap.put(finalMapSize+2,integerStringMap.get(finalMapSize + 2).replace("B", "999"));
+        });
+        List<Map<Integer, String>> maps = subList.stream().filter(integerStringMap -> StringUtils.isNotBlank(integerStringMap.get(finalMapSize + 2))).sorted(Comparator.comparing(o -> Integer.parseInt(o.get(finalMapSize + 2)))).collect(Collectors.toList());
+        maps.forEach(integerStringMap -> {
+            integerStringMap.put(finalMapSize+2,integerStringMap.get(finalMapSize + 2).replace("998", "A"));
+            integerStringMap.put(finalMapSize+2,integerStringMap.get(finalMapSize + 2).replace("999", "B"));
+        });
         Map<Integer, String> map = resultList.get(0);
         resultList = new ArrayList<>();
         resultList.add(map);
         resultList.addAll(maps);
+
+        // 将 报名点的记录放在第一条 ， 其余依次往后排
+        List<Map<Integer,String>> tempList = new ArrayList<>();
+        for (Map<Integer, String> integerStringMap : resultList) {
+            Map<Integer,String> tempMap = new HashMap<>();
+            for (Map.Entry<Integer, String> entry : integerStringMap.entrySet()) {
+                Integer entryKey = entry.getKey();
+                String value = entry.getValue();
+                if(entryKey < (finalMapSize + 2)){
+                    tempMap.put(entryKey+1, value);
+                }else if (entryKey == (finalMapSize + 2)){
+                    tempMap.put(0,value);
+                }else{
+                    tempMap.put(entryKey, value);
+                }
+            }
+            tempList.add(tempMap);
+        }
+        resultList = tempList;
+
         //放到redis中去
+        retMap.put("succeedCount", resultList.size() - 1);
         redisDao.boundValueOps(key).set(JsonUtil.toJson(resultList), 30, TimeUnit.DAYS);
 
         redisDao.boundValueOps(key + "_name").set(DateUtils.getToday("yyyy-MM-dd") + "-appoint-suc", 30, TimeUnit.DAYS);
@@ -1246,6 +1304,14 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exceptionService.clearException(exception, exception.getCode());
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + information.getReferrer() + "@sfgeeq@" + information.getRegistrationTime() + "@sfgeeq@" + regFee + "@sfgeeq@" + realFee + "@sfgeeq@" + arFee);
         } else {
+            SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
+            condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(3));//科目
+            condition.eq(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(6)));//约考时间
+            condition.setOrderByClause(TraineeTestInfo.InnerColumn.id.desc());
+            List<TraineeTestInfo> orgs = findByCondition(condition);
+            if(CollectionUtils.isNotEmpty(orgs)){
+                return ApiResponse.success();
+            }
             // 如果学员信息为空 ， 直接将约考信息插入约考信息表中
             TraineeTestInfo testInfo = new TraineeTestInfo();
             testInfo.setId(genId());

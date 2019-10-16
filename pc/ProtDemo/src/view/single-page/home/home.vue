@@ -56,7 +56,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.BMDSH == null ? 0 : dashboard.BMDSH" count-class="count-style"/>
+            <count-to :end="dashboard.BMDSH == null ? 0 : dashboard.BMDSH" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -71,7 +71,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.BMSHYC == null ? 0 : dashboard.BMSHYC" count-class="count-style"/>
+            <count-to :end="dashboard.BMSHYC == null ? 0 : dashboard.BMSHYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -98,7 +98,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.SFDQR == null ? 0 : dashboard.SFDQR" count-class="count-style"/>
+            <count-to :end="dashboard.SFDQR == null ? 0 : dashboard.SFDQR" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -113,7 +113,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.SFQRYC == null ? 0 : dashboard.SFQRYC" count-class="count-style"/>
+            <count-to :end="dashboard.SFQRYC == null ? 0 : dashboard.SFQRYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -140,7 +140,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.FQDQR == null ? 0 : dashboard.FQDQR" count-class="count-style"/>
+            <count-to :end="dashboard.FQDQR == null ? 0 : dashboard.FQDQR" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -155,7 +155,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.FQQRYC == null ? 0 : dashboard.FQQRYC" count-class="count-style"/>
+            <count-to :end="dashboard.FQQRYC == null ? 0 : dashboard.FQQRYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -182,7 +182,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.SLDQR == null ? 0 : dashboard.SLDQR" count-class="count-style"/>
+            <count-to :end="dashboard.SLDQR == null ? 0 : dashboard.SLDQR" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -197,7 +197,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.SLQRYC == null ? 0 : dashboard.SLQRYC" count-class="count-style"/>
+            <count-to :end="dashboard.SLQRYC == null ? 0 : dashboard.SLQRYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -226,7 +226,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" count-class="count-style"/>
+            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -241,7 +241,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1YYYC == null ? 0 : dashboard.KM1YYYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM1YYYC == null ? 0 : dashboard.KM1YYYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -268,7 +268,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1JF == null ? 0 : dashboard.KM1JF" count-class="count-style"/>
+            <count-to :end="dashboard.KM1JF == null ? 0 : dashboard.KM1JF" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -283,7 +283,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1JFYC == null ? 0 : dashboard.KM1JFYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM1JFYC == null ? 0 : dashboard.KM1JFYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -310,7 +310,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" count-class="count-style"/>
+            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -325,7 +325,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1QRYC == null ? 0 : dashboard.KM1QRYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM1QRYC == null ? 0 : dashboard.KM1QRYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -354,7 +354,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" count-class="count-style"/>
+            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -369,7 +369,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2YYYC == null ? 0 : dashboard.KM2YYYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM2YYYC == null ? 0 : dashboard.KM2YYYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -396,7 +396,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2JF == null ? 0 : dashboard.KM2JF" count-class="count-style"/>
+            <count-to :end="dashboard.KM2JF == null ? 0 : dashboard.KM2JF" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -411,7 +411,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2JFYC == null ? 0 : dashboard.KM2JFYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM2JFYC == null ? 0 : dashboard.KM2JFYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -438,7 +438,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" count-class="count-style"/>
+            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -453,7 +453,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2QRYC == null ? 0 : dashboard.KM2QRYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM2QRYC == null ? 0 : dashboard.KM2QRYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -482,7 +482,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" count-class="count-style"/>
+            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -497,7 +497,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3YYYC == null ? 0 : dashboard.KM3YYYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM3YYYC == null ? 0 : dashboard.KM3YYYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -524,7 +524,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3JF == null ? 0 : dashboard.KM3JF" count-class="count-style"/>
+            <count-to :end="dashboard.KM3JF == null ? 0 : dashboard.KM3JF" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -539,7 +539,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3JFYC == null ? 0 : dashboard.KM3JFYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM3JFYC == null ? 0 : dashboard.KM3JFYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -566,7 +566,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" count-class="count-style"/>
+            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -581,7 +581,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3QRYC == null ? 0 : dashboard.KM3QRYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM3QRYC == null ? 0 : dashboard.KM3QRYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -610,7 +610,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" count-class="count-style"/>
+            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -625,7 +625,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4YYYC == null ? 0 : dashboard.KM4YYYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM4YYYC == null ? 0 : dashboard.KM4YYYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -652,7 +652,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" count-class="count-style"/>
+            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -667,7 +667,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4QRYC == null ? 0 : dashboard.KM4QRYC" count-class="count-style"/>
+            <count-to :end="dashboard.KM4QRYC == null ? 0 : dashboard.KM4QRYC" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -690,7 +690,7 @@
         <Row class-name="cardSty">
           <i-col span="24" style="height: 120px;padding: 0">
             <infor-card shadow :color="col.color(1)" icon="md-person-add" :icon-size="36">
-              <count-to :end="typNumlist.newborn.min" count-class="count-style"/>
+              <count-to :end="typNumlist.newborn.min" count-class="count-style-excpetion"/>
               <p>小车_新生量</p>
             </infor-card>
           </i-col>
@@ -699,7 +699,7 @@
         <Row class-name="cardSty">
           <i-col span="24" style="height: 120px;padding: 0">
             <infor-card shadow :color="col.color(16)" icon="md-person-add" :icon-size="36">
-              <count-to :end="typNumlist.newborn.max" count-class="count-style"/>
+              <count-to :end="typNumlist.newborn.max" count-class="count-style-excpetion"/>
               <p>大车_新生量</p>
             </infor-card>
           </i-col>
@@ -708,7 +708,7 @@
         <Row class-name="cardSty">
           <i-col span="24" style="height: 120px;padding: 0">
             <infor-card shadow :color="col.color(4)" icon="md-map" :icon-size="36">
-              <count-to :end="typNumlist.SL.min" count-class="count-style"/>
+              <count-to :end="typNumlist.SL.min" count-class="count-style-excpetion"/>
               <p>小车_受理量</p>
             </infor-card>
           </i-col>
@@ -717,7 +717,7 @@
         <Row class-name="cardSty">
           <i-col span="24" style="height: 120px;padding: 0">
             <infor-card shadow :color="col.color(5)" icon="md-map" :icon-size="36">
-              <count-to :end="typNumlist.SL.max" count-class="count-style"/>
+              <count-to :end="typNumlist.SL.max" count-class="count-style-excpetion"/>
               <p>大车_受理量</p>
             </infor-card>
           </i-col>
@@ -736,7 +736,7 @@
         <Row class-name="cardSty">
           <i-col span="24" style="height: 120px;padding: 0">
             <infor-card shadow :color="col.color(10)" icon=" iconfont icon-lilun" :icon-size="36">
-              <count-to :end="typNumlist.KS.one" count-class="count-style"/>
+              <count-to :end="typNumlist.KS.one" count-class="count-style-excpetion"/>
               <p>科目一考试合格人数</p>
             </infor-card>
           </i-col>
@@ -745,7 +745,7 @@
         <Row class-name="cardSty">
           <i-col span="24" style="height: 120px;padding: 0">
             <infor-card shadow :color="col.color(11)" icon=" iconfont icon-jineng-xiaoicon" :icon-size="36">
-              <count-to :end="typNumlist.KS.two" count-class="count-style"/>
+              <count-to :end="typNumlist.KS.two" count-class="count-style-excpetion"/>
               <p>科目二考试合格人数</p>
             </infor-card>
           </i-col>
@@ -754,7 +754,7 @@
         <Row class-name="cardSty">
           <i-col span="24" style="height: 120px;padding: 0">
             <infor-card shadow :color="col.color(12)" icon=" iconfont icon-jiashi" :icon-size="36">
-              <count-to :end="typNumlist.KS.thr" count-class="count-style"/>
+              <count-to :end="typNumlist.KS.thr" count-class="count-style-excpetion"/>
               <p>科目三考试合格人数</p>
             </infor-card>
           </i-col>
@@ -763,7 +763,7 @@
         <Row class-name="cardSty">
           <i-col span="24" style="height: 120px;padding: 0">
             <infor-card shadow :color="col.color(17)" icon=" iconfont icon-bylx" :icon-size="36">
-              <count-to :end="over" count-class="count-style"/>
+              <count-to :end="over" count-class="count-style-excpetion"/>
               <p>毕业人数</p>
             </infor-card>
           </i-col>
@@ -858,7 +858,7 @@
 </script>
 
 <style lang="less">
-  .count-style {
+  .count-style-excpetion {
     font-size: 26px;
   }
 </style>

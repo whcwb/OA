@@ -30,7 +30,4 @@ public class BizLcWxjlController extends BaseController<BizLcWxjl, String> {
     public ApiResponse<String> save(BizLcWxjl entity){
         return service.saveEntity(entity);
     }
-
-
-
 }

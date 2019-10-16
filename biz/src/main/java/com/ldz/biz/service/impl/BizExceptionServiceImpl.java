@@ -92,8 +92,13 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			}
 			exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
 			exception.setZt("00");
-			exception.setBz1(traineeInfo.getJgmc());
-			exception.setBz2(traineeInfo.getJgdm());
+			if(traineeInfo != null){
+				exception.setBz1(traineeInfo.getJgmc());
+				exception.setBz2(traineeInfo.getJgdm());
+				exception.setBmsj(traineeInfo.getRegistrationTime());
+				exception.setZjcx(traineeInfo.getCarType());
+				exception.setXyid(traineeInfo.getId());
+			}
 			save(exception);
 		}
 		
@@ -239,7 +244,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		for (TraineeTestInfo information : informations) {
 			NotSchoolTestInfo testInfo = new NotSchoolTestInfo();
 			String s = information.getId();
-			traineeInfoService.remove(s);
+			testInfoService.remove(s);
 			BeanUtils.copyProperties(information,testInfo);
 			schoolTestInfoMapper.insertSelective(testInfo);
 		}

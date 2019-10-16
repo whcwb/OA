@@ -16,7 +16,7 @@ public class NotSchoolTestInfo {
     @Column(name = "TRAINEE_ID")
     private String traineeId;
 
-    @Column(name = "TRAIN_NAME")
+    @Column(name = "TRAINEE_NAME")
     private String traineeName;
 
     @Column(name = "ID_CARD_NO")

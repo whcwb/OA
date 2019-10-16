@@ -57,6 +57,7 @@
     data() {
       return {
         time1: (new Date()).getTime() - 60 * 3 * 1000,
+        dealStudentId:'',
         v:this,
         pagerUrl:this.apis.FBXXY.PAGER,
         param: {
@@ -123,6 +124,8 @@
                           }).then((val)=>{
                               if(val.value===true){
                                 //操作
+                                this.dealStudentId=p.row.id
+                                this.dealStudent()
                               }
                           });
                         }
@@ -193,7 +196,16 @@
           this.$Message.error(this.apis.NETWORK_ERR_STR);
         });
       },
-
+      dealStudent(){
+          this.$http.post(this.apis.FBXXY.DEAL,{id:this.dealStudentId}).then((res)=>{
+            if(res.code===200){
+              this.$Message.success(res.message);
+              this.util.getPageData(this);
+            }else{
+              this.$Message.error(res.message);
+            }
+          })
+      }
     }
   }
 </script>

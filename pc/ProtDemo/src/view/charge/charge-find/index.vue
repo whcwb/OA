@@ -9,7 +9,7 @@
       <Col span="20" :lg="20" :md="24">
         <Row :gutter="12" type="flex" justify="end">
           <Col span="4" :lg="4" :md="4">
-            <Select v-model="param.chargeCode" filterable clearable
+            <Select multiple v-model="param.chargeCode" filterable clearable
                     placeholder="费用类型"
                     @on-change="getpagerList">
               <Option v-for="(item,index) in typeList" :value="item.key" :key="(index+1)">{{item.val}}</Option>

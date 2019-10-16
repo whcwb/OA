@@ -510,7 +510,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             printlog.setChargeId(join);
             printlog.setCjr(user.getZh() + "-" + user.getXm());
             printlog.setCjsj(DateUtils.getNowTime());
-            printlog.setPjbh(pjbh+num);
+            printlog.setPjbh(pjbh+ "-" +num);
             printlog.setJgdm(jgdm);
             printlog.setJgmc(jgmc);
             printlogService.save(printlog);
@@ -724,7 +724,10 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
 		RuntimeCheck.ifNull(user, "未获取到用户信息 ， 请重新登录");
 		RuntimeCheck.ifBlank(pjbh, "请选择要作废的票据编号");
     	// 根据票据编号查询打印该编号的所有收费记录
-		List<ChargePrintlog> printlogs = printlogService.findEq(ChargePrintlog.InnerColumn.pjbh, pjbh);
+        SimpleCondition condition = new SimpleCondition(ChargePrintlog.class);
+        condition.and().andCondition(" zfsj is null or zfsj = ''");
+        condition.eq(ChargePrintlog.InnerColumn.pjbh, pjbh);
+		List<ChargePrintlog> printlogs = printlogService.findByCondition(condition);
 		RuntimeCheck.ifTrue(CollectionUtils.isEmpty(printlogs), "未找到打印该票据的记录");
 		// 根据查询到的记录 清空其中的票据编号
 		ChargePrintlog printlog = printlogs.get(0);

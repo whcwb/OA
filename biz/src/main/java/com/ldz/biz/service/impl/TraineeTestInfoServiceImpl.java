@@ -709,8 +709,10 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             //		5、修改考试表状态
             String testResult = "00"; //00 合格  10不合格
             if (StringUtils.isNotEmpty(map.get(16))) {
-                if (StringUtils.equals(map.get(16), "不合格") || StringUtils.equals(map.get(16), "缺考")) {
+                if (StringUtils.equals(map.get(16).trim(), "不合格") || StringUtils.equals(map.get(16).trim(), "缺考")) {
                     testResult = "10";
+                }else if(StringUtils.equals(map.get(16).trim(), "合格")){
+                    testResult = "00";
                 } else {
                     return ApiResponse.fail("考试结果状态不对。考试结果：" + map.get(16));
                 }
@@ -1520,9 +1522,11 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         if (split.length < 3) {
             return data;
         }
+
         if (split[1].length() < 2) {
             split[1] = "0" + split[1];
         }
+
         if (split[2].length() < 2) {
             split[2] = "0" + split[2];
         }

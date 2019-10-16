@@ -236,7 +236,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage(null, 1)">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('991', 1)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -364,7 +364,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage(null, 2)">异常</Button>
+              <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('991', 2)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -492,7 +492,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage(null, 3)">异常</Button>
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('991', 3)">异常</Button>
             </Col>
           </Row>
           <Row>
@@ -620,7 +620,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage(null, 4)">异常</Button>
+            <Button type="error"  ghost style="font-weight: bold;font-size: 14px" @click="goToExceptionPage('991', 4)">异常</Button>
             </Col>
           </Row>
           <Row>

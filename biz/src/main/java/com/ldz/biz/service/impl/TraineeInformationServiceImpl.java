@@ -26,6 +26,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -143,14 +144,14 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             condition.and().andCondition(" sec_sub_payment_time is null or sec_sub_payment_time = '' ");
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
             condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
-            condition.setOrderByClause(" sec_sub_test_time asc ");
+            condition.setOrderByClause("code asc, sec_sub_test_time asc  ");
         } else if (StringUtils.equals(sign, "3")) { // 查询科目三需要缴纳考试费的学员
             // 科三同理 ： 只要有 科三的考试时间 并且缴费时间是空 则需要交费
             condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
             condition.and().andCondition("  third_sub_test_time is not null or third_sub_test_time != '' ");
             condition.and().andCondition("third_sub_payment_time is null or third_sub_payment_time = ''"); // 考试费未缴纳
-            condition.setOrderByClause(" third_sub_test_time asc ");
+            condition.setOrderByClause("code asc, third_sub_test_time asc  ");
         } else if (StringUtils.equals(sign, "4")) { // 查询今日已缴纳报名费的学员
             condition.like(TraineeInformation.InnerColumn.confirmTime.name(), DateUtils.getDateStr(new Date(), "yyyy-MM-dd"));
             condition.eq(TraineeInformation.InnerColumn.chargeStatus.name(), "10");
@@ -160,7 +161,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             condition.and().andCondition("fir_sub_payment_time is  null or fir_sub_payment_time = '' ");
             condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
-            condition.setOrderByClause(" fir_sub_test_time asc");
+            condition.setOrderByClause(" code asc,fir_sub_test_time asc");
 //            condition.eq(TraineeInformation.InnerColumn.acceptStatus, "20");
         } else if (StringUtils.equals(sign, "9")) {
             condition.in(TraineeInformation.InnerColumn.status, Arrays.asList("10", "20", "30"));
@@ -645,6 +646,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (info == null && StringUtils.isNotBlank(repeat)) {
             return ApiResponse.fail("该学员当前没有学车 , 请勿选择重学操作");
         }
+        String free = getRequestParamterAsString("free");
 
         // 查看推荐人名额是否已满
         if (StringUtils.isNotBlank(entity.getReferrer()) && StringUtils.contains(entity.getReferrer(), "-")) {
@@ -935,6 +937,24 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             entity.setFirSubPaymentTime(entity.getRegistrationTime());
             entity.setSecSubPaymentTime(entity.getRegistrationTime());
             entity.setThirdSubPaymentTime(entity.getRegistrationTime());
+        }
+        if(StringUtils.equals(free, "1")){
+            entity.setRegistrationFee(0);
+            entity.setRealPay(0);
+            entity.setArrearage("00");
+            entity.setInstallment("00");
+            entity.setReduceCheckTime(DateUtils.getNowTime());
+            entity.setReduceStatus("10");
+            entity.setReduceName("免单优惠");
+            entity.setReduceVerifier("系统自动确认");
+            entity.setReduceRemark("免单优惠");
+        }
+        if(StringUtils.isNotBlank(repeat)){
+            entity.setReduceCheckTime(DateUtils.getNowTime());
+            entity.setReduceStatus("10");
+            entity.setReduceVerifier("系统自动确认");
+            entity.setReduceName("重学优惠");
+            entity.setReduceRemark("重学优惠");
         }
 
         int i = baseMapper.insertSelective(entity);
@@ -1260,7 +1280,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     @Override
     public ApiResponse<String> confirmTestTo(String traineeId, String remark, String km) {
         // 查询是否已经缴费
+        String amount = getRequestParamterAsString("amount");
         RuntimeCheck.ifBlank(traineeId, "请选择缴费学员");
+        RuntimeCheck.ifBlank(amount, "请填写缴费金额");
         RuntimeCheck.ifBlank(km, "请选择缴费科目");
         SimpleCondition chacondition = new SimpleCondition(ChargeManagement.class);
         chacondition.eq(ChargeManagement.InnerColumn.traineeId, traineeId);
@@ -1328,8 +1350,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (CollectionUtils.isNotEmpty(managements)) {
             ChargeItemManagement itemManagement = managements.get(0);
             management.setChargeName(itemManagement.getChargeName()); // 缴费项名称
-            management.setChargeFee(itemManagement.getAmount());
+            /*management.setChargeFee(itemManagement.getAmount());*/
         }
+        management.setChargeFee(Integer.parseInt(amount));
         management.setTraineeSource("00"); // 本校
         management.setTraineeName(information.getName()); // 学员姓名
         management.setTraineeId(information.getId()); // 学员id

@@ -1,21 +1,24 @@
 package com.ldz.biz.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.github.pagehelper.PageHelper;
+import com.ldz.biz.mapper.NotSchoolTestInfoMapper;
+import com.ldz.biz.model.*;
+import com.ldz.biz.service.TraineeTestInfoService;
 import com.ldz.util.bean.SimpleCondition;
+import com.ldz.util.exception.RuntimeCheck;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.ldz.biz.mapper.BizExceptionMapper;
-import com.ldz.biz.model.BizException;
-import com.ldz.biz.model.BizExceptionConfig;
-import com.ldz.biz.model.TraineeInformation;
 import com.ldz.biz.service.BizExceptionConfigService;
 import com.ldz.biz.service.BizExceptionService;
 import com.ldz.biz.service.TraineeInformationService;
@@ -35,6 +38,10 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	private BizExceptionConfigService exceptionConfigService;
 	@Autowired
 	private TraineeInformationService traineeInfoService;
+	@Autowired
+	private TraineeTestInfoService testInfoService;
+	@Autowired
+	private NotSchoolTestInfoMapper schoolTestInfoMapper;
 	
 	@Override
 	protected Mapper<BizException> getBaseMapper() {
@@ -86,6 +93,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			exception.setBz(exceptionConfigService.getExpNameByCode(exception.getCode()));
 			exception.setZt("00");
 			exception.setBz1(traineeInfo.getJgmc());
+			exception.setBz2(traineeInfo.getJgdm());
 			save(exception);
 		}
 		
@@ -212,6 +220,30 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	@Override
 	public ApiResponse<Map<String, Integer>> dashboard() {
 		return ApiResponse.success(baseMapper.dashboard());
+	}
+
+	@Override
+	public ApiResponse<String> updateException(String id) {
+		BizException exception = findById(id);
+		RuntimeCheck.ifTrue(exception.getZt().equals("10"), "此记录已经处理，请勿重复操作");
+		Map<String, String> kmCode = new HashMap<>();
+		kmCode.put("1", "科目一");
+		kmCode.put("2", "科目二");
+		kmCode.put("3", "科目三");
+		kmCode.put("4", "科目四");
+		exception.setZt("10");
+		SimpleCondition condition  = new SimpleCondition(TraineeTestInfo.class);
+		condition.eq(TraineeTestInfo.InnerColumn.subject, kmCode.get(exception.getKskm()));
+		condition.eq(TraineeTestInfo.InnerColumn.idCardNo, exception.getSfzmhm());
+		List<TraineeTestInfo> informations = testInfoService.findByCondition(condition);
+		for (TraineeTestInfo information : informations) {
+			NotSchoolTestInfo testInfo = new NotSchoolTestInfo();
+			String s = information.getId();
+			traineeInfoService.remove(s);
+			BeanUtils.copyProperties(information,testInfo);
+			schoolTestInfoMapper.insertSelective(testInfo);
+		}
+		return ApiResponse.success();
 	}
 
 }

@@ -57,7 +57,7 @@ public class TraineeReduceAuditingServiceImpl extends BaseServiceImpl<TraineeInf
 		SysYh sysUser=getCurrentUser(true);
 		String userId=sysUser.getYhid();
 		SimpleCondition simpleCondition = new SimpleCondition(ReduceManagement.class);
-		simpleCondition.like(ReduceManagement.InnerColumn.verifier, userId);
+//		simpleCondition.like(ReduceManagement.InnerColumn.verifier, userId);
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 		//从前台获取特殊的组件
 		String[] bmTime = request.getParameterValues("bmTime");
@@ -83,14 +83,15 @@ public class TraineeReduceAuditingServiceImpl extends BaseServiceImpl<TraineeInf
 				condition.eq(TraineeInformation.InnerColumn.jgdm.name(), jgdm[jgdm.length - 1]);	
 			}	
 		}
+
 		condition.setOrderByClause(" reduce_check_time desc , cjsj desc");
-		List<ReduceManagement> institutions = reduceManagementService.findByCondition(simpleCondition);
+	/*	List<ReduceManagement> institutions = reduceManagementService.findByCondition(simpleCondition);
 		List<String> list = institutions.stream().map(ReduceManagement::getId).collect(Collectors.toList());
 		if(CollectionUtils.isNotEmpty(list)) {//如果本人没有可以审核的优惠项，就直接跳过下一步查询。直接结束
 			condition.in(TraineeInformation.InnerColumn.reduceCode, list);
 		}else{
 			return false;
-		}
+		}*/
 		// condition.eq(TraineeInformation.InnerColumn.reduceStatus,"00");
 		return true;
 	}

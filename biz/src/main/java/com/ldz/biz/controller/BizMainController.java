@@ -30,11 +30,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
 /**
  * 处理用户登陆、登出、查询字典信息等相关访问接口
  *
@@ -76,13 +79,13 @@ public class BizMainController {
     private BizExceptionService exceptionService;
 
     @GetMapping("/test")
-    public  ApiResponse<String> test(){
+    public ApiResponse<String> test() {
         ApiResponse<List<BizExceptionConfig>> exps = exceptionService.getAllConfig();
-        if (exps.getCode() == ApiResponse.SUCCESS && exps.getResult().size() > 0){
+        if (exps.getCode() == ApiResponse.SUCCESS && exps.getResult().size() > 0) {
             List<BizExceptionConfig> configs = exps.getResult();
-            for (int i=0; i<configs.size(); i++){
+            for (int i = 0; i < configs.size(); i++) {
                 BizExceptionConfig config = configs.get(i);
-                if (config.getDays() != null){
+                if (config.getDays() != null) {
                     exceptionService.expJobSave(config);
                 }
             }
@@ -91,8 +94,8 @@ public class BizMainController {
     }
 
 
-    @RequestMapping(value = "/getTime", method = {RequestMethod.GET,RequestMethod.POST})
-    public ApiResponse<String> getTime(String type){
+    @RequestMapping(value = "/getTime", method = {RequestMethod.GET, RequestMethod.POST})
+    public ApiResponse<String> getTime(String type) {
         ApiResponse<String> res = new ApiResponse<>();
         res.setMessage("操作成功");
         res.setResult(DateUtils.getDateStr(new Date(), type));
@@ -102,47 +105,54 @@ public class BizMainController {
 
     /**
      * 获取报号API的 token
+     *
      * @return
      */
-    @RequestMapping(value = "/getvoicetkey", method = {RequestMethod.GET,RequestMethod.POST})
-    public ApiResponse<String> getVoicetKey(){
-        String access_token="";
+    @RequestMapping(value = "/getvoicetkey", method = {RequestMethod.GET, RequestMethod.POST})
+    public ApiResponse<String> getVoicetKey() {
+        String access_token = "";
         try {
-            String result=redisDao.boundValueOps("getvoicetkey_").get();
-            if(StringUtils.isBlank(result)){
-                String url="https://openapi.baidu.com/oauth/2.0/token?grant_type=client_credentials&client_id=NfM00GIoLVzHoFDyKiRP85Vq&client_secret=Xxatb330uVgXGue7EYkh05LKGEX15WTe";
-                result=HttpUtil.get(url);
-                if(StringUtils.isNotBlank(result)){
+            String result = redisDao.boundValueOps("getvoicetkey_").get();
+            if (StringUtils.isBlank(result)) {
+                String url = "https://openapi.baidu.com/oauth/2.0/token?grant_type=client_credentials&client_id=NfM00GIoLVzHoFDyKiRP85Vq&client_secret=Xxatb330uVgXGue7EYkh05LKGEX15WTe";
+                result = HttpUtil.get(url);
+                if (StringUtils.isNotBlank(result)) {
                     redisDao.boundValueOps("getvoicetkey_").set(result, 15, TimeUnit.DAYS);//设备邀请码，为1天过期
                 }
             }
-            System.out.println("--------------\n"+result);
+            System.out.println("--------------\n" + result);
             Map<?, ?> bean = JsonUtil.toBean(result, Map.class);
-        //        "access_token": "24.54f59fd63ed8b30c76483560ae6ef23b.2592000.1548657983.282335-10267277",
-           try {
-               access_token= (String) bean.get("access_token");
-           }catch (Exception e){e.printStackTrace();}
-        }catch (Exception e){e.printStackTrace();}
-        if(StringUtils.isNotBlank(access_token)){
+            //        "access_token": "24.54f59fd63ed8b30c76483560ae6ef23b.2592000.1548657983.282335-10267277",
+            try {
+                access_token = (String) bean.get("access_token");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (StringUtils.isNotBlank(access_token)) {
             ApiResponse<String> res = new ApiResponse<>();
             res.setMessage("操作成功");
             res.setResult(access_token);
             res.setCode(200);
             return res;
-        }else{
+        } else {
             return ApiResponse.fail("获取token失败");
         }
     }
 
     /**
      * 服务器当前时间的时间戳
+     *
      * @return
      */
-    @RequestMapping(value = "/getTimeMillis", method = {RequestMethod.GET,RequestMethod.POST})
-    public ApiResponse<Long> getDateTime(){
-        long time=System.currentTimeMillis();
+    @RequestMapping(value = "/getTimeMillis", method = {RequestMethod.GET, RequestMethod.POST})
+    public ApiResponse<Long> getDateTime() {
+        long time = System.currentTimeMillis();
         return ApiResponse.success(time);
     }
+
     /**
      * 导出结果
      *
@@ -195,7 +205,7 @@ public class BizMainController {
         map.put(2, "证件号");
         map.put(3, "驾校");
         map.put(4, "费用类型");
-        map.put(5,"收支类型");
+        map.put(5, "收支类型");
         map.put(6, "收费记录");
         map.put(7, "时间");
         map.put(8, "操作人");
@@ -212,8 +222,8 @@ public class BizMainController {
                     m.put(3, l.getChargeSource());//驾校
                     m.put(4, l.getChargeName());//费用类型
                     String inOutType = l.getInOutType();
-                    m.put(5, StringUtils.equals(inOutType, "10") ? ("支：" ) : ("收：" ));
-                    m.put(6,l.getChargeFee()+"");
+                    m.put(5, StringUtils.equals(inOutType, "10") ? ("支：") : ("收："));
+                    m.put(6, l.getChargeFee() + "");
                     m.put(7, l.getCjsj());
                     m.put(8, l.getCjr());
                     data.add(m);
@@ -252,14 +262,14 @@ public class BizMainController {
         if (StringUtils.isNotBlank(idCardNoLike)) {
             condition.like(TraineeInformation.InnerColumn.idCardNo, idCardNoLike);
         }
-        if(StringUtils.isNotBlank(firSubPaymentTimeLike)){
-            condition.like(TraineeInformation.InnerColumn.firSubPaymentTime,firSubPaymentTimeLike);
+        if (StringUtils.isNotBlank(firSubPaymentTimeLike)) {
+            condition.like(TraineeInformation.InnerColumn.firSubPaymentTime, firSubPaymentTimeLike);
         }
-        if(StringUtils.isNotBlank(secSubPaymentTimeLike)){
-            condition.like(TraineeInformation.InnerColumn.secSubPaymentTime,secSubPaymentTimeLike);
+        if (StringUtils.isNotBlank(secSubPaymentTimeLike)) {
+            condition.like(TraineeInformation.InnerColumn.secSubPaymentTime, secSubPaymentTimeLike);
         }
-        if(StringUtils.isNotBlank(thirdSubPaymentTimeLike)){
-            condition.like(TraineeInformation.InnerColumn.thirdSubPaymentTime,thirdSubPaymentTimeLike);
+        if (StringUtils.isNotBlank(thirdSubPaymentTimeLike)) {
+            condition.like(TraineeInformation.InnerColumn.thirdSubPaymentTime, thirdSubPaymentTimeLike);
         }
 
         /*if (StringUtils.isNotBlank(sign)) {
@@ -632,124 +642,119 @@ public class BizMainController {
     }
 
 
-
-
-
-
-
     @GetMapping("/getNdbb")
-    public void excelSignUp(HttpServletRequest request,HttpServletResponse response,String startTime, String endTime) throws ParseException, IOException {
+    public void excelSignUp(HttpServletRequest request, HttpServletResponse response, String startTime, String endTime) throws ParseException, IOException {
         List<StudentAllModel> models = new ArrayList<>();
 
-        if(org.apache.commons.lang3.StringUtils.isBlank(startTime)){
-            startTime = DateUtils.getDateStr(new Date(),"yyyy") + "-01-01 00:00:00";
-        }else{
+        if (org.apache.commons.lang3.StringUtils.isBlank(startTime)) {
+            startTime = DateUtils.getDateStr(new Date(), "yyyy") + "-01-01 00:00:00";
+        } else {
             startTime = startTime + " 00:00:00";
         }
-        if(org.apache.commons.lang3.StringUtils.isBlank(endTime)){
-            endTime = DateUtils.getDateStr(new Date(),"yyyy") + "-12-31 23:59:59";
-        }else {
-            endTime =endTime + " 23:59:59";
+        if (org.apache.commons.lang3.StringUtils.isBlank(endTime)) {
+            endTime = DateUtils.getDateStr(new Date(), "yyyy") + "-12-31 23:59:59";
+        } else {
+            endTime = endTime + " 23:59:59";
         }
-        List<String> monthBetween = DateUtils.getMonthBetween(startTime.substring(0,4)+"-01", endTime.substring(0,4)+"-12");
+        List<String> monthBetween = DateUtils.getMonthBetween(startTime.substring(0, 4) + "-01", endTime.substring(0, 4) + "-12");
 
 
-        List<ChargeManagement> managements = chargeManagementMapper.getAllIn2( startTime, endTime);
-        List<Map<Integer,String>> data = new ArrayList<>();
-        Map<Integer,String> map = new HashMap<>();
-        map.put(0,"机构");
+        List<ChargeManagement> managements = chargeManagementMapper.getAllIn2(startTime, endTime);
+        List<Map<Integer, String>> data = new ArrayList<>();
+        Map<Integer, String> map = new HashMap<>();
+        map.put(0, "机构");
         map.put(1, "1月");
-        map.put(2,"人数");
-        map.put(3,"2月");
-        map.put(4,"人数");
-        map.put(5,"3月");
-        map.put(6,"人数");
-        map.put(7,"4月");
-        map.put(8,"人数");
-        map.put(9,"5月");
-        map.put(10,"人数");
-        map.put(11,"6月");
+        map.put(2, "人数");
+        map.put(3, "2月");
+        map.put(4, "人数");
+        map.put(5, "3月");
+        map.put(6, "人数");
+        map.put(7, "4月");
+        map.put(8, "人数");
+        map.put(9, "5月");
+        map.put(10, "人数");
+        map.put(11, "6月");
         map.put(12, "人数");
-        map.put(13,"7月");
-        map.put(14,"人数");
-        map.put(15,"8月");
-        map.put(16,"人数");
-        map.put(17,"9月");
-        map.put(18,"人数");
-        map.put(19,"10月");
-        map.put(20,"人数");
-        map.put(21,"11月");
-        map.put(22,"人数");
-        map.put(23,"12月");
-        map.put(24,"人数");
-        map.put(25,"合计");
+        map.put(13, "7月");
+        map.put(14, "人数");
+        map.put(15, "8月");
+        map.put(16, "人数");
+        map.put(17, "9月");
+        map.put(18, "人数");
+        map.put(19, "10月");
+        map.put(20, "人数");
+        map.put(21, "11月");
+        map.put(22, "人数");
+        map.put(23, "12月");
+        map.put(24, "人数");
+        map.put(25, "合计");
         data.add(map);
 
-        if(CollectionUtils.isNotEmpty(managements)){
+        if (CollectionUtils.isNotEmpty(managements)) {
             LinkedHashMap<String, List<ChargeManagement>> collect = managements.stream().collect(Collectors.groupingBy(ChargeManagement::getChargeSource, LinkedHashMap::new, Collectors.toList()));
 
 
             for (String s : collect.keySet()) {
-                Map<Integer,String> m = new HashMap<>();
+                Map<Integer, String> m = new HashMap<>();
 
                 StudentAllModel allModel = new StudentAllModel();
                 List<StudentAllModel.StuAll> stuAlls = new ArrayList<>();
 
-                m.put(0,s.split("/")[0]);
+                m.put(0, s.split("/")[0]);
                 // 当前机构的所有报名费
                 List<ChargeManagement> chargeManagements = collect.get(s);
 
                 for (String mon : monthBetween) {
                     Long i = 0L;
                     Long count = 0L;
-                    StudentAllModel.StuAll  stuAll = new StudentAllModel.StuAll();
+                    StudentAllModel.StuAll stuAll = new StudentAllModel.StuAll();
                     stuAll.setTime(mon);
                     for (ChargeManagement chargeManagement : chargeManagements) {
 
-                        if(chargeManagement.getCjsj().startsWith(mon)){
-                            count+=chargeManagement.getChargeFee();
+                        if (chargeManagement.getCjsj().startsWith(mon)) {
+                            count += chargeManagement.getChargeFee();
                             i++;
                         }
                     }
                     stuAll.setCount(count);
                     stuAll.setSignUp(i);
                     stuAlls.add(stuAll);
-                    if(StringUtils.contains(mon,"-01")){
-                        m.put(1,count+"");
-                        m.put(2,i+"");
-                    }else if(StringUtils.contains(mon,"-02")){
-                        m.put(3,count+"");
-                        m.put(4,i+"");
-                    }else if(StringUtils.contains(mon,"-03")){
-                        m.put(5,count+"");
-                        m.put(6,i+"");
-                    }else if(StringUtils.contains(mon,"-04")){
-                        m.put(7,count+"");
-                        m.put(8,i+"");
-                    }else if(StringUtils.contains(mon,"-05")){
-                        m.put(9,count+"");
-                        m.put(10,i+"");
-                    }else if(StringUtils.contains(mon,"-06")){
-                        m.put(11,count+"");
-                        m.put(12,i+"");
-                    }else if(StringUtils.contains(mon,"-07")){
-                        m.put(13,count+"");
-                        m.put(14,i+"");
-                    }else if(StringUtils.contains(mon,"-08")){
-                        m.put(15,count+"");
-                        m.put(16,i+"");
-                    }else if(StringUtils.contains(mon,"-09")){
-                        m.put(17,count+"");
-                        m.put(18,i+"");
-                    }else if(StringUtils.contains(mon,"-10")){
-                        m.put(19,count+"");
-                        m.put(20,i+"");
-                    }else if(StringUtils.contains(mon,"-11")){
-                        m.put(21,count+"");
-                        m.put(22,i+"");
-                    }else if(StringUtils.contains(mon,"-12")){
-                        m.put(23,count+"");
-                        m.put(24,i+"");
+                    if (StringUtils.contains(mon, "-01")) {
+                        m.put(1, count + "");
+                        m.put(2, i + "");
+                    } else if (StringUtils.contains(mon, "-02")) {
+                        m.put(3, count + "");
+                        m.put(4, i + "");
+                    } else if (StringUtils.contains(mon, "-03")) {
+                        m.put(5, count + "");
+                        m.put(6, i + "");
+                    } else if (StringUtils.contains(mon, "-04")) {
+                        m.put(7, count + "");
+                        m.put(8, i + "");
+                    } else if (StringUtils.contains(mon, "-05")) {
+                        m.put(9, count + "");
+                        m.put(10, i + "");
+                    } else if (StringUtils.contains(mon, "-06")) {
+                        m.put(11, count + "");
+                        m.put(12, i + "");
+                    } else if (StringUtils.contains(mon, "-07")) {
+                        m.put(13, count + "");
+                        m.put(14, i + "");
+                    } else if (StringUtils.contains(mon, "-08")) {
+                        m.put(15, count + "");
+                        m.put(16, i + "");
+                    } else if (StringUtils.contains(mon, "-09")) {
+                        m.put(17, count + "");
+                        m.put(18, i + "");
+                    } else if (StringUtils.contains(mon, "-10")) {
+                        m.put(19, count + "");
+                        m.put(20, i + "");
+                    } else if (StringUtils.contains(mon, "-11")) {
+                        m.put(21, count + "");
+                        m.put(22, i + "");
+                    } else if (StringUtils.contains(mon, "-12")) {
+                        m.put(23, count + "");
+                        m.put(24, i + "");
                     }
 
 
@@ -757,59 +762,62 @@ public class BizMainController {
                 allModel.setAll(chargeManagements.stream().mapToLong(ChargeManagement::getChargeFee).sum());
                 allModel.setStu(stuAlls);
                 models.add(allModel);
-                m.put(25,chargeManagements.stream().mapToLong(ChargeManagement::getChargeFee).sum() + "");
+                m.put(25, chargeManagements.stream().mapToLong(ChargeManagement::getChargeFee).sum() + "");
                 data.add(m);
             }
         }
-        if(CollectionUtils.isNotEmpty(models)){
+        if (CollectionUtils.isNotEmpty(models)) {
 
-            Map<Integer,String> m = new HashMap<>();
+            Map<Integer, String> m = new HashMap<>();
 
             List<List<StudentAllModel.StuAll>> collect = models.stream().map(StudentAllModel::getStu).collect(Collectors.toList());
-            List<StudentAllModel.StuAll> models1 =  collect.stream().filter(item ->CollectionUtils.isNotEmpty(item)).reduce(new ArrayList<>(),(all,item)-> {all.addAll(item);return all;});
+            List<StudentAllModel.StuAll> models1 = collect.stream().filter(item -> CollectionUtils.isNotEmpty(item)).reduce(new ArrayList<>(), (all, item) -> {
+                all.addAll(item);
+                return all;
+            });
             LinkedHashMap<String, Long> collect1 = models1.stream().collect(Collectors.groupingBy(StudentAllModel.StuAll::getTime, LinkedHashMap::new, Collectors.summingLong(StudentAllModel.StuAll::getCount)));
             LinkedHashMap<String, Long> collect2 = models1.stream().collect(Collectors.groupingBy(StudentAllModel.StuAll::getTime, LinkedHashMap::new, Collectors.summingLong(StudentAllModel.StuAll::getSignUp)));
             long sum = models.stream().mapToLong(StudentAllModel::getAll).sum();
-            m.put(0,"合计");
-            m.put(25,sum+"");
+            m.put(0, "合计");
+            m.put(25, sum + "");
             for (String s : collect1.keySet()) {
                 Long aLong = collect1.get(s);
-                if(StringUtils.contains(s,"-01")){
-                    m.put(1,aLong+"");
-                    m.put(2,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-02")){
-                    m.put(3,aLong+"");
-                    m.put(4,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-03")){
-                    m.put(5,aLong+"");
-                    m.put(6,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-04")){
-                    m.put(7,aLong+"");
-                    m.put(8,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-05")){
-                    m.put(9,aLong+"");
-                    m.put(10,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-06")){
-                    m.put(11,aLong+"");
-                    m.put(12,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-07")){
-                    m.put(13,aLong+"");
-                    m.put(14,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-08")){
-                    m.put(15,aLong+"");
-                    m.put(16,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-09")){
-                    m.put(17,aLong+"");
-                    m.put(18,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-10")){
-                    m.put(19,aLong+"");
-                    m.put(20,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-11")){
-                    m.put(21,aLong+"");
-                    m.put(22,collect2.get(s)+"");
-                }else if(StringUtils.contains(s,"-12")){
-                    m.put(23,aLong+"");
-                    m.put(24,collect2.get(s)+"");
+                if (StringUtils.contains(s, "-01")) {
+                    m.put(1, aLong + "");
+                    m.put(2, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-02")) {
+                    m.put(3, aLong + "");
+                    m.put(4, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-03")) {
+                    m.put(5, aLong + "");
+                    m.put(6, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-04")) {
+                    m.put(7, aLong + "");
+                    m.put(8, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-05")) {
+                    m.put(9, aLong + "");
+                    m.put(10, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-06")) {
+                    m.put(11, aLong + "");
+                    m.put(12, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-07")) {
+                    m.put(13, aLong + "");
+                    m.put(14, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-08")) {
+                    m.put(15, aLong + "");
+                    m.put(16, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-09")) {
+                    m.put(17, aLong + "");
+                    m.put(18, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-10")) {
+                    m.put(19, aLong + "");
+                    m.put(20, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-11")) {
+                    m.put(21, aLong + "");
+                    m.put(22, collect2.get(s) + "");
+                } else if (StringUtils.contains(s, "-12")) {
+                    m.put(23, aLong + "");
+                    m.put(24, collect2.get(s) + "");
                 }
             }
             data.add(m);
@@ -830,7 +838,7 @@ public class BizMainController {
      * excel导出
      */
     @GetMapping("/exportExcel")
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response,ChargeManagement entity) throws IOException {
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response, ChargeManagement entity) throws IOException {
         service.exportExcel(request, response, entity);
     }
 
@@ -847,93 +855,93 @@ public class BizMainController {
         String firSubTestTimeLike = request.getParameter("firSubTestTimeLike");
         String secSubTestTimeLike = request.getParameter("secSubTestTimeLike");
         String thirdSubTestTimeLike = request.getParameter("thirdSubTestTimeLike");
-        if(StringUtils.isNotBlank(jgmcLike)){
-            condition.like(TraineeInformation.InnerColumn.jgmc,jgmcLike);
+        if (StringUtils.isNotBlank(jgmcLike)) {
+            condition.like(TraineeInformation.InnerColumn.jgmc, jgmcLike);
         }
-        if(StringUtils.isNotBlank(jgdm) ){
-            condition.eq(TraineeInformation.InnerColumn.jgdm,jgdm);
+        if (StringUtils.isNotBlank(jgdm)) {
+            condition.eq(TraineeInformation.InnerColumn.jgdm, jgdm);
         }
-        if(StringUtils.isNotBlank(idCardNoLike)){
-            condition.like(TraineeInformation.InnerColumn.idCardNo,idCardNoLike);
+        if (StringUtils.isNotBlank(idCardNoLike)) {
+            condition.like(TraineeInformation.InnerColumn.idCardNo, idCardNoLike);
         }
-        List<Map<Integer,String>> data = new ArrayList<>();
-        if(StringUtils.equals(sign,"7")){
+        List<Map<Integer, String>> data = new ArrayList<>();
+        if (StringUtils.equals(sign, "7")) {
             condition.and().andCondition(" (status='10' and (fir_sub_test_num =0 or fir_sub_test_num =1)  and (fir_sub is null or fir_sub = '')) or fir_sub='30' and fir_sub='40'");
             condition.and().andCondition("fir_sub_payment_time is  null or fir_sub_payment_time = '' ");
             condition.eq(TraineeInformation.InnerColumn.acceptStatus, "20");
-            if(StringUtils.isNotBlank(firSubTestTimeLike)){
-                condition.like(TraineeInformation.InnerColumn.firSubTestTime,firSubTestTimeLike);
+            if (StringUtils.isNotBlank(firSubTestTimeLike)) {
+                condition.like(TraineeInformation.InnerColumn.firSubTestTime, firSubTestTimeLike);
             }
-        }else if(StringUtils.equals(sign,"2")){
+        } else if (StringUtils.equals(sign, "2")) {
             condition.and().andCondition(" (sec_sub = '10' and status='20' and sec_sub_test_num = 1) or sec_sub='30' or sec_sub = '40'");
             condition.and().andCondition("sec_sub_payment_time is null or sec_sub_payment_time = ''");
-            if(StringUtils.isNotBlank(secSubTestTimeLike)){
-                condition.like(TraineeInformation.InnerColumn.secSubTestTime,secSubTestTimeLike);
+            if (StringUtils.isNotBlank(secSubTestTimeLike)) {
+                condition.like(TraineeInformation.InnerColumn.secSubTestTime, secSubTestTimeLike);
             }
-        }else if(StringUtils.equals(sign,"3")){
+        } else if (StringUtils.equals(sign, "3")) {
             condition.and().andCondition(" (third_sub_test_num =1 and third_sub = '10' and status='30') or third_sub='30' or third_sub='40'");
             condition.and().andCondition("third_sub_payment_time is null or third_sub_payment_time = ''"); // 考试费未缴纳
-            if(StringUtils.isNotBlank(thirdSubTestTimeLike)){
-                condition.like(TraineeInformation.InnerColumn.thirdSubTestTime,thirdSubTestTimeLike);
+            if (StringUtils.isNotBlank(thirdSubTestTimeLike)) {
+                condition.like(TraineeInformation.InnerColumn.thirdSubTestTime, thirdSubTestTimeLike);
             }
         }
-        Map<Integer,String> map = new HashMap<>();
-        map.put(0,"序号");
-        map.put(1,"姓名");
-        map.put(2,"证件号码");
-        map.put(3,"车型");
-        map.put(4,"报名点");
-        map.put(5,"金额");
-        map.put(6,"考试科目");
-        map.put(7,"考试时间");
-        map.put(8,"机构代码");
+        Map<Integer, String> map = new HashMap<>();
+        map.put(0, "序号");
+        map.put(1, "姓名");
+        map.put(2, "证件号码");
+        map.put(3, "车型");
+        map.put(4, "报名点");
+        map.put(5, "金额");
+        map.put(6, "考试科目");
+        map.put(7, "考试时间");
+        map.put(8, "机构代码");
         data.add(map);
-        List<Map<Integer,String>> coll = new ArrayList<>();
+        List<Map<Integer, String>> coll = new ArrayList<>();
         List<TraineeInformation> informations = informationService.findByCondition(condition);
-        for(int i = 0; i<informations.size() ; i++){
+        for (int i = 0; i < informations.size(); i++) {
             TraineeInformation information = informations.get(i);
-            Map<Integer,String> m = new HashMap<>();
-            m.put(0,i+1+"");
-            m.put(1,information.getName());
-            m.put(2,information.getIdCardNo());
-            m.put(3,information.getCarType());
-            m.put(4,information.getJgmc());
-            m.put(8,information.getJgdm());
-            if(StringUtils.equals(sign, "7")){
-                m.put(5,"120");
-                m.put(6,"科目一");
-                if(StringUtils.isNotBlank(information.getFirSubTestTime())) {
+            Map<Integer, String> m = new HashMap<>();
+            m.put(0, i + 1 + "");
+            m.put(1, information.getName());
+            m.put(2, information.getIdCardNo());
+            m.put(3, information.getCarType());
+            m.put(4, information.getJgmc());
+            m.put(8, information.getJgdm());
+            if (StringUtils.equals(sign, "7")) {
+                m.put(5, "120");
+                m.put(6, "科目一");
+                if (StringUtils.isNotBlank(information.getFirSubTestTime())) {
                     if (DateUtils.getDateStr(new Date(), "yyyy-MM-dd").compareTo(information.getFirSubTestTime().substring(0, 10)) <= 0) {
                         m.put(7, information.getFirSubTestTime());
                     } else {
                         m.put(7, "");
                     }
-                }else{
+                } else {
                     m.put(7, "");
                 }
-            }else if(StringUtils.equals(sign, "2")){
-                m.put(5,"150");
-                m.put(6,"科目二");
-                if(StringUtils.isNotBlank(information.getSecSubTestTime())){
-                    if(DateUtils.getDateStr(new Date(),"yyyy-MM-dd").compareTo( information.getSecSubTestTime().substring(0,10)) <= 0){
-                        m.put(7,information.getSecSubTestTime());
-                    }else{
-                        m.put(7,"");
+            } else if (StringUtils.equals(sign, "2")) {
+                m.put(5, "150");
+                m.put(6, "科目二");
+                if (StringUtils.isNotBlank(information.getSecSubTestTime())) {
+                    if (DateUtils.getDateStr(new Date(), "yyyy-MM-dd").compareTo(information.getSecSubTestTime().substring(0, 10)) <= 0) {
+                        m.put(7, information.getSecSubTestTime());
+                    } else {
+                        m.put(7, "");
                     }
-                }else{
-                    m.put(7,"");
+                } else {
+                    m.put(7, "");
                 }
-            }else if(StringUtils.equals(sign , "3")){
-                m.put(5,"232");
-                m.put(6,"科目三");
-                if(StringUtils.isNotBlank(information.getThirdSubTestTime())) {
+            } else if (StringUtils.equals(sign, "3")) {
+                m.put(5, "232");
+                m.put(6, "科目三");
+                if (StringUtils.isNotBlank(information.getThirdSubTestTime())) {
                     if (DateUtils.getDateStr(new Date(), "yyyy-MM-dd").compareTo(information.getThirdSubTestTime().substring(0, 10)) <= 0) {
                         m.put(7, information.getThirdSubTestTime());
                     } else {
                         m.put(7, "");
                     }
-                }else{
-                    m.put(7,"");
+                } else {
+                    m.put(7, "");
                 }
             }
 
@@ -943,13 +951,13 @@ public class BizMainController {
         }
         List<Map<Integer, String>> collect = coll.stream().sorted((o1, o2) -> o1.get(8).compareTo(o2.get(8))).collect(Collectors.toList());
         data.addAll(collect);
-        String fileName = java.net.URLEncoder.encode((sign.equals("7") ? "科目一": sign.equals("2")? "科目二": sign.equals("3") ? "科目三":"") + "考试待缴", "UTF-8");
+        String fileName = java.net.URLEncoder.encode((sign.equals("7") ? "科目一" : sign.equals("2") ? "科目二" : sign.equals("3") ? "科目三" : "") + "考试待缴", "UTF-8");
         response.setContentType("application/msexcel");
         request.setCharacterEncoding("UTF-8");
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheet(out, (sign.equals("7") ? "科目一": sign.equals("2")? "科目二": sign.equals("3") ? "科目三":"") + "考试代缴", data);
+        ExcelUtil.createSheet(out, (sign.equals("7") ? "科目一" : sign.equals("2") ? "科目二" : sign.equals("3") ? "科目三" : "") + "考试代缴", data);
     }
 
 
@@ -958,47 +966,47 @@ public class BizMainController {
      */
     @GetMapping("/pagerExcel")
     public void pagerExcel(Page<BizLcJl> page, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        jlService.pagerExcel(page,request, response);
+        jlService.pagerExcel(page, request, response);
     }
 
     /**
-     *  驾校统计 Excel 导出
+     * 驾校统计 Excel 导出
      */
     @GetMapping("/jxtjExcel")
     public void jxtjExcel(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String time = DateUtils.getDateStr(new Date(), "yyyy-MM-dd");
         String fileName = time + "驾校统计";
         List<Map<String, Object>> maps = jlService.drivingSchoolStatistics();
-        List<Map<Integer,String>> data = new ArrayList<>();
-        Map<Integer,String> map = new HashMap<>();
-        map.put(0,"序号");
-        map.put(1,"驾校");
-        map.put(2,"时长");
-        map.put(3,"收费（元）");
+        List<Map<Integer, String>> data = new ArrayList<>();
+        Map<Integer, String> map = new HashMap<>();
+        map.put(0, "序号");
+        map.put(1, "驾校");
+        map.put(2, "时长");
+        map.put(3, "收费（元）");
         data.add(map);
         long zj = 0;
-        for (int i = 0 ; i<maps.size(); i++){
+        for (int i = 0; i < maps.size(); i++) {
             Map<String, Object> objectMap = maps.get(i);
-            Map<Integer,String> dataMap = new HashMap<>();
-            dataMap.put(0,i+1+"");
-            dataMap.put(1,objectMap.get("jlJx")+"");
-            dataMap.put(2,objectMap.get("lcSc")+"");
-            dataMap.put(3,objectMap.get("lcFy")+"");
-            zj += ((BigDecimal)objectMap.get("lcFy")).longValue();
+            Map<Integer, String> dataMap = new HashMap<>();
+            dataMap.put(0, i + 1 + "");
+            dataMap.put(1, objectMap.get("jlJx") + "");
+            dataMap.put(2, objectMap.get("lcSc") + "");
+            dataMap.put(3, objectMap.get("lcFy") + "");
+            zj += ((BigDecimal) objectMap.get("lcFy")).longValue();
             data.add(dataMap);
         }
-        Map<Integer,String> dataMap = new HashMap<>();
-        dataMap.put(0,"合计:");
-        dataMap.put(1,"");
+        Map<Integer, String> dataMap = new HashMap<>();
+        dataMap.put(0, "合计:");
+        dataMap.put(1, "");
         dataMap.put(2, "");
-        dataMap.put(3,zj+"");
+        dataMap.put(3, zj + "");
         data.add(dataMap);
         response.setContentType("application/msexcel");
         request.setCharacterEncoding("UTF-8");
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheet(out,"驾校统计",data);
+        ExcelUtil.createSheet(out, "驾校统计", data);
     }
 
     /**
@@ -1011,48 +1019,48 @@ public class BizMainController {
 
         ApiResponse<List<LcJlModel>> jlTj = jlService.getJlTj();
         List<LcJlModel> result = jlTj.getResult();
-        List<Map<Integer,String>> data = new ArrayList<>();
-        Map<Integer,String> map = new HashMap<>();
-        map.put(0,"姓名");
-        map.put(1,"驾校");
-        map.put(2,"时长");
-        map.put(3,"收费（元）");
+        List<Map<Integer, String>> data = new ArrayList<>();
+        Map<Integer, String> map = new HashMap<>();
+        map.put(0, "姓名");
+        map.put(1, "驾校");
+        map.put(2, "时长");
+        map.put(3, "收费（元）");
         data.add(map);
         long zj = 0;
-        for(int i = 0 ; i < result.size(); i++){
+        for (int i = 0; i < result.size(); i++) {
             LcJlModel model = result.get(i);
-            Map<Integer,String> dataMap = new HashMap<>();
-            dataMap.put(0,model.getJlXm());
-            dataMap.put(1,model.getJlJx());
+            Map<Integer, String> dataMap = new HashMap<>();
+            dataMap.put(0, model.getJlXm());
+            dataMap.put(1, model.getJlJx());
             Integer l = model.getSc();
             if (l / 60 == 0) {
                 dataMap.put(2, l + "分");
             } else {
                 dataMap.put(2, (l / 60) + "时" + (l % 60) + "分");
             }
-            dataMap.put(3,model.getZj()+"");
+            dataMap.put(3, model.getZj() + "");
             zj += model.getZj();
             data.add(dataMap);
         }
-        Map<Integer,String> dataMap = new HashMap<>();
-        dataMap.put(0,"合计:");
-        dataMap.put(1,"");
+        Map<Integer, String> dataMap = new HashMap<>();
+        dataMap.put(0, "合计:");
+        dataMap.put(1, "");
         dataMap.put(2, "");
-        dataMap.put(3,zj+"");
+        dataMap.put(3, zj + "");
         data.add(dataMap);
         response.setContentType("application/msexcel");
         request.setCharacterEncoding("UTF-8");
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheet(out,"教练统计",data);
+        ExcelUtil.createSheet(out, "教练统计", data);
     }
 
     /**
      * 科三安全员日志 Excel导出
      */
     @GetMapping("/aqyExcel")
-    public void aqyExcel( HttpServletRequest request, HttpServletResponse response) throws WriteException, IOException {
+    public void aqyExcel(HttpServletRequest request, HttpServletResponse response) throws WriteException, IOException {
         String time = DateUtils.getDateStr(new Date(), "yyyy-MM-dd");
         String fileName = time + "安全员工作日志";
         ApiResponse<List<LcJlModel>> allLog = jlService.getAllLog();
@@ -1071,61 +1079,61 @@ public class BizMainController {
         WritableWorkbook workbook = Workbook.createWorkbook(out);
         WritableSheet sheet = workbook.createSheet("工作日志", 0);
 
-        sheet.mergeCells(0,0,0,1);
-        sheet.mergeCells(1,0,1,1);
-        sheet.mergeCells(2,0,2,1);
-        sheet.mergeCells(3,0,4,0);
-        sheet.mergeCells(5,0,6,0);
-        sheet.mergeCells(7,0,8,0);
-        sheet.mergeCells(9,0,10,0);
-        sheet.mergeCells(11,0,12,0);
-        sheet.mergeCells(13,0,14,0);
-        sheet.mergeCells(15,0,15,1);
-        sheet.addCell(new Label(0,0,"序号",cellFormat));
-        sheet.addCell(new Label(1,0,"姓名",cellFormat));
-        sheet.addCell(new Label(2,0,"车号",cellFormat));
-        sheet.addCell(new Label(3,0,"第一趟",cellFormat));
-        sheet.addCell(new Label(3,1,"人数",cellFormat));
-        sheet.addCell(new Label(4,1,"金额",cellFormat));
-        sheet.addCell(new Label(5,0,"第二趟",cellFormat));
-        sheet.addCell(new Label(5,1,"人数",cellFormat));
-        sheet.addCell(new Label(6,1,"金额",cellFormat));
-        sheet.addCell(new Label(7,0,"第三趟",cellFormat));
-        sheet.addCell(new Label(7,1,"人数",cellFormat));
-        sheet.addCell(new Label(8,1,"金额",cellFormat));
-        sheet.addCell(new Label(9,0,"第四趟",cellFormat));
-        sheet.addCell(new Label(9,1,"人数",cellFormat));
-        sheet.addCell(new Label(10,1,"金额",cellFormat));
-        sheet.addCell(new Label(11,0,"第五趟",cellFormat));
-        sheet.addCell(new Label(11,1,"人数",cellFormat));
-        sheet.addCell(new Label(12,1,"金额",cellFormat));
-        sheet.addCell(new Label(13,0,"第六趟",cellFormat));
-        sheet.addCell(new Label(13,1,"人数",cellFormat));
-        sheet.addCell(new Label(14,1,"金额",cellFormat));
-        sheet.addCell(new Label(15,0,"合计",cellFormat));
+        sheet.mergeCells(0, 0, 0, 1);
+        sheet.mergeCells(1, 0, 1, 1);
+        sheet.mergeCells(2, 0, 2, 1);
+        sheet.mergeCells(3, 0, 4, 0);
+        sheet.mergeCells(5, 0, 6, 0);
+        sheet.mergeCells(7, 0, 8, 0);
+        sheet.mergeCells(9, 0, 10, 0);
+        sheet.mergeCells(11, 0, 12, 0);
+        sheet.mergeCells(13, 0, 14, 0);
+        sheet.mergeCells(15, 0, 15, 1);
+        sheet.addCell(new Label(0, 0, "序号", cellFormat));
+        sheet.addCell(new Label(1, 0, "姓名", cellFormat));
+        sheet.addCell(new Label(2, 0, "车号", cellFormat));
+        sheet.addCell(new Label(3, 0, "第一趟", cellFormat));
+        sheet.addCell(new Label(3, 1, "人数", cellFormat));
+        sheet.addCell(new Label(4, 1, "金额", cellFormat));
+        sheet.addCell(new Label(5, 0, "第二趟", cellFormat));
+        sheet.addCell(new Label(5, 1, "人数", cellFormat));
+        sheet.addCell(new Label(6, 1, "金额", cellFormat));
+        sheet.addCell(new Label(7, 0, "第三趟", cellFormat));
+        sheet.addCell(new Label(7, 1, "人数", cellFormat));
+        sheet.addCell(new Label(8, 1, "金额", cellFormat));
+        sheet.addCell(new Label(9, 0, "第四趟", cellFormat));
+        sheet.addCell(new Label(9, 1, "人数", cellFormat));
+        sheet.addCell(new Label(10, 1, "金额", cellFormat));
+        sheet.addCell(new Label(11, 0, "第五趟", cellFormat));
+        sheet.addCell(new Label(11, 1, "人数", cellFormat));
+        sheet.addCell(new Label(12, 1, "金额", cellFormat));
+        sheet.addCell(new Label(13, 0, "第六趟", cellFormat));
+        sheet.addCell(new Label(13, 1, "人数", cellFormat));
+        sheet.addCell(new Label(14, 1, "金额", cellFormat));
+        sheet.addCell(new Label(15, 0, "合计", cellFormat));
 
 
-        for(int i = 0; i < result.size() ; i++){
+        for (int i = 0; i < result.size(); i++) {
             LcJlModel lcJlModel = result.get(i);
-            sheet.addCell(new Label(0,i+2,i+1+"",cellFormat));
-            sheet.addCell(new Label(1,i+2,lcJlModel.getZgXm(),cellFormat));
-            sheet.addCell(new Label(2,i+2,lcJlModel.getClBh(),cellFormat));
-            for (int j = 0 ; j<lcJlModel.getJls().size();j++) {
+            sheet.addCell(new Label(0, i + 2, i + 1 + "", cellFormat));
+            sheet.addCell(new Label(1, i + 2, lcJlModel.getZgXm(), cellFormat));
+            sheet.addCell(new Label(2, i + 2, lcJlModel.getClBh(), cellFormat));
+            for (int j = 0; j < lcJlModel.getJls().size(); j++) {
                 BizLcJl bizLcJl = lcJlModel.getJls().get(j);
-                sheet.addCell(new Label(j*2+3,i+2,bizLcJl.getXySl()+"",cellFormat));
-                sheet.addCell(new Label(j*2+4,i+2,bizLcJl.getLcFy()+"",cellFormat));
+                sheet.addCell(new Label(j * 2 + 3, i + 2, bizLcJl.getXySl() + "", cellFormat));
+                sheet.addCell(new Label(j * 2 + 4, i + 2, bizLcJl.getLcFy() + "", cellFormat));
             }
-            sheet.addCell(new Label(15,i+2,lcJlModel.getZj()+"",cellFormat));
+            sheet.addCell(new Label(15, i + 2, lcJlModel.getZj() + "", cellFormat));
         }
-        sheet.mergeCells(0,result.size()+2,14,result.size()+2 );
-        sheet.addCell(new Label(0,result.size()+2,"合计",cellFormat));
-        sheet.addCell(new Label(15,result.size()+2,result.size()==0?(0+""):(result.stream().mapToInt(LcJlModel::getZj).sum()+""),cellFormat));
+        sheet.mergeCells(0, result.size() + 2, 14, result.size() + 2);
+        sheet.addCell(new Label(0, result.size() + 2, "合计", cellFormat));
+        sheet.addCell(new Label(15, result.size() + 2, result.size() == 0 ? (0 + "") : (result.stream().mapToInt(LcJlModel::getZj).sum() + ""), cellFormat));
         workbook.write();
         workbook.close();
     }
 
     @GetMapping("/countBranchExcel")
-    public void countBranchSignUp(String[] lx , String startTime , String endTime, String jgdm, String carType , HttpServletRequest request , HttpServletResponse response) throws IOException {
+    public void countBranchSignUp(String[] lx, String startTime, String endTime, String jgdm, String carType, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String fileName = DateUtils.getDateStr(new Date(), "yyyy-MM-dd") + "- 学费报表";
 
         ApiResponse<List<ChargeManagement>> listApiResponse = staService.countBranch(lx, startTime, endTime, jgdm, carType);
@@ -1133,13 +1141,13 @@ public class BizMainController {
         Map<String, List<ChargeManagement>> collect = result.stream().collect(Collectors.groupingBy(ChargeManagement::getChargeSource));
         Set<String> keySet = collect.keySet();
 
-        List<List<Map<String,String>>> dataList = new ArrayList<>();
-        List<Map<String,Object>> sheetMap = new ArrayList<>();
-        if(collect.size() <= 0){
-            Map<String,Object> sheet = new HashMap<>();
-            sheet.put("name","无记录");
-            Map<String,String> tableMap = new HashMap<>();
-            tableMap.put("#","序号");
+        List<List<Map<String, String>>> dataList = new ArrayList<>();
+        List<Map<String, Object>> sheetMap = new ArrayList<>();
+        if (collect.size() <= 0) {
+            Map<String, Object> sheet = new HashMap<>();
+            sheet.put("name", "无记录");
+            Map<String, String> tableMap = new HashMap<>();
+            tableMap.put("#", "序号");
             tableMap.put("xm", "姓名");
             tableMap.put("sfzh", "身份证号");
             tableMap.put("pjbh", "票据编号");
@@ -1148,20 +1156,20 @@ public class BizMainController {
             tableMap.put("cx", "车型");
             tableMap.put("bmd", "报名点");
             tableMap.put("sj", "时间");
-            tableMap.put("cjr","创建人");
+            tableMap.put("cjr", "创建人");
             tableMap.put("cjsj", "创建时间");
-            sheet.put("sheelMap",tableMap);
+            sheet.put("sheelMap", tableMap);
             sheetMap.add(sheet);
-            List<Map<String,String>> data = new ArrayList<>();
+            List<Map<String, String>> data = new ArrayList<>();
             dataList.add(data);
         }
 
         for (String s : keySet) {
-            List<Map<String,String>> data = new ArrayList<>();
-            Map<String,Object> sheet = new HashMap<>();
-            sheet.put("name",s.split("/")[0]);
-            Map<String,String> tableMap = new HashMap<>();
-            tableMap.put("#","序号");
+            List<Map<String, String>> data = new ArrayList<>();
+            Map<String, Object> sheet = new HashMap<>();
+            sheet.put("name", s.split("/")[0]);
+            Map<String, String> tableMap = new HashMap<>();
+            tableMap.put("#", "序号");
             tableMap.put("xm", "姓名");
             tableMap.put("sfzh", "身份证号");
             tableMap.put("pjbh", "票据编号");
@@ -1170,26 +1178,26 @@ public class BizMainController {
             tableMap.put("cx", "车型");
             tableMap.put("bmd", "报名点");
             tableMap.put("sj", "时间");
-            tableMap.put("cjr","创建人");
+            tableMap.put("cjr", "创建人");
             tableMap.put("cjsj", "创建时间");
-            sheet.put("sheelMap",tableMap);
+            sheet.put("sheelMap", tableMap);
             sheetMap.add(sheet);
             List<ChargeManagement> chargeManagements = collect.get(s);
 
-            for (int i = 0 ; i < chargeManagements.size() ; i ++) {
+            for (int i = 0; i < chargeManagements.size(); i++) {
                 ChargeManagement management = chargeManagements.get(i);
-                Map<String,String> dataMap = new HashMap<>();
-                dataMap.put("#", i+1+"");
-                dataMap.put("xm",management.getTraineeName());
-                dataMap.put("sfzh",management.getIdCardNo());
-                dataMap.put("pjbh",management.getPjbh().substring(0, management.getPjbh().length() - 5));
-                dataMap.put("srje",management.getChargeFee() +"");
-                dataMap.put("srxm",management.getChargeName());
-                dataMap.put("cx",management.getCarType());
-                dataMap.put("bmd",management.getChargeSource());
-                dataMap.put("sj",management.getChargeTime());
-                dataMap.put("cjr",management.getCjr());
-                dataMap.put("cjsj",management.getCjsj());
+                Map<String, String> dataMap = new HashMap<>();
+                dataMap.put("#", i + 1 + "");
+                dataMap.put("xm", management.getTraineeName());
+                dataMap.put("sfzh", management.getIdCardNo());
+                dataMap.put("pjbh", management.getPjbh().substring(0, management.getPjbh().length() - 5));
+                dataMap.put("srje", management.getChargeFee() + "");
+                dataMap.put("srxm", management.getChargeName());
+                dataMap.put("cx", management.getCarType());
+                dataMap.put("bmd", management.getChargeSource());
+                dataMap.put("sj", management.getChargeTime());
+                dataMap.put("cjr", management.getCjr());
+                dataMap.put("cjsj", management.getCjsj());
                 data.add(dataMap);
             }
             dataList.add(data);
@@ -1201,9 +1209,10 @@ public class BizMainController {
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheetArrayAndDataArray(out,dataList,sheetMap);
+        ExcelUtil.createSheetArrayAndDataArray(out, dataList, sheetMap);
 
     }
+
     /**
      * 招生统计 Excel 导出
      */
@@ -1213,27 +1222,27 @@ public class BizMainController {
         List<StudentAllModel> result = allPayment.getResult();
         List<Map<Integer, String>> data = new ArrayList<>();
         String fileName = "";
-        if(org.apache.commons.lang3.StringUtils.equals(startTime,endTime)){
+        if (org.apache.commons.lang3.StringUtils.equals(startTime, endTime)) {
             fileName = startTime + "招生统计";
-        }else {
+        } else {
             fileName = startTime + "-" + endTime + "招生统计.xls";
         }
 
         Map<Integer, String> map = new HashMap<>();
         map.put(0, "机构");
-        map.put(1,"总人数");
-        map.put(2,"A1");
-        map.put(3,"A2");
-        map.put(4,"A3");
-        map.put(5,"B2");
-        map.put(6,"C1");
-        map.put(7,"C2");
+        map.put(1, "总人数");
+        map.put(2, "A1");
+        map.put(3, "A2");
+        map.put(4, "A3");
+        map.put(5, "B2");
+        map.put(6, "C1");
+        map.put(7, "C2");
         data.add(map);
 
         for (StudentAllModel model : result) {
-            Map<Integer,String> dataMap = new HashMap<>();
+            Map<Integer, String> dataMap = new HashMap<>();
             dataMap.put(0, model.getJgmc());
-            dataMap.put(1, model.getAll() +"");
+            dataMap.put(1, model.getAll() + "");
             dataMap.put(2, model.getA1() + "");
             dataMap.put(3, model.getA2() + "");
             dataMap.put(4, model.getA3() + "");
@@ -1258,19 +1267,19 @@ public class BizMainController {
     @GetMapping("/getPassExcel")
     public void getPassExcel(String jgdm, String startTime, String endTime, String km, HttpServletRequest request, HttpServletResponse response) throws IOException {
         ApiResponse<List<Map<String, String>>> pass = staService.getPass(jgdm, startTime, endTime, km);
-        if(org.apache.commons.lang3.StringUtils.isBlank(startTime)){
+        if (org.apache.commons.lang3.StringUtils.isBlank(startTime)) {
             startTime = DateUtils.getDateStr(new Date(), "yyyy-MM-dd");
         }
-        if(org.apache.commons.lang3.StringUtils.isBlank(endTime)){
+        if (org.apache.commons.lang3.StringUtils.isBlank(endTime)) {
             endTime = DateUtils.getDateStr(new Date(), "yyyy-MM-dd");
         }
         String fileName = "";
-        if(org.apache.commons.lang3.StringUtils.equals(startTime,endTime)){
+        if (org.apache.commons.lang3.StringUtils.equals(startTime, endTime)) {
             fileName = startTime + "合格率.xls";
-        }else {
+        } else {
             fileName = startTime + " - " + endTime + "合格率.xls";
         }
-        List<Map<Integer,String>> data = new ArrayList<>();
+        List<Map<Integer, String>> data = new ArrayList<>();
         Map<Integer, String> map = new HashMap<>();
         map.put(0, "机构");
         map.put(1, "总人数");
@@ -1289,10 +1298,10 @@ public class BizMainController {
         map.put(14, "科目四合格人数");
         map.put(15, "科目四合格率");
         data.add(map);
-        if(pass.getCode() == 200){
+        if (pass.getCode() == 200) {
             List<Map<String, String>> result = pass.getResult();
             for (Map<String, String> m : result) {
-                Map<Integer,String> dataMap = new HashMap<>();
+                Map<Integer, String> dataMap = new HashMap<>();
                 dataMap.put(0, m.get("jgmc"));
                 dataMap.put(1, m.get("all"));
                 dataMap.put(2, m.get("kmAllPass"));
@@ -1314,24 +1323,23 @@ public class BizMainController {
         }
 
 
-
         response.setContentType("application/msexcel");
         request.setCharacterEncoding("UTF-8");
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheet(out, "合格率" , data);
+        ExcelUtil.createSheet(out, "合格率", data);
     }
 
     @GetMapping("/exportBigCarExcel")
     public void exportBigCarExcel(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Map<String,String> m = new HashMap<>();
-        m.put("s00","待受理");
-        m.put("s10","科目一");
-        m.put("s20","科目二");
+        Map<String, String> m = new HashMap<>();
+        m.put("s00", "待受理");
+        m.put("s10", "科目一");
+        m.put("s20", "科目二");
         m.put("s30", "科目三");
         m.put("s40", "科目四");
-        m.put("100","已缴费");
+        m.put("100", "已缴费");
         m.put("110", "已缴费未约考");
         m.put("120", "已约考");
         m.put("130", "不合格");
@@ -1346,16 +1354,16 @@ public class BizMainController {
         m.put("420", "合格");
 
         SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
-        condition.in(TraineeInformation.InnerColumn.carType, "A1","A2","A3","B2");
-        condition.in(TraineeInformation.InnerColumn.status,"00","10","20","30","40");
+        condition.in(TraineeInformation.InnerColumn.carType, "A1", "A2", "A3", "B2");
+        condition.in(TraineeInformation.InnerColumn.status, "00", "10", "20", "30", "40");
         condition.setOrderByClause(" status asc");
         List<TraineeInformation> list = informationService.findByCondition(condition);
-        List<Map<Integer,String>> data = new ArrayList<>();
-        Map<Integer,String> map = new HashMap<>();
+        List<Map<Integer, String>> data = new ArrayList<>();
+        Map<Integer, String> map = new HashMap<>();
         map.put(0, "队号");
-        map.put(1,"姓名");
+        map.put(1, "姓名");
         map.put(2, "身份证号");
-        map.put(3,"车型");
+        map.put(3, "车型");
         map.put(4, "流水号");
         map.put(5, "当前状态");
         map.put(6, "科一");
@@ -1364,17 +1372,17 @@ public class BizMainController {
         map.put(9, "科四");
         data.add(map);
         for (TraineeInformation traineeInformation : list) {
-            Map<Integer,String> dataMap = new HashMap<>();
-            dataMap.put(0,traineeInformation.getJgmc());
+            Map<Integer, String> dataMap = new HashMap<>();
+            dataMap.put(0, traineeInformation.getJgmc());
             dataMap.put(1, traineeInformation.getName());
             dataMap.put(2, traineeInformation.getIdCardNo());
             dataMap.put(3, traineeInformation.getCarType());
             dataMap.put(4, traineeInformation.getSerialNum());
-            dataMap.put(5, m.get("s"+traineeInformation.getStatus()));
-            dataMap.put(6, StringUtils.isBlank(traineeInformation.getFirSub())?"无数据":m.get("1"+traineeInformation.getFirSub()));
-            dataMap.put(7, StringUtils.isBlank(traineeInformation.getSecSub())?"无数据":m.get("2"+traineeInformation.getSecSub()));
-            dataMap.put(8, StringUtils.isBlank(traineeInformation.getThirdSub())?"无数据":m.get("2"+traineeInformation.getThirdSub()));
-            dataMap.put(9, StringUtils.isBlank(traineeInformation.getForthSub())?"无数据":m.get("4"+traineeInformation.getForthSub()));
+            dataMap.put(5, m.get("s" + traineeInformation.getStatus()));
+            dataMap.put(6, StringUtils.isBlank(traineeInformation.getFirSub()) ? "无数据" : m.get("1" + traineeInformation.getFirSub()));
+            dataMap.put(7, StringUtils.isBlank(traineeInformation.getSecSub()) ? "无数据" : m.get("2" + traineeInformation.getSecSub()));
+            dataMap.put(8, StringUtils.isBlank(traineeInformation.getThirdSub()) ? "无数据" : m.get("2" + traineeInformation.getThirdSub()));
+            dataMap.put(9, StringUtils.isBlank(traineeInformation.getForthSub()) ? "无数据" : m.get("4" + traineeInformation.getForthSub()));
             data.add(dataMap);
         }
 
@@ -1383,13 +1391,13 @@ public class BizMainController {
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String("大车".getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheet(out, "大车情况" , data);
+        ExcelUtil.createSheet(out, "大车情况", data);
     }
 
     @GetMapping("exportCK")
     public void exportCK(String kcMc, String kcLx, String lqr, HttpServletRequest request, HttpServletResponse response) throws IOException {
         List<BizCk> bizCks = new ArrayList<>();
-        List<Map<Integer,String>> data = new ArrayList<>();
+        List<Map<Integer, String>> data = new ArrayList<>();
         Map<Integer, String> map = new HashMap<>();
 
         map.put(0, "物品名称");
@@ -1417,15 +1425,15 @@ public class BizMainController {
             List<BizKc> kcs = kcService.findByCondition(kcCondition);
             if (CollectionUtils.isNotEmpty(kcs)) {
                 List<String> kcIds = kcs.stream().map(BizKc::getId).collect(Collectors.toList());
-                if(CollectionUtils.isNotEmpty(kcIds)){
+                if (CollectionUtils.isNotEmpty(kcIds)) {
                     condition.in(BizCk.InnerColumn.kcId, kcIds);
                     bizCks = ckService.findByCondition(condition);
                 }
             }
-        }else{
+        } else {
             bizCks = ckService.findByCondition(condition);
         }
-        if (CollectionUtils.isNotEmpty(bizCks)){
+        if (CollectionUtils.isNotEmpty(bizCks)) {
 
             List<String> kcIds = bizCks.stream().map(BizCk::getKcId).collect(Collectors.toList());
             List<BizKc> kcs = kcService.findByIds(kcIds);
@@ -1440,8 +1448,8 @@ public class BizMainController {
                     }
                     dataMap.put(2, bizCk.getLqr().split("-")[0]);
                     dataMap.put(3, bizCk.getJgmc());
-                    dataMap.put(4, bizCk.getCjsj().substring(0,16));
-                    dataMap.put(5, bizCk.getLqSl()+"");
+                    dataMap.put(4, bizCk.getCjsj().substring(0, 16));
+                    dataMap.put(5, bizCk.getLqSl() + "");
                     dataMap.put(6, bizCk.getCjr().split("-")[1]);
                     data.add(dataMap);
                 });
@@ -1452,8 +1460,10 @@ public class BizMainController {
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String("出库流水".getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheet(out, "出库流水" , data);
+        ExcelUtil.createSheet(out, "出库流水", data);
     }
+
+
 
 
 }

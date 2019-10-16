@@ -78,7 +78,7 @@ public interface BizExceptionMapper extends Mapper<BizException> {
 			+ "SUM( CASE WHEN third_sub NOT IN ('30', '40') THEN 1 ELSE 0 END ) 'KM3DQR', "
 			+ "(select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE CODE = '302' AND kskm = '3' AND zt = '00' GROUP BY sfzmhm) t) 'KM3QRYC', "
 			+ "( SELECT COUNT(1) FROM trainee_test_info where subject ='科目四' and  (test_result is null or test_result = '') ) 'KM4YY', "
-			+ "(SELECT COUNT(1) FROM trainee_test_info m JOIN biz_exception c ON m.id_card_no=c.sfzmhm where subject ='科目四' and  (test_result is null or test_result = '') and c.zt='00') 'KM4YYYC', "
+			+ "((select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE (CODE = '991' ) AND KSKM='4' AND zt = '00' GROUP BY sfzmhm) t)) 'KM4YYYC', "
 			+ "SUM( CASE WHEN forth_sub NOT IN ('10', '20') THEN 1 ELSE 0 END ) 'KM4DQR'  , "
 			+ "(select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE CODE = '402' AND kskm = '4' AND zt = '00' GROUP BY sfzmhm) t) 'KM4QRYC' ,"
 			+"( SELECT COUNT(1) FROM TRAINEE_INFORMATION WHERE ARREARAGE ='10' and status  not in ( '60','99')  ) 'FQDQR' ,"

@@ -374,42 +374,95 @@
             minWidth: 90,
             fixed: 'right',
             render: (h, p) => {
-              return h('div', [
-                h('Tooltip',
-                  {
-                    props:
+                if (p.row.code !== '' && p.row.code !== null){
+                  return h('div', [
+                    h('Tooltip',
                       {
-                        placement: 'top',
-                        transfer: true,
-                        content: p.row.errorMessage,
-                        disabled: p.row.code !== '' && p.row.code !== null ? false : true
-                      }
-                  },
-                  [
-                    h('Button', {
-                      props: {
-                        type: p.row.code !== '' && p.row.code !== null ? 'error' : 'primary',
-                        size: 'small',
-                        icon: p.row.code !== '' && p.row.code !== null ? '' : 'md-checkmark'
+                        props:
+                          {
+                            placement: 'top',
+                            transfer: true,
+                            content: p.row.errorMessage,
+                            disabled:  false
+                          }
                       },
-                      style: {
-                        marginRight: '10px'
+                      [
+                        h('Button', {
+                          props: {
+                            type: 'primary',
+                            size: 'small',
+                            icon: 'md-checkmark'
+                          },
+                          style: {
+                            marginRight: '10px'
+                          },
+                          on: {
+                            click: () => {
+                              this.payOk.traineeId = p.row.id
+                              this.payOk.amount = this.kmMoney
+                              this.confirm = true
+                              // this.OKpay(p.index)
+                            }
+                          }
+                        }, ''),
+                        h('Button', {
+                          props: {
+                            type:  'error',
+                            size: 'small',
+                            icon: ''
+                          },
+                          style: {
+                            marginRight: '10px'
+                          },
+                          on: {
+                            click: () => {
+                              // console.log(p.row.remark);
+                              // console.log(this.payOk.remark);
+                              if (p.row.code !== '' && p.row.code !== null) return
+                            }
+                          }
+                        },  '异')
+                      ]
+                    ),
+                  ])
+                }else{
+                  return h('div', [
+                    h('Tooltip',
+                      {
+                        props:
+                          {
+                            placement: 'top',
+                            transfer: true,
+                            content: p.row.errorMessage,
+                            disabled: true
+                          }
                       },
-                      on: {
-                        click: () => {
-                          // console.log(p.row.remark);
-                          // console.log(this.payOk.remark);
-                          if (p.row.code !== '' && p.row.code !== null) return
-                          this.payOk.traineeId = p.row.id
-                          this.payOk.amount = this.kmMoney
-                          this.confirm = true
-                          // this.OKpay(p.index)
-                        }
-                      }
-                    }, p.row.code !== '' && p.row.code !== null ? '异' : '')
-                  ]
-                ),
-              ])
+                      [
+                        h('Button', {
+                          props: {
+                            type: 'primary',
+                            size: 'small',
+                            icon: 'md-checkmark'
+                          },
+                          style: {
+                            marginRight: '10px'
+                          },
+                          on: {
+                            click: () => {
+                              // console.log(p.row.remark);
+                              // console.log(this.payOk.remark);
+                              if (p.row.code !== '' && p.row.code !== null) return
+                              this.payOk.traineeId = p.row.id
+                              this.payOk.amount = this.kmMoney
+                              this.confirm = true
+                              // this.OKpay(p.index)
+                            }
+                          }
+                        }, '')
+                      ]
+                    ),
+                  ])
+                }
             }
           }
         ],
@@ -518,7 +571,8 @@
                         click: () => {
                           let a = {
                             traineeId: p.row.id,//学员ID
-                            remark: '',//备注
+                            remark: '先预约科目三考试，补交科目二初考费',//备注
+                            amount: 150,//科目二金额默认为150
                             km: '20'
                           }
                           this.swal({
@@ -626,67 +680,104 @@
             minWidth: 90,
             fixed: 'right',
             render: (h, p) => {
-              return h('div', [
+              if (p.row.code !== '' && p.row.code !== null){
+                return h('div', [
 
-                h('Tooltip',
-                  {
-                    props:
-                      {
-                        placement: 'top',
-                        transfer: true,
-                        content: p.row.errorMessage,
-                        disabled: p.row.code !== '' && p.row.code !== null ? false : true
-                      }
-                  },
-                  [
-                    h('Button', {
-                      props: {
-                        type: p.row.code !== '' && p.row.code !== null ? 'error' : 'primary',
-                        size: 'small',
-                        icon: p.row.code !== '' && p.row.code !== null ? '' : 'md-checkmark'
-                      },
-                      style: {
-                        marginRight: '10px'
-                      },
-                      on: {
-                        click: () => {
-                          if (p.row.secSubPaymentTime == '') {
-                            this.swal({
-                              text: '请先确定缴纳科二初考费',
-                              type: 'warning'
-                            });
-                            return
-                          }
-                          // } else if (p.row.secSub == '30') {
-                          //   this.swal({
-                          //     text: '学员考试不合格，请缴纳并核对核对科二补考费',
-                          //     type: 'warning',
-                          //     showCancelButton: true,
-                          //     confirmButtonText: '确定',
-                          //     cancelButtonText: '取消',
-                          //   }).then((willDelete) => {
-                          //     if (willDelete.value) {
-                          //       if (p.row.code !== '' && p.row.code !== null) return
-                          //       this.payOk.traineeId = p.row.id
-                          //       this.payOk.amount = this.kmMoney
-                          //       this.confirm = true
-                          //       // this.payOk.traineeId = p.row.id
-                          //       // this.OKpay(p.index)
-                          //     }
-                          //   });}
-                          else {
-                            if (p.row.code !== '' && p.row.code !== null) return
-                            if (p.row.secSub == '30') this.confirmText=true
-                            this.payOk.traineeId = p.row.id
-                            this.payOk.amount = this.kmMoney
-                            this.confirm = true
-                            // this.OKpay(p.index)
+                  h('Tooltip',
+                    {
+                      props:
+                        {
+                          placement: 'top',
+                          transfer: true,
+                          content: p.row.errorMessage,
+                          disabled:  false
+                        }
+                    },
+                    [
+                      h('Button', {
+                        props: {
+                          type:  'primary',
+                          size: 'small',
+                          icon:  'md-checkmark'
+                        },
+                        style: {
+                          marginRight: '10px'
+                        },
+                        on: {
+                          click: () => {
+                            if (p.row.secSubPaymentTime == '') {
+                              this.swal({
+                                text: '请先确定缴纳科二初考费',
+                                type: 'warning'
+                              });
+                              return
+                            }
+                            else {
+                              if (p.row.secSub == '30') this.confirmText=true
+                              this.payOk.traineeId = p.row.id
+                              this.payOk.amount = this.kmMoney
+                              this.confirm = true
+                              // this.OKpay(p.index)
+                            }
                           }
                         }
-                      }
-                    }, p.row.code !== '' && p.row.code !== null ? '异' : '')
-                  ])
-              ])
+                      },  ''),
+                      h('Button', {
+                        props: {
+                          type:  'error',
+                          size: 'small',
+                          icon: ''
+                        },
+                        style: {
+                          marginRight: '10px'
+                        }
+                      }, '异' )
+                    ])
+                ])
+              }else{
+                return h('div', [
+                  h('Tooltip',
+                    {
+                      props:
+                        {
+                          placement: 'top',
+                          transfer: true,
+                          content: p.row.errorMessage,
+                          disabled: true
+                        }
+                    },
+                    [
+                      h('Button', {
+                        props: {
+                          type:  'primary',
+                          size: 'small',
+                          icon:  'md-checkmark'
+                        },
+                        style: {
+                          marginRight: '10px'
+                        },
+                        on: {
+                          click: () => {
+                            if (p.row.secSubPaymentTime == '') {
+                              this.swal({
+                                text: '请先确定缴纳科二初考费',
+                                type: 'warning'
+                              });
+                              return
+                            }
+                            else {
+                              if (p.row.secSub == '30') this.confirmText=true
+                              this.payOk.traineeId = p.row.id
+                              this.payOk.amount = this.kmMoney
+                              this.confirm = true
+                              // this.OKpay(p.index)
+                            }
+                          }
+                        }
+                      },  '')
+                    ])
+                ])
+              }
             }
           }
         ],

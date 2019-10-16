@@ -90,6 +90,11 @@
                 <Tag v-else color="default">-</Tag>
               </Col>
             </Row>
+            <Row style="text-align: center" v-if="selectRow.code != '' && selectRow.code != null">
+              <Col span="24">
+                <Tag color="error">{{ selectRow.errorMessage }}</Tag>
+              </Col>
+            </Row>
             <Row style="text-align: center;padding-top: 10px"
                  v-if="!(selectRow.remark == '999999'&&selectRow.status=='50')">
               <Col span="24">
@@ -141,7 +146,7 @@
                     <Steps :current="stepIndex">
                       <Step title="报名" content="-" ref="bmStep"></Step>
                       <Step title="审核" content="-" ref="shStep"></Step>
-                      <Step title="缴费" content="-" ref="jfStep"></Step>
+                      <Step title="收费" content="-" ref="jfStep"></Step>
                       <Step title="受理" content="-" ref="slStep"></Step>
                     </Steps>
                     <!-- 报名内容 -->
@@ -243,6 +248,94 @@
               </Card>
             </Col>
           </Row>
+          <Row>
+          <Col span="24">
+            <Card dis-hover style="height: 200px">
+            <p slot="title">
+              初考缴费
+            </p>
+            <Row style="text-align: center">
+              <Col span="24" style="position: relative">
+              <Steps :current="kmStepIndex">
+                <Step title="科目一" content="-" ref="km1Step"></Step>
+                <Step title="科目二" content="-" ref="km2Step"></Step>
+                <Step title="科目三" content="-" ref="km3Step"></Step>
+              </Steps>
+              <!-- 科目一内容 -->
+              <div ref="km1Content" class="ivu-poptip-popper" style="position:absolute;left: 20px;top: 24px"
+                   x-placement="bottom">
+                <div class="ivu-poptip-content">
+                  <div class="ivu-poptip-arrow"></div> <!---->
+                  <div class="ivu-poptip-inner">
+                    <div class="ivu-poptip-title">
+                      <div class="ivu-poptip-title-inner">
+                        <span v-if="selectRow.infoCheckTime != ''">{{selectRow.firSubPaymentTime}}</span>
+                        <span v-else>-</span>
+                      </div>
+                    </div>
+                    <div class="ivu-poptip-body">
+                      <div class="ivu-poptip-body-content">
+                        <div class="ivu-poptip-body-content-inner">
+                          <Tag v-if="selectRow.firSubPaymentTime != ''" color="success">已缴费</Tag>
+                          <Tag v-else>-</Tag>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 科目二内容 -->
+              <div ref="km2Content" class="ivu-poptip-popper" style="position:absolute;left: 290px;top: 24px"
+                   x-placement="bottom">
+                <div class="ivu-poptip-content">
+                  <div class="ivu-poptip-arrow"></div> <!---->
+                  <div class="ivu-poptip-inner">
+                    <div class="ivu-poptip-title">
+                      <div class="ivu-poptip-title-inner">
+                        <span v-if="selectRow.confirmTime != ''">{{selectRow.secSubPaymentTime}}</span>
+                        <span v-else>-</span>
+                      </div>
+                    </div>
+                    <div class="ivu-poptip-body">
+                      <div class="ivu-poptip-body-content">
+                        <div class="ivu-poptip-body-content-inner">
+                          <Tag v-if="selectRow.secSubPaymentTime != ''" color="success">已缴费</Tag>
+                          <Tag v-else>-</Tag>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 科目三内容 -->
+              <div ref="km3Content" class="ivu-poptip-popper" style="position:absolute;left: 550px;top: 24px"
+                   x-placement="bottom">
+                <div class="ivu-poptip-content">
+                  <div class="ivu-poptip-arrow"></div> <!---->
+                  <div class="ivu-poptip-inner">
+                    <div class="ivu-poptip-title">
+                      <div class="ivu-poptip-title-inner">
+                        <span v-if="selectRow.acceptTime != ''">{{selectRow.thirdSubPaymentTime}}</span>
+                        <span v-else>-</span>
+                      </div>
+                    </div>
+                    <div class="ivu-poptip-body">
+                      <div class="ivu-poptip-body-content">
+                        <div class="ivu-poptip-body-content-inner">
+                          <Tag v-if="selectRow.thirdSubPaymentTime != ''" color="success">已缴费</Tag>
+                          <Tag v-else>-</Tag>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              </Col>
+            </Row>
+          </Card>
+          </Col>
+        </Row>
           <!--<Row style="padding-top: 20px">-->
           <!--<Col span="24">-->
           <!--<Card dis-hover>-->
@@ -388,6 +481,7 @@
         ],
         showModal: true,
         stepIndex: 0,
+        kmStepIndex:0,
         classType: {
           code: 'ZDCLK1002',
           data: []
@@ -672,6 +766,16 @@
       }
       if (this.selectRow.acceptTime != '') {
         this.stepIndex = 3;
+      }
+
+      if (this.selectRow.firSubPaymentTime != '' && this.selectRow.firSubPaymentTime != null){
+        this.kmStepIndex = 1;
+      }
+      if (this.selectRow.secSubPaymentTime != '' && this.selectRow.secSubPaymentTime != null){
+        this.kmStepIndex = 2;
+      }
+      if (this.selectRow.thirdSubPaymentTime != '' && this.selectRow.thirdSubPaymentTime != null){
+        this.kmStepIndex = 3;
       }
     },
     methods: {

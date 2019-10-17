@@ -40,6 +40,7 @@ export default {
   },
   FBXXY: {    //非本校学员
     PAGER: 'api/exception/pager',
+    DEAL:'/api/exception/updateException'
   },
   PJJL:{
     PAGER:'/api/chargemanagement/getPrintLog',

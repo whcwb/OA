@@ -9,7 +9,7 @@
       <Col span="20" :lg="20" :md="24">
         <Row :gutter="12" type="flex" justify="end">
           <Col span="4" :lg="4" :md="4">
-            <Select multiple v-model="param.chargeCode" filterable clearable
+            <Select multiple v-model="chargeCode" filterable clearable
                     placeholder="费用类型"
                     @on-change="getpagerList">
               <Option v-for="(item,index) in typeList" :value="item.key" :key="(index+1)">{{item.val}}</Option>
@@ -301,6 +301,7 @@
         tableData: [],
         total: 0,//总数量
         bmTime: [],
+        chargeCode:'',
         param: {
           // inOutType:'11',
           traineeNameLike: '',
@@ -379,12 +380,12 @@
       fineSup(n) {
         if (n != '') {
           this.bmTime = []
-          this.param.chargeCode = ''
+          this.chargeCode = ''
           this.DatePickerC(['', ''])
         }
         if (this.param.traineeNameLike == '' &&
           this.param.idCardNoLike == '' &&
-          this.param.chargeCode == '') {
+          this.chargeCode == '') {
           this.bmTime = [this.AF.trimDate(), this.AF.trimDate()];
           this.DatePickerC([this.bmTime[0], this.bmTime[1]]);
         }
@@ -399,6 +400,8 @@
         this.getPagerList()
       },
       getPagerList() {
+        this.param.chargeCode=(this.chargeCode).toString()
+
         var v = this
         if (this.param.cjsjGte.length == 10) {
           this.param.cjsjGte = this.param.cjsjGte + ' 00:00:00'

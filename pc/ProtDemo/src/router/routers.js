@@ -204,7 +204,7 @@ export default [
         name: 'NotLocalStudent',
         meta: {
           icon: 'md-trending-up',
-          title: '非本校学员'
+          title: '其他学员'
         },
         component: () => import('@/view/student/NotLocalStudent')
       },
@@ -413,7 +413,7 @@ export default [
         name: 'charge-signUp',
         meta: {
           icon: 'md-trending-up',
-          title: '报名收费'
+          title: '收费确认'
         },
         component: () => import('@/view/charge/charge-signUp')
       },
@@ -422,7 +422,7 @@ export default [
         name: 'charge-examination',
         meta: {
           icon: '_bear',
-          title: '考试收费'
+          title: '考试缴费'
         },
         component: () => import('@/view/charge/charge-examination')
       },

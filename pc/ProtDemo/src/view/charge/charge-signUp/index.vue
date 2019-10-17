@@ -5,12 +5,12 @@
     <Menu mode="horizontal" :active-name="activeName" @on-select="MenuClick">
       <MenuItem name="1">
         <div style="font-weight: 700;font-size: 16px">
-          待缴费学员
+          待缴费
         </div>
       </MenuItem>
       <MenuItem name="2">
         <div style="font-weight: 700;font-size: 16px">
-          已缴费学员
+          已缴费
         </div>
       </MenuItem>
       <MenuItem name="3">

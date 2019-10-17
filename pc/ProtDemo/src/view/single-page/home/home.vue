@@ -221,7 +221,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-appointment')">已约</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待考</Button>
             </Col>
           </Row>
           <Row>
@@ -310,7 +310,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM1DQR == null ? 0 : dashboard.KM1DQR" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -349,7 +349,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-appointment')">已约</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待考</Button>
             </Col>
           </Row>
           <Row>
@@ -438,7 +438,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM2DQR == null ? 0 : dashboard.KM2DQR" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -477,7 +477,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-appointment')">已约</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待考</Button>
             </Col>
           </Row>
           <Row>
@@ -566,7 +566,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM3DQR == null ? 0 : dashboard.KM3DQR" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -605,7 +605,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-appointment')">已约</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待考</Button>
             </Col>
           </Row>
           <Row>
@@ -652,7 +652,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM4DQR == null ? 0 : dashboard.KM4DQR" count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>

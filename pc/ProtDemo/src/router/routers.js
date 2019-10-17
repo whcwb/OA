@@ -303,7 +303,7 @@ export default [
         name: 'Student-appointment',
         meta: {
           icon: '_bear',
-          title: '预约确认'
+          title: '约考导入'
         },
         component: () => import('@/view/student/Student-appointment')
       },

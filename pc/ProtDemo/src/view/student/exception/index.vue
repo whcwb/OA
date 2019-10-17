@@ -17,7 +17,7 @@
                    v-model="param.xmLike"/>
           </Col>
           <Col span="4" style="padding-left: 10px">
-            <Select v-model="param.code" @on-change="changeExpCode" clearable multiple>
+            <Select v-model="codeIn" @on-change="changeExpCode" clearable multiple>
               <Option v-for="item in expsConfig" :value="item.code" :key="item.code">{{ item.bz }}</Option>
             </Select>
           </Col>
@@ -99,10 +99,11 @@
         selectRow: {},
         message: '',
         expsConfig:[],
+        codeIn:'',
         param: {
           sfzmhm: '',
           xmLike:'',
-          code:'',
+          codeIn:'',
           kskm:'',
           zt:'00',
           bz2:'',
@@ -199,11 +200,11 @@
         }).then(()=>{
           if (this.$route.query.code){
             sessionStorage.setItem("queryExpCode", this.$route.query.code);
-            this.param.code = this.$route.query.code.split(",");
+            this.codeIn = this.$route.query.code.split(",");
           } else {
             var code = sessionStorage.getItem("queryExpCode");
             if (code){
-              this.param.code = code.split(",");
+              this.codeIn = code.split(",");
             }
           }
           if (this.$route.query.kskm){
@@ -224,6 +225,7 @@
         sessionStorage.removeItem("queryExpKskm");
       },
       getPagerList() {
+        this.param.codeIn=(this.codeIn).toString()
           this.$http.post('/api/exception/pager', this.param).then(res => {
             if (res.code == 200) {
                 this.pageData = res.page.list;
@@ -243,11 +245,12 @@
           })
       },
       downloadExcel(){
+        this.param.codeIn=(this.codeIn).toString()
         window.open(http.url + '/api/exception/export' +
           "?sfzmhm=" + this.param.sfzmhm +
           "&userid=" + JSON.parse(sessionStorage.getItem('userInfo')).yhid +
           "&token=" + JSON.parse(Cookies.get('accessToken')).token +
-          "&code=" + this.param.code +
+          "&code=" + this.param.codeIn +
           "&kskm=" + this.param.kskm +
           "&zt=" + this.param.zt +
           "&bz2=" + this.param.bz2

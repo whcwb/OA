@@ -9,7 +9,7 @@
       <Col span="20" :lg="20" :md="24">
         <Row :gutter="12" type="flex" justify="end">
           <Col span="4" :lg="4" :md="4">
-            <Select multiple v-model="chargeCode" filterable clearable
+            <Select multiple v-model="chargeCodeIn" filterable clearable
                     placeholder="费用类型"
                     @on-change="getpagerList">
               <Option v-for="(item,index) in typeList" :value="item.key" :key="(index+1)">{{item.val}}</Option>
@@ -241,7 +241,7 @@
                 }, [
                   h('Button',{
                     props:{type:'error',size:'small'},
-                    style:{display:p.row.chargeCode == '0003'?'':'none'},
+                    style:{display:p.row.chargeCodeIn == '0003'?'':'none'},
                     on:{
                       click:()=>{
                         this.payRemove(p.row.traineeId)
@@ -301,13 +301,13 @@
         tableData: [],
         total: 0,//总数量
         bmTime: [],
-        chargeCode:'',
+        chargeCodeIn:'',
         param: {
           // inOutType:'11',
           traineeNameLike: '',
           idCardNoLike: '',
           // chargeSourceLike: '',//驾校名称
-          chargeCode: '',
+          chargeCodeIn: '',
           // cjsjLike:'',
           cjsjGte: '',//开始时间
           cjsjLte: '',//结束时间
@@ -339,6 +339,8 @@
         this.bmTime = [this.AF.trimDate(), this.AF.trimDate()];
       }
       this.DatePickerC([this.bmTime[0], this.bmTime[1]]);
+      this.chargeCodeIn=''
+      this.param.chargeCodeIn=''
       this.getPagerList();
       this.getTypeList()
     },
@@ -380,12 +382,12 @@
       fineSup(n) {
         if (n != '') {
           this.bmTime = []
-          this.chargeCode = ''
+          this.chargeCodeIn = ''
           this.DatePickerC(['', ''])
         }
         if (this.param.traineeNameLike == '' &&
           this.param.idCardNoLike == '' &&
-          this.chargeCode == '') {
+          this.chargeCodeIn == '') {
           this.bmTime = [this.AF.trimDate(), this.AF.trimDate()];
           this.DatePickerC([this.bmTime[0], this.bmTime[1]]);
         }
@@ -400,8 +402,7 @@
         this.getPagerList()
       },
       getPagerList() {
-        this.param.chargeCode=(this.chargeCode).toString()
-
+        this.param.chargeCodeIn=(this.chargeCodeIn).toString()
         var v = this
         if (this.param.cjsjGte.length == 10) {
           this.param.cjsjGte = this.param.cjsjGte + ' 00:00:00'
@@ -435,10 +436,11 @@
         this.getPagerList()
       },
       excel() {
+        this.param.chargeCodeIn=(this.chargeCodeIn).toString()
         window.open(http.url + this.apis.EXCEL.CHARGE +
           "?traineeNameLike=" + this.param.traineeNameLike +
           "&idCardNoLike=" + this.param.idCardNoLike +
-          "&chargeCode=" + this.param.chargeCode +
+          "&chargeCode=" + this.param.chargeCodeIn +
           // "&chargeSourceLike=" + this.param.chargeSourceLike +
           "&cjsjGte=" + this.param.cjsjGte +
           "&cjsjLte=" + this.param.cjsjLte +

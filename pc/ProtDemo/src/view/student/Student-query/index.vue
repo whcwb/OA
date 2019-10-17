@@ -21,15 +21,15 @@
                           filterable></Cascader>
               </FormItem>
             </Col>
-            <Col span="3">
-              <FormItem>
-                <Input type="text" placeholder="学员姓名" v-model="param.nameLike"
-                       @on-enter="param.pageNum = 1,getPagerList('val')"/>
-              </FormItem>
-            </Col>
             <Col span="2">
               <FormItem>
                 <Input type="text" placeholder="推荐人" v-model="param.referrerLike"
+                       @on-enter="param.pageNum = 1,getPagerList('val')"/>
+              </FormItem>
+            </Col>
+            <Col span="3">
+              <FormItem>
+                <Input type="text" placeholder="学员姓名" v-model="param.nameLike"
                        @on-enter="param.pageNum = 1,getPagerList('val')"/>
               </FormItem>
             </Col>
@@ -171,7 +171,7 @@
             title: '报名时间', width: 180, key: 'registrationTime', align: 'center',
             render: (h, params) => {
               return h('div',
-                params.row.registrationTime
+                params.row.registrationTime.substring(0,10)
               );
             }
           },

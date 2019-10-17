@@ -120,7 +120,7 @@
                       报名费
                     </div>
                   </Col>
-                  <Col span="3" v-if ='userRealyPay'>
+                  <Col span="2" v-if ='userRealyPay'>
                     <FormItem>
                       <Input type="text" placeholder="报名费" v-model="user.realPay"/>
                     </FormItem>
@@ -135,7 +135,7 @@
                     </FormItem>
                   </Col>
                   <!--v-show="user.installment == 10"-->
-                  <Col span="3" v-show="user.installment == 10">
+                  <Col span="2" v-show="user.installment == 10">
                     <FormItem>
                       <Input type="text" placeholder="尾款金额" v-model="user.oweAmount"/>
                     </FormItem>
@@ -146,7 +146,7 @@
                 </Row>
                 <Row>
                   <Col span="20">
-                    <Card dis-hover style="background-color: #EEEEEE;height: 72px;">
+                    <Card dis-hover style="background-color: #EEEEEE;height: 90px;">
                       <Row>
                         <Col span="6">
                         <FormItem>

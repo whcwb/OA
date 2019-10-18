@@ -9,6 +9,7 @@ import com.ldz.biz.constant.Status;
 import com.ldz.biz.mapper.ArchivesRecordMapper;
 import com.ldz.biz.mapper.CoachTraineeRercordMapper;
 import com.ldz.biz.mapper.TraineeInformationMapper;
+import com.ldz.biz.mapper.TraineeTestInfoMapper;
 import com.ldz.biz.model.*;
 import com.ldz.biz.service.*;
 import com.ldz.sys.base.BaseServiceImpl;
@@ -26,7 +27,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -34,7 +34,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.jdbc.support.nativejdbc.OracleJdbc4NativeJdbcExtractor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -79,7 +78,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     private ChargeManagementService chargeManagementService;
     @Autowired // 学员状态表
     private TraineeStatusService traineeStatusService;
-
+    @Autowired
+    private TraineeTestInfoMapper testInfoMapper;
     @Autowired //电子档案表
     private ElecArchivesManageService elecService;
     @Autowired
@@ -143,11 +143,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             condition.and().andCondition(" sec_sub_test_time is not null or sec_sub_test_time != ''");
             condition.and().andCondition(" sec_sub_payment_time is null or sec_sub_payment_time = '' ");
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
-            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
             condition.setOrderByClause("code asc, sec_sub_test_time asc  ");
         } else if (StringUtils.equals(sign, "3")) { // 查询科目三需要缴纳考试费的学员
             // 科三同理 ： 只要有 科三的考试时间 并且缴费时间是空 则需要交费
-            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
             condition.and().andCondition("  third_sub_test_time is not null or third_sub_test_time != '' ");
             condition.and().andCondition("third_sub_payment_time is null or third_sub_payment_time = ''"); // 考试费未缴纳
@@ -159,7 +159,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             //  科目一 也按照已经预约的来缴费
             condition.and().andCondition(" fir_sub_test_time is not null or fir_sub_test_time != '' ");
             condition.and().andCondition("fir_sub_payment_time is  null or fir_sub_payment_time = '' ");
-            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50","60"));
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
             condition.setOrderByClause(" code asc,fir_sub_test_time asc");
 //            condition.eq(TraineeInformation.InnerColumn.acceptStatus, "20");
@@ -431,7 +431,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 condition.lte(TraineeInformation.InnerColumn.registrationTime.name(), endTime);
             }
         }
-        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50","60"));
+        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50", "60"));
         String[] jgdm = request.getParameterValues("bmd");
         if (jgdm != null && jgdm.length > 0) {
             //报名点，是级联组件，从前台传过来的是一个数组，数组最后一个数据是最终选择的报名点数据
@@ -492,7 +492,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
         PageInfo<TraineeInformation> resultPage = findPage(pager, condition);
         String idCardNo = getRequestParamterAsString("idCardNo");
-        if (CollectionUtils.isNotEmpty(resultPage.getList())|| StringUtils.isBlank(idCardNo)) {
+        if (CollectionUtils.isNotEmpty(resultPage.getList()) || StringUtils.isBlank(idCardNo)) {
             afterPager(resultPage);
             result.setPage(resultPage);
             return result;
@@ -557,7 +557,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             exceptionService.saveException(exception);
             return ApiResponse.success();
         }
-        if(StringUtils.isBlank(obj.getInfoCheckTime())){
+        if (StringUtils.isBlank(obj.getInfoCheckTime())) {
             return ApiResponse.fail("学员信息未审核 ， 请先审核");
         }
         obj.setSerialNum(entity.getSerialNum());
@@ -938,7 +938,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             entity.setSecSubPaymentTime(entity.getRegistrationTime());
             entity.setThirdSubPaymentTime(entity.getRegistrationTime());
         }
-        if(StringUtils.equals(free, "1")){
+        if (StringUtils.equals(free, "1")) {
             entity.setRegistrationFee(0);
             entity.setRealPay(0);
             entity.setArrearage("00");
@@ -949,7 +949,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             entity.setReduceVerifier("系统自动确认");
             entity.setReduceRemark("免单优惠");
         }
-        if(StringUtils.isNotBlank(repeat)){
+        if (StringUtils.isNotBlank(repeat)) {
             entity.setReduceCheckTime(DateUtils.getNowTime());
             entity.setReduceStatus("10");
             entity.setReduceVerifier("系统自动确认");
@@ -960,7 +960,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         int i = baseMapper.insertSelective(entity);
         if (info != null && StringUtils.isNotBlank(repeat)) {
             String status = info.getStatus();
-            info.setStatus("70");
+            info.setStatus("50");
             update(info);
             traineeStatusService.saveEntity(info, "学员重新报名 未修改前状态 ," + status, "00", "重新报名");
 
@@ -1095,7 +1095,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (StringUtils.equals("99", information.getStatus()) || StringUtils.isBlank(information.getSerialNum())) {
             information.setStatus("00");  // 收费完成，进入受理状态
         }
-        if(StringUtils.equals(information.getAcceptStatus(), "00") || StringUtils.isBlank(information.getAcceptStatus())){
+        if (StringUtils.equals(information.getAcceptStatus(), "00") || StringUtils.isBlank(information.getAcceptStatus())) {
             information.setAcceptStatus("10"); // 受理状态进入受理中
         }
         information.setConfirmer(currentUser.getZh() + "-" + currentUser.getXm());
@@ -2098,6 +2098,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         LimitedCondition condition = getQueryCondition();
         condition.eq(TraineeInformation.InnerColumn.infoCheckStatus, "10");
         condition.and().andCondition(" confirm_time is null or confirm_time = ''");
+        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50", "60"));
         condition.setOrderByClause(" registration_time desc");
         PageInfo<TraineeInformation> pageInfo = findPage(page, condition);
        /* long realPay = baseMapper.countRealPay();
@@ -2107,7 +2108,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         page.setPageSize(9999);
         PageInfo<TraineeInformation> info = findPage(page, condition);
         if (CollectionUtils.isNotEmpty(info.getList())) {
-            long asLong = info.getList().stream().mapToLong(TraineeInformation::getRealPay).reduce((i1, i2) -> i1 + i2).getAsLong();
+            long asLong = info.getList().stream().mapToLong(TraineeInformation::getRealPay).reduce(Long::sum).getAsLong();
             result.setResult(asLong);
         }
         pageInfo.getList().forEach(traineeInformation -> {
@@ -2609,17 +2610,17 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     @Override
     public ApiResponse<String> getAppointed(Page<TraineeInformation> entity) {
         Map<String, String> kmMap = new HashMap<>();
-        kmMap.put("10","科目一");
+        kmMap.put("10", "科目一");
         kmMap.put("20", "科目二");
         kmMap.put("30", "科目三");
-        kmMap.put("40","科目四");
+        kmMap.put("40", "科目四");
         ApiResponse<String> result = new ApiResponse<>();
 //        LimitedCondition condition = getQueryCondition();
-        SimpleCondition  condition = new SimpleCondition(TraineeTestInfo.class);
+        SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
         condition.and().andCondition(" test_result is null or test_result = ''");
         String statu = getRequestParamterAsString("statu");
         if (StringUtils.isNotBlank(statu)) {
-            condition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(statu) );
+            condition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(statu));
         }
         condition.setOrderByClause(" id desc ");
         SimpleCondition finalCondition = condition;
@@ -2658,7 +2659,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
         if (StringUtils.isNotBlank(statu)) {
             condition.eq(TraineeInformation.InnerColumn.status, statu);
-            if (StringUtils.equals(statu, "10")) {
+          /*  if (StringUtils.equals(statu, "10")) {
                 // 科目一待办条件   科目一未合格 或科目一的考试时间为空
                 condition.and().andCondition(" (fir_sub !='40' or fir_sub_test_time is null) and accept_Status ='20' ");
             } else if (StringUtils.equals(statu, "20")) {
@@ -2669,10 +2670,10 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 condition.and().andCondition(" third_sub !='40' and fir_sub = '40' ");
             }else if(StringUtils.equals(statu, "40")){
                 condition.and().andCondition(" fir_sub = '40' and sec_sub = '40' and third_sub = '40' and forth_sub != '20'");
-            }
-        } else {
+            }*/
+        } /*else {
             condition.and().andCondition(" ((fir_sub !='40' or fir_sub_test_time is null) and accept_Status ='20' ) or (fir_sub = '40' and sec_sub != '40') or (third_sub !='40' and fir_sub = '40' ) or (fir_sub = '40' and sec_sub = '40' and third_sub = '40' and forth_sub != '20')");
-        }
+        }*/
 
         PageInfo<TraineeInformation> page = findPage(entity, condition);
         result.setPage(page);
@@ -3097,6 +3098,180 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
         ExcelUtil.createSheetArray(out, data, sheetList);
+    }
+
+    @Override
+    public ApiResponse<String> getTestStudents(int pageSize, int pageNum, String jgdm, String testTime, String testPlace, String kskm, String idCardNoLike) {
+        Map<String, Object> kmMap = new HashMap<>();
+        kmMap.put("1", "科目一");
+        kmMap.put("2", "科目二");
+        kmMap.put("3", "科目三");
+        kmMap.put("4", "科目四");
+        int anInt = Integer.parseInt(kskm);
+        kskm = (String) kmMap.get(kskm);
+        if (StringUtils.isBlank(jgdm)) {
+            jgdm = null;
+        }
+        if (StringUtils.isBlank(testTime)) {
+            testTime = null;
+        }
+        if (StringUtils.isBlank(testPlace)) {
+            testPlace = null;
+        }
+        if (StringUtils.isBlank(idCardNoLike)) {
+            idCardNoLike = null;
+        }
+        String firSubTestTimeLike = getRequestParamterAsString("firSubTestTimeLike");
+        String secSubTestTimeLike = getRequestParamterAsString("secSubTestTimeLike");
+        String thirdSubTestTimeLike = getRequestParamterAsString("thirdSubTestTimeLike");
+        String forthSubTestTimeLike = getRequestParamterAsString("forthSubTestTimeLike");
+        if (StringUtils.isBlank(firSubTestTimeLike)) {
+            firSubTestTimeLike = null;
+        }
+        if (StringUtils.isBlank(secSubTestTimeLike)) {
+            secSubTestTimeLike = null;
+        }
+        if (StringUtils.isBlank(thirdSubTestTimeLike)) {
+            thirdSubTestTimeLike = null;
+        }
+        if (StringUtils.isBlank(forthSubTestTimeLike)) {
+            forthSubTestTimeLike = null;
+        }
+        String nameLike = getRequestParamterAsString("nameLike");
+        if (StringUtils.isBlank(nameLike)) {
+            nameLike = null;
+        }
+        String finalKskm = kskm;
+        String finalIdCardNo = idCardNoLike;
+        String finalTestPlace = testPlace;
+        String finalTestTime = testTime;
+        String finalJgdm = jgdm;
+        String finalForthSubTestTimeLike = forthSubTestTimeLike;
+        String finalThirdSubTestTimeLike = thirdSubTestTimeLike;
+        String finalSecSubTestTimeLike = secSubTestTimeLike;
+        String finalFirSubTestTimeLike = firSubTestTimeLike;
+        String finalNameLike = nameLike;
+        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, finalTestPlace, finalKskm, anInt, finalIdCardNo, finalFirSubTestTimeLike, finalSecSubTestTimeLike, finalThirdSubTestTimeLike, finalForthSubTestTimeLike, finalNameLike));
+        if (CollectionUtils.isNotEmpty(info.getList())) {
+            List<TraineeInformation> infoList = info.getList();
+            List<String> ids = infoList.stream().map(TraineeInformation::getId).collect(Collectors.toList());
+            SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
+            simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, finalKskm);
+            simpleCondition.in(TraineeTestInfo.InnerColumn.traineeId, ids);
+            simpleCondition.setOrderByClause(" test_time asc");
+            List<TraineeTestInfo> list = traineeTestInfoService.findByCondition(simpleCondition);
+            Map<String, List<TraineeTestInfo>> map = list.stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
+            info.getList().forEach(traineeInformation -> traineeInformation.setTestInfos(map.get(traineeInformation.getId())));
+        }
+        ApiResponse<String> res = new ApiResponse<>();
+        res.setPage(info);
+        return res;
+    }
+
+    @Override
+    public ApiResponse<String> updateTestResult(String id, String kskm, String result, String time) {
+        RuntimeCheck.ifBlank(id, "请选择学员");
+        RuntimeCheck.ifBlank(kskm, "请选择科目");
+        RuntimeCheck.ifBlank(result, "请选择考试结果");
+        RuntimeCheck.ifBlank(time, "请选择考试时间");
+        Map<String, String> kmMap = new HashMap<>();
+        kmMap.put("1", "科目一");
+        kmMap.put("2", "科目二");
+        kmMap.put("3", "科目三");
+        kmMap.put("4", "科目四");
+        TraineeInformation information = findById(id);
+        SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(kskm));
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, time);
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.traineeId, id);
+        List<TraineeTestInfo> testInfos = traineeTestInfoService.findByCondition(simpleCondition);
+        if (CollectionUtils.isEmpty(testInfos)) {
+            return ApiResponse.success();
+        }
+        for (TraineeTestInfo info : testInfos) {
+            info.setTestResult(result);
+            traineeTestInfoService.update(info);
+            // 根据当前考试科目 , 查看是否需要修改当前学员的状态
+            if (StringUtils.equals(kskm, "1")) {
+                // 科目一考试如果合格 , 如果不在科目一就修改为科目二
+                if (StringUtils.equals(result, "00")) {
+                    if (StringUtils.equals(information.getStatus(), "10")) {
+                        information.setStatus("20");
+                    }
+                    information.setFirSub("40");
+                } else {
+                    information.setFirSub("30");
+                }
+            } else if (StringUtils.equals(kskm, "2")) {
+                if (StringUtils.equals(result, "00")) {
+                    // 科目二合格 , 查看当前状态是否在科目二, 不在则不更新状态
+                    information.setSecSub("40");
+                    if (StringUtils.equals(information.getStatus(), "20")) {
+                        if (StringUtils.equals(information.getThirdSub(), "40")) {
+                            information.setStatus("40");
+                        } else {
+                            information.setStatus("30");
+                        }
+                    }
+                } else {
+                    information.setSecSub("30");
+                }
+            } else if (StringUtils.equals(kskm, "3")) {
+                if (StringUtils.equals(result, "00")) {
+                    information.setThirdSub("40");
+                    if (StringUtils.equals(information.getStatus(), "30")) {
+                        if (StringUtils.equals(information.getSecSub(), "40")) {
+                            information.setStatus("40");
+                        } else {
+                            information.setStatus("20");
+                        }
+                    }
+                } else {
+                    information.setThirdSub("30");
+                }
+            } else if (StringUtils.equals(kskm, "4")) {
+                if (StringUtils.equals(result, "00")) {
+                    information.setForthSub("20");
+                    information.setStatus("50");
+                }
+            } else {
+                information.setForthSub("10");
+            }
+            update(information);
+        }
+
+        return ApiResponse.success();
+    }
+
+    @Override
+    public ApiResponse<String> revokeTestAppoint(String id, String kskm, String time) {
+        RuntimeCheck.ifBlank(id,"请选择学员" );
+        RuntimeCheck.ifBlank(kskm, "请选择科目");
+        RuntimeCheck.ifBlank(time, "请选择时间");
+        Map<String, String> kmMap = new HashMap<>();
+        kmMap.put("1", "科目一");
+        kmMap.put("2", "科目二");
+        kmMap.put("3", "科目三");
+        kmMap.put("4", "科目四");
+        TraineeInformation information = findById(id);
+        SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.traineeId, id);
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(kskm));
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, time);
+        List<TraineeTestInfo> infos = traineeTestInfoService.findByCondition(simpleCondition);
+        for (TraineeTestInfo info : infos) {
+            info.setTestResult(null);
+            testInfoMapper.updateByPrimaryKey(info);
+            if(StringUtils.equals(kskm, "1")){
+                information.setFirSub("10");
+
+            }else if(StringUtils.equals(kskm, "2")){
+                information.setSecSub("20");
+            }
+        }
+
+
+        return null;
     }
 
 

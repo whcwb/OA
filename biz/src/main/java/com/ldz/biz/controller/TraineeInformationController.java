@@ -464,5 +464,30 @@ public class TraineeInformationController extends BaseController<TraineeInformat
         service.exportResult(request, response);
     }
 
+    /**
+     * 获取约考记录
+     */
+    @PostMapping("/getTestStudents")
+    public ApiResponse<String> getTestStudents(@RequestParam(defaultValue = "8") int pageSize,@RequestParam(defaultValue = "1") int pageNum,  String jgdm , String testTime , String testPlace, String kskm,  String idCardNoLike){
+        return service.getTestStudents(pageSize, pageNum,jgdm,testTime,testPlace,kskm,idCardNoLike);
+    }
+
+    /**
+     * 修改学员的考试状态
+     */
+    @PostMapping("/updateTestResult")
+    public ApiResponse<String> updateTestResult(String id , String kskm, String result, String time){
+        return service.updateTestResult(id, kskm, result, time);
+    }
+
+
+    /**
+     *  预约撤回
+     */
+    public ApiResponse<String> revokeAppoint(String id, String kskm, String time){
+        return service.revokeTestAppoint(id, kskm, time);
+    }
+
+
 
 }

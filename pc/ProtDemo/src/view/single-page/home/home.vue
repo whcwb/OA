@@ -41,6 +41,11 @@
         <Button type="primary" shape="circle" icon="md-refresh" :loading="loadBtnFlag" @click="loadData"></Button>
       </Tooltip>
     </div>
+    <div v-if="anayDivFlag" style="position: absolute;padding-top: 80px;padding-left: 20px">
+      <Tooltip :content="anayGxsj" placement="bottom-start">
+        <Button type="error" shape="circle" icon="md-analytics" :loading="anayBtnFlag" @click="anayData"></Button>
+      </Tooltip>
+    </div>
     <Row :gutter="20" type="flex" justify="center" align="middle" style="padding-top: 20px">
       <Col span="5">
       <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
@@ -211,6 +216,7 @@
       </Card>
       </Col>
     </Row>
+
     <Row :gutter="20" type="flex" justify="center" align="middle" style="padding-top: 20px">
       <Col span="7">
       <Card  :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
@@ -802,6 +808,9 @@
         over:0,
         gxsj:'',
         loadBtnFlag:false,
+        anayBtnFlag:false,
+        anayDivFlag:false,
+        anayGxsj:'异常统计',
         dashboard:{},
         params:{
           startTime:'',
@@ -823,6 +832,14 @@
     },
     mounted() {
         this.loadData();
+        //
+        var userInfo = sessionStorage.getItem("userInfo");
+        var uData = JSON.parse(userInfo);
+        if (uData.type == "su"){
+          this.anayDivFlag = true;
+        }else{
+          this.anayDivFlag = false;
+        }
     },
     methods: {
       inputVal(val){
@@ -843,6 +860,22 @@
             this.loadBtnFlag = false;
             this.gxsj = "数据加载失败";
           })
+      },
+      anayData(){
+        this.anayBtnFlag = true;
+        this.anayGxsj = "加载中";
+        this.$http.get(this.apis.HOME.DASHBOARD).then((res) => {
+          this.anayBtnFlag = false;
+          if (res.code == 200) {
+            this.anayGxsj = "数据更新时间:"+moment().format("YYYY-MM-DD HH:mm");
+            this.loadData();
+          }else{
+            this.anayGxsj = "数据更新失败";
+          }
+        }).catch((err) => {
+          this.anayBtnFlag = false;
+          this.anayGxsj = "数据加载失败";
+        })
       },
       goToPage(pageName){
           var permission = JSON.stringify(this.$store.state.app.permissionMenuList);

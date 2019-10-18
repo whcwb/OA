@@ -8,27 +8,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.ldz.util.bean.SimpleCondition;
-import com.ldz.util.commonUtil.ExcelUtil;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ldz.biz.model.BizException;
 import com.ldz.biz.model.BizExceptionConfig;
+import com.ldz.biz.model.BizJoblog;
 import com.ldz.biz.service.BizExceptionService;
+import com.ldz.biz.service.BizJoblogService;
 import com.ldz.sys.base.BaseController;
 import com.ldz.sys.base.BaseService;
 import com.ldz.util.bean.ApiResponse;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.ldz.util.bean.SimpleCondition;
+import com.ldz.util.commonUtil.ExcelUtil;
 
 @RestController
 @RequestMapping("/api/exception")
 public class BizExceptionController extends BaseController<BizException, String> {
     @Autowired
     private BizExceptionService service;
+    @Autowired
+	private BizJoblogService jobLogService;
 
     @Override
     protected BaseService<BizException, String> getBaseService() {
@@ -120,5 +128,32 @@ public class BizExceptionController extends BaseController<BizException, String>
         return service.updateException(id);
     }
 
-
+    /**
+     * 手工执行异常统计
+     * @param id
+     * @return
+     */
+    @PostMapping("/runException")
+    public ApiResponse<String> runException(String id){
+    	ApiResponse<List<BizExceptionConfig>> exps = service.getAllConfig();
+		if (exps.getCode() == ApiResponse.SUCCESS && exps.getResult().size() > 0){
+			List<BizExceptionConfig> configs = exps.getResult();
+			for (int i=0; i<configs.size(); i++){
+				BizExceptionConfig config = configs.get(i);
+				if (config.getDays() != null){
+					long startTime = System.currentTimeMillis();
+					service.expJobSave(config);
+					long endTime = System.currentTimeMillis();
+					//写日志记录
+					BizJoblog jobLog = new BizJoblog();
+					jobLog.setJob(config.getBz());
+					jobLog.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+					jobLog.setYxsc((endTime - startTime) / 1000);
+					jobLogService.save(jobLog);
+				}
+			}
+		}
+		
+        return ApiResponse.success();
+    }
 }

@@ -1,99 +1,138 @@
 <template>
   <div class="box_col">
     <Row>
-      <Col span="24">
-        <pager-tit title="考试导入"></pager-tit>
+      <Col span="2">
+        <pager-tit title="考试确认"></pager-tit>
+      </Col>
+      <Col span="8">
+      <Tag type="dot" :color="TagDot == index ? 'primary' : 'default'"
+           style="cursor: pointer"
+           @click.native="kmCheck(index,item)"
+           v-for="(item,index) in [{val:'科目一',key:'10'},{val:'科目二',key:'20'},{val:'科目三',key:'30'},{val:'科目四',key:'40'}]">{{item.val}}
+      </Tag>
       </Col>
     </Row>
     <Row style="padding-top: 20px">
       <Col span="2" style="padding-right: 20px;cursor: pointer">
-        <Card dis-hover style="text-align:center;width:150px;height:148px" @click.native="downloadTemplate">
-          <div style="text-align:center">
-            <img src="@/assets/images/excel.jpg" style="width:100%">
-          </div>
-          <h3 style="margin-top: 10px;padding-bottom: 10px">模板下载</h3>
-        </Card>
+      <Button size="large" icon="ios-download-outline" type="primary" @click="downloadTemplate">模板下载</Button>
+      <!--<Card dis-hover style="text-align:center;width:150px;height:148px" @click.native="downloadTemplate">
+        <div style="text-align:center">
+          <img src="@/assets/images/excel.jpg" style="width:100%">
+        </div>
+        <h3 style="margin-top: 10px;padding-bottom: 10px">模板下载</h3>
+      </Card>-->
       </Col>
-      <Col span="14" offset="1">
-        <Upload
-          ref="upload"
-          :max-size="2048"
-          :headers="{'userid':accessToken.userId, 'token':accessToken.token}"
-          :before-upload="(file)=>{pageData=[],this.handleSpinCustom()}"
-          :on-success="(res, file,fileList)=>{successCallback(res, file, fileList)}"
-          :on-error="errorCallback"
-          :on-format-error="handleFormatError"
-          :on-exceeded-size="handleMaxSize"
-          :format="['xls']"
-          type="drag"
-          :action="uploadUrl">
-          <div style="padding: 20px 0">
-            <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-            <p style="color:#464c5b;font-size: 16px">点击或拖动Excel文件进行上传导入</p>
-            <p style="color:#9ea7b4;font-size: 12px;padding-top:10px">只能上传xls文件，文件不能大于2M</p>
-          </div>
-        </Upload>
+
+      <Col span="3">
+      <Upload
+        ref="upload"
+        :max-size="2048"
+        :headers="{'userid':accessToken.userId, 'token':accessToken.token}"
+        :before-upload="(file)=>{pageData=[],this.handleSpinCustom()}"
+        :on-success="(res, file,fileList)=>{successCallback(res, file, fileList)}"
+        :on-error="errorCallback"
+        :on-format-error="handleFormatError"
+        :on-exceeded-size="handleMaxSize"
+        :format="['xls']"
+        :action="uploadUrl">
+        <Button icon="ios-cloud-upload-outline">上传Excel文件</Button>
+        <!--<div style="padding: 20px 0">
+          <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+          <p style="color:#464c5b;font-size: 16px">点击或拖动Excel文件进行上传导入</p>
+          <p style="color:#9ea7b4;font-size: 12px;padding-top:10px">只能上传xls文件，文件不能大于2M</p>
+        </div>-->
+      </Upload>
       </Col>
-      <Col span="6">
+      <Col :span="result.code == 200 ? '9' : '4' ">
         <Row>
-          <Col span="9" style="padding-left: 20px;">
-            <Card dis-hover class="successCard" style="height: 148px;width: 100%">
-              <p slot="title" style="height: 50px;padding-top: 10px;color:white;position: relative">
-                <Icon type="md-checkmark-circle-outline" style="font-size: 36px;padding-left: 10px"/>
-                <span style="font-size: 22px;padding-left: 8px">成功</span>
-              </p>
-              <div style="text-align: center">
-                <count-to :end="result.success" count-class="count-style"/>
-              </div>
-              <div v-if="result.code == 200" style="z-index: 9999;position: absolute;right: -10px;top: -10px">
-                <Button type="info" @click="exportExcel">
-                  <div>
-                    导出
-                  </div>
-                  <div>
-                    Excel
-                  </div>
-                </Button>
-              </div>
-            </Card>
+          <Col span="9">
+          <ButtonGroup v-if="result.code == 200">
+            <Button>成功：{{ result.success }}</Button>
+            <Button type="info" @click="exportExcel">导出Excel</Button>
+          </ButtonGroup>
+          <Button v-else>
+            成功：{{ result.success }}
+          </Button>
           </Col>
           <Col span="9" style="padding-left: 20px;">
-            <Card class="failCard" dis-hover style="height: 148px;width: 100%;position: relative">
-              <p slot="title" style="height: 50px;padding-top: 10px;color:white;">
-                <Icon type="md-close-circle" style="font-size: 36px;padding-left: 10px" />
-                <span style="font-size: 22px;padding-left: 8px">失败</span>
-              </p>
-              <div style="text-align: center">
-                <count-to :end="result.error" count-class="count-style"/>
-              </div>
-              <div v-if="result.code == 200" style="z-index: 9999;position: absolute;right: -10px;top: -10px">
-                <Button long type="error" @click="exportExcelerr" style="background-color: #fa541c;border-color: #fa541c">
-                  <div>导出</div>
-                  <div>Excel</div>
-                </Button>
-              </div>
-            </Card>
-          </Col>
-          <Col span="6" >
-            <Button type="primary" style="width: 100%;margin-left: 12px;margin-top: 110px" @click="showList">历史导入</Button>
+          <ButtonGroup v-if="result.code == 200">
+            <Button>失败：{{ result.error }}</Button>
+            <Button type="error" @click="exportExcelerr">导出Excel</Button>
+          </ButtonGroup>
+          <Button v-else>
+            失败：{{ result.error }}
+          </Button>
           </Col>
         </Row>
-        <!--<Row v-if="result.code == 200">-->
-        <!--<Col span="24" style="padding-left: 20px;padding-top: 5px">-->
-        <!--<Button long type="success" @click="exportExcel">导出Excel</Button>-->
-        <!--</Col>-->
-        <!--</Row>-->
+        </Col>
+        <Col span="2" >
+        <Button type="primary" @click="showList">历史导入</Button>
+        </Col>
+      </Row>
+      <Row :gutter="10" style="margin-bottom: 8px">
+        <Col span="3" :lg="3" :md="4">
+        <div style="width: 100%">
+          <Select v-model="param.jgdm"
+                  clearable
+                  @on-change="CasChange">
+            <Option v-for="item in CascaderList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </div>
+        </Col>
+        <Col span="4" :lg="4" :md="5">
+        <div v-if="TagDot==0">
+          <DatePicker v-model="param.firSubTestTimeLike" split-panels format="yyyy-MM-dd"
+                      type="date" placeholder="考试时间"
+                      @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
+        </div>
+        <div v-else-if="TagDot==1">
+          <DatePicker v-model="param.secSubTestTimeLike" split-panels format="yyyy-MM-dd"
+                      type="date" placeholder="考试时间"
+                      @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
+        </div>
+        <div v-else-if="TagDot==2">
+          <DatePicker v-model="param.thirdSubTestTimeLike" split-panels format="yyyy-MM-dd"
+                      type="date" placeholder="考试时间"
+                      @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
+        </div>
+        <div v-else-if="TagDot==3">
+          <DatePicker v-model="param.forthSubTestTimeLike" split-panels format="yyyy-MM-dd"
+                      type="date" placeholder="考试时间"
+                      @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
+        </div>
+        </Col>
+        <Col span="4" :lg="4" :md="5">
+          <div>
+            <Input v-model="param.idCardNoLike"
+                   @on-enter="param.pageNum = 1;getPagerList()"
+                   placeholder="证件号码"/>
+          </div>
+        </Col>
+        <Col span="4" :lg="4" :md="5">
+          <div>
+            <Input v-model="param.nameLike"
+                   @on-enter="param.pageNum = 1;getPagerList()"
+                   placeholder="姓名"/>
+          </div>
+        </Col>
+        <Col span="2" :lg="2" :md="3">
+        <Button type="primary" @click="param.pageNum = 1;getPagerList()">
+          <Icon type="md-search"></Icon>
+          <!--查询-->
+        </Button>
+        </Col>
+      </Row>
       </Col>
     </Row>
 
     <Row style="padding-top: 20px">
       <Col span="24">
         <Table
-          :height="AF.getPageHeight()-420"
+          :height="AF.getPageHeight()-320"
           size="large"
           stripe
           border
-          no-data-text="请先导入文件清单"
+          no-data-text="暂无成绩待确认学员"
           :columns="tabTit"
           :data="pageData">
         </Table>
@@ -102,6 +141,7 @@
                 :current=param.pageNum
                 :page-size=param.pageSize
                 :page-size-opts=[8,10,20,30,40,50]
+                v-show="pageShow"
                 show-total
                 show-elevator
                 show-sizer
@@ -135,6 +175,10 @@
         accessToken:{},
         uploadUrl:http.url + this.apis.TRAINETEST.IMPORT_RESULT,
         pageData:[],
+        TagDot:0,
+        selectKm:'10',
+        CascaderList: [],
+        pageShow:true,
         result:{
           errorKey: '',
           code:-1,
@@ -144,133 +188,126 @@
         },
         param:{
           statu: '',
+          kskm:'1',
+          idCardNoLike:'',
+          nameLike:'',
+          jgdm:'',
+          firSubTestTimeLike:'',
+          secSubTestTimeLike:'',
+          thirdSubTestTimeLike:'',
+          forthSubTestTimeLike:'',
           pageSize: 8,
           pageNum: 1
         },
         tabTit: [
-          {title: '#',type: 'index',minWidth: 60},
-          {title: '姓名',key: 'name',width: 120},
-          {title: '证件号码',key: 'idCardNo',width: 180},
-          {title: '报名点',key: 'jgmc',width: 160,
-          },
-          { title: '科目',
-            key: 'subject',
-            width: 120,
-            filters: [
-              {
-                label: '科目一',
-                value: '10'
-              },
-              {
-                label: '科目二',
-                value: '20'
-              },{
-                label: '科目三',
-                value: '30'
-              }
-            ],
-            filterMultiple: false,
-            filterRemote:(value, p,r)=> {
-              this.param.statu = value[0];
-              this.getPagerList();
-              return true;
-            },
+          {
+            type: 'index2', align: 'center', width: 80,
             render: (h, p) => {
-            let color = 'success';
-            let msg = '初考';
-            if (!p.row.subTestNums || p.row.success == 0){
-              color = 'default';
-              msg = '-';
-            }else if (p.row.success == 1 && p.row.subTestNums > 1){
-              color = 'error';
-              msg = '第' + (p.row.subTestNums - 1) + '次补考';
+              return h('span', p.index + (this.param.pageNum - 1) * this.param.pageSize + 1);
             }
-
-            return h('div', [
-              p.row.subject,
-              h('Tag', {
-                props: {
-                  color: color
+          },
+          {
+            title: '姓名',
+            align: 'center',
+            minWidth: 120,
+            key: 'name'
+          },
+          {
+            title: '证件号码',
+            align: 'center',
+            minWidth: 180,
+            key: 'idCardNo'
+          },
+          {
+            title: '流水号',
+            align: 'center',
+            minWidth: 180,
+            key: 'serialNum'
+          },
+          {
+            title: '车型',
+            key: 'carType',
+            minWidth: 120,
+            align: 'center',
+            render: (h, p) => {
+              return h('div', [
+                h('Tooltip', {
+                  props: {
+                    placement: 'top',
+                    content: p.row.arrearage == '10' ? '欠费' : '未欠费'
+                  }
+                }, [
+                  h('Tag', {
+                    props: {
+                      type: 'dot',
+                      color: p.row.arrearage == '10' ? 'error' : 'success'
+                    }
+                  }, p.row.carType)
+                ])
+              ])
+            }
+          },
+          {
+            title: '报名点',
+            align: 'center',
+            minWidth: 120,
+            key: 'jgmc',
+            render: (h, params) => {
+              let jgmcArray = params.row.jgmc.split("/");
+              let res = "";
+              if (jgmcArray.length == 2 || jgmcArray.length == 1) {
+                return h('div', params.row.jgmc);
+              } else if (jgmcArray.length == 3) {
+                return h('div', jgmcArray[1] + ("/" + jgmcArray[2]))
+              }
+            }
+          },
+          {
+            title: '考试地点',
+            minWidth: 100,
+            align: 'center',
+            render: (h, p) => {
+              let arr=p.row.testInfos;
+              let place=''
+              let km=this.selectKm=='10' ? p.row.firSubTestTime : this.selectKm=='20' ? p.row.secSubTestTime : this.selectKm=='30' ? p.row.thirdSubTestTime : p.row.forthSubTestTime
+              arr.map((val,index,arr)=>{
+                if(val.testTime===km){
+                  place=val.testPlace
                 }
-              }, msg)
-            ]);
-          }},
-          {title: '培训',key: 'trainStatus',width: 100,render: (h, p) => {
-            let color = 'success';
-            let msg = '合格';
-            if (!p.row.trainStatus){
-              color = 'default';
-              msg = '-';
-            }else if (p.row.trainStatus == '10'){
-              color = 'error';
-              msg = '不合格';
+              })
+              return h('div', place)
             }
-
-            return h('Tag', {
-              props: {
-                color: color
+          }, {
+            title: '考试时间',
+            minWidth: 120,
+            align: 'center',
+            render: (h, p) => {
+              let a = ''
+              switch (this.selectKm) {
+                case '10':
+                  a = p.row.firSubTestTime
+                  break;
+                case '20':
+                  a = p.row.secSubTestTime
+                  break;
+                case '30':
+                  a = p.row.thirdSubTestTime
+                  break;
+                case '40':
+                  a = p.row.forthSubTestTime
+                  break;
               }
-            }, msg);
-          }},
-          {title: '车型',key: 'carModel',width: 80, render: (h, p) => {
-            let carTypeStr = p.row.carModel.substring(0, 1);
-            if (carTypeStr == 'C') {
-              //小车
-              return h('Tag', {
-                props: {
-                  color: 'green'
-                },
-                style: {
-                  fontSize: '15px',
-                }
-              }, p.row.carModel);
+              return h('div', a)
             }
-            //大车
-            return h('Tag', {
-              props: {
-                color: 'volcano'
-              },
-              style: {
-                fontSize: '15px',
+          },
+          {title: '导入结果', width:120, key: 'message',
+            render: (h, p) => {
+              let a = p.row.message;
+              if (a == '待上传'){
+                a = "-";
               }
-            }, p.row.carModel);
-          }},
-          {title: '考试日期',key: 'ykDate',width: 120},
-          {title: '考试地点',key: 'examinationSite',width: 160},
-          {title: '考试结果',key: 'testResults',width: 120, render: (h, p) => {
-            let color = 'error';
-            let msg = p.row.testResults;
-            if (msg == '合格') {
-              color = 'success';
-            }
-            //大车
-            return h('Tag', {
-              props: {
-                color: color
-              }
-            }, msg);
-          }},
-          {title: '导入状态',key: 'success',width: 120, render:(h, p)=>{
-            let color = 'success';
-            let msg = '成功';
-            if (p.row.success == '0'){
-              color = 'error';
-              msg = '失败'
-            }else if(p.row.success =='-'){
-              msg = '-';
-              color = 'primary';
-            }
-
-            return h('Tag', {
-              props: {
-                color: color
-              },
-              style: {
-                fontSize: '15px',
-              }
-            }, msg);
-          }},
-          {title: '导入结果',key: 'message',filters: [
+              return h('div', a)
+            },filters: [
             {
               label: '成功',
               value: 1
@@ -284,16 +321,135 @@
             filterMethod (value, row) {
               return row.success == value;
             }
+          },
+          {title: '操作', width:160, fixed:'right',
+            render: (h, p) => {
+              return h('div', [
+                h('Button', {
+                  props: {
+                    type: 'warning',
+                    size: 'small'
+                  },
+                  style: {margin: '0 8px 0 0'},
+                  on: {
+                    click: () => {
+                      this.retract(p.row.id, p.row.chargeRecord.id)
+                    }
+                  }
+                }, '撤'),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {margin: '0 8px 0 0'},
+                  on: {
+                    click: () => {
+                      this.updateResult(p.row, '00')
+                    }
+                  }
+                }, '合'),
+                h('Button', {
+                  props: {
+                    type: 'error',
+                    size: 'small'
+                  },
+                  style: {margin: '0 8px 0 0'},
+                  on: {
+                    click: () => {
+                      this.updateResult(p.row, '10')
+                    }
+                  }
+                }, '不')
+              ])
+            }
           }
         ]
       }
     },
     created(){
       this.accessToken = JSON.parse(Cookies.get('accessToken'));
+      this.getBmdList();
       this.getPagerList();
       // this.pageData = this.$store.state.app.examination
     },
     methods: {
+      updateResult(row, result){
+        this.swal({
+          text: "确认手工补录成功为"+ (result == '00' ? '合格' : '不合格')+"?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonText: '确认',
+          cancelButtonText: '取消'
+        }).then((isConfirm) => {
+          if (isConfirm.value) {
+            var time = '';
+            var kskm = '1';
+            if (this.selectKm == '10'){
+              time = row.firSubTestTime;
+            }else if (this.kskm == '20'){
+              time = row.secSubTestTime;
+              kskm = '2';
+            }else if (this.kskm == '30'){
+              time = row.thirdSubTestTime;
+              kskm = '3';
+            }else if (this.kskm == '40'){
+              time = row.forthSubTestTime;
+              kskm = '4';
+            }
+
+            var opt = {
+              kskm:kskm,
+              id:row.id,
+              result:result,
+              time:time
+            };
+
+            this.$http.post('/api/traineeinformation/updateTestResult',opt).then((res)=>{
+                if (res.code == 200){
+                  this.swal({
+                    text: '操作完成',
+                    type: 'success',
+                    confirmButtonText: '关闭'
+                  });
+                  this.getPagerList();
+                }else{
+                  this.swal({
+                    text: res.message,
+                    type: 'warning',
+                    confirmButtonText: '关闭'
+                  })
+                }
+            })
+          }
+        });
+      },
+      getBmdList() {
+        this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
+          if (res.code === 200) {
+            /*function tree(arr) {
+             if (arr[0].value.length == 6) {
+             return arr[0].children
+             } else if (arr[0].value.length == 3) {
+             return arr[0].children[0].children
+             }
+             }
+             this.CascaderList = tree(res.result)*/
+            if (res.result[0].value.length == 3) {
+              this.CascaderList = res.result[0].children[0].children;
+            } else if (res.result[0].value.length == 6) {
+              this.CascaderList = res.result[0].children;
+            } else if (res.result[0].value.length == 9) {
+              this.CascaderList = res.result
+            }
+          }
+        }).catch((error) => {
+        })
+      },
+      CasChange(val) {
+        this.param.pageNum = 1;
+        this.getPagerList()
+      },
       showList(){
         this.compName = 'FileList';
       },
@@ -309,7 +465,23 @@
       },
       getPagerList(){
         this.pageData = [];
-        this.$http.post('/api/traineeinformation/getAppointed',this.param).then((res)=>{
+        this.pageShow = true;
+        if (this.TagDot == 0 && this.param.firSubTestTimeLike != '') {
+          this.param.firSubTestTimeLike = this.AF.trimDate(this.param.firSubTestTimeLike)
+        } else if (this.TagDot == 1 && this.param.secSubTestTimeLike != '') {
+          this.param.secSubTestTimeLike = this.AF.trimDate(this.param.secSubTestTimeLike)
+        } else if (this.TagDot == 2 && this.param.thirdSubTestTimeLike != '') {
+          this.param.thirdSubTestTimeLike = this.AF.trimDate(this.param.thirdSubTestTimeLike)
+        }  else if (this.TagDot == 3 && this.param.forthSubTestTimeLike != '') {
+          this.param.forthSubTestTimeLike = this.AF.trimDate(this.param.forthSubTestTimeLike)
+        } else {
+          this.param.firSubTestTimeLike = '';
+          this.param.secSubTestTimeLike = '';
+          this.param.thirdSubTestTimeLike = '';
+          this.param.forthSubTestTimeLike = '';
+        }
+
+        this.$http.post('/api/traineeinformation/getTestStudents',this.param).then((res)=>{
           if(res.code===200){
             res.page.list.forEach((item,index)=>{
               if(item.status === '10'){
@@ -318,6 +490,8 @@
                 item.subject = '科目二';
               }else if(item.status === '30'){
                 item.subject = '科目三';
+              }else if(item.status === '40'){
+                item.subject = '科目四';
               }
               item.trainStatus = '00';
               item.carModel = item.carType;
@@ -368,6 +542,7 @@
           this.result.error = res.result.errorCount;
           this.result.success = res.result.succeedCount;
           this.pageData = res.result.list;
+          this.pageShow = false;
           this.$store.commit('Gexamination',res.result.list)
         } else {
           this.$Message.error("文件上传失败：" + res.message);
@@ -395,6 +570,25 @@
           text: '文件不能超过2M',
           type:'error'
         });
+      },
+      kmCheck(index, item) {
+        this.TagDot = index;
+        this.param.pageNum = 1;
+        if (index == 0) {
+          this.param.kskm = '1';
+          this.selectKm = "10";
+        } else if (index == 1) {
+          this.param.kskm = '2';
+          this.selectKm = "20";
+        } else if (index == 2) {
+          this.param.kskm = '3';
+          this.selectKm = "30";
+        } else if (index == 3) {
+          this.param.kskm = '4';
+          this.selectKm = "40";
+        }
+
+        this.getPagerList();
       }
     }
   }

@@ -364,7 +364,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 testInfos = collect.get(traineeInformation.getId());
                 if (CollectionUtils.isNotEmpty(testInfos)) {
                     TraineeTestInfo testInfo = testInfos.get(0);
-                    if (DateUtils.getDateStr(new Date(), "yyyy-Mm-dd").compareTo(testInfo.getTestTime()) <= 0) {
+                    if ( testInfo.getTestTime() != null && DateUtils.getDateStr(new Date(), "yyyy-Mm-dd").compareTo(testInfo.getTestTime()) <= 0) {
                         traineeInformation.setTestInfo(testInfo);
                     }
                 }
@@ -3161,7 +3161,19 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             simpleCondition.setOrderByClause(" test_time asc");
             List<TraineeTestInfo> list = traineeTestInfoService.findByCondition(simpleCondition);
             Map<String, List<TraineeTestInfo>> map = list.stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
-            info.getList().forEach(traineeInformation -> traineeInformation.setTestInfos(map.get(traineeInformation.getId())));
+            info.getList().forEach(traineeInformation -> traineeInformation.setTestInfos(map.get(traineeInformation.getId()).stream().filter(traineeTestInfo -> traineeTestInfo.getTestTime().equals(traineeInformation.getTestTime())).collect(Collectors.toList())));
+            for (TraineeInformation information : info.getList()) {
+                if(StringUtils.equals(kskm, "科目一")){
+                    information.setFirSubTestTime(information.getTestTime());
+                }else if (StringUtils.equals(kskm, "科目二")){
+                    information.setSecSubTestTime(information.getTestTime());
+                }else if(StringUtils.equals(kskm, "科目三")){
+                    information.setThirdSubTestTime(information.getTestTime());
+                }else if (StringUtils.equals(kskm, "科目四")){
+                    information.setForthSubTestTime(information.getTestTime());
+                }
+
+            }
         }
         ApiResponse<String> res = new ApiResponse<>();
         res.setPage(info);
@@ -3257,21 +3269,55 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
         simpleCondition.eq(TraineeTestInfo.InnerColumn.traineeId, id);
         simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(kskm));
-        simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, time);
+        simpleCondition.lte(TraineeTestInfo.InnerColumn.testTime, time);
         List<TraineeTestInfo> infos = traineeTestInfoService.findByCondition(simpleCondition);
+        BizException exception = new BizException();
         for (TraineeTestInfo info : infos) {
-            info.setTestResult(null);
-            testInfoMapper.updateByPrimaryKey(info);
-            if(StringUtils.equals(kskm, "1")){
-                information.setFirSub("10");
-
-            }else if(StringUtils.equals(kskm, "2")){
-                information.setSecSub("20");
+            if(info.getTestTime().equals(time)){
+                traineeTestInfoService.remove(info.getId());
+            }else{
+                info.setTestResult("10");
+                traineeTestInfoService.update(info);
             }
+            exception.setSfzmhm(info.getIdCardNo());
         }
 
-
-        return null;
+        exception.setKskm(kskm);
+        if(StringUtils.equals(kskm, "1")){
+            information.setFirSub("00");
+            information.setFirSubTestTime(null);
+            int sum = information.getFirSubTestNum() - 1;
+            if(sum >= 1){
+                information.setFirSub("30");
+            }
+            information.setFirSubTestNum(Math.max(sum, 0));
+            exception.setCode("101");
+        }else if(StringUtils.equals(kskm, "2")){
+            information.setSecSub("00");
+            information.setSecSubTestTime(null);
+            int sum = information.getSecSubTestNum() - 1;
+            if( sum >= 1 ){
+                information.setSecSub("30");
+            }
+            information.setSecSubTestNum(Math.max(sum, 0));
+            exception.setCode("201");
+        }else if(StringUtils.equals(kskm, "3")){
+            information.setThirdSub("00");
+            information.setThirdSubTestTime(null);
+            int sum = information.getThirdSubTestNum() - 1;
+            if(sum >= 1) {
+                information.setThirdSub("30");
+            }
+            information.setThirdSubTestNum(Math.max(sum, 0));
+            exception.setCode("301");
+        }else if(StringUtils.equals(kskm, "4")){
+            information.setForthSub(null);
+            information.setForthSubTestTime(null);
+        }
+        exceptionService.clearException(exception, exception.getCode());
+        baseMapper.updateByPrimaryKey(information);
+        traineeStatusService.saveEntity(information,"考试预约撤回", "00", kmMap.get(kskm) + " 预约撤回" );
+        return ApiResponse.success();
     }
 
 

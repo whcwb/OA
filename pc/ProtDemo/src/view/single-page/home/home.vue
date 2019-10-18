@@ -36,7 +36,7 @@
 </style>
 <template>
   <div>
-    <div style="position: absolute;padding-top: 20px;padding-left: 20px">
+    <div style="position: absolute;padding-top: 20px;padding-left: 20px;z-index: 99">
       <Tooltip :content="gxsj" placement="bottom-start">
         <Button type="primary" shape="circle" icon="md-refresh" :loading="loadBtnFlag" @click="loadData"></Button>
       </Tooltip>
@@ -864,7 +864,7 @@
       anayData(){
         this.anayBtnFlag = true;
         this.anayGxsj = "加载中";
-        this.$http.get(this.apis.HOME.DASHBOARD).then((res) => {
+        this.$http.post(this.apis.HOME.RUNEXCEPTION).then((res) => {
           this.anayBtnFlag = false;
           if (res.code == 200) {
             this.anayGxsj = "数据更新时间:"+moment().format("YYYY-MM-DD HH:mm");

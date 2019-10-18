@@ -23,7 +23,7 @@
         </Card>-->
       </Col>
 
-      <Col span="3">
+      <Col span="3" style="padding-right: 8px">
         <Upload
           ref="upload"
           :max-size="2048"
@@ -34,13 +34,9 @@
           :on-format-error="handleFormatError"
           :on-exceeded-size="handleMaxSize"
           :format="['xls']"
+          type="drag"
           :action="uploadUrl">
-          <Button icon="ios-cloud-upload-outline">上传Excel文件</Button>
-          <!--<div style="padding: 20px 0">
-            <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-            <p style="color:#464c5b;font-size: 16px">点击或拖动Excel文件进行上传导入</p>
-            <p style="color:#9ea7b4;font-size: 12px;padding-top:10px">只能上传xls文件，文件不能大于2M</p>
-          </div>-->
+          <p style="color:#464c5b;font-size: 16px;height: 32px;text-align: center;line-height: 32px">上传Excel文件</p>
         </Upload>
       </Col>
       <Col :span="result.code == 200 ? '9' : '4' ">
@@ -323,7 +319,7 @@
                   style: {margin: '0 8px 0 0'},
                   on: {
                     click: () => {
-                      this.retract(p.row.id, p.row.chargeRecord.id)
+                      this.revoke(p.row)
                     }
                   }
                 }, '撤')
@@ -339,6 +335,55 @@
       this.getPagerList();
     },
     methods: {
+      revoke(row){
+        this.swal({
+          text: "确认撤回约考记录?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonText: '确认',
+          cancelButtonText: '取消'
+        }).then((isConfirm) => {
+          if (isConfirm.value) {
+            var time = '';
+            var kskm = '1';
+            if (this.selectKm == '10'){
+              time = row.firSubTestTime;
+            }else if (this.kskm == '20'){
+              time = row.secSubTestTime;
+              kskm = '2';
+            }else if (this.kskm == '30'){
+              time = row.thirdSubTestTime;
+              kskm = '3';
+            }else if (this.kskm == '40'){
+              time = row.forthSubTestTime;
+              kskm = '4';
+            }
+
+            var opt = {
+              kskm:kskm,
+              id:row.id,
+              time:time
+            };
+
+            this.$http.post('/api/traineeinformation/revokeAppoint',opt).then((res)=>{
+              if (res.code == 200){
+                this.swal({
+                  text: '操作完成',
+                  type: 'success',
+                  confirmButtonText: '关闭'
+                });
+                this.getPagerList();
+              }else{
+                this.swal({
+                  text: res.message,
+                  type: 'warning',
+                  confirmButtonText: '关闭'
+                })
+              }
+            })
+          }
+        });
+      },
       getBmdList() {
         this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
           if (res.code === 200) {

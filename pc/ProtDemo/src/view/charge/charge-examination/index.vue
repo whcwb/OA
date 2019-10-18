@@ -530,23 +530,7 @@
             minWidth: 120,
             render: (h, p) => {
               let a = ''
-              if (p.row.secSub == '40') {
-                return h('div', [
-                  h('Tag', {
-                    props: {
-                      color: 'success'
-                    }
-                  }, '合格')
-                ])
-              } else if (p.row.secSub == '30') {
-                return h('div', [
-                  h('Tag', {
-                    props: {
-                      color: 'error'
-                    }
-                  }, '不合格')
-                ])
-              } else if (p.row.secSubPaymentTime != '' && p.row.secSub != '30' && p.row.secSub != '40') {
+              if (p.row.secSubPaymentTime != '' && p.row.secSub != '30' && p.row.secSub != '40') {
                 return h('div', [
                   h('Tag', {
                     props: {
@@ -597,6 +581,22 @@
                       }
                     }, '初考待缴')
                   ])
+                ])
+              }else if (p.row.secSub == '40') {
+                return h('div', [
+                  h('Tag', {
+                    props: {
+                      color: 'success'
+                    }
+                  }, '合格')
+                ])
+              } else if (p.row.secSub == '30') {
+                return h('div', [
+                  h('Tag', {
+                    props: {
+                      color: 'error'
+                    }
+                  }, '不合格')
                 ])
               }
               return h('div', a)

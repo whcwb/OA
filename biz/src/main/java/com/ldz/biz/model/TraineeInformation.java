@@ -479,7 +479,17 @@ public class TraineeInformation implements Serializable {
     @Column(name = "error_message")
     private String errorMessage;
 
+    @Transient
+    private String testTime;
 
+
+    public String getTestTime() {
+        return testTime;
+    }
+
+    public void setTestTime(String testTime) {
+        this.testTime = testTime;
+    }
 
     private static final long serialVersionUID = 1L;
 

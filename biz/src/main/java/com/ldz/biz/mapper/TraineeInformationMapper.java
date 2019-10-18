@@ -45,7 +45,7 @@ public interface TraineeInformationMapper extends Mapper<TraineeInformation> {
     @Select(" select count(real_pay) from trainee_information where confirm_time like '%${date}%')")
     long countRealPaied(@Param("date") String date);
     // (SELECT COUNT(1) FROM trainee_test_info where subject ='科目一' and  (test_result is null or test_result = '') AND trainee_id = m.id AND m.`fir_sub` NOT IN ('30','40')
-    @Select("<script> select * from trainee_information m  join trainee_test_info t on t.trainee_id  =m.id  where  m.status not in ('50','60') and    (test_result is null or test_result = '' )" +
+    @Select("<script> select m.*,t.test_time testTime from trainee_information m  join trainee_test_info t on t.trainee_id  =m.id  where  m.status not in ('50','60') and    (test_result is null or test_result = '' )" +
             " <if test= 'nameLike != null' >" +
             "       and name like '%${nameLike}%'" +
             "</if> " +

@@ -482,8 +482,9 @@ public class TraineeInformationController extends BaseController<TraineeInformat
 
 
     /**
-     *  预约撤回
+     *  考试结果撤回
      */
+    @PostMapping("/revokeAppoint")
     public ApiResponse<String> revokeAppoint(String id, String kskm, String time){
         return service.revokeTestAppoint(id, kskm, time);
     }

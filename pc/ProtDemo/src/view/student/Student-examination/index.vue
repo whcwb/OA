@@ -364,9 +364,10 @@
     },
     created(){
       this.accessToken = JSON.parse(Cookies.get('accessToken'));
-        this.getkm()
+
       this.getBmdList();
       this.getPagerList();
+        this.getkm()
 
       // this.pageData = this.$store.state.app.examination
     },
@@ -392,6 +393,7 @@
                     a = 3
                     b={val:'科目四',key:'40'}
                 }
+                this.pageData = []
                 this.kmCheck(a,b)
             } else {
                 var kskm = sessionStorage.getItem("queryKM");

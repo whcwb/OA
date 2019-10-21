@@ -382,13 +382,13 @@
             var kskm = '1';
             if (this.selectKm == '10'){
               time = row.firSubTestTime;
-            }else if (this.kskm == '20'){
+            }else if (this.selectKm == '20'){
               time = row.secSubTestTime;
               kskm = '2';
-            }else if (this.kskm == '30'){
+            }else if (this.selectKm == '30'){
               time = row.thirdSubTestTime;
               kskm = '3';
-            }else if (this.kskm == '40'){
+            }else if (this.selectKm == '40'){
               time = row.forthSubTestTime;
               kskm = '4';
             }
@@ -432,13 +432,13 @@
             var kskm = '1';
             if (this.selectKm == '10'){
               time = row.firSubTestTime;
-            }else if (this.kskm == '20'){
+            }else if (this.selectKm == '20'){
               time = row.secSubTestTime;
               kskm = '2';
-            }else if (this.kskm == '30'){
+            }else if (this.selectKm == '30'){
               time = row.thirdSubTestTime;
               kskm = '3';
-            }else if (this.kskm == '40'){
+            }else if (this.selectKm == '40'){
               time = row.forthSubTestTime;
               kskm = '4';
             }

@@ -140,7 +140,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             condition.eq(TraineeInformation.InnerColumn.chargeStatus, "00");
         } else if (StringUtils.equals(sign, "2")) {
             // 科目二需要交费的学员  ： 只要有科目二的考试时间 ， 且 交费时间是空的 ， 就需要交费
-            condition.and().andCondition(" sec_sub_test_time is not null or sec_sub_test_time != ''");
+            condition.and().andCondition("  sec_sub_test_time != ''");
             condition.and().andCondition(" sec_sub_payment_time is null or sec_sub_payment_time = '' ");
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
             condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
@@ -149,7 +149,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             // 科三同理 ： 只要有 科三的考试时间 并且缴费时间是空 则需要交费
             condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
-            condition.and().andCondition("  third_sub_test_time is not null or third_sub_test_time != '' ");
+            condition.and().andCondition("   third_sub_test_time != '' ");
             condition.and().andCondition("third_sub_payment_time is null or third_sub_payment_time = ''"); // 考试费未缴纳
             condition.setOrderByClause("code asc, third_sub_test_time asc  ");
         } else if (StringUtils.equals(sign, "4")) { // 查询今日已缴纳报名费的学员
@@ -157,7 +157,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             condition.eq(TraineeInformation.InnerColumn.chargeStatus.name(), "10");
         } else if (StringUtils.equals(sign, "7")) { // 查询科目一代缴费学员
             //  科目一 也按照已经预约的来缴费
-            condition.and().andCondition(" fir_sub_test_time is not null or fir_sub_test_time != '' ");
+            condition.and().andCondition("  fir_sub_test_time != '' ");
             condition.and().andCondition("fir_sub_payment_time is  null or fir_sub_payment_time = '' ");
             condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");

@@ -367,12 +367,17 @@
 
       this.getBmdList();
       this.getPagerList();
-        this.getkm()
+
+      setTimeout(()=>{
+          this.getkm()
+      },200)
+
 
       // this.pageData = this.$store.state.app.examination
     },
     methods: {
         getkm(){
+            this.pageData = [];
             if (this.$route.query.param){
                 console.log(this.$route.query.param);
                 sessionStorage.setItem("queryKM", this.$route.query.param);
@@ -393,7 +398,7 @@
                     a = 3
                     b={val:'科目四',key:'40'}
                 }
-                this.pageData = []
+                this.pageData = [];
                 this.kmCheck(a,b)
             } else {
                 var kskm = sessionStorage.getItem("queryKM");
@@ -651,6 +656,7 @@
       kmCheck(index, item) {
         this.TagDot = index;
         this.param.pageNum = 1;
+        // this.param.pageSize = 8;
         if (index == 0) {
           this.param.kskm = '1';
           this.selectKm = "10";

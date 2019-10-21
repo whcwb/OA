@@ -69,6 +69,8 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		//给学员标记异常备注
 		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(exception.getSfzmhm());
 		if (traineeInfo != null){
+			SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
+			simpleCondition.eq(TraineeTestInfo.InnerColumn.traineeId, traineeInfo.getId());
 			if(StringUtils.equals(exception.getCode(), "001")){
 				bz += "( 报名时间:  " +traineeInfo.getRegistrationTime() +")";
 			}else if (StringUtils.equals(exception.getCode(), "002")){
@@ -76,13 +78,41 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			}else if(StringUtils.equals(exception.getCode(), "003")){
 				bz += "( 报名收费时间:  " +traineeInfo.getConfirmTime() +")";
 			}else if(StringUtils.equals(exception.getCode(), "101") || StringUtils.equals(exception.getCode(), "102")){
-				bz += "( 科目一考试时间:  " +traineeInfo.getFirSubTestTime() +")";
+				simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, "科目一");
+				simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, traineeInfo.getFirSubTestTime());
+				List<TraineeTestInfo> infos = testInfoService.findByCondition(simpleCondition);
+				String testPlace = "";
+				if(CollectionUtils.isNotEmpty(infos)){
+					testPlace = infos.get(0).getTestPlace();
+				}
+				bz += "( 科目一考试时间:  " +traineeInfo.getFirSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}else if(StringUtils.equals(exception.getCode(), "201")|| StringUtils.equals(exception.getCode(), "202")){
-				bz += "( 科目二考试时间:  " +traineeInfo.getSecSubTestTime() +")";
+				simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, "科目二");
+				simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, traineeInfo.getSecSubTestTime());
+				List<TraineeTestInfo> infos = testInfoService.findByCondition(simpleCondition);
+				String testPlace = "";
+				if(CollectionUtils.isNotEmpty(infos)){
+					testPlace = infos.get(0).getTestPlace();
+				}
+				bz += "( 科目一考试时间:  " +traineeInfo.getSecSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}else if(StringUtils.equals(exception.getCode(), "301") || StringUtils.equals(exception.getCode(), "302")){
-				bz += "( 科目三考试时间:  " +traineeInfo.getThirdSubTestTime() +")";
+				simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, "科目三");
+				simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, traineeInfo.getThirdSubTestTime());
+				List<TraineeTestInfo> infos = testInfoService.findByCondition(simpleCondition);
+				String testPlace = "";
+				if(CollectionUtils.isNotEmpty(infos)){
+					testPlace = infos.get(0).getTestPlace();
+				}
+				bz += "( 科目一考试时间:  " +traineeInfo.getThirdSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}else if(StringUtils.equals(exception.getCode(), "402")){
-				bz += "( 科目四考试时间:  " +traineeInfo.getForthSubTestTime() +")";
+				simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, "科目四");
+				simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, traineeInfo.getForthSubTestTime());
+				List<TraineeTestInfo> infos = testInfoService.findByCondition(simpleCondition);
+				String testPlace = "";
+				if(CollectionUtils.isNotEmpty(infos)){
+					testPlace = infos.get(0).getTestPlace();
+				}
+				bz += "( 科目一考试时间:  " +traineeInfo.getForthSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}
 			traineeInfo.setCode(exception.getCode());
 			traineeInfo.setErrorMessage(bz);

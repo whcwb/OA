@@ -137,9 +137,11 @@ public interface TraineeInformationService extends BaseService<TraineeInformatio
 
     void exportResult(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
-    ApiResponse<String> getTestStudents(int pageSize, int pageNum, String jgdm, String testTime, String testPlace, String kskm, String idCardNo);
+    ApiResponse<String> getTestStudents(int pageSize, int pageNum, String kskm);
 
     ApiResponse<String> updateTestResult(String id, String kskm, String result, String time);
 
     ApiResponse<String> revokeTestAppoint(String id, String kskm, String time);
+
+    ApiResponse<TraineeInformation> getById(String id);
 }

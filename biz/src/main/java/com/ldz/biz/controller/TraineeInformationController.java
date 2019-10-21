@@ -468,8 +468,8 @@ public class TraineeInformationController extends BaseController<TraineeInformat
      * 获取约考记录
      */
     @PostMapping("/getTestStudents")
-    public ApiResponse<String> getTestStudents(@RequestParam(defaultValue = "8") int pageSize,@RequestParam(defaultValue = "1") int pageNum,  String jgdm , String testTime , String testPlace, String kskm,  String idCardNoLike){
-        return service.getTestStudents(pageSize, pageNum,jgdm,testTime,testPlace,kskm,idCardNoLike);
+    public ApiResponse<String> getTestStudents(@RequestParam(defaultValue = "8") int pageSize,@RequestParam(defaultValue = "1") int pageNum,   String kskm){
+        return service.getTestStudents(pageSize, pageNum,kskm);
     }
 
     /**
@@ -488,6 +488,13 @@ public class TraineeInformationController extends BaseController<TraineeInformat
     public ApiResponse<String> revokeAppoint(String id, String kskm, String time){
         return service.revokeTestAppoint(id, kskm, time);
     }
+
+    @Override
+    @GetMapping("/{pkid}")
+    public ApiResponse<TraineeInformation> get(@PathVariable("pkid")String id){
+        return service.getById(id);
+    }
+
 
 
 

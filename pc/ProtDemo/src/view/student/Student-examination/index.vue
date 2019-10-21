@@ -364,11 +364,26 @@
     },
     created(){
       this.accessToken = JSON.parse(Cookies.get('accessToken'));
+        this.getkm()
       this.getBmdList();
       this.getPagerList();
+
       // this.pageData = this.$store.state.app.examination
     },
     methods: {
+        getkm(){
+            if (this.$route.query.param){
+                console.log(this.$route.query.param);
+                sessionStorage.setItem("queryKM", this.$route.query.param);
+                this.TagDot = parseInt(this.$route.query.param) -1
+                this.param.kskm = this.$route.query.param;
+            } else {
+                var kskm = sessionStorage.getItem("queryKM");
+                if (kskm){
+                    this.param.kskm = kskm;
+                }
+            }
+        },
       updateResult(row, result){
         this.swal({
           text: "确认手工补录成功为"+ (result == '00' ? '合格' : '不合格')+"?",

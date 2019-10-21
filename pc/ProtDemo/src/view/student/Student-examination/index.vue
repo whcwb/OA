@@ -377,6 +377,22 @@
                 sessionStorage.setItem("queryKM", this.$route.query.param);
                 this.TagDot = parseInt(this.$route.query.param) -1
                 this.param.kskm = this.$route.query.param;
+                var a =''
+                var b = {}
+                if (this.$route.query.param == 1){
+                    a = 0
+                    b={val:'科目一',key:'10'}
+                }else if(this.$route.query.param == 2){
+                    a = 1
+                    b={val:'科目二',key:'20'}
+                }else if(this.$route.query.param == 3){
+                    a = 2
+                    b={val:'科目三',key:'30'}
+                }else if (this.$route.query.param == 4){
+                    a = 3
+                    b={val:'科目四',key:'40'}
+                }
+                this.kmCheck(a,b)
             } else {
                 var kskm = sessionStorage.getItem("queryKM");
                 if (kskm){

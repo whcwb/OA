@@ -1019,7 +1019,7 @@
                 var b = {}
                 if (this.$route.query.param == 1){
                     a = 0
-                    b={val:'科目一',key:'10'},{val:'科目二',key:'20'},{val:'科目三',key:'30'}
+                    b={val:'科目一',key:'10'}
                 }else if(this.$route.query.param == 2){
                     a = 1
                     b={val:'科目二',key:'20'}

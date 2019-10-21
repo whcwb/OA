@@ -424,9 +424,7 @@
                 console.log(this.$route.query.param);
                 sessionStorage.setItem("queryZT", this.$route.query.param);
                 this.param.statusArray = this.$route.query.param;
-
-                // var i = parseInt(this.param.kskm) -1
-                // this.kmCheck(i)
+                this.param.bmTime = []
             } else {
                 var kskm = sessionStorage.getItem("queryZT");
                 if (kskm){

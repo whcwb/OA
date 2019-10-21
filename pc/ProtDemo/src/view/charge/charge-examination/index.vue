@@ -996,6 +996,7 @@
       this.getBmdList()
       this.getJTjx()
       this.tabTit = this.tabTitFT
+        this.getkm()
     },
     computed: {
       AutoReadCard() {
@@ -1009,6 +1010,32 @@
       }
     },
     methods: {
+        getkm(){
+            if (this.$route.query.param){
+                console.log(this.$route.query.param);
+                sessionStorage.setItem("queryJF", this.$route.query.param);
+                this.TagDot = parseInt(this.$route.query.param) -1
+                var a =''
+                var b = {}
+                if (this.$route.query.param == 1){
+                    a = 0
+                    b={val:'科目一',key:'10'},{val:'科目二',key:'20'},{val:'科目三',key:'30'}
+                }else if(this.$route.query.param == 2){
+                    a = 1
+                    b={val:'科目二',key:'20'}
+                }else if(this.$route.query.param == 3){
+                    a = 2
+                    b={val:'科目三',key:'30'}
+                }
+                this.kmCheck(a,b)
+                this.getKmMoney()
+            } else {
+                var kskm = sessionStorage.getItem("queryJF");
+                if (kskm){
+                    this.param.kskm = kskm;
+                }
+            }
+        },
       pageSizeChange(n) {
         if (this.activeName == '1') {
           this.param.pageSize = n;
@@ -1212,7 +1239,6 @@
           this.chargeCode = '9997'
           this.tabTit = this.tabTitFT
         } else if (index == 2) {
-
           this.param.sign = 3;
           this.param1.sign = 6;
           this.chargeCode = '9996';

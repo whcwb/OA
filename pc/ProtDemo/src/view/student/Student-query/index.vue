@@ -412,13 +412,26 @@
       strTime[2] = '01'
       strTime = strTime.join('-')
       this.param.bmTime = [strTime, this.AF.trimDate()]
-
+      this.getkm()
       this.getDictList();
       this.getBmdList();
-      this.getPagerList()
+      this.getPagerList();
       this.getJTjx()
     },
     methods: {
+        getkm(){
+            if (this.$route.query.param){
+                console.log(this.$route.query.param);
+                sessionStorage.setItem("queryZT", this.$route.query.param);
+                this.param.statusArray = this.$route.query.param;
+                this.param.bmTime = []
+            } else {
+                var kskm = sessionStorage.getItem("queryZT");
+                if (kskm){
+                    this.param.statusArray = kskm;
+                }
+            }
+        },
       getPagerList(val) {
         if(val){
           this.param.bmTime = []

@@ -269,7 +269,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-examination')">待缴</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('charge-examination',1)">待缴</Button>
             </Col>
           </Row>
           <Row>
@@ -311,7 +311,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-examination')">待办</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('Student-examination',1)">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -397,7 +397,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-examination')">待缴</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('charge-examination',2)">待缴</Button>
             </Col>
           </Row>
           <Row>
@@ -439,7 +439,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-examination')">待办</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('Student-examination',2)">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -525,7 +525,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('charge-examination')">待缴</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('charge-examination',3)">待缴</Button>
             </Col>
           </Row>
           <Row>
@@ -567,7 +567,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-examination')">待办</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('Student-examination',3)">待办</Button>
             </Col>
           </Row>
           <Row>
@@ -653,7 +653,7 @@
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPage('Student-examination')">待办</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('Student-examination',4)">待办</Button>
             </Col>
           </Row>
           <Row>

@@ -221,13 +221,13 @@
       <Col span="7">
       <Card  :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
         <div slot="title" style="text-align: center">
-          <Button type="success" style="font-weight: bold;font-size: 16px">科目一预约</Button>
+          <Button type="success" style="font-weight: bold;font-size: 16px" @click="goToPageByParam('Student-appointment', '1')">科目一预约</Button>
         </div>
         <Row style="text-align: center">
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待考</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('Student-query', '10')">待考</Button>
             </Col>
           </Row>
           <Row>
@@ -349,13 +349,13 @@
       <Col span="7">
       <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
         <div slot="title" style="text-align: center">
-          <Button type="success" style="font-weight: bold;font-size: 16px">科目二预约</Button>
+          <Button type="success" style="font-weight: bold;font-size: 16px" @click="goToPageByParam('Student-appointment', '2')">科目二预约</Button>
         </div>
         <Row style="text-align: center">
           <Col span="10">
           <Row>
             <Col span="24">
-              <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待考</Button>
+              <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('Student-query', '20')">待考</Button>
             </Col>
           </Row>
           <Row>
@@ -477,13 +477,13 @@
       <Col span="7">
       <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
         <div slot="title" style="text-align: center">
-          <Button type="success" style="font-weight: bold;font-size: 16px">科目三预约</Button>
+          <Button type="success" style="font-weight: bold;font-size: 16px"  @click="goToPageByParam('Student-appointment', '3')">科目三预约</Button>
         </div>
         <Row style="text-align: center">
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待考</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('Student-query', '30')">待考</Button>
             </Col>
           </Row>
           <Row>
@@ -605,13 +605,13 @@
       <Col span="10">
       <Card :bordered="false" class="cardBox" style="box-shadow: 0 2px 12px rgba(0,0,0,.2)">
         <div slot="title" style="text-align: center">
-          <Button type="info" style="font-weight: bold;font-size: 16px">科目四预约</Button>
+          <Button type="info" style="font-weight: bold;font-size: 16px" @click="goToPageByParam('Student-appointment', '4')">科目四预约</Button>
         </div>
         <Row style="text-align: center">
           <Col span="10">
           <Row>
             <Col span="24">
-            <Button type="success"  ghost style="font-weight: bold;font-size: 14px">待考</Button>
+            <Button type="success"  ghost style="font-weight: bold;font-size: 14px" @click="goToPageByParam('Student-query', '40')">待考</Button>
             </Col>
           </Row>
           <Row>
@@ -882,6 +882,12 @@
           if (permission.indexOf(pageName) != -1){
               this.$router.push({ name: pageName });
           }
+      },
+      goToPageByParam(pageName, param){
+        var permission = JSON.stringify(this.$store.state.app.permissionMenuList);
+        if (permission.indexOf(pageName) != -1){
+          this.$router.push({ name: pageName, query:{param: param} });
+        }
       },
       goToExceptionPage(code ,kskm){
           this.$router.push({ name: 'Student-exception', query:{code: code, kskm:kskm} });

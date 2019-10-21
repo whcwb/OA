@@ -996,6 +996,7 @@
       this.getBmdList()
       this.getJTjx()
       this.tabTit = this.tabTitFT
+        this.getkm()
     },
     computed: {
       AutoReadCard() {
@@ -1009,6 +1010,21 @@
       }
     },
     methods: {
+        getkm(){
+            if (this.$route.query.param){
+                console.log(this.$route.query.param);
+                sessionStorage.setItem("queryJF", this.$route.query.param);
+                this.TagDot = parseInt(this.$route.query.param) -1
+                this.param.sign = this.$route.query.param
+                this.getPagerList()
+                this.$nextTick()
+            } else {
+                var kskm = sessionStorage.getItem("queryJF");
+                if (kskm){
+                    this.param.kskm = kskm;
+                }
+            }
+        },
       pageSizeChange(n) {
         if (this.activeName == '1') {
           this.param.pageSize = n;

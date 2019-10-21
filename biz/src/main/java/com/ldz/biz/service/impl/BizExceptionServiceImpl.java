@@ -65,9 +65,25 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			return ApiResponse.fail("异常码不能为空");
 		}
 		String bz = exceptionConfigService.getExpNameByCode(exception.getCode());
+
 		//给学员标记异常备注
 		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(exception.getSfzmhm());
 		if (traineeInfo != null){
+			if(StringUtils.equals(exception.getCode(), "001")){
+				bz += "( 报名时间:  " +traineeInfo.getRegistrationTime() +")";
+			}else if (StringUtils.equals(exception.getCode(), "002")){
+				bz += "( 报名审核时间:  " +traineeInfo.getInfoCheckTime() +")";
+			}else if(StringUtils.equals(exception.getCode(), "003")){
+				bz += "( 报名收费时间:  " +traineeInfo.getConfirmTime() +")";
+			}else if(StringUtils.equals(exception.getCode(), "101") || StringUtils.equals(exception.getCode(), "102")){
+				bz += "( 科目一考试时间:  " +traineeInfo.getFirSubTestTime() +")";
+			}else if(StringUtils.equals(exception.getCode(), "201")|| StringUtils.equals(exception.getCode(), "202")){
+				bz += "( 科目二考试时间:  " +traineeInfo.getSecSubTestTime() +")";
+			}else if(StringUtils.equals(exception.getCode(), "301") || StringUtils.equals(exception.getCode(), "302")){
+				bz += "( 科目三考试时间:  " +traineeInfo.getThirdSubTestTime() +")";
+			}else if(StringUtils.equals(exception.getCode(), "402")){
+				bz += "( 科目四考试时间:  " +traineeInfo.getForthSubTestTime() +")";
+			}
 			traineeInfo.setCode(exception.getCode());
 			traineeInfo.setErrorMessage(bz);
 			traineeInfoService.update(traineeInfo);

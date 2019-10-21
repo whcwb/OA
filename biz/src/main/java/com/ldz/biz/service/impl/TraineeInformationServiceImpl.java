@@ -3101,79 +3101,82 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     }
 
     @Override
-    public ApiResponse<String> getTestStudents(int pageSize, int pageNum, String jgdm, String testTime, String testPlace, String kskm, String idCardNoLike) {
-        Map<String, Object> kmMap = new HashMap<>();
-        kmMap.put("1", "科目一");
-        kmMap.put("2", "科目二");
-        kmMap.put("3", "科目三");
-        kmMap.put("4", "科目四");
-        int anInt = Integer.parseInt(kskm);
-        kskm = (String) kmMap.get(kskm);
-        if (StringUtils.isBlank(jgdm)) {
-            jgdm = null;
+    public ApiResponse<String> getTestStudents(int pageSize, int pageNum, String kskm) {
+        Map<String, String> kmMap = new HashMap<>();
+      /*  kmMap.put("1", "10");
+        kmMap.put("2", "20");
+        kmMap.put("3", "30");
+        kmMap.put("4", "40");
+        kmMap.put("10", "科目一");
+        kmMap.put("20", "科目二");
+        kmMap.put("30", "科目三");
+        kmMap.put("40", "科目四");*/
+        kmMap.put("1", "fir_sub_test_time");
+        kmMap.put("2", "sec_sub_test_time");
+        kmMap.put("3", "third_sub_test_time");
+        kmMap.put("4", "forth_sub_test_time");
+        kmMap.put("fir_sub_test_time", "科目一");
+        kmMap.put("sec_sub_test_time", "科目二");
+        kmMap.put("third_sub_test_time", "科目三");
+        kmMap.put("forth_sub_test_time", "科目四");
+
+        String cond = null;
+        if(StringUtils.equals(kskm, "1")){
+            cond = " m.fir_sub not in ('30','40')";
+        }else if(StringUtils.equals(kskm, "2")){
+            cond = "  m.sec_sub not in ('30','40')";
+        }else if(StringUtils.equals(kskm, "3")){
+            cond = " m.third_sub not in ('30','40')";
+        }else{
+            cond = " m.forth_sub not in ('10','20')";
         }
-        if (StringUtils.isBlank(testTime)) {
-            testTime = null;
-        }
-        if (StringUtils.isBlank(testPlace)) {
-            testPlace = null;
-        }
-        if (StringUtils.isBlank(idCardNoLike)) {
-            idCardNoLike = null;
-        }
+
+        String kmTestColumn = kmMap.get(kskm);
+        String testTime = null;
         String firSubTestTimeLike = getRequestParamterAsString("firSubTestTimeLike");
         String secSubTestTimeLike = getRequestParamterAsString("secSubTestTimeLike");
         String thirdSubTestTimeLike = getRequestParamterAsString("thirdSubTestTimeLike");
         String forthSubTestTimeLike = getRequestParamterAsString("forthSubTestTimeLike");
-        if (StringUtils.isBlank(firSubTestTimeLike)) {
-            firSubTestTimeLike = null;
+        if(StringUtils.isNotBlank(firSubTestTimeLike)){
+            testTime = firSubTestTimeLike;
         }
-        if (StringUtils.isBlank(secSubTestTimeLike)) {
-            secSubTestTimeLike = null;
+        if(StringUtils.isNotBlank(secSubTestTimeLike)){
+            testTime = secSubTestTimeLike;
         }
-        if (StringUtils.isBlank(thirdSubTestTimeLike)) {
-            thirdSubTestTimeLike = null;
+        if(StringUtils.isNotBlank(thirdSubTestTimeLike)){
+            testTime = thirdSubTestTimeLike;
         }
-        if (StringUtils.isBlank(forthSubTestTimeLike)) {
-            forthSubTestTimeLike = null;
+        if(StringUtils.isNotBlank(forthSubTestTimeLike)){
+            testTime = forthSubTestTimeLike;
         }
-        String nameLike = getRequestParamterAsString("nameLike");
-        if (StringUtils.isBlank(nameLike)) {
-            nameLike = null;
+        String jgdm = getRequestParamterAsString("jgdm");
+        if(StringUtils.isBlank(jgdm)){
+            jgdm = null;
         }
-        String finalKskm = kskm;
-        String finalIdCardNo = idCardNoLike;
-        String finalTestPlace = testPlace;
+        String idCardNoLike = getRequestParamterAsString("idCardNoLike");
+        if(StringUtils.isBlank(idCardNoLike)){
+            idCardNoLike = null;
+        }
+
         String finalTestTime = testTime;
         String finalJgdm = jgdm;
-        String finalForthSubTestTimeLike = forthSubTestTimeLike;
-        String finalThirdSubTestTimeLike = thirdSubTestTimeLike;
-        String finalSecSubTestTimeLike = secSubTestTimeLike;
-        String finalFirSubTestTimeLike = firSubTestTimeLike;
-        String finalNameLike = nameLike;
-        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, finalTestPlace, finalKskm, anInt, finalIdCardNo, finalFirSubTestTimeLike, finalSecSubTestTimeLike, finalThirdSubTestTimeLike, finalForthSubTestTimeLike, finalNameLike));
+        String finalIdCardNoLike = idCardNoLike;
+        String finalCond = cond;
+        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, kmTestColumn, kmMap.get(kmTestColumn), finalIdCardNoLike, finalCond));
+
+
         if (CollectionUtils.isNotEmpty(info.getList())) {
             List<TraineeInformation> infoList = info.getList();
             List<String> ids = infoList.stream().map(TraineeInformation::getId).collect(Collectors.toList());
             SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
-            simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, finalKskm);
+            simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(kmTestColumn));
             simpleCondition.in(TraineeTestInfo.InnerColumn.traineeId, ids);
             simpleCondition.setOrderByClause(" test_time asc");
             List<TraineeTestInfo> list = traineeTestInfoService.findByCondition(simpleCondition);
             Map<String, List<TraineeTestInfo>> map = list.stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
-            info.getList().forEach(traineeInformation -> traineeInformation.setTestInfos(map.get(traineeInformation.getId()).stream().filter(traineeTestInfo -> traineeTestInfo.getTestTime().equals(traineeInformation.getTestTime())).collect(Collectors.toList())));
-            for (TraineeInformation information : info.getList()) {
-                if(StringUtils.equals(kskm, "科目一")){
-                    information.setFirSubTestTime(information.getTestTime());
-                }else if (StringUtils.equals(kskm, "科目二")){
-                    information.setSecSubTestTime(information.getTestTime());
-                }else if(StringUtils.equals(kskm, "科目三")){
-                    information.setThirdSubTestTime(information.getTestTime());
-                }else if (StringUtils.equals(kskm, "科目四")){
-                    information.setForthSubTestTime(information.getTestTime());
-                }
-
-            }
+            info.getList().forEach(traineeInformation -> {
+                traineeInformation.setTestInfos(map.get(traineeInformation.getId()));
+            });
         }
         ApiResponse<String> res = new ApiResponse<>();
         res.setPage(info);
@@ -3318,6 +3321,23 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         baseMapper.updateByPrimaryKey(information);
         traineeStatusService.saveEntity(information,"考试预约撤回", "00", kmMap.get(kskm) + " 预约撤回" );
         return ApiResponse.success();
+    }
+
+    @Override
+    public ApiResponse<TraineeInformation> getById(String id) {
+        if(StringUtils.isBlank(id)){
+            return ApiResponse.success(new TraineeInformation());
+        }
+        TraineeInformation information = findById(id);
+        if(information != null ){
+            // 查询学员所有的考试信息
+            SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
+            condition.eq(TraineeTestInfo.InnerColumn.traineeId, id);
+            List<TraineeTestInfo> infos = traineeTestInfoService.findByCondition(condition);
+            information.setTestInfos(infos);
+        }
+
+        return ApiResponse.success(information);
     }
 
 

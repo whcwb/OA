@@ -330,11 +330,29 @@
       }
     },
     created(){
+        this.getkm();
       this.accessToken = JSON.parse(Cookies.get('accessToken'));
       this.getBmdList();
+
       this.getPagerList();
     },
     methods: {
+        getkm(){
+            if (this.$route.query.param){
+                console.log(this.$route.query.param);
+                sessionStorage.setItem("queryparam", this.$route.query.param);
+                this.TagDot = parseInt(this.$route.query.param) -1
+                this.param.kskm = this.$route.query.param;
+
+                // var i = parseInt(this.param.kskm) -1
+                // this.kmCheck(i)
+            } else {
+                var kskm = sessionStorage.getItem("queryparam");
+                if (kskm){
+                    this.param.kskm = kskm;
+                }
+            }
+        },
       revoke(row){
         this.swal({
           text: "确认撤回约考记录?",

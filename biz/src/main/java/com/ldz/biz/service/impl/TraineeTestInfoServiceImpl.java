@@ -755,10 +755,18 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             }
             BizException exception = new BizException();
             exception.setSfzmhm(map.get(5));
-            exception.setCode("102");
             exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(2));
-            exceptionService.clearException(exception, exception.getCode());
+            if(StringUtils.equals(kmCode,"科目一")){
+                exception.setCode("102");
+                exceptionService.clearException(exception, exception.getCode());
+            }else if(StringUtils.equals(kmCode, "科目二")){
+                exception.setCode("202");
+                exceptionService.clearException(exception, exception.getCode());
+            }else if(StringUtils.equals(kmCode, "科目三")){
+                exception.setCode("302");
+                exceptionService.clearException(exception, exception.getCode());
+            }
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);
         } else {
             //		4、找到约考记录

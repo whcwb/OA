@@ -85,7 +85,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 				if(CollectionUtils.isNotEmpty(infos)){
 					testPlace = infos.get(0).getTestPlace();
 				}
-				bz += "( 科目一考试时间:  " +traineeInfo.getFirSubTestTime() +" 考试地点: " + testPlace+ "   )";
+				bz += "( 考试时间:  " +traineeInfo.getFirSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}else if(StringUtils.equals(exception.getCode(), "201")|| StringUtils.equals(exception.getCode(), "202")){
 				simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, "科目二");
 				simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, traineeInfo.getSecSubTestTime());
@@ -94,7 +94,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 				if(CollectionUtils.isNotEmpty(infos)){
 					testPlace = infos.get(0).getTestPlace();
 				}
-				bz += "( 科目一考试时间:  " +traineeInfo.getSecSubTestTime() +" 考试地点: " + testPlace+ "   )";
+				bz += "( 考试时间:  " +traineeInfo.getSecSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}else if(StringUtils.equals(exception.getCode(), "301") || StringUtils.equals(exception.getCode(), "302")){
 				simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, "科目三");
 				simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, traineeInfo.getThirdSubTestTime());
@@ -103,7 +103,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 				if(CollectionUtils.isNotEmpty(infos)){
 					testPlace = infos.get(0).getTestPlace();
 				}
-				bz += "( 科目一考试时间:  " +traineeInfo.getThirdSubTestTime() +" 考试地点: " + testPlace+ "   )";
+				bz += "( 考试时间:  " +traineeInfo.getThirdSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}else if(StringUtils.equals(exception.getCode(), "402")){
 				simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, "科目四");
 				simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, traineeInfo.getForthSubTestTime());
@@ -112,7 +112,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 				if(CollectionUtils.isNotEmpty(infos)){
 					testPlace = infos.get(0).getTestPlace();
 				}
-				bz += "( 科目一考试时间:  " +traineeInfo.getForthSubTestTime() +" 考试地点: " + testPlace+ "   )";
+				bz += "( 考试时间:  " +traineeInfo.getForthSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}
 			traineeInfo.setCode(exception.getCode());
 			traineeInfo.setErrorMessage(bz);
@@ -232,15 +232,15 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		}else if ("101".equals(config.getCode())){
 			kskm = "1";
 			//科目一约考.即将考试还未缴科目一初考费
-			students = baseMapper.getTraineeInfoByColumn("fir_sub_test_time", " is not null", "fir_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("fir_sub_payment_time", " is  null", "fir_sub_test_time", config.getDays().toString());
 		}else if ("201".equals(config.getCode())){
 			kskm = "2";
 			//科目二约考.即将考试还未缴科目二初考费
-			students = baseMapper.getTraineeInfoByColumn("sec_sub_test_time", " is not null", "sec_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("sec_sub_payment_time", " is  null", "sec_sub_test_time", config.getDays().toString());
 		}else if ("301".equals(config.getCode())){
 			kskm = "3";
 			//科目三约考.即将考试还未缴科目三初考费
-			students = baseMapper.getTraineeInfoByColumn("third_sub_test_time", " is not null", "third_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("third_sub_payment_time", " is  null", "third_sub_test_time", config.getDays().toString());
 		}else if ("102".equals(config.getCode())){
 			kskm = "1";
 			//科目一成绩确认.科目一考试成绩未确认

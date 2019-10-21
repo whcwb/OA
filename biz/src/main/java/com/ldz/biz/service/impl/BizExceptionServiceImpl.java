@@ -202,15 +202,15 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		}else if ("101".equals(config.getCode())){
 			kskm = "1";
 			//科目一约考.即将考试还未缴科目一初考费
-			students = baseMapper.getTraineeInfoByColumn("fir_sub", "='20'", "fir_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("fir_sub_test_time", " is not null", "fir_sub_payment_time", config.getDays().toString());
 		}else if ("201".equals(config.getCode())){
 			kskm = "2";
 			//科目二约考.即将考试还未缴科目二初考费
-			students = baseMapper.getTraineeInfoByColumn("sec_sub", "='10'", "sec_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("sec_sub_test_time", " is not null", "sec_sub_payment_time", config.getDays().toString());
 		}else if ("301".equals(config.getCode())){
 			kskm = "3";
 			//科目三约考.即将考试还未缴科目三初考费
-			students = baseMapper.getTraineeInfoByColumn("third_sub", "='10'", "third_sub_payment_time", config.getDays().toString());
+			students = baseMapper.getTraineeInfoByColumn("third_sub_test_time", " is not null", "third_sub_payment_time", config.getDays().toString());
 		}else if ("102".equals(config.getCode())){
 			kskm = "1";
 			//科目一成绩确认.科目一考试成绩未确认

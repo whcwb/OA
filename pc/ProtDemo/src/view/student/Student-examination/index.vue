@@ -1,122 +1,148 @@
 <template>
   <div class="box_col">
     <Row>
-      <Col span="2">
+      <Col span="3">
         <pager-tit title="考试确认"></pager-tit>
       </Col>
       <Col span="8">
-      <Tag type="dot" :color="TagDot == index ? 'primary' : 'default'"
-           style="cursor: pointer"
-           @click.native="kmCheck(index,item)"
-           v-for="(item,index) in [{val:'科目一',key:'10'},{val:'科目二',key:'20'},{val:'科目三',key:'30'},{val:'科目四',key:'40'}]">{{item.val}}
-      </Tag>
+        <Tag type="dot" :color="TagDot == index ? 'primary' : 'default'"
+             style="cursor: pointer"
+             @click.native="kmCheck(index,item)"
+             v-for="(item,index) in [{val:'科目一',key:'10'},{val:'科目二',key:'20'},{val:'科目三',key:'30'},{val:'科目四',key:'40'}]">
+          {{item.val}}
+        </Tag>
       </Col>
     </Row>
-    <Row style="padding-top: 20px">
-      <Col span="2" style="padding-right: 20px;cursor: pointer">
-      <Button size="large" icon="ios-download-outline" type="primary" @click="downloadTemplate">模板下载</Button>
-      <!--<Card dis-hover style="text-align:center;width:150px;height:148px" @click.native="downloadTemplate">
-        <div style="text-align:center">
-          <img src="@/assets/images/excel.jpg" style="width:100%">
-        </div>
-        <h3 style="margin-top: 10px;padding-bottom: 10px">模板下载</h3>
-      </Card>-->
-      </Col>
 
-      <Col span="3">
-      <Upload
-        ref="upload"
-        :max-size="2048"
-        :headers="{'userid':accessToken.userId, 'token':accessToken.token}"
-        :before-upload="(file)=>{pageData=[],this.handleSpinCustom()}"
-        :on-success="(res, file,fileList)=>{successCallback(res, file, fileList)}"
-        :on-error="errorCallback"
-        :on-format-error="handleFormatError"
-        :on-exceeded-size="handleMaxSize"
-        :format="['xls']"
-        :action="uploadUrl">
-        <p style="color:#464c5b;font-size: 16px;height: 32px;text-align: center;line-height: 32px">上传Excel文件</p>
-      </Upload>
-      </Col>
-      <Col :span="result.code == 200 ? '9' : '4' ">
-        <Row>
-          <Col span="9">
-          <ButtonGroup v-if="result.code == 200">
-            <Button>成功：{{ result.success }}</Button>
-            <Button type="info" @click="exportExcel">导出Excel</Button>
-          </ButtonGroup>
-          <Button v-else>
-            成功：{{ result.success }}
-          </Button>
+    <Row>
+      <Col span="16">
+        <Row style="padding-top: 20px">
+          <Col span="4" style="padding-right: 20px;cursor: pointer">
+            <Button size="large" icon="ios-download-outline" type="primary" @click="downloadTemplate">模板下载</Button>
+            <!--<Card dis-hover style="text-align:center;width:150px;height:148px" @click.native="downloadTemplate">
+              <div style="text-align:center">
+                <img src="@/assets/images/excel.jpg" style="width:100%">
+              </div>
+              <h3 style="margin-top: 10px;padding-bottom: 10px">模板下载</h3>
+            </Card>-->
           </Col>
-          <Col span="9" style="padding-left: 20px;">
-          <ButtonGroup v-if="result.code == 200">
-            <Button>失败：{{ result.error }}</Button>
-            <Button type="error" @click="exportExcelerr">导出Excel</Button>
-          </ButtonGroup>
-          <Button v-else>
-            失败：{{ result.error }}
-          </Button>
+
+          <Col span="4">
+            <Button type="primary" @click="showList">历史导入</Button>
+          </Col>
+
+          <!--<Col span="3">-->
+          <!--<Upload-->
+          <!--ref="upload"-->
+          <!--:max-size="2048"-->
+          <!--:headers="{'userid':accessToken.userId, 'token':accessToken.token}"-->
+          <!--:before-upload="(file)=>{pageData=[],this.handleSpinCustom()}"-->
+          <!--:on-success="(res, file,fileList)=>{successCallback(res, file, fileList)}"-->
+          <!--:on-error="errorCallback"-->
+          <!--:on-format-error="handleFormatError"-->
+          <!--:on-exceeded-size="handleMaxSize"-->
+          <!--:format="['xls']"-->
+          <!--:action="uploadUrl">-->
+          <!--<p style="color:#464c5b;font-size: 16px;height: 32px;text-align: center;line-height: 32px">上传Excel文件</p>-->
+          <!--</Upload>-->
+          <!--</Col>-->
+          <Col :span="result.code == 200 ? '12' : '7' ">
+            <Row>
+              <Col span="10">
+                <ButtonGroup v-if="result.code == 200">
+                  <Button>成功：{{ result.success }}</Button>
+                  <Button type="info" @click="exportExcel">导出Excel</Button>
+                </ButtonGroup>
+                <Button v-else>
+                  成功：{{ result.success }}
+                </Button>
+              </Col>
+              <Col span="10" style="padding-left: 20px;">
+                <ButtonGroup v-if="result.code == 200">
+                  <Button>失败：{{ result.error }}</Button>
+                  <Button type="error" @click="exportExcelerr">导出Excel</Button>
+                </ButtonGroup>
+                <Button v-else>
+                  失败：{{ result.error }}
+                </Button>
+              </Col>
+            </Row>
+          </Col>
+
+        </Row>
+        <Row :gutter="10" style="margin-bottom: 8px">
+          <Col span="3" :lg="3" :md="4">
+            <div style="width: 100%">
+              <Select v-model="param.jgdm"
+                      clearable
+                      @on-change="CasChange">
+                <Option v-for="item in CascaderList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
+            </div>
+          </Col>
+          <Col span="4" :lg="4" :md="5">
+            <div v-if="TagDot==0">
+              <DatePicker v-model="param.firSubTestTimeLike" split-panels format="yyyy-MM-dd"
+                          type="date" placeholder="考试时间"
+                          @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
+            </div>
+            <div v-else-if="TagDot==1">
+              <DatePicker v-model="param.secSubTestTimeLike" split-panels format="yyyy-MM-dd"
+                          type="date" placeholder="考试时间"
+                          @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
+            </div>
+            <div v-else-if="TagDot==2">
+              <DatePicker v-model="param.thirdSubTestTimeLike" split-panels format="yyyy-MM-dd"
+                          type="date" placeholder="考试时间"
+                          @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
+            </div>
+            <div v-else-if="TagDot==3">
+              <DatePicker v-model="param.forthSubTestTimeLike" split-panels format="yyyy-MM-dd"
+                          type="date" placeholder="考试时间"
+                          @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
+            </div>
+          </Col>
+          <Col span="4" :lg="4" :md="5">
+            <div>
+              <Input v-model="param.idCardNoLike"
+                     @on-enter="param.pageNum = 1;getPagerList()"
+                     placeholder="证件号码"/>
+            </div>
+          </Col>
+          <Col span="4" :lg="4" :md="5">
+            <div>
+              <Input v-model="param.nameLike"
+                     @on-enter="param.pageNum = 1;getPagerList()"
+                     placeholder="姓名"/>
+            </div>
+          </Col>
+          <Col span="2" :lg="2" :md="3">
+            <Button type="primary" @click="param.pageNum = 1;getPagerList()">
+              <Icon type="md-search"></Icon>
+              <!--查询-->
+            </Button>
           </Col>
         </Row>
-        </Col>
-        <Col span="2" >
-        <Button type="primary" @click="showList">历史导入</Button>
-        </Col>
-      </Row>
-      <Row :gutter="10" style="margin-bottom: 8px">
-        <Col span="3" :lg="3" :md="4">
-        <div style="width: 100%">
-          <Select v-model="param.jgdm"
-                  clearable
-                  @on-change="CasChange">
-            <Option v-for="item in CascaderList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-          </Select>
-        </div>
-        </Col>
-        <Col span="4" :lg="4" :md="5">
-        <div v-if="TagDot==0">
-          <DatePicker v-model="param.firSubTestTimeLike" split-panels format="yyyy-MM-dd"
-                      type="date" placeholder="考试时间"
-                      @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
-        </div>
-        <div v-else-if="TagDot==1">
-          <DatePicker v-model="param.secSubTestTimeLike" split-panels format="yyyy-MM-dd"
-                      type="date" placeholder="考试时间"
-                      @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
-        </div>
-        <div v-else-if="TagDot==2">
-          <DatePicker v-model="param.thirdSubTestTimeLike" split-panels format="yyyy-MM-dd"
-                      type="date" placeholder="考试时间"
-                      @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
-        </div>
-        <div v-else-if="TagDot==3">
-          <DatePicker v-model="param.forthSubTestTimeLike" split-panels format="yyyy-MM-dd"
-                      type="date" placeholder="考试时间"
-                      @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
-        </div>
-        </Col>
-        <Col span="4" :lg="4" :md="5">
-          <div>
-            <Input v-model="param.idCardNoLike"
-                   @on-enter="param.pageNum = 1;getPagerList()"
-                   placeholder="证件号码"/>
+      </Col>
+      <Col span="8">
+        <Upload
+          ref="upload"
+          :max-size="2048"
+          :headers="{'userid':accessToken.userId, 'token':accessToken.token}"
+          :before-upload="(file)=>{pageData=[],this.handleSpinCustom()}"
+          :on-success="(res, file,fileList)=>{successCallback(res, file, fileList)}"
+          :on-error="errorCallback"
+          :on-format-error="handleFormatError"
+          :on-exceeded-size="handleMaxSize"
+          :format="['xls']"
+          type="drag"
+          :action="uploadUrl">
+          <div style="padding: 5px 0">
+            <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+            <p style="color:#464c5b;font-size: 16px">点击或拖动Excel文件进行上传导入</p>
+            <p style="color:#9ea7b4;font-size: 12px;padding-top:10px">只能上传xls文件，文件不能大于2M</p>
           </div>
-        </Col>
-        <Col span="4" :lg="4" :md="5">
-          <div>
-            <Input v-model="param.nameLike"
-                   @on-enter="param.pageNum = 1;getPagerList()"
-                   placeholder="姓名"/>
-          </div>
-        </Col>
-        <Col span="2" :lg="2" :md="3">
-        <Button type="primary" @click="param.pageNum = 1;getPagerList()">
-          <Icon type="md-search"></Icon>
-          <!--查询-->
-        </Button>
-        </Col>
-      </Row>
+        </Upload>
       </Col>
     </Row>
 
@@ -160,37 +186,37 @@
   export default {
     name: "index",
     components: {
-      CountTo,FileList
+      CountTo, FileList
     },
     data() {
       return {
-        compName:'',
-        v:this,
+        compName: '',
+        v: this,
         total: 0,
-        accessToken:{},
-        uploadUrl:http.url + this.apis.TRAINETEST.IMPORT_RESULT,
-        pageData:[],
-        TagDot:0,
-        selectKm:'10',
+        accessToken: {},
+        uploadUrl: http.url + this.apis.TRAINETEST.IMPORT_RESULT,
+        pageData: [],
+        TagDot: 0,
+        selectKm: '10',
         CascaderList: [],
-        pageShow:true,
-        result:{
+        pageShow: true,
+        result: {
           errorKey: '',
-          code:-1,
-          success:0,
-          error:0,
-          key:''
+          code: -1,
+          success: 0,
+          error: 0,
+          key: ''
         },
-        param:{
+        param: {
           statu: '',
-          kskm:'1',
-          idCardNoLike:'',
-          nameLike:'',
-          jgdm:'',
-          firSubTestTimeLike:'',
-          secSubTestTimeLike:'',
-          thirdSubTestTimeLike:'',
-          forthSubTestTimeLike:'',
+          kskm: '1',
+          idCardNoLike: '',
+          nameLike: '',
+          jgdm: '',
+          firSubTestTimeLike: '',
+          secSubTestTimeLike: '',
+          thirdSubTestTimeLike: '',
+          forthSubTestTimeLike: '',
           pageSize: 8,
           pageNum: 1
         },
@@ -262,12 +288,12 @@
             minWidth: 100,
             align: 'center',
             render: (h, p) => {
-              let arr=p.row.testInfos;
-              let place=''
-              let km=this.selectKm=='10' ? p.row.firSubTestTime : this.selectKm=='20' ? p.row.secSubTestTime : this.selectKm=='30' ? p.row.thirdSubTestTime : p.row.forthSubTestTime
-              arr.map((val,index,arr)=>{
-                if(val.testTime===km){
-                  place=val.testPlace
+              let arr = p.row.testInfos;
+              let place = ''
+              let km = this.selectKm == '10' ? p.row.firSubTestTime : this.selectKm == '20' ? p.row.secSubTestTime : this.selectKm == '30' ? p.row.thirdSubTestTime : p.row.forthSubTestTime
+              arr.map((val, index, arr) => {
+                if (val.testTime === km) {
+                  place = val.testPlace
                 }
               })
               return h('div', place)
@@ -295,29 +321,31 @@
               return h('div', a)
             }
           },
-          {title: '导入结果', width:120, key: 'message',
+          {
+            title: '导入结果', width: 120, key: 'message',
             render: (h, p) => {
               let a = p.row.message;
-              if (a == '待上传'){
+              if (a == '待上传') {
                 a = "-";
               }
               return h('div', a)
-            },filters: [
-            {
-              label: '成功',
-              value: 1
-            },
-            {
-              label: '失败',
-              value: 0
-            }
-          ],
+            }, filters: [
+              {
+                label: '成功',
+                value: 1
+              },
+              {
+                label: '失败',
+                value: 0
+              }
+            ],
             filterMultiple: false,
-            filterMethod (value, row) {
+            filterMethod(value, row) {
               return row.success == value;
             }
           },
-          {title: '操作', width:160, fixed:'right',
+          {
+            title: '操作', width: 160, fixed: 'right',
             render: (h, p) => {
               return h('div', [
                 h('Button', {
@@ -362,54 +390,54 @@
         ]
       }
     },
-    created(){
+    created() {
       this.accessToken = JSON.parse(Cookies.get('accessToken'));
 
       this.getBmdList();
       this.getPagerList();
 
-      setTimeout(()=>{
-          this.getkm()
-      },200)
+      setTimeout(() => {
+        this.getkm()
+      }, 200)
 
 
       // this.pageData = this.$store.state.app.examination
     },
     methods: {
-        getkm(){
-            this.pageData = [];
-            if (this.$route.query.param){
-                console.log(this.$route.query.param);
-                sessionStorage.setItem("queryKM", this.$route.query.param);
-                this.TagDot = parseInt(this.$route.query.param) -1
-                this.param.kskm = this.$route.query.param;
-                var a =''
-                var b = {}
-                if (this.$route.query.param == 1){
-                    a = 0
-                    b={val:'科目一',key:'10'}
-                }else if(this.$route.query.param == 2){
-                    a = 1
-                    b={val:'科目二',key:'20'}
-                }else if(this.$route.query.param == 3){
-                    a = 2
-                    b={val:'科目三',key:'30'}
-                }else if (this.$route.query.param == 4){
-                    a = 3
-                    b={val:'科目四',key:'40'}
-                }
-                this.pageData = [];
-                this.kmCheck(a,b)
-            } else {
-                var kskm = sessionStorage.getItem("queryKM");
-                if (kskm){
-                    this.param.kskm = kskm;
-                }
-            }
-        },
-      updateResult(row, result){
+      getkm() {
+        this.pageData = [];
+        if (this.$route.query.param) {
+          console.log(this.$route.query.param);
+          sessionStorage.setItem("queryKM", this.$route.query.param);
+          this.TagDot = parseInt(this.$route.query.param) - 1
+          this.param.kskm = this.$route.query.param;
+          var a = ''
+          var b = {}
+          if (this.$route.query.param == 1) {
+            a = 0
+            b = {val: '科目一', key: '10'}
+          } else if (this.$route.query.param == 2) {
+            a = 1
+            b = {val: '科目二', key: '20'}
+          } else if (this.$route.query.param == 3) {
+            a = 2
+            b = {val: '科目三', key: '30'}
+          } else if (this.$route.query.param == 4) {
+            a = 3
+            b = {val: '科目四', key: '40'}
+          }
+          this.pageData = [];
+          this.kmCheck(a, b)
+        } else {
+          var kskm = sessionStorage.getItem("queryKM");
+          if (kskm) {
+            this.param.kskm = kskm;
+          }
+        }
+      },
+      updateResult(row, result) {
         this.swal({
-          text: "确认手工补录成功为"+ (result == '00' ? '合格' : '不合格')+"?",
+          text: "确认手工补录成功为" + (result == '00' ? '合格' : '不合格') + "?",
           type: "warning",
           showCancelButton: true,
           confirmButtonText: '确认',
@@ -418,46 +446,46 @@
           if (isConfirm.value) {
             var time = '';
             var kskm = '1';
-            if (this.selectKm == '10'){
+            if (this.selectKm == '10') {
               time = row.firSubTestTime;
-            }else if (this.selectKm == '20'){
+            } else if (this.selectKm == '20') {
               time = row.secSubTestTime;
               kskm = '2';
-            }else if (this.selectKm == '30'){
+            } else if (this.selectKm == '30') {
               time = row.thirdSubTestTime;
               kskm = '3';
-            }else if (this.selectKm == '40'){
+            } else if (this.selectKm == '40') {
               time = row.forthSubTestTime;
               kskm = '4';
             }
 
             var opt = {
-              kskm:kskm,
-              id:row.id,
-              result:result,
-              time:time
+              kskm: kskm,
+              id: row.id,
+              result: result,
+              time: time
             };
 
-            this.$http.post('/api/traineeinformation/updateTestResult',opt).then((res)=>{
-                if (res.code == 200){
-                  this.swal({
-                    text: '操作完成',
-                    type: 'success',
-                    confirmButtonText: '关闭'
-                  });
-                  this.getPagerList();
-                }else{
-                  this.swal({
-                    text: res.message,
-                    type: 'warning',
-                    confirmButtonText: '关闭'
-                  })
-                }
+            this.$http.post('/api/traineeinformation/updateTestResult', opt).then((res) => {
+              if (res.code == 200) {
+                this.swal({
+                  text: '操作完成',
+                  type: 'success',
+                  confirmButtonText: '关闭'
+                });
+                this.getPagerList();
+              } else {
+                this.swal({
+                  text: res.message,
+                  type: 'warning',
+                  confirmButtonText: '关闭'
+                })
+              }
             })
           }
         });
       },
-      revoke(row){
+      revoke(row) {
         this.swal({
           text: "确认撤回约考记录?",
           type: "warning",
@@ -468,34 +496,34 @@
           if (isConfirm.value) {
             var time = '';
             var kskm = '1';
-            if (this.selectKm == '10'){
+            if (this.selectKm == '10') {
               time = row.firSubTestTime;
-            }else if (this.selectKm == '20'){
+            } else if (this.selectKm == '20') {
               time = row.secSubTestTime;
               kskm = '2';
-            }else if (this.selectKm == '30'){
+            } else if (this.selectKm == '30') {
               time = row.thirdSubTestTime;
               kskm = '3';
-            }else if (this.selectKm == '40'){
+            } else if (this.selectKm == '40') {
               time = row.forthSubTestTime;
               kskm = '4';
             }
 
             var opt = {
-              kskm:kskm,
-              id:row.id,
-              time:time
+              kskm: kskm,
+              id: row.id,
+              time: time
             };
 
-            this.$http.post('/api/traineeinformation/revokeAppoint',opt).then((res)=>{
-              if (res.code == 200){
+            this.$http.post('/api/traineeinformation/revokeAppoint', opt).then((res) => {
+              if (res.code == 200) {
                 this.swal({
                   text: '操作完成',
                   type: 'success',
                   confirmButtonText: '关闭'
                 });
                 this.getPagerList();
-              }else{
+              } else {
                 this.swal({
                   text: res.message,
                   type: 'warning',
@@ -532,7 +560,7 @@
         this.param.pageNum = 1;
         this.getPagerList()
       },
-      showList(){
+      showList() {
         this.compName = 'FileList';
       },
       pageChange(n) {
@@ -545,7 +573,7 @@
         this.getPagerList();
         // this.util.pageSizeChange(this, n);
       },
-      getPagerList(){
+      getPagerList() {
         this.pageData = [];
         this.pageShow = true;
         if (this.TagDot == 0 && this.param.firSubTestTimeLike != '') {
@@ -554,7 +582,7 @@
           this.param.secSubTestTimeLike = this.AF.trimDate(this.param.secSubTestTimeLike)
         } else if (this.TagDot == 2 && this.param.thirdSubTestTimeLike != '') {
           this.param.thirdSubTestTimeLike = this.AF.trimDate(this.param.thirdSubTestTimeLike)
-        }  else if (this.TagDot == 3 && this.param.forthSubTestTimeLike != '') {
+        } else if (this.TagDot == 3 && this.param.forthSubTestTimeLike != '') {
           this.param.forthSubTestTimeLike = this.AF.trimDate(this.param.forthSubTestTimeLike)
         } else {
           this.param.firSubTestTimeLike = '';
@@ -563,16 +591,16 @@
           this.param.forthSubTestTimeLike = '';
         }
 
-        this.$http.post('/api/traineeinformation/getTestStudents',this.param).then((res)=>{
-          if(res.code===200){
-            res.page.list.forEach((item,index)=>{
-              if(item.status === '10'){
+        this.$http.post('/api/traineeinformation/getTestStudents', this.param).then((res) => {
+          if (res.code === 200) {
+            res.page.list.forEach((item, index) => {
+              if (item.status === '10') {
                 item.subject = '科目一';
-              }else if(item.status === '20'){
+              } else if (item.status === '20') {
                 item.subject = '科目二';
-              }else if(item.status === '30'){
+              } else if (item.status === '30') {
                 item.subject = '科目三';
-              }else if(item.status === '40'){
+              } else if (item.status === '40') {
                 item.subject = '科目四';
               }
               item.trainStatus = '00';
@@ -588,7 +616,7 @@
           }
         })
       },
-      handleSpinCustom () {
+      handleSpinCustom() {
         this.$Spin.show({
           render: (h) => {
             return h('div', [
@@ -604,13 +632,13 @@
           }
         });
       },
-      downloadTemplate(){
+      downloadTemplate() {
         window.open('../成绩导入模板（有内容的为必填）.xls', '_blank');
       },
-      exportExcel(){
+      exportExcel() {
         window.open(http.url + this.apis.TRAINETEST.EXPORT_URL + this.result.key, '_blank');
       },
-      exportExcelerr(){
+      exportExcelerr() {
         window.open(http.url + this.apis.TRAINETEST.EXPORT_URL + this.result.errorKey, '_blank');
       },
       //文件上传成功后，回调该方法，进行后续处理
@@ -625,7 +653,7 @@
           this.result.success = res.result.succeedCount;
           this.pageData = res.result.list;
           this.pageShow = false;
-          this.$store.commit('Gexamination',res.result.list)
+          this.$store.commit('Gexamination', res.result.list)
         } else {
           this.$Message.error("文件上传失败：" + res.message);
         }
@@ -636,21 +664,21 @@
         this.$refs.upload.clearFiles();
         this.swal({
           text: '文件上传失败，请稍后重试！',
-          type:'error'
+          type: 'error'
         });
       },
       handleFormatError(file) {
         this.$Spin.hide();
         this.swal({
           text: '文件格式错误，仅支持 xls',
-          type:'error'
+          type: 'error'
         });
       },
       handleMaxSize(file) {
         this.$Spin.hide();
         this.swal({
           text: '文件不能超过2M',
-          type:'error'
+          type: 'error'
         });
       },
       kmCheck(index, item) {
@@ -678,25 +706,25 @@
 </script>
 
 <style lang="less">
-  .count-style{
+  .count-style {
     font-size: 50px;
   }
 
-  .successCard{
-  .ivu-card-head{
-    border-bottom: 1px solid #e8eaec;
-    padding: 0px;
-    line-height: 1;
-    background-color: #2d8cf0;
-  }
+  .successCard {
+    .ivu-card-head {
+      border-bottom: 1px solid #e8eaec;
+      padding: 0px;
+      line-height: 1;
+      background-color: #2d8cf0;
+    }
   }
 
-  .failCard{
-  .ivu-card-head{
-    border-bottom: 1px solid #e8eaec;
-    padding: 0px;
-    line-height: 1;
-    background-color: #ed3f14;
-  }
+  .failCard {
+    .ivu-card-head {
+      border-bottom: 1px solid #e8eaec;
+      padding: 0px;
+      line-height: 1;
+      background-color: #ed3f14;
+    }
   }
 </style>

@@ -1375,6 +1375,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
             condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(3));//科目
             condition.eq(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(6)));//约考时间
+            condition.eq(TraineeTestInfo.InnerColumn.idCardNo, map.get(2));
             condition.setOrderByClause(TraineeTestInfo.InnerColumn.id.desc());
             List<TraineeTestInfo> orgs = findByCondition(condition);
             if(CollectionUtils.isNotEmpty(orgs)){

@@ -398,14 +398,13 @@
 
       setTimeout(() => {
         this.getkm()
-      }, 200)
+      }, 500)
 
 
       // this.pageData = this.$store.state.app.examination
     },
     methods: {
       getkm() {
-        this.pageData = [];
         if (this.$route.query.param) {
           console.log(this.$route.query.param);
           sessionStorage.setItem("queryKM", this.$route.query.param);

@@ -16,7 +16,7 @@
     </FormItem>
     <Row>
       <Col span="14">
-        <Row v-if="loginType == '1'">
+        <Row>
           <Col span="24">
             <FormItem prop="captcha">
               <Input v-model="form.captcha" placeholder="请输入验证码">
@@ -40,12 +40,12 @@
           </Col>
         </Row>
       </Col>
-      <Col v-if="loginType == '1'" span="10">
+      <Col span="10">
         <img :src="YzUrl" width="100%" alt="验证码" style="margin-left: 8px;cursor: pointer"  @click="getUrl">
       </Col>
-      <Col v-if="loginType == '2'" span="10">
-        <h3 style="color: red">请插入UKey！</h3><a href="../ukey.exe">UKey驱动下载</a>
-      </Col>
+<!--      <Col v-if="loginType == '2'" span="10">-->
+<!--        <h3 style="color: red">请插入UKey！</h3><a href="../ukey.exe">UKey驱动下载</a>-->
+<!--      </Col>-->
     </Row>
   </Form>
 </template>

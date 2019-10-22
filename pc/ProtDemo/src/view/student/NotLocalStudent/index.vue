@@ -6,12 +6,12 @@
       <Row type="flex" justify="end">
         <Col span="3">
         <FormItem>
-          <Input type="text" placeholder="证件号码" v-model="param.idCardNoLike"/>
+          <Input type="text" placeholder="证件号码" v-model="param.sfzmhm"/>
         </FormItem>
         </Col>
         <Col span="3">
         <FormItem>
-          <Input type="text" placeholder="学员姓名" v-model="param.nameLike"/>
+          <Input type="text" placeholder="学员姓名" v-model="param.xmLike"/>
         </FormItem>
         </Col>
         <Col span="2">
@@ -61,8 +61,8 @@
         v:this,
         pagerUrl:this.apis.FBXXY.PAGER,
         param: {
-          nameLike: '',//姓名
-          idCardNoLike:'',
+          xmLike: '',//姓名
+          sfzmhm:'',
           code: '991',
           zt:'00',
           //分页数据

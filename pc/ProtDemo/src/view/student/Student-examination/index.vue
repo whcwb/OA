@@ -16,7 +16,7 @@
 
     <Row>
       <Col span="16">
-        <Row style="padding-top: 20px">
+        <Row style="padding-top: 20px;margin-bottom: 10px">
           <Col span="4" style="padding-right: 20px;cursor: pointer">
             <Button size="large" icon="ios-download-outline" type="primary" @click="downloadTemplate">模板下载</Button>
             <!--<Card dis-hover style="text-align:center;width:150px;height:148px" @click.native="downloadTemplate">
@@ -46,7 +46,7 @@
           <!--<p style="color:#464c5b;font-size: 16px;height: 32px;text-align: center;line-height: 32px">上传Excel文件</p>-->
           <!--</Upload>-->
           <!--</Col>-->
-          <Col :span="result.code == 200 ? '12' : '7' ">
+          <Col :span="result.code == 200 ? '16' : '7' ">
             <Row>
               <Col span="10">
                 <ButtonGroup v-if="result.code == 200">
@@ -71,7 +71,7 @@
 
         </Row>
         <Row :gutter="10" style="margin-bottom: 8px">
-          <Col span="3" :lg="3" :md="4">
+          <Col span="3" :lg="4" :md="4">
             <div style="width: 100%">
               <Select v-model="param.jgdm"
                       clearable
@@ -102,14 +102,14 @@
                           @on-change="param.pageNum = 1;getPagerList()"></DatePicker>
             </div>
           </Col>
-          <Col span="4" :lg="4" :md="5">
+          <Col span="4" :lg="6" :md="5">
             <div>
               <Input v-model="param.idCardNoLike"
                      @on-enter="param.pageNum = 1;getPagerList()"
                      placeholder="证件号码"/>
             </div>
           </Col>
-          <Col span="4" :lg="4" :md="5">
+          <Col span="4" :lg="5" :md="5">
             <div>
               <Input v-model="param.nameLike"
                      @on-enter="param.pageNum = 1;getPagerList()"
@@ -124,7 +124,7 @@
           </Col>
         </Row>
       </Col>
-      <Col span="8">
+      <Col span="7">
         <Upload
           ref="upload"
           :max-size="2048"
@@ -138,7 +138,7 @@
           type="drag"
           :action="uploadUrl">
           <div style="padding: 5px 0">
-            <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+            <Icon type="ios-cloud-upload" size="50" style="color: #3399ff"></Icon>
             <p style="color:#464c5b;font-size: 16px">点击或拖动Excel文件进行上传导入</p>
             <p style="color:#9ea7b4;font-size: 12px;padding-top:10px">只能上传xls文件，文件不能大于2M</p>
           </div>

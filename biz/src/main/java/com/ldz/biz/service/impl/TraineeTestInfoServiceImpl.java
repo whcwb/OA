@@ -766,6 +766,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             }else if(StringUtils.equals(kmCode, "科目三")){
                 exception.setCode("302");
                 exceptionService.clearException(exception, exception.getCode());
+            }else if(StringUtils.equals(kmCode, "科目四")){
+                exception.setCode("402");
+                exceptionService.clearException(exception, exception.getCode());
             }
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);
         } else {

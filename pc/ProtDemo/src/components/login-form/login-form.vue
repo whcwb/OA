@@ -31,7 +31,7 @@
           <Col span="24">
             <Row>
               <Col span="12" style="padding: 0 16px">
-                <Button @click="handleSubmit" type="primary" long>登录</Button>
+                <Button @click="login" type="primary" long>登录</Button>
               </Col>
               <Col span="12" style="padding: 0 16px">
                 <Button @click="newMess" type="primary" long>重置</Button>

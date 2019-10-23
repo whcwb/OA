@@ -113,6 +113,8 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 					testPlace = infos.get(0).getTestPlace();
 				}
 				bz += "( 考试时间:  " +traineeInfo.getForthSubTestTime() +" 考试地点: " + testPlace+ "   )";
+			}else if(StringUtils.equals(exception.getCode(), "903")){
+				bz += ("( 欠费金额 : " + traineeInfo.getOweAmount() + " ) ");
 			}
 			traineeInfo.setCode(exception.getCode());
 			traineeInfo.setErrorMessage(bz);

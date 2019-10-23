@@ -1297,7 +1297,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         }
         List<ChargeManagement> list = chargeManagementService.findByCondition(chacondition);
         if (CollectionUtils.isNotEmpty(list)) {
-            return ApiResponse.success();
+            return ApiResponse.fail(" 该学员已于 " + list.get(0).getCjsj().substring(0,10) + " 交过初考费");
         }
 
         SysYh currentUser = getCurrentUser();
@@ -2402,7 +2402,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             List<TraineeInformation> informationList = pageInfo.getList();
             List<TraineeInformation> informations = new ArrayList<>();
 
-            list.forEach(s -> informationList.stream().filter(traineeInformation -> traineeInformation.getId().equals(s)).forEach(traineeInformation -> informations.add(traineeInformation)));
+            list.forEach(s -> informationList.stream().filter(traineeInformation -> traineeInformation.getId().equals(s)).forEach(informations::add));
             informations.forEach(traineeInformation -> page1.getList().stream().filter(chargeManagement -> chargeManagement.getTraineeId().equals(traineeInformation.getId())).forEach(chargeManagement -> {
                 SysJg byOrgCode = jgService.findByOrgCode(traineeInformation.getJgdm());
                 traineeInformation.setJgPhone(byOrgCode.getLxdh1());
@@ -3157,12 +3157,16 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if(StringUtils.isBlank(idCardNoLike)){
             idCardNoLike = null;
         }
-
+        String nameLike = getRequestParamterAsString("nameLike");
+        if(StringUtils.isBlank(nameLike)){
+            nameLike = null;
+        }
         String finalTestTime = testTime;
         String finalJgdm = jgdm;
         String finalIdCardNoLike = idCardNoLike;
         String finalCond = cond;
-        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, kmTestColumn, kmMap.get(kmTestColumn), finalIdCardNoLike, finalCond));
+        String finalNameLike = nameLike;
+        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, kmTestColumn, kmMap.get(kmTestColumn), finalIdCardNoLike, finalCond, finalNameLike));
 
 
         if (CollectionUtils.isNotEmpty(info.getList())) {

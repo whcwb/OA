@@ -1,15 +1,22 @@
 <template>
   <div class="box_col">
     <Row style="padding: 10px">
-      <Col span="16">
+      <Col span="24">
         <pager-tit title="合格率统计"></pager-tit>
       </Col>
-      <Col span="4">
+      <Col span="5">
         <DatePicker type="daterange" split-panels placeholder="请选择日期（默认当天)" @on-change="getNf" @on-clear="getNf"
                     style="width: 200px"></DatePicker>
       </Col>
-      <Col span="4">
-        <Button type="primary" @click="DcExcel">导出Excel</Button>
+      <Col span="2">
+        <Button type="primary" @click="getNf([param.startTime,param.endTime])">
+          <Icon type="md-search"></Icon>
+        </Button>
+      </Col>
+      <Col span="2">
+        <Tooltip content="导出Excel" placement="right-start">
+          <Button type="primary" icon="md-cloud-download" @click="DcExcel"></Button>
+        </Tooltip>
       </Col>
     </Row>
     <div class="box_col_100">
@@ -175,10 +182,25 @@
           this.param.startTime = this.AF.trimDate();
           this.param.endTime = this.AF.trimDate();
         }
+        this.$Spin.show({
+          render: (h) => {
+            return h('div', [
+              h('Icon', {
+                'class': 'demo-spin-icon-load',
+                props: {
+                  type: 'ios-loading',
+                  size: 30
+                }
+              }),
+              h('div', 'Loading')
+            ])
+          }
+        });
         this.$http.post('/api/data/getPass', {
           startTime: this.param.startTime,
           endTime: this.param.endTime
         }).then((res) => {
+          this.$Spin.hide();
           console.log(res);
           if (res.code == 200) {
             this.data10 = res.result

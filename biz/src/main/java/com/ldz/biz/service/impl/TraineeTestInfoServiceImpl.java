@@ -766,6 +766,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             }else if(StringUtils.equals(kmCode, "科目三")){
                 exception.setCode("302");
                 exceptionService.clearException(exception, exception.getCode());
+            }else if(StringUtils.equals(kmCode, "科目四")){
+                exception.setCode("402");
+                exceptionService.clearException(exception, exception.getCode());
             }
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);
         } else {
@@ -1372,6 +1375,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
             condition.eq(TraineeTestInfo.InnerColumn.subject, map.get(3));//科目
             condition.eq(TraineeTestInfo.InnerColumn.testTime, appendZero(map.get(6)));//约考时间
+            condition.eq(TraineeTestInfo.InnerColumn.idCardNo, map.get(2));
             condition.setOrderByClause(TraineeTestInfo.InnerColumn.id.desc());
             List<TraineeTestInfo> orgs = findByCondition(condition);
             if(CollectionUtils.isNotEmpty(orgs)){

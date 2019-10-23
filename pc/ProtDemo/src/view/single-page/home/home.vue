@@ -61,7 +61,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.BMDSH == null ? 0 : dashboard.BMDSH" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.BMDSH == null ? 0 : dashboard.BMDSH" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -76,7 +76,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.BMSHYC == null ? 0 : dashboard.BMSHYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.BMSHYC == null ? 0 : dashboard.BMSHYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -103,7 +103,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.SFDQR == null ? 0 : dashboard.SFDQR" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.SFDQR == null ? 0 : dashboard.SFDQR" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -118,7 +118,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.SFQRYC == null ? 0 : dashboard.SFQRYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.SFQRYC == null ? 0 : dashboard.SFQRYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -145,7 +145,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.FQDQR == null ? 0 : dashboard.FQDQR" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.FQDQR == null ? 0 : dashboard.FQDQR" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -160,7 +160,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.FQQRYC == null ? 0 : dashboard.FQQRYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.FQQRYC == null ? 0 : dashboard.FQQRYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -187,7 +187,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.SLDQR == null ? 0 : dashboard.SLDQR" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.SLDQR == null ? 0 : dashboard.SLDQR" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -202,7 +202,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.SLQRYC == null ? 0 : dashboard.SLQRYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.SLQRYC == null ? 0 : dashboard.SLQRYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -232,7 +232,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM1YY == null ? 0 : dashboard.KM1YY" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -247,7 +247,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1YYYC == null ? 0 : dashboard.KM1YYYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM1YYYC == null ? 0 : dashboard.KM1YYYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -274,7 +274,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1JF == null ? 0 : dashboard.KM1JF" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM1JF == null ? 0 : dashboard.KM1JF" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -289,7 +289,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1JFYC == null ? 0 : dashboard.KM1JFYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM1JFYC == null ? 0 : dashboard.KM1JFYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -316,7 +316,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1DQR == null ? 0 : dashboard.KM1DQR" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM1DQR == null ? 0 : dashboard.KM1DQR" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -331,7 +331,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM1QRYC == null ? 0 : dashboard.KM1QRYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM1QRYC == null ? 0 : dashboard.KM1QRYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -360,7 +360,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM2YY == null ? 0 : dashboard.KM2YY" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -375,7 +375,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2YYYC == null ? 0 : dashboard.KM2YYYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM2YYYC == null ? 0 : dashboard.KM2YYYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -402,7 +402,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2JF == null ? 0 : dashboard.KM2JF" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM2JF == null ? 0 : dashboard.KM2JF" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -417,7 +417,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2JFYC == null ? 0 : dashboard.KM2JFYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM2JFYC == null ? 0 : dashboard.KM2JFYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -444,7 +444,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2DQR == null ? 0 : dashboard.KM2DQR" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM2DQR == null ? 0 : dashboard.KM2DQR" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -459,7 +459,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM2QRYC == null ? 0 : dashboard.KM2QRYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM2QRYC == null ? 0 : dashboard.KM2QRYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -488,7 +488,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM3YY == null ? 0 : dashboard.KM3YY" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -503,7 +503,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3YYYC == null ? 0 : dashboard.KM3YYYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM3YYYC == null ? 0 : dashboard.KM3YYYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -530,7 +530,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3JF == null ? 0 : dashboard.KM3JF" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM3JF == null ? 0 : dashboard.KM3JF" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -545,7 +545,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3JFYC == null ? 0 : dashboard.KM3JFYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM3JFYC == null ? 0 : dashboard.KM3JFYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -572,7 +572,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3DQR == null ? 0 : dashboard.KM3DQR" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM3DQR == null ? 0 : dashboard.KM3DQR" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -587,7 +587,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM3QRYC == null ? 0 : dashboard.KM3QRYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM3QRYC == null ? 0 : dashboard.KM3QRYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -616,7 +616,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM4YY == null ? 0 : dashboard.KM4YY" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -631,7 +631,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4YYYC == null ? 0 : dashboard.KM4YYYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM4YYYC == null ? 0 : dashboard.KM4YYYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -658,7 +658,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4DQR == null ? 0 : dashboard.KM4DQR" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM4DQR == null ? 0 : dashboard.KM4DQR" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>
@@ -673,7 +673,7 @@
           </Row>
           <Row>
             <Col span="24">
-            <count-to :end="dashboard.KM4QRYC == null ? 0 : dashboard.KM4QRYC" count-class="count-style-excpetion"/>
+            <count-to :end="dashboard.KM4QRYC == null ? 0 : dashboard.KM4QRYC" :duration='0.2' count-class="count-style-excpetion"/>
             </Col>
           </Row>
           </Col>

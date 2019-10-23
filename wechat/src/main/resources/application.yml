@@ -86,3 +86,5 @@ staticPath: D:/static/common/
 
 ukey_pwd1: '02468246'
 ukey_pwd2: 'ABCDXYWZ'
+
+replyFilePath: /data/ReplyConfig.properti

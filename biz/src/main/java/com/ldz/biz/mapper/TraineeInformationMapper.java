@@ -60,8 +60,12 @@ public interface TraineeInformationMapper extends Mapper<TraineeInformation> {
             " <if test='jgdm != null'>" +
             " AND m.jgdm = #{jgdm}" +
             " </if> " +
+            " <if test= 'nameLike != null'>" +
+            " AND m.name like '%${nameLike}%'" +
+            " </if>" +
+            "order by ${kmTestColumn} asc " +
             "</script>   ")
-    List<TraineeInformation> getTestStudents(@Param("jgdm") String jgdm, @Param("testTime") String testTime, @Param("kmTestColumn") String s, @Param("subject") String subject, @Param("idCardNo") String idCardNo,@Param("condition")String condition);
+    List<TraineeInformation> getTestStudents(@Param("jgdm") String jgdm, @Param("testTime") String testTime, @Param("kmTestColumn") String s, @Param("subject") String subject, @Param("idCardNo") String idCardNo,@Param("condition")String condition, @Param("nameLike")String name);
 
 
     /**

@@ -5,12 +5,14 @@ import com.ldz.biz.model.ChargeManagement;
 import com.ldz.biz.model.StudentAllModel;
 import com.ldz.biz.service.DataStaService;
 import com.ldz.util.bean.ApiResponse;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.ApplicationPid;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +95,16 @@ public class DataStatisticsController {
     public ApiResponse<List<Map<String,String>>> getPass(String jgdm, String startTime, String endTime, String km){
         return service.getPass(jgdm,startTime,endTime,km);
     }
+
+    /**
+     *  收支 统计 接口
+     */
+    @PostMapping("/statisCharge")
+    public ApiResponse<String> statisCharge(@RequestParam(defaultValue = "1") int pageNum,@RequestParam(defaultValue = "8") int pageSize, String start, String end, String idCard, String name, String jgdm){
+        return service.statisCharge(pageNum, pageSize,start, end , idCard, name, jgdm);
+    }
+
+
 
 
 

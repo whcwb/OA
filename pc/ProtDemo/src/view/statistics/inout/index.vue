@@ -214,19 +214,19 @@
           },
             {
                 title: '科目一支出',
-                key: '1',
+                key: 'firPay',
                 minWidth: 100,
                 align: 'center'
             },
             {
                 title: '科目二支出',
-                key: '2',
+                key: 'secPay',
                 minWidth: 100,
                 align: 'center'
             },
             {
                 title: '科目三支出',
-                key: '3',
+                key: 'thirdPay',
                 minWidth: 100,
                 align: 'center'
             },

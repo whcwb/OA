@@ -4,6 +4,10 @@ import com.ldz.biz.model.ChargeManagement;
 import com.ldz.biz.model.StudentAllModel;
 import com.ldz.util.bean.ApiResponse;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +51,10 @@ public interface DataStaService {
     ApiResponse<List<StudentAllModel>> getAllPayment(String startTime, String endTime, String jgdm, String... lx);
 
     ApiResponse<List<Map<String, String>>> getPass(String jgdm, String startTime, String endTime, String km);
+
+    ApiResponse<String> statisCharge(int pageNum, int pageSize, String start, String end, String idCard, String name, String jgdm);
+
+    void exportStatisCharge(String start, String end, String idCard, String name, String jgdm, HttpServletRequest request, HttpServletResponse response) throws IOException;
 
 
 

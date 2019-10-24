@@ -482,6 +482,49 @@ public class TraineeInformation implements Serializable {
     @Transient
     private String testTime;
 
+    @Transient
+    private Integer firPay;
+
+    @Transient
+    private Integer secPay;
+
+    @Transient
+    private Integer thirdPay;
+
+    @Transient
+    private Integer total;
+
+    public Integer getTotal() {
+        return total;
+    }
+
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
+
+    public Integer getFirPay() {
+        return firPay;
+    }
+
+    public void setFirPay(Integer firPay) {
+        this.firPay = firPay;
+    }
+
+    public Integer getSecPay() {
+        return secPay;
+    }
+
+    public void setSecPay(Integer secPay) {
+        this.secPay = secPay;
+    }
+
+    public Integer getThirdPay() {
+        return thirdPay;
+    }
+
+    public void setThirdPay(Integer thirdPay) {
+        this.thirdPay = thirdPay;
+    }
 
     public String getTestTime() {
         return testTime;

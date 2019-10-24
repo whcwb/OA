@@ -424,8 +424,7 @@ public class GnServiceImpl extends BaseServiceImpl<SysGn, String> implements GnS
     public List<SysGn> getOrgFunctions(String orgCode) {
         List<String> functionCodes = getOrgFunctionCodes(orgCode);
         if(CollectionUtils.isNotEmpty(functionCodes)) {
-            List<SysGn> in = gnService.findIn(SysGn.InnerColumn.gndm, functionCodes);
-            return in;
+            return gnService.findIn(SysGn.InnerColumn.gndm, functionCodes);
         }else {
             return new ArrayList<>();
         }

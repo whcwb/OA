@@ -7,6 +7,8 @@ import com.ldz.biz.constant.Status;
 import com.ldz.biz.mapper.ChargeManagementMapper;
 import com.ldz.biz.model.*;
 import com.ldz.biz.service.*;
+import com.ldz.sys.model.SysJg;
+import com.ldz.sys.service.JgService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.DateUtils;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +80,9 @@ public class BizMainController {
     private BizKcService kcService;
     @Autowired
     private BizExceptionService exceptionService;
+
+    @Autowired
+    private JgService jgService;
 
     @GetMapping("/test")
     public ApiResponse<String> test() {
@@ -662,7 +668,7 @@ public class BizMainController {
         List<ChargeManagement> managements = chargeManagementMapper.getAllIn2(startTime, endTime);
         List<Map<Integer, String>> data = new ArrayList<>();
         Map<Integer, String> map = new HashMap<>();
-        map.put(0, "机构");
+        map.put(0, "报名点");
         map.put(1, "1月");
         map.put(2, "人数");
         map.put(3, "2月");
@@ -691,8 +697,10 @@ public class BizMainController {
         data.add(map);
 
         if (CollectionUtils.isNotEmpty(managements)) {
-            LinkedHashMap<String, List<ChargeManagement>> collect = managements.stream().collect(Collectors.groupingBy(ChargeManagement::getChargeSource, LinkedHashMap::new, Collectors.toList()));
-
+            LinkedHashMap<String, List<ChargeManagement>> collect = managements.stream().collect(Collectors.groupingBy(ChargeManagement::getJgdm, LinkedHashMap::new, Collectors.toList()));
+            Set<String> jgdms = managements.stream().map(ChargeManagement::getJgdm).collect(Collectors.toSet());
+            List<SysJg> jgs = jgService.findIn(SysJg.InnerColumn.jgdm, jgdms);
+            Map<String, String> jgMap = jgs.stream().collect(Collectors.toMap(SysJg::getJgdm, SysJg::getJgmc));
 
             for (String s : collect.keySet()) {
                 Map<Integer, String> m = new HashMap<>();
@@ -700,7 +708,7 @@ public class BizMainController {
                 StudentAllModel allModel = new StudentAllModel();
                 List<StudentAllModel.StuAll> stuAlls = new ArrayList<>();
 
-                m.put(0, s.split("/")[0]);
+                m.put(0, jgMap.get(s));
                 // 当前机构的所有报名费
                 List<ChargeManagement> chargeManagements = collect.get(s);
 
@@ -1463,7 +1471,162 @@ public class BizMainController {
         ExcelUtil.createSheet(out, "出库流水", data);
     }
 
+    /**
+     * 学费报表excel导出
+     * @param lx
+     * @param startTime
+     * @param endTime
+     * @param jgdm
+     * @param carType
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping("/exportBranchSignUp")
+    public void exportBranchSignUp(@RequestParam(required = false) String[] lx,String startTime,String endTime,@RequestParam(required = false) String jgdm, @RequestParam(required = false)String carType, HttpServletRequest request , HttpServletResponse response) throws IOException {
+        ApiResponse<List<ChargeManagement>> branch = staService.countBranch(lx, startTime, endTime, jgdm, carType);
+       List<Map<Integer,String>> dataList = new ArrayList<>();
+       Map<Integer, String> titleMap = new HashMap<>();
+       titleMap.put(0, "序号");
+       titleMap.put(1, "姓名");
+       titleMap.put(2, "身份证号");
+       titleMap.put(3, "票据编号");
+       titleMap.put(4, "收入金额");
+       titleMap.put(5, "收入项目");
+       titleMap.put(6,"车型");
+       titleMap.put(7, "报名点");
+       titleMap.put(8, "时间");
+       titleMap.put(9, "创建人");
+       dataList.add(titleMap);
+       if(CollectionUtils.isNotEmpty(branch.getResult())){
+           AtomicInteger i = new AtomicInteger();
+           branch.getResult().forEach(chargeManagement -> {
+               Map<Integer, String> dataMap = new HashMap<>();
+               i.getAndIncrement();
+               dataMap.put(0, i +"");
+               dataMap.put(1, chargeManagement.getTraineeName());
+               dataMap.put(2, chargeManagement.getIdCardNo());
+               dataMap.put(3, chargeManagement.getPjbh());
+               dataMap.put(4, chargeManagement.getChargeFee() + "");
+               dataMap.put(5, chargeManagement.getChargeName());
+               dataMap.put(6, chargeManagement.getCarType());
+               dataMap.put(7, chargeManagement.getChargeSource());
+               dataMap.put(8,chargeManagement.getCjsj().substring(0,10));
+               dataMap.put(9, chargeManagement.getCjr());
+                dataList.add(dataMap);
+           });
+       }
+        response.setContentType("application/msexcel");
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("pragma", "no-cache");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String("学费报表".getBytes(StandardCharsets.UTF_8), "ISO8859-1") + ".xls");
+        OutputStream out = response.getOutputStream();
+        ExcelUtil.createSheet(out, "学费报表", dataList);
+    }
+
+    /**
+     * 收支统计导出功能
+     */
+    @GetMapping("/exportStatisCharge")
+    public void exportStatisCharge(String start, String end, String idCard, String name, String jgdm, HttpServletRequest request , HttpServletResponse response) throws IOException {
+        staService.exportStatisCharge(start,end,idCard,name,jgdm,request, response);
+    }
+
+    /**
+     * 年度招生 excel 导出
+     */
+    @GetMapping("/exportAllIn")
+    public  void exportAllIn(String startTime, String endTime, HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
+        ApiResponse<List<StudentAllModel>> allIn = staService.getAllIn(startTime, endTime);
+        List<Map<Integer, String>> dataList = new ArrayList<>();
+        Map<Integer,String> titleMap = new HashMap<>();
+        titleMap.put(0, "报名点");
+        titleMap.put(1, "一月");
+        titleMap.put(2, "二月");
+        titleMap.put(3, "三月");
+        titleMap.put(4, "四月");
+        titleMap.put(5, "五月");
+        titleMap.put(6, "六月");
+        titleMap.put(7, "七月");
+        titleMap.put(8, "八月");
+        titleMap.put(9, "九月");
+        titleMap.put(10, "十月");
+        titleMap.put(11, "十一月");
+        titleMap.put(12, "十二月");
+        titleMap.put(13, "合计");
+        titleMap.put(14, "退学人数");
+        dataList.add(titleMap);
 
 
+        List<StudentAllModel> result = allIn.getResult();
+        if(CollectionUtils.isNotEmpty(result)){
+            int total = 0;
+            for (StudentAllModel model : result) {
+                Map<Integer,String> dataMap  =new HashMap<>();
+                dataMap.put(0, model.getJgmc());
+                List<StudentAllModel.StuAll> stu = model.getStu();
+                for (int i = 0, stuSize = stu.size(); i < stuSize; i++) {
+                    StudentAllModel.StuAll stuAll = stu.get(i);
+                    total += stuAll.getSignUp();
+                    dataMap.put(i+1, stuAll.getSignUp() +"");
+                    if(i == stuSize -1){
+                        dataMap.put(i +2, stuAll.getCount() + "");
+                    }
+                }
+                dataMap.put(13, total + "");
+                dataList.add(dataMap);
+            }
+        }
+
+        response.setContentType("application/msexcel");
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("pragma", "no-cache");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String((startTime.substring(0,4) + "年度招生").getBytes(StandardCharsets.UTF_8), "ISO8859-1") + ".xls");
+        OutputStream out = response.getOutputStream();
+        ExcelUtil.createSheet(out, "年度招生", dataList);
+    }
+
+    /**
+     * 今日招生统计 Excel 导出
+     */
+    @GetMapping("/exportStudentCount")
+    public void exportStudentCount(String startTime, String endTime, String jgdm, String[] lx, HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
+
+        ApiResponse<List<StudentAllModel>> studentCount = staService.getStudentCount(startTime, endTime, jgdm, lx);
+
+        List<StudentAllModel> models = studentCount.getResult();
+        List<Map<Integer,String>> dataList = new ArrayList<>();
+
+        Map<Integer,String> titleMap = new HashMap<>();
+        titleMap.put(0 , "报名点");
+        titleMap.put(1, "招生人数");
+        titleMap.put(2, "A1");
+        titleMap.put(3, "A2");
+        titleMap.put(4, "A3");
+        titleMap.put(5, "B2");
+        titleMap.put(6, "C1");
+        titleMap.put(7, "C2");
+        dataList.add(titleMap);
+        if(CollectionUtils.isNotEmpty(models)){
+            models.forEach(studentAllModel -> {
+                Map<Integer, String> dataMap = new HashMap<>();
+                dataMap.put(0, studentAllModel.getJgmc());
+                dataMap.put(1, studentAllModel.getAll() + "");
+                dataMap.put(2, studentAllModel.getA1()+"");
+                dataMap.put(3, studentAllModel.getA2() + "");
+                dataMap.put(4, studentAllModel.getA3()  + "");
+                dataMap.put(5, studentAllModel.getB2() + "");
+                dataMap.put(6, studentAllModel.getC1() + "");
+                dataMap.put(7, studentAllModel.getC2() + "");
+                dataList.add(dataMap);
+            });
+        }
+        response.setContentType("application/msexcel");
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("pragma", "no-cache");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String((startTime.substring(0,10) + "招生").getBytes(StandardCharsets.UTF_8), "ISO8859-1") + ".xls");
+        OutputStream out = response.getOutputStream();
+        ExcelUtil.createSheet(out, "今日招生", dataList);
+    }
 
 }

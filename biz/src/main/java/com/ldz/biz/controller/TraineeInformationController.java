@@ -473,6 +473,14 @@ public class TraineeInformationController extends BaseController<TraineeInformat
     }
 
     /**
+     * 获取异常约考记录
+     */
+    @PostMapping("/getTestStudentsError")
+    public ApiResponse<String> getTestStudentsError(@RequestParam(defaultValue = "8") int pageSize,@RequestParam(defaultValue = "1") int pageNum,   String kskm){
+        return service.getTestStudentsError(pageSize, pageNum,kskm);
+    }
+
+    /**
      * 修改学员的考试状态
      */
     @PostMapping("/updateTestResult")

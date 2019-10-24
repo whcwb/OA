@@ -624,7 +624,23 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
             //		5、修改考试表状态
             String testResult = "00";//00 合格  10不合格
-            if (StringUtils.isNotEmpty(map.get(16))) {
+            double v = Double.parseDouble(map.get(11));
+            // 考试成绩不填
+            if(StringUtils.isBlank(map.get(11))){
+                testResult = "10";
+            }else {
+                if((StringUtils.startsWith(information.getCarType(), "C") || StringUtils.startsWith(information.getCarType(), "c")) && StringUtils.equals(kmCode,"20")){
+                    if(v < 80){
+                        testResult = "10";
+                    }
+                }else{
+                    if(v < 90){
+                        testResult = "10";
+                    }
+                }
+            }
+            /*if (StringUtils.isNotEmpty(map.get(16))) {
+
                 if (StringUtils.equals(map.get(16).trim(), "不合格") || StringUtils.equals(map.get(16).trim(), "缺考")) {
                     testResult = "10";
                 } else if (StringUtils.equals(map.get(16).trim(), "合格")) {
@@ -632,7 +648,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 } else {
                     return ApiResponse.fail("考试结果状态不对。考试结果：" + map.get(16));
                 }
-            }
+            }*/
             if (CollectionUtils.isNotEmpty(orgs)) {
                 for (TraineeTestInfo org : orgs) {
                     org.setTestResult(testResult);

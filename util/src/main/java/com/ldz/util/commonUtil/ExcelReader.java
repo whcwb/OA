@@ -165,9 +165,12 @@ public class ExcelReader {
             switch (cell.getCellType()) {
                 // 如果当前Cell的Type为NUMERIC
                 case HSSFCell.CELL_TYPE_NUMERIC:
+                    cellvalue = String.valueOf(cell.getNumericCellValue());
+                    break;
                 case HSSFCell.CELL_TYPE_FORMULA: {
                     // 判断当前的cell是否为Date
-                    if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                    cellvalue =   String.valueOf(cell.getRichStringCellValue());
+                   /* if (HSSFDateUtil.isCellDateFormatted(cell)) {
                         // 如果是Date类型则，转化为Data格式
 
                         //方法1：这样子的data格式是带时分秒的：2011-10-12 0:00:00
@@ -183,7 +186,7 @@ public class ExcelReader {
                     else {
                         // 取得当前Cell的数值
                         cellvalue = String.valueOf(cell.getNumericCellValue());
-                    }
+                    }*/
                     break;
                 }
                 // 如果当前Cell的Type为STRIN

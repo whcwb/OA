@@ -5,11 +5,11 @@
     <!--</div>-->
     <pager-tit title="年收入统计"></pager-tit>
     <row style="margin-top: 10px">
-      <Col span="6">
+      <Col span="5" style="margin-right: 10px">
         <DatePicker type="year" split-panels @on-change="getNf" placeholder="请选择年份（默认当前年份）"
-                    style="width: 250px"></DatePicker>
+                    style="width: 100%"></DatePicker>
       </Col>
-      <Col span="2">
+      <Col span="1" style="margin-right: 10px">
         <Button type="primary" @click="getNf(year)">
           <Icon type="md-search"></Icon>
         </Button>

@@ -55,7 +55,7 @@
                         placement="bottom-end" placeholder="收费日期" style="width: 100% ;"></DatePicker>
           </div>
         </Col>
-        <Col span="1" :lg="1" :md="1">
+        <Col span="1" :lg="1" :md="1" style="margin-right: 10px">
           <Button type="primary" @click="param.pageNum = 1,getPagerList()">
             <Icon type="md-search"></Icon>
             <!--查询-->

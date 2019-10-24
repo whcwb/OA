@@ -6,18 +6,13 @@
           <Col span="5">
             <DatePicker  type="date" split-panels @on-change="getNf" clearable @on-clear="getNf"  placeholder="请选择日期（默认当天）"></DatePicker>
           </Col>
-          <Col span="2">
-            <Button type="primary" @click="getNf(year)">
-              <Icon type="md-search"></Icon>
-            </Button>
-          </Col>
           <Col span="3" style="margin-right: 20px">
             <Select v-model="param.bmd" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
               <Option v-for="item in dictList.bmd.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
           </Col>
-          <Col span="2">
-            <Button type="primary" @click="getTJ(param.jgdm)">
+          <Col span="1" style="margin-right: 10px">
+            <Button type="primary" @click="getNf(year)">
               <Icon type="md-search"></Icon>
             </Button>
           </Col>

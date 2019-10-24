@@ -4,12 +4,12 @@
       <Col span="24">
         <pager-tit title="招生统计"></pager-tit>
       </Col>
-      <Col span="5">
+      <Col span="5" style="margin-right: 10px">
         <DatePicker type="daterange" split-panels placeholder="请选择日期（默认当天)" @on-change="getNf" @on-clear="getNf"
-                    style="width: 200px"></DatePicker>
+                    style="width: 100%"></DatePicker>
         <!--<DatePicker  type="date" split-panels @on-change="getNf" clearable @on-clear="getNf"  placeholder="请选择日期（默认当天)"></DatePicker>-->
       </Col>
-      <Col span="2">
+      <Col span="1" style="margin-right: 10px">
         <Button type="primary" @click="getNf([param.startTime,param.endTime])">
           <Icon type="md-search"></Icon>
         </Button>

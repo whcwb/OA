@@ -7,26 +7,21 @@
       <pager-tit title="报名费统计"></pager-tit>
     </Row>
     <Row style="margin-bottom: 10px">
-      <Col span="6">
+      <Col span="5" style="margin-right: 10px">
         <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
         <DatePicker type="daterange" split-panels @on-change="getNf" clearable @on-clear="getNf"
-                    placeholder="请选择日期（默认当天）" style="width: 250px"></DatePicker>
+                    placeholder="请选择日期（默认当天）" style="width: 100%"></DatePicker>
       </Col>
-      <Col span="2">
-        <Button type="primary" @click="getNf([param.startTime,param.endTime])">
-          <Icon type="md-search"></Icon>
-        </Button>
-      </Col>
+      <!--<Col span="2">-->
+        <!--<Button type="primary" @click="getNf([param.startTime,param.endTime])">-->
+          <!--<Icon type="md-search"></Icon>-->
+        <!--</Button>-->
+      <!--</Col>-->
 
       <Col span="3" style="margin-right: 20px">
         <Select v-model="param.bmd" clearable style="width:100%;" @on-change="getTJ" @on-clear="getTJ">
           <Option v-for="item in dictList.bmd.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-      </Col>
-      <Col span="2">
-        <Button type="primary" @click="getTJ(param.jgdm)">
-          <Icon type="md-search"></Icon>
-        </Button>
       </Col>
       <Col span="5">
         <CheckboxGroup v-model="param.lx" @on-change="getlx">
@@ -34,6 +29,12 @@
           <Checkbox value="20" label="20">挂靠队</Checkbox>
           <Checkbox value="30" label="30">承包队</Checkbox>
         </CheckboxGroup>
+      </Col>
+
+      <Col span="1" style="margin-right: 10px">
+        <Button type="primary" @click="getSRTJList">
+          <Icon type="md-search"></Icon>
+        </Button>
       </Col>
 
       <Col span="2">
@@ -80,19 +81,19 @@
             title: '姓名',
             key: 'traineeName',
             align: 'center',
-            minWidth: 50
+            // minWidth: 50
           },
           {
             title: '身份证号',
             key: 'idCardNo',
             align: 'center',
-            minWidth: 140
+            // minWidth: 140
           },
           {
             title: '票据编号',
             key: 'pjbh',
             align: 'center',
-            minWidth: 120,
+            // minWidth: 120,
             render: (h, p) => {
               if (p.row.pjbh != '') {
                 let a = p.row.pjbh.split('-')
@@ -104,31 +105,31 @@
             title: '收入金额',
             key: 'chargeFee',
             align: 'center',
-            minWidth: 60
+            // minWidth: 60
           },
           {
             title: '收入项目',
             key: 'chargeName',
             align: 'center',
-            minWidth: 100
+            // minWidth: 100
           },
           {
             title: '车型',
             key: 'carType',
             align: 'center',
-            minWidth: 40
+            // minWidth: 40
           },
           {
             title: '报名点',
             key: 'chargeSource',
             align: 'center',
-            minWidth: 90
+            // minWidth: 90
           },
           {
             title: '时间',
             key: 'chargeTime',
             align: 'center',
-            minWidth: 120,
+            // minWidth: 120,
             render: (h, p) => {
               let a = p.row.chargeTime.substring(0, 10);
               return h('div', a);
@@ -138,13 +139,13 @@
             title: '创建人',
             key: 'cjr',
             align: 'center',
-            minWidth: 130
+            // minWidth: 130
           },
           {
             title: '创建时间',
             key: 'cjsj',
             align: 'center',
-            minWidth: 120,
+            // minWidth: 120,
             render: (h, p) => {
               let a = p.row.cjsj.substring(0, 10);
               return h('div', a);

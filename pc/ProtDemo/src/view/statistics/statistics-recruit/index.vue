@@ -15,15 +15,15 @@
                     <!--<Radio label="C1C2"></Radio>-->
                   <!--</RadioGroup>-->
                   <!--</Col>-->
-                  <Col span="6">
+                  <Col span="5" style="margin-right: 10px">
                     <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
-                    <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 250px"></DatePicker>
+                    <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 100%"></DatePicker>
                   </Col>
-                  <Col span="2">
-                    <Button type="primary" @click="getNf(year)">
-                      <Icon type="md-search"></Icon>
-                    </Button>
-                  </Col>
+                  <!--<Col span="2">-->
+                    <!--<Button type="primary" @click="getNf(year)">-->
+                      <!--<Icon type="md-search"></Icon>-->
+                    <!--</Button>-->
+                  <!--</Col>-->
                   <Col span="3" style="margin-right: 20px">
 
                     <Select v-model="param.bmd" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
@@ -36,8 +36,8 @@
                     </FormItem>
                     </Form>-->
                   </Col>
-                  <Col span="2">
-                    <Button type="primary" @click="getTJ(param.jgdm)">
+                  <Col span="1" style="margin-right: 10px">
+                    <Button type="primary" @click="getPagerList">
                       <Icon type="md-search"></Icon>
                     </Button>
                   </Col>

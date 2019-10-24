@@ -3,10 +3,15 @@
     <Row>
       <pager-tit title="优惠统计"></pager-tit>
     </Row>
-    <Row>
-      <Col span="5">
+    <Row style="margin-bottom: 10px">
+      <Col span="6">
         <DatePicker type="daterange" split-panels @on-change="getNf" clearable @on-clear="getNf"
                     placeholder="请选择日期（默认当天）" style="width: 250px"></DatePicker>
+      </Col>
+      <Col span="2">
+        <Button type="primary" @click="getNf([param.reduceCheckTimeGte,param.reduceCheckTimeLte])">
+          <Icon type="md-search"></Icon>
+        </Button>
       </Col>
     </Row>
     <Table size="small" :height="AF.getPageHeight()-320" stripe :columns="columns1" :data="data1"></Table>
@@ -143,7 +148,22 @@
       },
       getBmdList() {
         // this.handleSpinCustom();
+        this.$Spin.show({
+          render: (h) => {
+            return h('div', [
+              h('Icon', {
+                'class': 'demo-spin-icon-load',
+                props: {
+                  type: 'ios-loading',
+                  size: 30
+                }
+              }),
+              h('div', 'Loading')
+            ])
+          }
+        });
         this.$http.post(this.apis.TRAINEE.PAGER, this.param).then((res) => {
+          this.$Spin.hide();
           if (res.code === 200) {
             this.data1 = res.page.list;
             this.addRealPay = 0;

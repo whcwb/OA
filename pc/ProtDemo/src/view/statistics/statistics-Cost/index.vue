@@ -2,17 +2,27 @@
 
       <div class="box_col">
         <pager-tit title="当日招生统计"></pager-tit>
-        <row>
+        <Row style="margin-bottom: 10px">
           <Col span="5">
             <DatePicker  type="date" split-panels @on-change="getNf" clearable @on-clear="getNf"  placeholder="请选择日期（默认当天）"></DatePicker>
           </Col>
-          <Col span="3">
-
-            <Select v-model="param.bmd" clearable style="width:200px" @on-change="getTJ" @on-clear="getTJ">
+          <Col span="3" style="margin-right: 20px">
+            <Select v-model="param.bmd" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
               <Option v-for="item in dictList.bmd.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
           </Col>
-        </row>
+          <Col span="1" style="margin-right: 10px">
+            <Button type="primary" @click="getNf(year)">
+              <Icon type="md-search"></Icon>
+            </Button>
+          </Col>
+
+          <Col span="2">
+            <Tooltip content="导出Excel" placement="right-start">
+              <Button type="primary" icon="md-cloud-download" @click="excel"></Button>
+            </Tooltip>
+          </Col>
+        </Row>
         <!--<div style="height: 400px">-->
         <!--<awb></awb>-->
         <!--</div>-->
@@ -23,10 +33,12 @@
 </div>
   </template>
 <script>
+  import http from '@/axios/index';
       export default {
          name: "",
         data() {
           return {
+            year:'',
             param:{
               startTime:this.AF.trimDate(),
               endTime: this.AF.trimDate(),
@@ -105,6 +117,13 @@
            this.getBmdList();
         },
         methods:{
+          excel() {
+            if (this.param.startTime == '-01-01') {
+              this.param.startTime = this.AF.getYear() + '-01-01';
+              this.param.endTime = this.AF.getYear() + '-12-31';
+            }
+            window.open(http.url + `/pub/exportStudentCount?startTime=${this.param.startTime}&endTime=${this.param.endTime}&jgdm=${this.param.jgdm}&bmd=${this.param.bmd}`, '_blank');
+          },
           getTJ(st){
             this.param.jgdm = st;
             this.data10 = [];
@@ -113,6 +132,7 @@
           getNf(gsh,date){
             // console.log(gsh);
             // console.log(date);
+            this.year=gsh
             this.param.startTime = gsh;
             this.param.endTime = gsh;
             this.data10 = [];
@@ -138,8 +158,23 @@
                this.param.startTime = this.AF.trimDate();
                this.param.endTime = this.AF.trimDate();
              }
+             this.$Spin.show({
+               render: (h) => {
+                 return h('div', [
+                   h('Icon', {
+                     'class': 'demo-spin-icon-load',
+                     props: {
+                       type: 'ios-loading',
+                       size: 30
+                     }
+                   }),
+                   h('div', 'Loading')
+                 ])
+               }
+             });
              this.$http.post(this.apis.COUNT.DTXY,{startTime:this.param.startTime,endTime: this.param.endTime,jgdm:this.param.jgdm}).then( (res)=>{
                // console.log(res);
+               this.$Spin.hide();
                if(res.code == 200){
                  res.result.forEach((item,index)=> {
                    var ps = {};

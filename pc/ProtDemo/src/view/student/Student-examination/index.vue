@@ -362,7 +362,7 @@
                 }, '撤'),
                 h('Button', {
                   props: {
-                    type: 'primary',
+                    type: 'success',
                     size: 'small'
                   },
                   style: {margin: '0 8px 0 0'},

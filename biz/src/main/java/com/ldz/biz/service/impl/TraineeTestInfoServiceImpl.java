@@ -487,6 +487,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             return ApiResponse.fail("约考日期不能为空");
         }
 
+
         // 如果是科目四 并且合格的话 会将状态改为 结业
 //		2、查找到学员ID
         if (information == null) {

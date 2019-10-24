@@ -5,7 +5,7 @@
               <!--<awb></awb>-->
             <!--</div>-->
               <div class="box_col_100">
-                <Row>
+                <Row style="margin-bottom: 10px">
                   <!--<Col span="4">-->
                   <!--<RadioGroup v-model="button1" type="button">-->
                     <!--<Radio label="A1"></Radio>-->
@@ -15,13 +15,18 @@
                     <!--<Radio label="C1C2"></Radio>-->
                   <!--</RadioGroup>-->
                   <!--</Col>-->
-                  <Col span="5">
+                  <Col span="5" style="margin-right: 10px">
                     <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
-                    <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 250px"></DatePicker>
+                    <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 100%"></DatePicker>
                   </Col>
-                  <Col span="3">
+                  <!--<Col span="2">-->
+                    <!--<Button type="primary" @click="getNf(year)">-->
+                      <!--<Icon type="md-search"></Icon>-->
+                    <!--</Button>-->
+                  <!--</Col>-->
+                  <Col span="3" style="margin-right: 20px">
 
-                    <Select v-model="param.bmd" clearable style="width:200px" @on-change="getTJ" @on-clear="getTJ">
+                    <Select v-model="param.bmd" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
                       <Option v-for="item in dictList.bmd.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
                     </Select>
                    <!-- <Form :label-width="10">
@@ -30,6 +35,17 @@
                                 filterable></Cascader>
                     </FormItem>
                     </Form>-->
+                  </Col>
+                  <Col span="1" style="margin-right: 10px">
+                    <Button type="primary" @click="getNf(year)">
+                      <Icon type="md-search"></Icon>
+                    </Button>
+                  </Col>
+
+                  <Col span="2">
+                    <Tooltip content="导出Excel" placement="right-start">
+                      <Button type="primary" icon="md-cloud-download" @click="excel"></Button>
+                    </Tooltip>
                   </Col>
                  <!-- <Col span="4" :lg="2" :md="0">
                     <Button type="primary" @click="getPagerList()">
@@ -47,6 +63,7 @@
 
 <script>
   import awb from "./comp/bar"
+  import http from '@/axios/index';
 
   export default {
         name: "",
@@ -55,6 +72,7 @@
       },
           data() {
             return {
+              year:'',
               param:{
                 startTime: this.AF.getYear()+'-01-01',
                 endTime: this.AF.getYear()+'-12-31',
@@ -89,6 +107,12 @@
                       return row.name === 'John Brown';
                     }
                   }
+                },
+                {
+                  title: '合计',
+                  key: 'hj1',
+                  align: 'center',
+                  sortable: true
                 },
                 {
                   renderHeader:(h,p)=>{
@@ -159,12 +183,6 @@
                   ]
                 },
                 {
-                  title: '合计',
-                  key: 'hj1',
-                  align: 'center',
-                  sortable: true
-                },
-                {
                   title: '退学人数',
                   key: 'tx',
                   align: 'center',
@@ -200,6 +218,13 @@
         // this.data10 = data;
       },
       methods:{
+        excel() {
+          if (this.param.startTime == '-01-01') {
+            this.param.startTime = this.AF.getYear() + '-01-01';
+            this.param.endTime = this.AF.getYear() + '-12-31';
+          }
+          window.open(http.url + `/pub/exportAllIn?startTime=${this.param.startTime}&endTime=${this.param.endTime}&jgdm=${this.param.jgdm}&bmd=${this.param.bmd}`, '_blank');
+        },
         //获取当前用户可操作的报名点
         getBmdList() {
           this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
@@ -241,6 +266,7 @@
         getNf(gsh,date){
           // console.log(gsh);
           // console.log(date);
+          this.year=gsh
           this.param.startTime = gsh+'-01-01';
           this.param.endTime = gsh+'-12-31';
           this.data10 = [];
@@ -255,10 +281,24 @@
             }
             this.data10 = [];
             // console.log(this.param.jgdm);
+            this.$Spin.show({
+              render: (h) => {
+                return h('div', [
+                  h('Icon', {
+                    'class': 'demo-spin-icon-load',
+                    props: {
+                      type: 'ios-loading',
+                      size: 30
+                    }
+                  }),
+                  h('div', 'Loading')
+                ])
+              }
+            });
             this.$http.post('/api/data/getAllIn',{startTime:this.param.startTime,endTime: this.param.endTime,jgdm:this.param.jgdm}).then( (res)=>{
               // console.log(res);
              if(res.code == 200){
-
+               this.$Spin.hide();
                var zshj = {};
                res.result.forEach((item,index)=>{
                       var ps = {}

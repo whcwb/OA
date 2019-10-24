@@ -757,16 +757,16 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setSfzmhm(map.get(5));
             exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(2));
-            if(StringUtils.equals(kmCode,"科目一")){
+            if(StringUtils.equals(kmCode,"10")){
                 exception.setCode("102");
                 exceptionService.clearException(exception, exception.getCode());
-            }else if(StringUtils.equals(kmCode, "科目二")){
+            }else if(StringUtils.equals(kmCode, "20")){
                 exception.setCode("202");
                 exceptionService.clearException(exception, exception.getCode());
-            }else if(StringUtils.equals(kmCode, "科目三")){
+            }else if(StringUtils.equals(kmCode, "30")){
                 exception.setCode("302");
                 exceptionService.clearException(exception, exception.getCode());
-            }else if(StringUtils.equals(kmCode, "科目四")){
+            }else if(StringUtils.equals(kmCode, "40")){
                 exception.setCode("402");
                 exceptionService.clearException(exception, exception.getCode());
             }

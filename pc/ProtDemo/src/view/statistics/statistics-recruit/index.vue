@@ -55,7 +55,7 @@
                   </Col>-->
                 </Row>
                 <row>
-                  <Table size="small" :height="AF.getPageHeight()-280" :columns="columns11" :data="data10" border stripe no-data-text="当前日期暂无数据，请选择日期"></Table>
+                  <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" :columns="columns11" :data="data10" border stripe no-data-text="当前日期暂无数据，请选择日期"></Table>
                 </row>
                </div>
           </div>
@@ -72,6 +72,7 @@
       },
           data() {
             return {
+              loading:true,
               year:'',
               param:{
                 startTime: this.AF.getYear()+'-01-01',
@@ -280,25 +281,11 @@
               this.param.endTime = this.AF.getYear()+'-12-31';
             }
             this.data10 = [];
+            this.loading=true
             // console.log(this.param.jgdm);
-            this.$Spin.show({
-              render: (h) => {
-                return h('div', [
-                  h('Icon', {
-                    'class': 'demo-spin-icon-load',
-                    props: {
-                      type: 'ios-loading',
-                      size: 30
-                    }
-                  }),
-                  h('div', 'Loading')
-                ])
-              }
-            });
             this.$http.post('/api/data/getAllIn',{startTime:this.param.startTime,endTime: this.param.endTime,jgdm:this.param.jgdm}).then( (res)=>{
               // console.log(res);
              if(res.code == 200){
-               this.$Spin.hide();
                var zshj = {};
                res.result.forEach((item,index)=>{
                       var ps = {}
@@ -335,12 +322,11 @@
                        // zshj.hj2 = zshj.one + ps.one;
                        // zshj.hj3 = zshj.one + ps.one;
                       this.data10.push(ps)
-
                     })
-               this.$Spin.hide();
              }else{
                 this.$Message.error(res.message);
               }
+              this.loading=false
             })
           }
   }

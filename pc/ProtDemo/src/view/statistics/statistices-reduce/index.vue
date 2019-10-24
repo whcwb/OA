@@ -14,7 +14,7 @@
         </Button>
       </Col>
     </Row>
-    <Table size="small" :height="AF.getPageHeight()-320" stripe :columns="columns1" :data="data1"></Table>
+    <Table size="small" :loading="loading" :height="AF.getPageHeight()-320" stripe :columns="columns1" :data="data1"></Table>
     <div class="box_col_auto" v-if="data1.length>0" style="font-size: 18px;font-weight: 600">
       <span>合计：优惠人数</span><span style="font-size: 22px;font-weight: 600;color: #ed4014;margin-right: 16px">{{data1.length}}人</span>
       <span>实付金额共计：</span><span style="font-size: 22px;font-weight: 600;color: #ed4014;margin-right: 16px">{{addRealPay}}元</span>
@@ -28,6 +28,7 @@
     name: "",
     data() {
       return {
+        loading:true,
         tjzje: 0,
         addRealPay: 0,
         addReducePrice: 0,
@@ -148,22 +149,9 @@
       },
       getBmdList() {
         // this.handleSpinCustom();
-        this.$Spin.show({
-          render: (h) => {
-            return h('div', [
-              h('Icon', {
-                'class': 'demo-spin-icon-load',
-                props: {
-                  type: 'ios-loading',
-                  size: 30
-                }
-              }),
-              h('div', 'Loading')
-            ])
-          }
-        });
+        this.loading=true
         this.$http.post(this.apis.TRAINEE.PAGER, this.param).then((res) => {
-          this.$Spin.hide();
+          this.loading=false
           if (res.code === 200) {
             this.data1 = res.page.list;
             this.addRealPay = 0;

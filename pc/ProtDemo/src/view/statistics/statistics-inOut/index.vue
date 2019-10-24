@@ -44,7 +44,7 @@
       </Col>
     </Row>
     <div class="box_col_100">
-      <Table size="small" :height="AF.getPageHeight()-280" stripe :columns="columns1" :data="data1" stripe></Table>
+      <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" stripe :columns="columns1" :data="data1" stripe></Table>
     </div>
     <Row class="tjsize">
       <Col span="5">
@@ -69,6 +69,7 @@
     // },
     data() {
       return {
+        loading:true,
         tjzje: 0,
         columns1: [
           {
@@ -237,20 +238,7 @@
       getSRTJList() {
         // this.handleSpinCustom();
         this.tjzje = 0;
-        this.$Spin.show({
-          render: (h) => {
-            return h('div', [
-              h('Icon', {
-                'class': 'demo-spin-icon-load',
-                props: {
-                  type: 'ios-loading',
-                  size: 30
-                }
-              }),
-              h('div', 'Loading')
-            ])
-          }
-        });
+        this.loading=true
         this.$http.post(this.apis.COUNT.BMSF, this.param).then((res) => {
           // console.log(res);
           this.$Spin.hide();
@@ -262,7 +250,7 @@
           } else {
             this.$Message.error(res.message);
           }
-          this.$Spin.hide();
+          this.loading = false
         })
       },
       getNSRList() {

@@ -1,5 +1,7 @@
 package com.ldz.biz.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ldz.biz.constant.FeeType;
 import com.ldz.biz.mapper.ChargeManagementMapper;
 import com.ldz.biz.model.ChargeManagement;
@@ -15,15 +17,24 @@ import com.ldz.sys.service.JgService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.DateUtils;
+import com.ldz.util.commonUtil.ExcelUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -451,29 +462,19 @@ public class DataStaServiceImpl implements DataStaService {
         List<ChargeManagement> managements = chargeManagementMapper.getAllIn2(startTime, endTime);
 
         if (CollectionUtils.isNotEmpty(managements)) {
-            LinkedHashMap<String, List<ChargeManagement>> collect = managements.stream().collect(Collectors.groupingBy(c -> {
-                String[] split = c.getChargeSource().split("/");
-                if (split.length > 2) {
-                    return split[1].trim();
-                } else {
-                    return split[0].trim();
-                }
-            }, LinkedHashMap::new, Collectors.toList()));
-
+            LinkedHashMap<String, List<ChargeManagement>> collect = managements.stream().collect(Collectors.groupingBy(ChargeManagement::getJgdm, LinkedHashMap::new, Collectors.toList()));
+            Set<String> jgdms = managements.stream().map(ChargeManagement::getJgdm).collect(Collectors.toSet());
+            List<SysJg> jgs = jgService.findIn(SysJg.InnerColumn.jgdm, jgdms);
+            Map<String, String> jgMap = jgs.stream().collect(Collectors.toMap(SysJg::getJgdm, SysJg::getJgmc));
 
             for (String s : collect.keySet()) {
                 StudentAllModel allModel = new StudentAllModel();
                 List<StudentAllModel.StuAll> stuAlls = new ArrayList<>();
-                String[] split = s.split("/");
-                if (split.length > 2) {
-                    allModel.setJgmc(split[1]);
-                } else {
-                    allModel.setJgmc(split[0]);
-                }
+                allModel.setJgmc(jgMap.get(s));
 
                 // 当前机构的所有报名费
                 List<ChargeManagement> chargeManagements = collect.get(s);
-                Long j = 0L;
+                long j = 0L;
                 for (String mon : monthBetween) {
                     Long i = 0L;
                     Long count = 0L;
@@ -508,7 +509,7 @@ public class DataStaServiceImpl implements DataStaService {
         }
         if (CollectionUtils.isNotEmpty(models)) {
             List<List<StudentAllModel.StuAll>> collect = models.stream().map(StudentAllModel::getStu).collect(Collectors.toList());
-            List<StudentAllModel.StuAll> models1 = collect.stream().filter(item -> CollectionUtils.isNotEmpty(item)).reduce(new ArrayList<>(), (all, item) -> {
+            List<StudentAllModel.StuAll> models1 = collect.stream().filter(CollectionUtils::isNotEmpty).reduce(new ArrayList<>(), (all, item) -> {
                 all.addAll(item);
                 return all;
             });
@@ -690,6 +691,187 @@ public class DataStaServiceImpl implements DataStaService {
         }
         data.sort(Comparator.comparing(stringStringMap -> Integer.parseInt(stringStringMap.get("px"))));
         return ApiResponse.success(data);
+    }
+
+    @Override
+    public ApiResponse<String> statisCharge(int pageNum, int pageSize, String start, String end, String idCard, String name, String jgdm) {
+        if (StringUtils.isBlank(start)) {
+            start = DateTime.now().toString("yyyy-MM-dd") + " 00:00:00";
+        }
+        if (StringUtils.isBlank(end)) {
+            end = DateTime.now().toString("yyyy-MM-dd") + " 23:59:59";
+        }
+
+        SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+        condition.gte(TraineeInformation.InnerColumn.confirmTime, start);
+        condition.lte(TraineeInformation.InnerColumn.confirmTime, end);
+        if (StringUtils.isNotBlank(idCard)) {
+            condition.like(TraineeInformation.InnerColumn.idCardNo, idCard);
+        }
+        if (StringUtils.isNotBlank(name)) {
+            condition.like(TraineeInformation.InnerColumn.name, name);
+        }
+        if (StringUtils.isNotBlank(jgdm)) {
+            condition.eq(TraineeInformation.InnerColumn.jgdm, jgdm);
+        }
+        // 查询当前时间段报名的学员的所有收支信息
+        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> informationService.findByCondition(condition));
+        if (CollectionUtils.isEmpty(info.getList())) {
+            return ApiResponse.success();
+        }
+        List<String> trainIds = info.getList().stream().map(TraineeInformation::getId).collect(Collectors.toList());
+        // 查询学员的 考试支出金额
+        SimpleCondition simpleCondition = new SimpleCondition(ChargeManagement.class);
+        simpleCondition.in(ChargeManagement.InnerColumn.chargeCode, Arrays.asList(FeeType.FIR_SUB, FeeType.SEC_SUB, FeeType.THIRD_SUB));
+        simpleCondition.in(ChargeManagement.InnerColumn.traineeId, trainIds);
+        List<ChargeManagement> managements = chargeManagementMapper.selectByExample(simpleCondition);
+        Map<String, List<ChargeManagement>> listMap = managements.stream().collect(Collectors.groupingBy(ChargeManagement::getTraineeId));
+
+        info.getList().forEach(traineeInformation -> {
+            if (listMap.containsKey(traineeInformation.getId())) {
+                List<ChargeManagement> list = listMap.get(traineeInformation.getId());
+                // 科目一支出
+                int firPay = list.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.FIR_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+                traineeInformation.setFirPay(firPay);
+                // 科目二支出
+                int secPay = list.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.SEC_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+                traineeInformation.setSecPay(secPay);
+                // 科目三支出
+                int thirdPay = list.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.THIRD_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+                traineeInformation.setThirdPay(thirdPay);
+                traineeInformation.setTotal(firPay + secPay + thirdPay);
+            } else {
+                traineeInformation.setFirPay(0);
+                traineeInformation.setSecPay(0);
+                traineeInformation.setThirdPay(0);
+                traineeInformation.setTotal(0);
+            }
+        });
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setPage(info);
+        List<TraineeInformation> list = informationService.findByCondition(condition);
+        if(CollectionUtils.isNotEmpty(list)){
+            // 实际总收费
+            int sum = list.stream().mapToInt(TraineeInformation::getRealPay).sum();
+             trainIds = info.getList().stream().map(TraineeInformation::getId).collect(Collectors.toList());
+            // 查询学员的 考试支出金额
+            simpleCondition = new SimpleCondition(ChargeManagement.class);
+            simpleCondition.in(ChargeManagement.InnerColumn.chargeCode, Arrays.asList(FeeType.FIR_SUB, FeeType.SEC_SUB, FeeType.THIRD_SUB));
+            simpleCondition.in(ChargeManagement.InnerColumn.traineeId, trainIds);
+            managements = chargeManagementMapper.selectByExample(simpleCondition);
+            int owe = list.stream().mapToInt(TraineeInformation::getOweAmount).sum();
+            int firPay = 0;
+            int secPay = 0;
+            int thirdPay = 0;
+            int fees = 0;
+            if(CollectionUtils.isNotEmpty(managements)){
+                fees = managements.stream().mapToInt(ChargeManagement::getChargeFee).sum();
+                firPay = managements.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.FIR_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+                secPay = managements.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.SEC_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+                thirdPay = managements.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.THIRD_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+            }
+            response.setMessage(sum + "," + owe + "," + fees + "," + firPay + "," + secPay + "," + thirdPay);
+        }else{
+            response.setMessage("0,0,0,0,0,0");
+        }
+        return response;
+    }
+
+    @Override
+    public void exportStatisCharge(String start, String end, String idCard, String name, String jgdm, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        if (StringUtils.isBlank(start)) {
+            start = DateTime.now().toString("yyyy-MM-dd") + " 00:00:00";
+        }
+        if (StringUtils.isBlank(end)) {
+            end = DateTime.now().toString("yyyy-MM-dd") + " 23:59:59";
+        }
+        SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+        condition.gte(TraineeInformation.InnerColumn.confirmTime, start);
+        condition.lte(TraineeInformation.InnerColumn.confirmTime, end);
+        if (StringUtils.isNotBlank(idCard)) {
+            condition.like(TraineeInformation.InnerColumn.idCardNo, idCard);
+        }
+        if (StringUtils.isNotBlank(name)) {
+            condition.like(TraineeInformation.InnerColumn.name, name);
+        }
+        if (StringUtils.isNotBlank(jgdm)) {
+            condition.eq(TraineeInformation.InnerColumn.jgdm, jgdm);
+        }
+        List<Map<Integer,String>> dataList = new ArrayList<>();
+        Map<Integer, String> titleMap = new HashMap<>();
+        titleMap.put(0, "序号");
+        titleMap.put(1, "姓名");
+        titleMap.put(2, "身份证号");
+        titleMap.put(3, "报名点");
+        titleMap.put(4, "车型");
+        titleMap.put(5, "收费时间");
+        titleMap.put(6, "收费金额");
+        titleMap.put(7, "欠费金额");
+        titleMap.put(8, "科目一支出");
+        titleMap.put(9, "科目二支出");
+        titleMap.put(10, "科目三支出");
+        titleMap.put(11,"考试支出合计");
+        dataList.add(titleMap);
+
+
+        List<TraineeInformation> informations = informationService.findByCondition(condition);
+
+        if (CollectionUtils.isNotEmpty(informations)) {
+            Set<String> jgdms = informations.stream().map(TraineeInformation::getJgdm).collect(Collectors.toSet());
+            List<SysJg> jgs = jgService.findIn(SysJg.InnerColumn.jgdm, jgdms);
+            Map<String, String> jgMap = jgs.stream().collect(Collectors.toMap(SysJg::getJgdm, p -> p.getJgmc()));
+
+            List<String> trainIds = informations.stream().map(TraineeInformation::getId).collect(Collectors.toList());
+            // 查询学员的 考试支出金额
+            SimpleCondition simpleCondition = new SimpleCondition(ChargeManagement.class);
+            simpleCondition.in(ChargeManagement.InnerColumn.chargeCode, Arrays.asList(FeeType.FIR_SUB, FeeType.SEC_SUB, FeeType.THIRD_SUB));
+            simpleCondition.in(ChargeManagement.InnerColumn.traineeId, trainIds);
+            List<ChargeManagement> managements = chargeManagementMapper.selectByExample(simpleCondition);
+            Map<String, List<ChargeManagement>> listMap = managements.stream().collect(Collectors.groupingBy(ChargeManagement::getTraineeId));
+             AtomicInteger i = new AtomicInteger(0);
+            informations.forEach(traineeInformation ->  {
+               i.getAndIncrement();
+                Map<Integer,String> dataMap = new HashMap<>();
+                if (listMap.containsKey(traineeInformation.getId())) {
+                    List<ChargeManagement> list = listMap.get(traineeInformation.getId());
+                    // 科目一支出
+                    int firPay = list.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.FIR_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+                    traineeInformation.setFirPay(firPay);
+                    // 科目二支出
+                    int secPay = list.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.SEC_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+                    traineeInformation.setSecPay(secPay);
+                    // 科目三支出
+                    int thirdPay = list.stream().filter(chargeManagement -> StringUtils.equals(chargeManagement.getChargeCode(), FeeType.THIRD_SUB)).mapToInt(ChargeManagement::getChargeFee).sum();
+                    traineeInformation.setThirdPay(thirdPay);
+                    traineeInformation.setTotal(firPay + secPay + thirdPay);
+                } else {
+                    traineeInformation.setFirPay(0);
+                    traineeInformation.setSecPay(0);
+                    traineeInformation.setThirdPay(0);
+                    traineeInformation.setTotal(0);
+                }
+                dataMap.put(0, i +"");
+                dataMap.put(1, traineeInformation.getName());
+                dataMap.put(2, traineeInformation.getIdCardNo());
+                dataMap.put(3, jgMap.get(traineeInformation.getJgdm()));
+                dataMap.put(4, traineeInformation.getCarType());
+                dataMap.put(5, traineeInformation.getConfirmTime());
+                dataMap.put(6, traineeInformation.getRealPay() + "");
+                dataMap.put(7, traineeInformation.getOweAmount() + "");
+                dataMap.put(8, traineeInformation.getFirPay() + "");
+                dataMap.put(9, traineeInformation.getSecPay() + "");
+                dataMap.put(10, traineeInformation.getThirdPay() + "");
+                dataMap.put(11 , traineeInformation.getTotal() + "");
+                dataList.add(dataMap);
+            });
+        }
+        response.setContentType("application/msexcel");
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("pragma", "no-cache");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String("收支统计导出".getBytes(StandardCharsets.UTF_8), "ISO8859-1") + ".xls");
+        ServletOutputStream outputStream = response.getOutputStream();
+        ExcelUtil.createSheet(outputStream, "收支统计", dataList);
     }
 
     public static double formatValue(double val) {

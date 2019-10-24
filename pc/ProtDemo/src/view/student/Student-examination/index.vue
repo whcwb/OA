@@ -122,6 +122,12 @@
               <!--查询-->
             </Button>
           </Col>
+          <Col span="2" :lg="2" :md="3">
+            <Button type="error" @click="param.pageNum = 1;getPagerListyc()">
+              异常
+              <!--查询-->
+            </Button>
+          </Col>
         </Row>
       </Col>
       <Col span="7">
@@ -572,6 +578,50 @@
         this.getPagerList();
         // this.util.pageSizeChange(this, n);
       },
+        getPagerListyc(){ //异常查询
+            this.pageData = [];
+            this.pageShow = true;
+            if (this.TagDot == 0 && this.param.firSubTestTimeLike != '') {
+                this.param.firSubTestTimeLike = this.AF.trimDate(this.param.firSubTestTimeLike)
+            } else if (this.TagDot == 1 && this.param.secSubTestTimeLike != '') {
+                this.param.secSubTestTimeLike = this.AF.trimDate(this.param.secSubTestTimeLike)
+            } else if (this.TagDot == 2 && this.param.thirdSubTestTimeLike != '') {
+                this.param.thirdSubTestTimeLike = this.AF.trimDate(this.param.thirdSubTestTimeLike)
+            } else if (this.TagDot == 3 && this.param.forthSubTestTimeLike != '') {
+                this.param.forthSubTestTimeLike = this.AF.trimDate(this.param.forthSubTestTimeLike)
+            } else {
+                this.param.firSubTestTimeLike = '';
+                this.param.secSubTestTimeLike = '';
+                this.param.thirdSubTestTimeLike = '';
+                this.param.forthSubTestTimeLike = '';
+            }
+
+            this.$http.post('/api/traineeinformation/getTestStudentsError', this.param).then((res) => {
+                if (res.code === 200) {
+                    res.page.list.forEach((item, index) => {
+                        if (item.status === '10') {
+                            item.subject = '科目一';
+                        } else if (item.status === '20') {
+                            item.subject = '科目二';
+                        } else if (item.status === '30') {
+                            item.subject = '科目三';
+                        } else if (item.status === '40') {
+                            item.subject = '科目四';
+                        }
+                        item.trainStatus = '00';
+                        item.carModel = item.carType;
+                        item.ykDate = item.testInfo.testTime;
+                        item.examinationSite = item.testInfo.testPlace;
+                        item.message = '待上传';
+                        item.testResults = '待上传';
+                        item.success = '-';
+                        this.pageData.push(item);
+                    })
+                    this.total = res.page.total;
+                }
+            })
+
+        },
       getPagerList() {
         this.pageData = [];
         this.pageShow = true;

@@ -316,6 +316,8 @@
               ps.hj3 = item.all;
               this.data1.push(ps)
             })
+
+            this.data1.unshift(this.data1.pop())
             res.result.forEach((item, index) => {
               this.tjzje += item.chargeFee;
             })

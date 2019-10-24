@@ -162,6 +162,7 @@
              this.loading=true
              this.$http.post(this.apis.COUNT.DTXY,{startTime:this.param.startTime,endTime: this.param.endTime,jgdm:this.param.jgdm}).then( (res)=>{
                // console.log(res);
+               this.loading=false
                if(res.code == 200){
                  res.result.forEach((item,index)=> {
                    var ps = {};
@@ -175,10 +176,10 @@
                    ps.C2 = item.c2;
                    this.data10.push(ps)
                  })
+                 this.data10.unshift(this.data10.pop())
                }else{
                  this.$Message.error(res.message);
                }
-               this.loading=false
              })
             },
         }

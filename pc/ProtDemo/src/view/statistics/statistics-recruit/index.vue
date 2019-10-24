@@ -110,12 +110,6 @@
                   }
                 },
                 {
-                  title: '合计',
-                  key: 'hj1',
-                  align: 'center',
-                  sortable: true
-                },
-                {
                   renderHeader:(h,p)=>{
                     return h('div',this.param.startTime+" —— "+this.param.endTime)
                   },
@@ -182,6 +176,12 @@
                       align: 'center',
                     },
                   ]
+                },
+                {
+                  title: '合计',
+                  key: 'hj1',
+                  align: 'center',
+                  sortable: true
                 },
                 {
                   title: '退学人数',
@@ -323,6 +323,7 @@
                        // zshj.hj3 = zshj.one + ps.one;
                       this.data10.push(ps)
                     })
+               this.data10.unshift(this.data10.pop())
              }else{
                 this.$Message.error(res.message);
               }

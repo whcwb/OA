@@ -187,20 +187,20 @@
         window.open(http.url + `/pub/exportBranchSignUp?startTime=${this.param.startTime}&endTime=${this.param.endTime}&jgdm=${this.param.jgdm}&lx=${this.param.lx}`, '_blank');
       },
       handleSpinCustom() {
-        this.$Spin.show({
-          render: (h) => {
-            return h('div', [
-              h('Icon', {
-                'class': 'demo-spin-icon-load',
-                props: {
-                  type: 'ios-loading',
-                  size: 88
-                }
-              }),
-              h('div', 'Loading')
-            ])
-          }
-        });
+        // this.$Spin.show({
+        //   render: (h) => {
+        //     return h('div', [
+        //       h('Icon', {
+        //         'class': 'demo-spin-icon-load',
+        //         props: {
+        //           type: 'ios-loading',
+        //           size: 88
+        //         }
+        //       }),
+        //       h('div', 'Loading')
+        //     ])
+        //   }
+        // });
 
       },
       getlx(lx) {
@@ -239,9 +239,11 @@
         // this.handleSpinCustom();
         this.tjzje = 0;
         this.loading=true
-        this.$http.post(this.apis.COUNT.BMSF, this.param).then((res) => {
+        var v=this;
+        this.$http.post(this.apis.COUNT.BMSF, this.param).then(res => {
           // console.log(res);
-          this.$Spin.hide();
+         v.loading = false;
+          console.log(this.loading)
           if (res.code == 200) {
             this.data1 = res.result;
             res.result.forEach((item) => {
@@ -250,7 +252,6 @@
           } else {
             this.$Message.error(res.message);
           }
-          this.loading = false
         })
       },
       getNSRList() {

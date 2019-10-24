@@ -390,6 +390,7 @@
       getPagerList() {
         var v = this
         this.$http.post('/api/data/statisCharge', this.param).then((res) => {
+          v.loading = false
           v.tableData = res.page.list
           v.total = res.page.total
             var a = res.message.split(',')
@@ -399,7 +400,6 @@
             v.data1[0].k1 = a[3]
             v.data1[0].k2 = a[4]
             v.data1[0].k3 = a[5]
-            v.loading = false
         })
       },
       OKpay(index) {

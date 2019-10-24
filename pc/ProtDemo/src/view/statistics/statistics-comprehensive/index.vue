@@ -21,7 +21,7 @@
       </Col>
     </row>
     <div class="box_col_100" style="margin-top: 10px">
-      <Table size="small" :height="AF.getPageHeight()-280" stripe :columns="columns1" :data="data1"></Table>
+      <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" stripe :columns="columns1" :data="data1"></Table>
 
     </div>
   </div>
@@ -38,6 +38,7 @@
     },
     data() {
       return {
+        loading:true,
         columns1: [
           {
             title: '机构',
@@ -265,22 +266,22 @@
           this.param.endTime = this.AF.getYear() + '-12-31';
         }
         //this.$http.post(this.apis.COUNT.ZHTJ,this.param).then( (res)=>{
-        this.$Spin.show({
-          render: (h) => {
-            return h('div', [
-              h('Icon', {
-                'class': 'demo-spin-icon-load',
-                props: {
-                  type: 'ios-loading',
-                  size: 30
-                }
-              }),
-              h('div', 'Loading')
-            ])
-          }
-        });
+        // this.$Spin.show({
+        //   render: (h) => {
+        //     return h('div', [
+        //       h('Icon', {
+        //         'class': 'demo-spin-icon-load',
+        //         props: {
+        //           type: 'ios-loading',
+        //           size: 30
+        //         }
+        //       }),
+        //       h('div', 'Loading')
+        //     ])
+        //   }
+        // });
+        this.loading=true
         this.$http.post('/api/data/getAllIn', this.param).then((res) => {
-          this.$Spin.hide();
           // console.log(res);
           if (res.code == 200) {
             res.result.forEach((item, index) => {
@@ -314,15 +315,16 @@
               }
               ps.hj3 = item.all;
               this.data1.push(ps)
-
             })
+
+            this.data1.unshift(this.data1.pop())
             res.result.forEach((item, index) => {
               this.tjzje += item.chargeFee;
             })
           } else {
             this.$Message.error(res.message);
           }
-          this.$Spin.hide();
+          this.loading = false
         })
       },
       excel() {

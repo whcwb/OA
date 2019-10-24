@@ -27,7 +27,7 @@
         <!--<awb></awb>-->
         <!--</div>-->
         <div class="box_col_100">
-              <Table size="small" :height="AF.getPageHeight()-280" :columns="columns11" :data="data10" border stripe ></Table>
+              <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" :columns="columns11" :data="data10" border stripe ></Table>
         </div>
         <!--<Page :total="100" />-->
 </div>
@@ -38,6 +38,7 @@
          name: "",
         data() {
           return {
+            loading:true,
             year:'',
             param:{
               startTime:this.AF.trimDate(),
@@ -158,23 +159,10 @@
                this.param.startTime = this.AF.trimDate();
                this.param.endTime = this.AF.trimDate();
              }
-             this.$Spin.show({
-               render: (h) => {
-                 return h('div', [
-                   h('Icon', {
-                     'class': 'demo-spin-icon-load',
-                     props: {
-                       type: 'ios-loading',
-                       size: 30
-                     }
-                   }),
-                   h('div', 'Loading')
-                 ])
-               }
-             });
+             this.loading=true
              this.$http.post(this.apis.COUNT.DTXY,{startTime:this.param.startTime,endTime: this.param.endTime,jgdm:this.param.jgdm}).then( (res)=>{
                // console.log(res);
-               this.$Spin.hide();
+               this.loading=false
                if(res.code == 200){
                  res.result.forEach((item,index)=> {
                    var ps = {};
@@ -188,6 +176,7 @@
                    ps.C2 = item.c2;
                    this.data10.push(ps)
                  })
+                 this.data10.unshift(this.data10.pop())
                }else{
                  this.$Message.error(res.message);
                }

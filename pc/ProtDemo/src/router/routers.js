@@ -586,7 +586,7 @@ export default [
         name: 'statistics-recruit',
         meta: {
           icon: 'md-trending-up',
-          title: '今日 招生'
+          title: '今日招生'
         },
         component: () => import('@/view/statistics/statistics-recruit')
       },
@@ -613,9 +613,18 @@ export default [
         name: 'statistics-Cost',
         meta: {
           icon: 'md-trending-up',
-          title: '学费统计'
+          title: '今日招生'
         },
         component: () => import('@/view/statistics/statistics-Cost')
+      },
+      {
+        path: 'inout',
+        name: 'inout',
+        meta: {
+          icon: 'md-trending-up',
+          title: '收支统计'
+        },
+        component: () => import('@/view/statistics/inout')
       },
       {
         path: 'statistices-reduce',

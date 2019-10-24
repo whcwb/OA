@@ -243,26 +243,38 @@
           {
             title: '姓名',
             align: 'center',
-            minWidth: 120,
+            minWidth: 40,
             key: 'name',
-            fixed: 'left'
+              fixed: 'left',
           },
           {
             title: '证件号码',
             align: 'center',
-            minWidth: 180,
+            minWidth: 130,
             key: 'idCardNo'
           },
-          {
-            title: '受理流水号',
-            align: 'center',
-            minWidth: 180,
-            key: 'serialNum'
-          },
+            {
+                title: '考试地点',
+                minWidth: 100,
+                align: 'center',
+                render: (h, p) => {
+                    console.log(this.payOk.km)
+                    let arr=p.row.testInfos;
+                    let place=''
+                    let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
+                    arr.map((val,index,arr)=>{
+                        if(val.testTime===km){
+                            place=val.testPlace
+                        }
+                    })
+                    return h('div', place)
+                }
+            },
+
           {
             title: '车型',
             key: 'carType',
-            minWidth: 120,
+            minWidth: 80,
             align: 'center',
             render: (h, p) => {
               return h('div', [
@@ -300,28 +312,12 @@
           {
             title: '实付金额',
             align: 'center',
-            minWidth: 100,
+            minWidth: 40,
             render: (h, p) => {
               return h('div', this.kmMoney)
             }
           },
           {
-            title: '考试地点',
-            minWidth: 100,
-            align: 'center',
-            render: (h, p) => {
-              console.log(this.payOk.km)
-              let arr=p.row.testInfos;
-              let place=''
-              let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
-              arr.map((val,index,arr)=>{
-                if(val.testTime===km){
-                  place=val.testPlace
-                }
-              })
-              return h('div', place)
-            }
-          }, {
             title: '考试时间',
             minWidth: 120,
             align: 'center',
@@ -341,6 +337,12 @@
               return h('div', a)
             }
           },
+            {
+                title: '受理流水号',
+                align: 'center',
+                minWidth: 180,
+                key: 'serialNum'
+            },
           {
             title: '备注',
             align: 'center',
@@ -371,7 +373,7 @@
             title: '操作',
             align: 'center',
             key: 'cz',
-            minWidth: 90,
+            minWidth: 40,
             fixed: 'right',
             render: (h, p) => {
                 if (p.row.code !== '' && p.row.code !== null){
@@ -486,6 +488,23 @@
             minWidth: 180,
             key: 'idCardNo'
           },
+            {
+                title: '考试地点',
+                minWidth: 100,
+                align: 'center',
+                render: (h, p) => {
+                    console.log(this.payOk.km)
+                    let arr=p.row.testInfos;
+                    let place=''
+                    let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
+                    arr.map((val,index,arr)=>{
+                        if(val.testTime===km){
+                            place=val.testPlace
+                        }
+                    })
+                    return h('div', place)
+                }
+            },
           {
             title: '车型',
             key: 'carType',
@@ -610,23 +629,7 @@
               return h('div', this.kmMoney)
             }
           },
-          {
-            title: '考试地点',
-            minWidth: 100,
-            align: 'center',
-            render: (h, p) => {
-              console.log(this.payOk.km)
-              let arr=p.row.testInfos;
-              let place=''
-              let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
-              arr.map((val,index,arr)=>{
-                if(val.testTime===km){
-                  place=val.testPlace
-                }
-              })
-              return h('div', place)
-            }
-          },
+
           {
             title: '考试时间',
             minWidth: 120,

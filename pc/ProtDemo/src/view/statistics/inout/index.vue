@@ -1,11 +1,11 @@
 <template>
   <div class="box_col" style="position: relative">
-    <!--<pager-tit title="报名收费" iconname="ios-football"></pager-tit>-->
+    <pager-tit title="收支统计" iconname="ios-football"></pager-tit>
     <div class="box_col_100">
       <Row :gutter="10" style="margin:8px 0">
         <Col span="8" :lg="8" :md="32">
-          <div style="font-size: 18px;font-weight: 700;width: 100%">
-            收支统计
+<!--          <div style="font-size: 18px;font-weight: 700;width: 100%">-->
+<!--            收支统计-->
 <!--            <span style="font-size: 16px;margin-left: 16px">-->
 <!--                    共:-->
 <!--                    <span style="font-size: 20px;color: #ff9900">-->
@@ -20,7 +20,7 @@
 <!--                      {{allmoney}}-->
 <!--                    </span>-->
 <!--                  </span>-->
-          </div>
+<!--          </div>-->
         </Col>
         <Col span="3" :lg="3" :md="4">
           <div style="width: 100%">
@@ -348,7 +348,6 @@
           }
         })
       },
-
       getJTjx() {
         this.jXlist = this.dictUtil.getByCode(this, 'ZDCLK1019');
       },

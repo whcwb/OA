@@ -277,6 +277,16 @@
             minWidth: 120,
             align: 'center'
           },
+            {
+                title:'推荐人',
+                key:'referrer',
+                align:'center',
+                minWidth:120,
+                render: (h, p) => {
+                    let a =  p.row.referrer.split('-')
+                    return h('div',a[0])
+                }
+            },
           {
             title: '备注',
             align: 'center',
@@ -323,16 +333,6 @@
             key: 'registrationFee',
             minWidth: 100,
             align: 'center'
-          },
-          {
-            title:'推荐人',
-            key:'referrer',
-            align:'center',
-            minWidth:120,
-            render: (h, p) => {
-              let a =  p.row.referrer.split('-')
-              return h('div',a[0])
-            }
           },
           {
             title: '优惠状态',

@@ -243,9 +243,8 @@
         this.$http.post(this.apis.COUNT.BMSF, this.param).then(res => {
           // console.log(res);
          v.loading = false;
-          console.log(this.loading)
           if (res.code == 200) {
-            this.data1 = res.result;
+            this.data1 = res.result?res.result:[];
             res.result.forEach((item) => {
               this.tjzje += item.chargeFee;
             })

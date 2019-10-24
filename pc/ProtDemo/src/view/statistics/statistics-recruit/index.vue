@@ -37,7 +37,7 @@
                     </Form>-->
                   </Col>
                   <Col span="1" style="margin-right: 10px">
-                    <Button type="primary" @click="getPagerList">
+                    <Button type="primary" @click="getNf(year)">
                       <Icon type="md-search"></Icon>
                     </Button>
                   </Col>

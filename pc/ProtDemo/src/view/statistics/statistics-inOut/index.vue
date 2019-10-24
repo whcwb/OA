@@ -32,7 +32,7 @@
       </Col>
 
       <Col span="1" style="margin-right: 10px">
-        <Button type="primary" @click="getSRTJList">
+        <Button type="primary" @click="getNf([param.startTime,param.endTime])">
           <Icon type="md-search"></Icon>
         </Button>
       </Col>

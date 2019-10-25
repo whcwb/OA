@@ -14,11 +14,13 @@ import com.ldz.util.commonUtil.DateUtils;
 import com.ldz.util.commonUtil.JsonUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import tk.mybatis.mapper.common.Mapper;
+import tk.mybatis.mapper.entity.Example;
 
 import java.text.ParseException;
 import java.util.*;
@@ -228,18 +230,18 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                             }
                         }
                     }
-                    if(information !=  null){
+                    if (information != null) {
                         map.put(mapSize + 2, information.getJgmc().replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/", "").trim());
                         webMap.put("jgmc", information.getJgmc().replaceAll("[\\u4E00-\\u9FA5]+", "").replaceAll("/", "").trim());
-                    }else{
-                        map.put(mapSize + 2,"");
-                        webMap.put("jgmc","");
+                    } else {
+                        map.put(mapSize + 2, "");
+                        webMap.put("jgmc", "");
                     }
 
                     webMap.put("trainStatus", trainStatus);
                     webMap.put("subTestNums", subTestNums);
                     sucList.add(map);
-                    if(information == null){
+                    if (information == null) {
                         information = new TraineeInformation();
                         information.setIdCardNo(map.get(5));
                         information.setName(map.get(2));
@@ -354,7 +356,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 webMap.put("subTestNums", subTestNums);
                 listMap.put(size - 1, jgmc);
                 sucList.add(listMap);
-                if(information == null){
+                if (information == null) {
                     information = new TraineeInformation();
                     information.setIdCardNo(listMap.get(5));
                     information.setName(listMap.get(2));
@@ -390,30 +392,30 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             collect.add(integerStringMap);
             List<Map<Integer, String>> maps = sucList.subList(1, sucList.size());
             maps.forEach(integerStringMap1 -> {
-                integerStringMap1.put(size1-1,integerStringMap1.get(size1 -1).replace("A", "998"));
-                integerStringMap1.put(size1-1,integerStringMap1.get(size1 -1).replace("B", "999"));
+                integerStringMap1.put(size1 - 1, integerStringMap1.get(size1 - 1).replace("A", "998"));
+                integerStringMap1.put(size1 - 1, integerStringMap1.get(size1 - 1).replace("B", "999"));
             });
             List<Map<Integer, String>> collect1 = maps.stream().filter(integerStringMap1 -> StringUtils.isNotBlank(integerStringMap1.get(size1 - 1))).sorted(Comparator.comparing(o -> Integer.parseInt(o.get(size1 - 1)))).collect(Collectors.toList());
             collect1.forEach(integerStringMap1 -> {
-                integerStringMap1.put(size1-1,integerStringMap1.get(size1 -1).replace("998", "A"));
-                integerStringMap1.put(size1-1,integerStringMap1.get(size1 -1).replace("999", "B"));
+                integerStringMap1.put(size1 - 1, integerStringMap1.get(size1 - 1).replace("998", "A"));
+                integerStringMap1.put(size1 - 1, integerStringMap1.get(size1 - 1).replace("999", "B"));
             });
             List<Map<Integer, String>> mapList = maps.stream().filter(m -> StringUtils.isBlank(m.get(size1 - 1))).collect(Collectors.toList());
             collect.addAll(collect1);
             collect.addAll(mapList);
         }
         // 将 报名点的记录放在第一条 ， 其余依次往后排
-        List<Map<Integer,String>> tempList = new ArrayList<>();
+        List<Map<Integer, String>> tempList = new ArrayList<>();
         for (Map<Integer, String> integerStringMap : collect) {
-            Map<Integer,String> tempMap = new HashMap<>();
+            Map<Integer, String> tempMap = new HashMap<>();
             for (Map.Entry<Integer, String> entry : integerStringMap.entrySet()) {
                 Integer entryKey = entry.getKey();
                 String value = entry.getValue();
-                if(entryKey < (size1-1)){
-                    tempMap.put(entryKey+1, value);
-                }else if (entryKey == (size1- 1)){
-                    tempMap.put(0,value);
-                }else{
+                if (entryKey < (size1 - 1)) {
+                    tempMap.put(entryKey + 1, value);
+                } else if (entryKey == (size1 - 1)) {
+                    tempMap.put(0, value);
+                } else {
                     tempMap.put(entryKey, value);
                 }
             }
@@ -421,7 +423,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         }
         collect = tempList;
         collect.forEach(integerStringMap -> {
-            if(StringUtils.isBlank(integerStringMap.get(0))){
+            if (StringUtils.isBlank(integerStringMap.get(0))) {
                 integerStringMap.put(0, "非本校学院");
             }
         });
@@ -624,17 +626,18 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
             //		5、修改考试表状态
             String testResult = "00";//00 合格  10不合格
-            double v = Double.parseDouble(map.get(11));
+
             // 考试成绩不填
-            if(StringUtils.isBlank(map.get(11))){
+            if (StringUtils.isBlank(map.get(11))) {
                 testResult = "10";
-            }else {
-                if((StringUtils.startsWith(information.getCarType(), "C") || StringUtils.startsWith(information.getCarType(), "c")) && StringUtils.equals(kmCode,"20")){
-                    if(v < 80){
+            } else {
+                double v = Double.parseDouble(map.get(11));
+                if ((StringUtils.startsWith(information.getCarType(), "C") || StringUtils.startsWith(information.getCarType(), "c")) && StringUtils.equals(kmCode, "20")) {
+                    if (v < 80) {
                         testResult = "10";
                     }
-                }else{
-                    if(v < 90){
+                } else {
+                    if (v < 90) {
                         testResult = "10";
                     }
                 }
@@ -774,18 +777,62 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             exception.setSfzmhm(map.get(5));
             exception.setKskm(kmMap.get(kmCode));
             exception.setXm(map.get(2));
-            if(StringUtils.equals(kmCode,"10")){
+            if (StringUtils.equals(kmCode, "10")) {
                 exception.setCode("102");
                 exceptionService.clearException(exception, exception.getCode());
-            }else if(StringUtils.equals(kmCode, "20")){
+            } else if (StringUtils.equals(kmCode, "20")) {
                 exception.setCode("202");
                 exceptionService.clearException(exception, exception.getCode());
-            }else if(StringUtils.equals(kmCode, "30")){
+            } else if (StringUtils.equals(kmCode, "30")) {
                 exception.setCode("302");
                 exceptionService.clearException(exception, exception.getCode());
-            }else if(StringUtils.equals(kmCode, "40")){
+            } else if (StringUtils.equals(kmCode, "40")) {
                 exception.setCode("402");
+                // 科目四成绩确认 清理异常
+                SimpleCondition econdition = new SimpleCondition(BizException.class);
+                econdition.eq(BizException.InnerColumn.sfzmhm, info.getIdCardNo());
+                econdition.eq(BizException.InnerColumn.code, "402");
+                econdition.eq(BizException.InnerColumn.zt, "00");
+                List<BizException> exceptions = exceptionService.findByCondition(econdition);
+                exceptions.forEach(e -> {
+                    e.setZt("10");
+                    exceptionService.update(e);
+                });
                 exceptionService.clearException(exception, exception.getCode());
+                if (information != null) {
+                    //查询学员是否有相关类型未处理的异常信息
+                    Example condition1 = new Example(BizException.class);
+                    condition1.and()
+                            .andEqualTo(BizException.InnerColumn.sfzmhm.name(), information.getIdCardNo())
+                            .andEqualTo(BizException.InnerColumn.zt.name(), "00");
+                    List<BizException> exps = exceptionService.findByCondition(condition1);
+                    if (CollectionUtils.isNotEmpty(exps)) {
+                        BizException otherEntity = null;
+                        for (int t = 0; t < exps.size(); t++) {
+                            BizException entity = exps.get(t);
+                            //将相同类型的异常标记为已处理
+                            if (exception.getCode().equals(entity.getCode())) {
+                                entity.setGxsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+                                entity.setGxr(sysUser.getZh() + "-" + sysUser.getXm());
+                                entity.setZt("10");
+
+                                exceptionService.update(entity);
+                            } else {
+                                otherEntity = entity;
+                            }
+                        }
+                        //将学员主表信息异常也标记为已处理，如果学员同时有其他异常信息，则更新其他异常信息
+                        if (exception.getCode().equals(information.getCode())) {
+                            if (otherEntity == null) {
+                                information.setCode("");
+                                information.setErrorMessage("");
+                            } else {
+                                information.setCode(otherEntity.getCode());
+                                information.setErrorMessage(otherEntity.getBz());
+                            }
+                        }
+                    }
+                }
             }
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);
         } else {
@@ -807,7 +854,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             if (StringUtils.isNotEmpty(map.get(16))) {
                 if (StringUtils.equals(map.get(16).trim(), "不合格") || StringUtils.equals(map.get(16).trim(), "缺考")) {
                     testResult = "10";
-                }else if(StringUtils.equals(map.get(16).trim(), "合格")){
+                } else if (StringUtils.equals(map.get(16).trim(), "合格")) {
                     testResult = "00";
                 } else {
                     return ApiResponse.fail("考试结果状态不对。考试结果：" + map.get(16));
@@ -963,7 +1010,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     testInfo.setSubject(map.get(3));
                     testInfo.setTestPlace(map.get(7));
                     testInfo.setTestTime(map.get(6));
-                    if(information == null){
+                    if (information == null) {
                         information = new TraineeInformation();
                         information.setIdCardNo(map.get(2));
                         information.setName(map.get(0));
@@ -993,13 +1040,13 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         redisDao.boundValueOps(errorKey + "_name").set(DateUtils.getToday("yyyy-MM-dd") + "-appoint-fail", 30, TimeUnit.DAYS);
         List<Map<Integer, String>> subList = resultList.subList(1, resultList.size());
         subList.forEach(integerStringMap -> {
-            integerStringMap.put(finalMapSize+2,integerStringMap.get(finalMapSize + 2).replace("A", "998"));
-            integerStringMap.put(finalMapSize+2,integerStringMap.get(finalMapSize + 2).replace("B", "999"));
+            integerStringMap.put(finalMapSize + 2, integerStringMap.get(finalMapSize + 2).replace("A", "998"));
+            integerStringMap.put(finalMapSize + 2, integerStringMap.get(finalMapSize + 2).replace("B", "999"));
         });
         List<Map<Integer, String>> maps = subList.stream().filter(integerStringMap -> StringUtils.isNotBlank(integerStringMap.get(finalMapSize + 2))).sorted(Comparator.comparing(o -> Integer.parseInt(o.get(finalMapSize + 2)))).collect(Collectors.toList());
         maps.forEach(integerStringMap -> {
-            integerStringMap.put(finalMapSize+2,integerStringMap.get(finalMapSize + 2).replace("998", "A"));
-            integerStringMap.put(finalMapSize+2,integerStringMap.get(finalMapSize + 2).replace("999", "B"));
+            integerStringMap.put(finalMapSize + 2, integerStringMap.get(finalMapSize + 2).replace("998", "A"));
+            integerStringMap.put(finalMapSize + 2, integerStringMap.get(finalMapSize + 2).replace("999", "B"));
         });
         List<Map<Integer, String>> mapList = subList.stream().filter(m -> StringUtils.isBlank(m.get(finalMapSize + 2))).collect(Collectors.toList());
         Map<Integer, String> map = resultList.get(0);
@@ -1009,17 +1056,17 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         resultList.addAll(mapList);
 
         // 将 报名点的记录放在第一条 ， 其余依次往后排
-        List<Map<Integer,String>> tempList = new ArrayList<>();
+        List<Map<Integer, String>> tempList = new ArrayList<>();
         for (Map<Integer, String> integerStringMap : resultList) {
-            Map<Integer,String> tempMap = new HashMap<>();
+            Map<Integer, String> tempMap = new HashMap<>();
             for (Map.Entry<Integer, String> entry : integerStringMap.entrySet()) {
                 Integer entryKey = entry.getKey();
                 String value = entry.getValue();
-                if(entryKey < (finalMapSize + 2)){
-                    tempMap.put(entryKey+1, value);
-                }else if (entryKey == (finalMapSize + 2)){
-                    tempMap.put(0,value);
-                }else{
+                if (entryKey < (finalMapSize + 2)) {
+                    tempMap.put(entryKey + 1, value);
+                } else if (entryKey == (finalMapSize + 2)) {
+                    tempMap.put(0, value);
+                } else {
                     tempMap.put(entryKey, value);
                 }
             }
@@ -1027,7 +1074,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         }
         resultList = tempList;
         resultList.forEach(integerStringMap -> {
-            if(StringUtils.isBlank(integerStringMap.get(0))){
+            if (StringUtils.isBlank(integerStringMap.get(0))) {
                 integerStringMap.put(0, "非本校学院");
             }
         });
@@ -1395,7 +1442,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             condition.eq(TraineeTestInfo.InnerColumn.idCardNo, map.get(2));
             condition.setOrderByClause(TraineeTestInfo.InnerColumn.id.desc());
             List<TraineeTestInfo> orgs = findByCondition(condition);
-            if(CollectionUtils.isNotEmpty(orgs)){
+            if (CollectionUtils.isNotEmpty(orgs)) {
                 return ApiResponse.success();
             }
             // 如果学员信息为空 ， 直接将约考信息插入约考信息表中
@@ -1685,7 +1732,6 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
         return split[0] + "-" + split[1] + "-" + split[2];
     }
-
 
 
 }

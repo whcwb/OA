@@ -39,6 +39,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import tk.mybatis.mapper.common.Mapper;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -364,7 +365,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 testInfos = collect.get(traineeInformation.getId());
                 if (CollectionUtils.isNotEmpty(testInfos)) {
                     TraineeTestInfo testInfo = testInfos.get(0);
-                    if ( testInfo.getTestTime() != null && DateUtils.getDateStr(new Date(), "yyyy-Mm-dd").compareTo(testInfo.getTestTime()) <= 0) {
+                    if (testInfo.getTestTime() != null && DateUtils.getDateStr(new Date(), "yyyy-Mm-dd").compareTo(testInfo.getTestTime()) <= 0) {
                         traineeInformation.setTestInfo(testInfo);
                     }
                 }
@@ -1297,7 +1298,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         }
         List<ChargeManagement> list = chargeManagementService.findByCondition(chacondition);
         if (CollectionUtils.isNotEmpty(list)) {
-            return ApiResponse.fail(" 该学员已于 " + list.get(0).getCjsj().substring(0,10) + " 交过初考费");
+            return ApiResponse.fail(" 该学员已于 " + list.get(0).getCjsj().substring(0, 10) + " 交过初考费");
         }
 
         SysYh currentUser = getCurrentUser();
@@ -3121,13 +3122,13 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         kmMap.put("forth_sub_test_time", "科目四");
 
         String cond = null;
-        if(StringUtils.equals(kskm, "1")){
+        if (StringUtils.equals(kskm, "1")) {
             cond = " m.fir_sub not in ('30','40')";
-        }else if(StringUtils.equals(kskm, "2")){
+        } else if (StringUtils.equals(kskm, "2")) {
             cond = "  m.sec_sub not in ('30','40')";
-        }else if(StringUtils.equals(kskm, "3")){
+        } else if (StringUtils.equals(kskm, "3")) {
             cond = " m.third_sub not in ('30','40')";
-        }else{
+        } else {
             cond = " m.forth_sub not in ('10','20')";
         }
         String error = getRequestParamterAsString("error");
@@ -3138,28 +3139,28 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         String secSubTestTimeLike = getRequestParamterAsString("secSubTestTimeLike");
         String thirdSubTestTimeLike = getRequestParamterAsString("thirdSubTestTimeLike");
         String forthSubTestTimeLike = getRequestParamterAsString("forthSubTestTimeLike");
-        if(StringUtils.isNotBlank(firSubTestTimeLike)){
+        if (StringUtils.isNotBlank(firSubTestTimeLike)) {
             testTime = firSubTestTimeLike;
         }
-        if(StringUtils.isNotBlank(secSubTestTimeLike)){
+        if (StringUtils.isNotBlank(secSubTestTimeLike)) {
             testTime = secSubTestTimeLike;
         }
-        if(StringUtils.isNotBlank(thirdSubTestTimeLike)){
+        if (StringUtils.isNotBlank(thirdSubTestTimeLike)) {
             testTime = thirdSubTestTimeLike;
         }
-        if(StringUtils.isNotBlank(forthSubTestTimeLike)){
+        if (StringUtils.isNotBlank(forthSubTestTimeLike)) {
             testTime = forthSubTestTimeLike;
         }
         String jgdm = getRequestParamterAsString("jgdm");
-        if(StringUtils.isBlank(jgdm)){
+        if (StringUtils.isBlank(jgdm)) {
             jgdm = null;
         }
         String idCardNoLike = getRequestParamterAsString("idCardNoLike");
-        if(StringUtils.isBlank(idCardNoLike)){
+        if (StringUtils.isBlank(idCardNoLike)) {
             idCardNoLike = null;
         }
         String nameLike = getRequestParamterAsString("nameLike");
-        if(StringUtils.isBlank(nameLike)){
+        if (StringUtils.isBlank(nameLike)) {
             nameLike = null;
         }
         String finalTestTime = testTime;
@@ -3167,7 +3168,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         String finalIdCardNoLike = idCardNoLike;
         String finalCond = cond;
         String finalNameLike = nameLike;
-        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, kmTestColumn, kmMap.get(kmTestColumn), finalIdCardNoLike, finalCond, finalNameLike,null));
+        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, kmTestColumn, kmMap.get(kmTestColumn), finalIdCardNoLike, finalCond, finalNameLike, null));
 
 
         if (CollectionUtils.isNotEmpty(info.getList())) {
@@ -3194,6 +3195,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifBlank(kskm, "请选择科目");
         RuntimeCheck.ifBlank(result, "请选择考试结果");
         RuntimeCheck.ifBlank(time, "请选择考试时间");
+        SysYh user = getCurrentUser();
         Map<String, String> kmMap = new HashMap<>();
         kmMap.put("1", "科目一");
         kmMap.put("2", "科目二");
@@ -3211,8 +3213,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         for (TraineeTestInfo info : testInfos) {
             info.setTestResult(result);
             traineeTestInfoService.update(info);
+            BizException exception = new BizException();
+            exception.setSfzmhm(info.getIdCardNo());
             // 根据当前考试科目 , 查看是否需要修改当前学员的状态
             if (StringUtils.equals(kskm, "1")) {
+                exception.setCode("102");
                 // 科目一考试如果合格 , 如果不在科目一就修改为科目二
                 if (StringUtils.equals(result, "00")) {
                     if (StringUtils.equals(information.getStatus(), "10")) {
@@ -3222,7 +3227,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 } else {
                     information.setFirSub("30");
                 }
+
             } else if (StringUtils.equals(kskm, "2")) {
+                exception.setCode("202");
                 if (StringUtils.equals(result, "00")) {
                     // 科目二合格 , 查看当前状态是否在科目二, 不在则不更新状态
                     information.setSecSub("40");
@@ -3237,6 +3244,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                     information.setSecSub("30");
                 }
             } else if (StringUtils.equals(kskm, "3")) {
+                exception.setCode("302");
                 if (StringUtils.equals(result, "00")) {
                     information.setThirdSub("40");
                     if (StringUtils.equals(information.getStatus(), "30")) {
@@ -3250,22 +3258,68 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                     information.setThirdSub("30");
                 }
             } else if (StringUtils.equals(kskm, "4")) {
+                exception.setCode("402");
                 if (StringUtils.equals(result, "00")) {
                     information.setForthSub("20");
                     information.setStatus("50");
                 }
+                // 科目四成绩确认 清理异常
+                SimpleCondition condition = new SimpleCondition(BizException.class);
+                condition.eq(BizException.InnerColumn.sfzmhm, info.getIdCardNo());
+                condition.eq(BizException.InnerColumn.code, "402");
+                condition.eq(BizException.InnerColumn.zt, "00");
+                List<BizException> exceptions = exceptionService.findByCondition(condition);
+                exceptions.forEach(e -> {
+                    e.setZt("10");
+                    exceptionService.update(e);
+                });
             } else {
                 information.setForthSub("10");
             }
-            update(information);
-        }
+            exceptionService.clearException(exception, exception.getCode());
+            if (information != null) {
+                //查询学员是否有相关类型未处理的异常信息
+                Example condition = new Example(BizException.class);
+                condition.and()
+                        .andEqualTo(BizException.InnerColumn.sfzmhm.name(), information.getIdCardNo())
+                        .andEqualTo(BizException.InnerColumn.zt.name(), "00");
+                List<BizException> exps = exceptionService.findByCondition(condition);
+                if (CollectionUtils.isNotEmpty(exps)) {
+                    BizException otherEntity = null;
+                    for (int i = 0; i < exps.size(); i++) {
+                        BizException entity = exps.get(i);
+                        //将相同类型的异常标记为已处理
+                        if (exception.getCode().equals(entity.getCode())) {
+                            entity.setGxsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+                            entity.setGxr(user.getZh() + "-" + user.getXm());
+                            entity.setZt("10");
 
+                            exceptionService.update(entity);
+                        } else {
+                            otherEntity = entity;
+                        }
+                    }
+                    //将学员主表信息异常也标记为已处理，如果学员同时有其他异常信息，则更新其他异常信息
+                    if (exception.getCode().equals(information.getCode())) {
+                        if (otherEntity == null) {
+                            information.setCode("");
+                            information.setErrorMessage("");
+                        } else {
+                            information.setCode(otherEntity.getCode());
+                            information.setErrorMessage(otherEntity.getBz());
+                        }
+                    }
+
+                }
+            }
+        }
+        update(information);
         return ApiResponse.success();
     }
 
     @Override
     public ApiResponse<String> revokeTestAppoint(String id, String kskm, String time) {
-        RuntimeCheck.ifBlank(id,"请选择学员" );
+        RuntimeCheck.ifBlank(id, "请选择学员");
         RuntimeCheck.ifBlank(kskm, "请选择科目");
         RuntimeCheck.ifBlank(time, "请选择时间");
         Map<String, String> kmMap = new HashMap<>();
@@ -3281,9 +3335,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         List<TraineeTestInfo> infos = traineeTestInfoService.findByCondition(simpleCondition);
         BizException exception = new BizException();
         for (TraineeTestInfo info : infos) {
-            if(info.getTestTime().equals(time)){
+            if (info.getTestTime().equals(time)) {
                 traineeTestInfoService.remove(info.getId());
-            }else{
+            } else {
                 info.setTestResult("10");
                 traineeTestInfoService.update(info);
             }
@@ -3291,50 +3345,50 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         }
 
         exception.setKskm(kskm);
-        if(StringUtils.equals(kskm, "1")){
+        if (StringUtils.equals(kskm, "1")) {
             information.setFirSub("00");
             information.setFirSubTestTime(null);
             int sum = information.getFirSubTestNum() - 1;
-            if(sum >= 1){
+            if (sum >= 1) {
                 information.setFirSub("30");
             }
             information.setFirSubTestNum(Math.max(sum, 0));
             exception.setCode("101");
-        }else if(StringUtils.equals(kskm, "2")){
+        } else if (StringUtils.equals(kskm, "2")) {
             information.setSecSub("00");
             information.setSecSubTestTime(null);
             int sum = information.getSecSubTestNum() - 1;
-            if( sum >= 1 ){
+            if (sum >= 1) {
                 information.setSecSub("30");
             }
             information.setSecSubTestNum(Math.max(sum, 0));
             exception.setCode("201");
-        }else if(StringUtils.equals(kskm, "3")){
+        } else if (StringUtils.equals(kskm, "3")) {
             information.setThirdSub("00");
             information.setThirdSubTestTime(null);
             int sum = information.getThirdSubTestNum() - 1;
-            if(sum >= 1) {
+            if (sum >= 1) {
                 information.setThirdSub("30");
             }
             information.setThirdSubTestNum(Math.max(sum, 0));
             exception.setCode("301");
-        }else if(StringUtils.equals(kskm, "4")){
+        } else if (StringUtils.equals(kskm, "4")) {
             information.setForthSub(null);
             information.setForthSubTestTime(null);
         }
         exceptionService.clearException(exception, exception.getCode());
         baseMapper.updateByPrimaryKey(information);
-        traineeStatusService.saveEntity(information,"考试预约撤回", "00", kmMap.get(kskm) + " 预约撤回" );
+        traineeStatusService.saveEntity(information, "考试预约撤回", "00", kmMap.get(kskm) + " 预约撤回");
         return ApiResponse.success();
     }
 
     @Override
     public ApiResponse<TraineeInformation> getById(String id) {
-        if(StringUtils.isBlank(id)){
+        if (StringUtils.isBlank(id)) {
             return ApiResponse.success(new TraineeInformation());
         }
         TraineeInformation information = findById(id);
-        if(information != null ){
+        if (information != null) {
             // 查询学员所有的考试信息
             SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);
             condition.eq(TraineeTestInfo.InnerColumn.traineeId, id);
@@ -3358,31 +3412,31 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         kmMap.put("forth_sub_test_time", "科目四");
 
         String cond = null;
-        if(StringUtils.equals(kskm, "1")){
+        if (StringUtils.equals(kskm, "1")) {
             cond = " m.fir_sub not in ('30','40')";
-        }else if(StringUtils.equals(kskm, "2")){
+        } else if (StringUtils.equals(kskm, "2")) {
             cond = "  m.sec_sub not in ('30','40')";
-        }else if(StringUtils.equals(kskm, "3")){
+        } else if (StringUtils.equals(kskm, "3")) {
             cond = " m.third_sub not in ('30','40')";
-        }else{
+        } else {
             cond = " m.forth_sub not in ('10','20')";
         }
         // 根据传入的考试科目查询 下面所有的异常信息
         SimpleCondition condition = new SimpleCondition(BizException.class);
         condition.eq(BizException.InnerColumn.kskm, kskm);
         condition.eq(BizException.InnerColumn.zt, "00");
-        if(StringUtils.equals(kskm, "1")){
+        if (StringUtils.equals(kskm, "1")) {
             condition.eq(BizException.InnerColumn.code, "102");
-        }else if(StringUtils.equals(kskm, "2")){
+        } else if (StringUtils.equals(kskm, "2")) {
             condition.eq(BizException.InnerColumn.code, "202");
-        }else if(StringUtils.equals(kskm, "3")){
+        } else if (StringUtils.equals(kskm, "3")) {
             condition.eq(BizException.InnerColumn.code, "302");
-        }else{
+        } else {
             condition.eq(BizException.InnerColumn.code, "402");
         }
         List<BizException> exceptions = exceptionService.findByCondition(condition);
         Set<String> set = exceptions.stream().map(BizException::getSfzmhm).collect(Collectors.toSet());
-        if(CollectionUtils.isEmpty(set)){
+        if (CollectionUtils.isEmpty(set)) {
             set = null;
         }
 
@@ -3392,28 +3446,28 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         String secSubTestTimeLike = getRequestParamterAsString("secSubTestTimeLike");
         String thirdSubTestTimeLike = getRequestParamterAsString("thirdSubTestTimeLike");
         String forthSubTestTimeLike = getRequestParamterAsString("forthSubTestTimeLike");
-        if(StringUtils.isNotBlank(firSubTestTimeLike)){
+        if (StringUtils.isNotBlank(firSubTestTimeLike)) {
             testTime = firSubTestTimeLike;
         }
-        if(StringUtils.isNotBlank(secSubTestTimeLike)){
+        if (StringUtils.isNotBlank(secSubTestTimeLike)) {
             testTime = secSubTestTimeLike;
         }
-        if(StringUtils.isNotBlank(thirdSubTestTimeLike)){
+        if (StringUtils.isNotBlank(thirdSubTestTimeLike)) {
             testTime = thirdSubTestTimeLike;
         }
-        if(StringUtils.isNotBlank(forthSubTestTimeLike)){
+        if (StringUtils.isNotBlank(forthSubTestTimeLike)) {
             testTime = forthSubTestTimeLike;
         }
         String jgdm = getRequestParamterAsString("jgdm");
-        if(StringUtils.isBlank(jgdm)){
+        if (StringUtils.isBlank(jgdm)) {
             jgdm = null;
         }
         String idCardNoLike = getRequestParamterAsString("idCardNoLike");
-        if(StringUtils.isBlank(idCardNoLike)){
+        if (StringUtils.isBlank(idCardNoLike)) {
             idCardNoLike = null;
         }
         String nameLike = getRequestParamterAsString("nameLike");
-        if(StringUtils.isBlank(nameLike)){
+        if (StringUtils.isBlank(nameLike)) {
             nameLike = null;
         }
         String finalTestTime = testTime;

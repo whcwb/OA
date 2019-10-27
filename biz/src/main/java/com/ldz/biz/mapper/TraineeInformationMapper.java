@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TraineeInformationMapper extends Mapper<TraineeInformation> {
     /**
@@ -63,9 +64,15 @@ public interface TraineeInformationMapper extends Mapper<TraineeInformation> {
             " <if test= 'nameLike != null'>" +
             " AND m.name like '%${nameLike}%'" +
             " </if>" +
+            " <if test = 'cards != null '>" +
+            " and m.id_card_no in " +
+            " <foreach collection='cards' open='(' close=')' separator=',' item='item'>" +
+            "  #{item} " +
+            " </foreach>" +
+            "</if>" +
             "order by ${kmTestColumn} asc " +
             "</script>   ")
-    List<TraineeInformation> getTestStudents(@Param("jgdm") String jgdm, @Param("testTime") String testTime, @Param("kmTestColumn") String s, @Param("subject") String subject, @Param("idCardNo") String idCardNo,@Param("condition")String condition, @Param("nameLike")String name);
+    List<TraineeInformation> getTestStudents(@Param("jgdm") String jgdm, @Param("testTime") String testTime, @Param("kmTestColumn") String s, @Param("subject") String subject, @Param("idCardNo") String idCardNo, @Param("condition")String condition, @Param("nameLike")String name, @Param("cards")Set<String> set);
 
 
     /**

@@ -144,4 +144,6 @@ public interface TraineeInformationService extends BaseService<TraineeInformatio
     ApiResponse<String> revokeTestAppoint(String id, String kskm, String time);
 
     ApiResponse<TraineeInformation> getById(String id);
+
+    ApiResponse<String> getTestStudentsError(int pageSize, int pageNum, String kskm);
 }

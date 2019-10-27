@@ -2022,11 +2022,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifNull(entity, "未找到该学员信息，请核实");
         RuntimeCheck.ifFalse(StringUtils.equals(entity.getStatus(), Status.SIGN_UP), "该学员已报名，无法回退");
         entity.setInfoCheckStatus("00");
-        entity.setInfoCheckTime(DateUtils.getNowTime());
+        entity.setInfoCheckTime(null);
         SysYh currentUser = getCurrentUser();
         entity.setModifier(currentUser.getZh() + "-" + currentUser.getXm());
         entity.setModifyTime(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
-        int i = update(entity);
+        int i = baseMapper.updateByPrimaryKey(entity);
 
         if (i > 0) {
             //学员状态表新增
@@ -3437,7 +3437,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         List<BizException> exceptions = exceptionService.findByCondition(condition);
         Set<String> set = exceptions.stream().map(BizException::getSfzmhm).collect(Collectors.toSet());
         if (CollectionUtils.isEmpty(set)) {
-            set = null;
+            return ApiResponse.success();
         }
 
         String kmTestColumn = kmMap.get(kskm);

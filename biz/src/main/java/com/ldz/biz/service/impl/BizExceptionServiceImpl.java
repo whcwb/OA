@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ldz.biz.constant.FeeType;
+import com.ldz.biz.constant.Status;
+import com.ldz.biz.model.*;
+import com.ldz.biz.service.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -14,15 +18,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.ldz.biz.mapper.BizExceptionMapper;
 import com.ldz.biz.mapper.NotSchoolTestInfoMapper;
-import com.ldz.biz.model.BizException;
-import com.ldz.biz.model.BizExceptionConfig;
-import com.ldz.biz.model.NotSchoolTestInfo;
-import com.ldz.biz.model.TraineeInformation;
-import com.ldz.biz.model.TraineeTestInfo;
-import com.ldz.biz.service.BizExceptionConfigService;
-import com.ldz.biz.service.BizExceptionService;
-import com.ldz.biz.service.TraineeInformationService;
-import com.ldz.biz.service.TraineeTestInfoService;
 import com.ldz.sys.base.BaseServiceImpl;
 import com.ldz.sys.model.SysYh;
 import com.ldz.util.bean.ApiResponse;
@@ -45,6 +40,8 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	private TraineeTestInfoService testInfoService;
 	@Autowired
 	private NotSchoolTestInfoMapper schoolTestInfoMapper;
+	@Autowired
+	private ChargeManagementService chargeManagementService;
 	
 	@Override
 	protected Mapper<BizException> getBaseMapper() {
@@ -120,7 +117,49 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			traineeInfo.setErrorMessage(bz);
 			traineeInfoService.update(traineeInfo);
 		}
-		
+		if(StringUtils.equals(exception.getCode(), "991")){
+			// 非本校学员 查看本校信息中是否有数据
+			SimpleCondition infoCondition = new SimpleCondition(TraineeInformation.class);
+			infoCondition.eq(TraineeInformation.InnerColumn.idCardNo , exception.getSfzmhm());
+			infoCondition.setOrderByClause(" registration_time desc ");
+			List<TraineeInformation> informations = traineeInfoService.findByCondition(infoCondition);
+			if(CollectionUtils.isNotEmpty(informations)){
+				TraineeInformation information = informations.get(0);
+				if(StringUtils.equals(information.getStatus(), Status.WIND)){
+					bz += "学员已结业  , 车型: " + information.getCarType();
+					// 学员结业 , 查询学员科目四考试合格的时间 如果此时已经合格 则为科四考试时间
+					//  科目四合格状态
+					String testResult = "20";
+					if(StringUtils.isNotBlank(information.getForthSubTestTime()) && StringUtils.equals(information.getForthSub(),testResult)){
+						bz += " 结业时间: " + information.getForthSubTestTime() ;
+					}else  {
+						 // 查询考试表里有没有科四的记录
+						SimpleCondition testCondition = new SimpleCondition(TraineeTestInfo.class);
+						testCondition.eq(TraineeTestInfo.InnerColumn.idCardNo, exception.getSfzmhm());
+						testCondition.eq(TraineeTestInfo.InnerColumn.testResult, "00");
+						testCondition.setOrderByClause(" id desc ");
+						List<TraineeTestInfo> testInfos = testInfoService.findByCondition(testCondition);
+						if(CollectionUtils.isNotEmpty(testInfos)){
+							TraineeTestInfo testInfo = testInfos.get(0);
+							bz += "结业时间: " + testInfo.getTestTime();
+						}
+					}
+				}else if(StringUtils.equals(information.getStatus(), Status.QUIT)){
+					bz += "学员已退学, 车型: " + information.getCarType();
+					SimpleCondition statusCondition = new SimpleCondition(ChargeManagement.class);
+					statusCondition.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.DROP_OUT);
+					statusCondition.eq(ChargeManagement.InnerColumn.idCardNo, exception.getSfzmhm());
+					statusCondition.setOrderByClause(" id desc ");
+					List<ChargeManagement> managements = chargeManagementService.findByCondition(statusCondition);
+					if(CollectionUtils.isNotEmpty(managements)){
+						ChargeManagement management = managements.get(0);
+						bz += " 退学时间 : " + management.getCjsj().substring(0,10);
+					}
+				}
+			}else {
+				bz += "系统中无此学员信息";
+			}
+		}
 		//查看是否有相同的异常未处理，如果有就不再重复创建
 		Example condition = new Example(BizException.class);
 		condition.and()

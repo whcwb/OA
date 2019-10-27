@@ -116,14 +116,12 @@
                      placeholder="姓名"/>
             </div>
           </Col>
-          <Col span="2" :lg="2" :md="3">
-            <Button type="primary" @click="param.pageNum = 1;getPagerList()">
+          <Col span="4" :lg="4" :md="3">
+            <Button type="primary" @click="param.pageNum = 1;YC = false;getPagerList()">
               <Icon type="md-search"></Icon>
               <!--查询-->
             </Button>
-          </Col>
-          <Col span="2" :lg="2" :md="3">
-            <Button type="error" @click="param.pageNum = 1;getPagerListyc()">
+            <Button type="error" style="margin-left: 5px" @click="param.pageNum = 1;YC = true;getPagerListyc()">
               异常
               <!--查询-->
             </Button>
@@ -196,6 +194,7 @@
     },
     data() {
       return {
+          YC:false,
         compName: '',
         v: this,
         total: 0,
@@ -230,7 +229,26 @@
           {
             type: 'index2', align: 'center', width: 80,
             render: (h, p) => {
-              return h('span', p.index + (this.param.pageNum - 1) * this.param.pageSize + 1);
+
+                if(this.YC){
+                    return h('Tooltip',
+                        {
+                            props: {placement: 'top', transfer: true, content: p.row.errorMessage,maxWidth:200}
+                        },
+                      [
+                           h('Tag', {
+                               props: {
+                                   color: 'volcano'
+                               },
+                               style: {
+                                   fontSize: '15px',
+                               }
+                           },  p.index + (this.param.pageNum - 1) * this.param.pageSize + 1)
+                      ])
+                }else {
+                    return h('span', p.index + (this.param.pageNum - 1) * this.param.pageSize + 1);
+                }
+
             }
           },
           {
@@ -570,12 +588,21 @@
       },
       pageChange(n) {
         this.param.pageNum = n;
-        this.getPagerList();
+        if(this.YC){
+            this.getPagerListyc();
+        }else {
+            this.getPagerList();
+        }
+
         // this.util.pageChange(this, n);
       },
       pageSizeChange(n) {
         this.param.pageSize = n;
-        this.getPagerList();
+          if(this.YC){
+              this.getPagerListyc();
+          }else {
+              this.getPagerList();
+          }
         // this.util.pageSizeChange(this, n);
       },
         getPagerListyc(){ //异常查询

@@ -1,10 +1,10 @@
 // let ajaxUrl = 'http://127.0.0.1:8080';
-let ajaxUrl = 'http://192.168.0.105:8080';
+// let ajaxUrl = 'http://192.168.0.105:8080';
 // let ajaxUrl = 'http://192.168.123.12:10010';//羊
 // let ajaxUrl ='http://192.168.123.69:10010'; // 陈伟
 // let ajaxUrl ='http://192.168.123.6:10010';//宋
 // let ajaxUrl ='http://192.168.1.188:10010';//宋
-// let ajaxUrl = 'http://mt.xxpt123.com:81';
+let ajaxUrl = 'http://mt.xxpt123.com:81';
 export default {
   NETWORK_ERR_STR: '网络加载异常!',
   // url:'http://192.168.3.234:10010',

@@ -496,8 +496,10 @@
                     console.log(this.payOk.km)
                     let arr=p.row.testInfos;
                     let place=''
+                    console.log(arr);
                     let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
                     arr.map((val,index,arr)=>{
+                        console.log(val);
                         if(val.testTime===km){
                             place=val.testPlace
                         }
@@ -899,9 +901,9 @@
             minWidth: 120,
             render: (h, p) => {
               let val;
-              if (p.row.status == '10') {
+              if (this.payOk.km == '10') {
                 val = p.row.firSubTestTime;
-              } else if (p.row.status == '20') {
+              } else if (this.payOk.km== '20') {
                 val = p.row.secSubTestTime;
               } else {
                 val = p.row.thirdSubTestTime;
@@ -914,8 +916,15 @@
             align: 'center',
             minWidth: 120,
             render: (h, p) => {
-              let val = p.row.testInfo.testPlace;
-              return h('div', val);
+                let arr=p.row.testInfos;
+                let place=''
+                let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
+                arr.map((val,index,arr)=>{
+                    if(val.testTime===km){
+                        place=val.testPlace
+                    }
+                })
+                return h('div', place)
             }
           },
           {

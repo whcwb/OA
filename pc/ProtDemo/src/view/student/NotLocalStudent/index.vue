@@ -91,6 +91,7 @@
             return h('div', params.row.cjsj.substring(0,10)
             );
           }},
+            {title:"异常原因",align:'center', key:'bz'},
           {title: '导入科目',align: 'center',key: 'kskm', render:(h, p)=>{
             return h('div',  '科目'+p.row.kskm);
           }},

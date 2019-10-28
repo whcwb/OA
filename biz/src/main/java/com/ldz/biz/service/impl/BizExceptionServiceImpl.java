@@ -126,7 +126,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 			if(CollectionUtils.isNotEmpty(informations)){
 				TraineeInformation information = informations.get(0);
 				if(StringUtils.equals(information.getStatus(), Status.WIND)){
-					bz += "学员已结业  , 车型: " + information.getCarType();
+					bz += "( 学员已结业  , 车型: " + information.getCarType();
 					// 学员结业 , 查询学员科目四考试合格的时间 如果此时已经合格 则为科四考试时间
 					//  科目四合格状态
 					String testResult = "20";
@@ -145,7 +145,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 						}
 					}
 				}else if(StringUtils.equals(information.getStatus(), Status.QUIT)){
-					bz += "学员已退学, 车型: " + information.getCarType();
+					bz += "( 学员已退学, 车型: " + information.getCarType();
 					SimpleCondition statusCondition = new SimpleCondition(ChargeManagement.class);
 					statusCondition.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.DROP_OUT);
 					statusCondition.eq(ChargeManagement.InnerColumn.idCardNo, exception.getSfzmhm());
@@ -155,10 +155,13 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 						ChargeManagement management = managements.get(0);
 						bz += " 退学时间 : " + management.getCjsj().substring(0,10);
 					}
+				}else  {
+					bz += "( 学员显示在办, 报名时间: " + traineeInfo.getRegistrationTime();
 				}
 			}else {
-				bz += "系统中无此学员信息";
+				bz += "( 系统中无此学员信息";
 			}
+			bz += " )";
 		}
 		//查看是否有相同的异常未处理，如果有就不再重复创建
 		Example condition = new Example(BizException.class);

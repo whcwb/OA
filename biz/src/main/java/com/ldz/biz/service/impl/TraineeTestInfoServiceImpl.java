@@ -832,6 +832,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                             }
                         }
                     }
+                    traineeInformationService.update(information);
                 }
             }
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);

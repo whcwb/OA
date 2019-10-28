@@ -1,5 +1,5 @@
-// let ajaxUrl = 'http://127.0.0.1:8080';
-let ajaxUrl = 'http://192.168.0.105:8080';
+// let ajaxUrl = 'http://127.0.0.1:8081';
+// let ajaxUrl = 'http://192.168.0.105:8080';
 // let ajaxUrl = 'http://192.168.123.12:10010';//羊
 // let ajaxUrl ='http://192.168.123.69:10010'; // 陈伟
 // let ajaxUrl ='http://192.168.123.6:10010';//宋

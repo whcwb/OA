@@ -1435,6 +1435,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 exception.setCode("302");
             }
             exceptionService.clearException(exception, exception.getCode());
+            exception.setCode("991");
+            exceptionService.clearException(exception, exception.getCode());
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums + "@sfgeeq@" + information.getReferrer() + "@sfgeeq@" + information.getRegistrationTime() + "@sfgeeq@" + regFee + "@sfgeeq@" + realFee + "@sfgeeq@" + arFee);
         } else {
             SimpleCondition condition = new SimpleCondition(TraineeTestInfo.class);

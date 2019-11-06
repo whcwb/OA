@@ -3227,7 +3227,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 } else {
                     information.setFirSub("30");
                 }
-
             } else if (StringUtils.equals(kskm, "2")) {
                 exception.setCode("202");
                 if (StringUtils.equals(result, "00")) {
@@ -3262,6 +3261,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 if (StringUtils.equals(result, "00")) {
                     information.setForthSub("20");
                     information.setStatus("50");
+                }else{
+                    information.setForthSub("10");
                 }
                 // 科目四成绩确认 清理异常
                 SimpleCondition condition = new SimpleCondition(BizException.class);
@@ -3314,6 +3315,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             }
         }
         update(information);
+        traineeStatusService.saveEntity(information,kmMap.get(kskm) + "成绩手动确认","00", "成绩确认");
         return ApiResponse.success();
     }
 

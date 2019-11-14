@@ -111,7 +111,10 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 				}
 				bz += "( 考试时间:  " +traineeInfo.getForthSubTestTime() +" 考试地点: " + testPlace+ "   )";
 			}else if(StringUtils.equals(exception.getCode(), "903")){
-				bz += ("( 欠费金额 : " + traineeInfo.getOweAmount() + " ) ");
+				bz += ("( 欠费金额: " + traineeInfo.getOweAmount() + " ) ");
+				if(StringUtils.isNotBlank(traineeInfo.getReferrer())){
+					bz +=",推荐人: "+ traineeInfo.getReferrer().split("-")[0];
+				}
 			}
 			traineeInfo.setCode(exception.getCode());
 			traineeInfo.setErrorMessage(bz);

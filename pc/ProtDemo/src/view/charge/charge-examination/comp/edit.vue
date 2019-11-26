@@ -40,7 +40,7 @@
           return {
             modal: true,
             params:{
-              amount:'',
+              amount:'230',
               id: '',
               remark:''
             },

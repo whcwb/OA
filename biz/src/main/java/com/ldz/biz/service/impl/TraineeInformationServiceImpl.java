@@ -3511,7 +3511,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifBlank(idcard, "请输入证件号码");
         SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
         condition.eq(TraineeInformation.InnerColumn.idCardNo, idcard);
-        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("99","50","60"));
+        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50","60"));
         List<TraineeInformation> informationList = findByCondition(condition);
         RuntimeCheck.ifEmpty(informationList, "当前证件号码没有在办业务");
         return ApiResponse.success(informationList);

@@ -1,16 +1,16 @@
 <template>
   <div>
     <Modal
-      width="1200"
-      title="修改学员科三缴费状态"
+      width="1300"
+      title="补登科三缴费"
       v-model="modal"
       :closable="false"
       :mask-closable="false"
     >
       <div   >
         <Row>
-          <Col span="20">
-            <Input v-model="idCardNo" placeholder="请输入学员身份证号码" @on-enter="findByIdCard"></Input>
+          <Col span="5">
+            <Input v-model="idCardNo" placeholder="请输入学员身份证号码" @on-enter="findByIdCard" @on-change="findByIdCard"></Input>
           </Col>
           <Col span="4" style="padding-left: 5px">
             <Button icon="ios-search" type="primary" @click="findByIdCard"></Button>
@@ -45,7 +45,7 @@
           {title: '姓名', key: 'name', align: 'center', width: 100},
           {title: '证件号码', width: 180, key: 'idCardNo', align: 'center'},
           {
-            title: '报名时间', width: 180, key: 'registrationTime', align: 'center',
+            title: '报名时间', width: 150, key: 'registrationTime', align: 'center',
             render: (h, params) => {
               return h('div',
                 params.row.registrationTime.substring(0,10)
@@ -53,14 +53,14 @@
             }
           },
           {
-            title: '报名点', width: 120, key: 'jgmc', align: 'center',
+            title: '报名点', width: 100, key: 'jgmc', align: 'center',
             render: (h, params) => {
               let jgmcArray = params.row.jgmc.split("/");
               let res = "";
               if (jgmcArray.length == 2 || jgmcArray.length == 1) {
-                return h('div', params.row.jgmc);
+                return h('div', jgmcArray[0]);
               } else if (jgmcArray.length == 3) {
-                return h('div', jgmcArray[1] + ("/" + jgmcArray[2]))
+                return h('div', jgmcArray[1]);
               }
             }
           },
@@ -71,7 +71,7 @@
             key: 'glyxm'
           },
           {
-            title: '车型', width: 100, key: 'carType', align: 'center',
+            title: '车型', width: 80, key: 'carType', align: 'center',
             render: (h, p) => {
               let carType = p.row.carType;
               let color = 'volcano';
@@ -140,9 +140,31 @@
             }
           },
           {
-            title:'缴费',
+            title: '科三缴费状态',
+            align: 'center',
+            render: (h,p) => {
+              let content = '-';
+              let color = 'orange';
+              if(p.row.thirdSubPaymentTime){
+                content = '已缴';
+                color = 'green';
+              }else{
+                content = '未缴';
+              }
+              return h('Tag',{
+                props:{
+                  color: color
+                }
+              }, content)
+            }
+          },
+          {
+            title:'操作',
             align:'center',
             render:  (h,p) => {
+              if(p.row.thirdSubPaymentTime){
+                return  h('div','-');
+              }
               return h('Button',{
                 props: {
                   icon: 'ios-create',
@@ -173,7 +195,8 @@
           if(res.code == 200){
             this.data  = res.result;
           }else{
-            this.$Message.error(res.message);
+            // this.$Message.error(res.message);
+            this.data = [];
           }
         })
       }

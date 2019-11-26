@@ -20,7 +20,7 @@
            @click.native="kmCheck(index,item)"
            v-for="(item,index) in [{val:'科目一',key:'10'},{val:'科目二',key:'20'},{val:'科目三',key:'30'}]">{{item.val}}
       </Tag>
-      <Tooltip content="科三缴费" placement="top">
+      <Tooltip content="科三补登" placement="top">
       <Button icon="ios-construct" type="primary" @click="saveCharge"></Button>
       </Tooltip>
     </div>

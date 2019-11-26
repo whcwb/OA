@@ -2464,6 +2464,15 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         ChargeManagement chargeManagement = new ChargeManagement();
         chargeManagement.setTraineeId(id);
         chargeManagementService.remove(chargeManagement);
+        // 将学员的所有的异常信息修改为已处理
+        SysYh currentUser = getCurrentUser();
+        List<BizException> exceptions = exceptionService.findEq(BizException.InnerColumn.sfzmhm, information.getIdCardNo());
+        exceptions.forEach(e -> {
+            e.setZt("10");
+            e.setGxsj(DateUtils.getNowTime());
+            e.setGxr(currentUser.getZh() + "-" + currentUser.getXm());
+            exceptionService.update(e);
+        });
         traineeStatusService.saveEntity(information, "删除学员信息", "00", "删除学员信息");
         return ApiResponse.success();
     }
@@ -3261,7 +3270,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 if (StringUtils.equals(result, "00")) {
                     information.setForthSub("20");
                     information.setStatus("50");
-                }else{
+                } else {
                     information.setForthSub("10");
                 }
                 // 科目四成绩确认 清理异常
@@ -3315,7 +3324,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             }
         }
         update(information);
-        traineeStatusService.saveEntity(information,kmMap.get(kskm) + "成绩手动确认","00", "成绩确认");
+        traineeStatusService.saveEntity(information, kmMap.get(kskm) + "成绩手动确认", "00", "成绩确认");
         return ApiResponse.success();
     }
 
@@ -3495,6 +3504,53 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         ApiResponse<String> res = new ApiResponse<>();
         res.setPage(info);
         return res;
+    }
+
+    @Override
+    public ApiResponse<List<TraineeInformation>> getByIdCard(String idcard) {
+        RuntimeCheck.ifBlank(idcard, "请输入证件号码");
+        SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+        condition.eq(TraineeInformation.InnerColumn.idCardNo, idcard);
+        condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("99","50","60"));
+        List<TraineeInformation> informationList = findByCondition(condition);
+        RuntimeCheck.ifEmpty(informationList, "当前证件号码没有在办业务");
+        return ApiResponse.success(informationList);
+    }
+
+    @Override
+    public ApiResponse<String> saveChargeK3(String id, String amount,String remark) {
+        RuntimeCheck.ifBlank(id, "请选择学员");
+        RuntimeCheck.ifBlank(amount, "请输入金额");
+        try {
+            double v = Double.parseDouble(amount);
+            RuntimeCheck.ifTrue(v <0 , "金额不能小于0");
+        }catch (Exception ignored){
+            RuntimeCheck.ifTrue(true, "金额格式不正确");
+        }
+        SysYh currentUser = getCurrentUser();
+        TraineeInformation information = findById(id);
+        String time = information.getThirdSubPaymentTime();
+        RuntimeCheck.ifTrue(StringUtils.isNotBlank(time), "学员已于 " + time  + " 缴纳了科目三初考费");
+        information.setThirdSubPaymentTime(DateUtils.getNowTime());
+        update(information);
+        ChargeManagement charge = new ChargeManagement();
+        charge.setChargeTime(DateUtils.getNowTime());
+        charge.setChargeFee(Integer.parseInt(amount));
+        charge.setTraineeSource("00"); // 本校
+        charge.setTraineeName(information.getName()); // 学员姓名
+        charge.setTraineeId(information.getId()); // 学员id
+        charge.setReceiver(currentUser.getZh() + "-" + currentUser.getXm()); // 缴费人
+        charge.setInOutType("10"); // 支出
+        charge.setIdCardNo(information.getIdCardNo());
+        charge.setChargeType("10"); // 在线支付
+        charge.setChargeSource(information.getJgmc());  // 报名点
+        charge.setChargeCode(FeeType.THIRD_SUB);
+        charge.setId(genId());
+        charge.setCjsj(DateUtils.getNowTime());
+        charge.setRemark(remark);
+        charge.setCjr(currentUser.getZh() + "-" + currentUser.getXm());
+        chargeManagementService.save(charge);
+        return ApiResponse.success();
     }
 
 

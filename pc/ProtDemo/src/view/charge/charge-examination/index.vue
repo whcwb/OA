@@ -20,6 +20,9 @@
            @click.native="kmCheck(index,item)"
            v-for="(item,index) in [{val:'科目一',key:'10'},{val:'科目二',key:'20'},{val:'科目三',key:'30'}]">{{item.val}}
       </Tag>
+      <Tooltip content="科三缴费" placement="top">
+      <Button icon="ios-construct" type="primary" @click="saveCharge"></Button>
+      </Tooltip>
     </div>
     <div class="box_col_100" v-if="activeName=='1'" style="padding-top: 8px">
       <Row :gutter="10" style="margin-bottom: 8px">
@@ -123,21 +126,6 @@
                       :clearable="false"
                       type="date" placeholder="科目一缴费时间"
                       @on-change="getPagerList1"></DatePicker>
-          <!--<div v-if="TagDot==0">-->
-          <!--<DatePicker v-model="param1.firSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
-          <!--type="date" placeholder="科目一缴费时间"-->
-          <!--@on-change="getPagerList1"></DatePicker>-->
-          <!--</div>-->
-          <!--<div v-else-if="TagDot==1">-->
-          <!--<DatePicker v-model="param1.secSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
-          <!--type="date" placeholder="科目二缴费时间"-->
-          <!--@on-change="getPagerList1"></DatePicker>-->
-          <!--</div>-->
-          <!--<div v-else-if="TagDot==2">-->
-          <!--<DatePicker v-model="param1.thirdSubPaymentTimeLike" split-panels format="yyyy-MM-dd"-->
-          <!--type="date" placeholder="科目三缴费时间"-->
-          <!--@on-change="getPagerList1"></DatePicker>-->
-          <!--</div>-->
         </Col>
         <Col span="3" :lg="3" :md="4">
           <div style="width: 100%">
@@ -210,10 +198,12 @@
 
 <script>
   import http from '@/axios/index';
-
+import charge from './comp/charge'
   export default {
     name: "index",
-    methods: {},
+    components:{
+      charge
+    },
     watch: {
       param1Time: function (n, o) {
         // console.log(n);
@@ -1087,14 +1077,6 @@
       getBmdList() {
         this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
           if (res.code === 200) {
-            /*function tree(arr) {
-              if (arr[0].value.length == 6) {
-                return arr[0].children
-              } else if (arr[0].value.length == 3) {
-                return arr[0].children[0].children
-              }
-            }
-            this.CascaderList = tree(res.result)*/
             if (res.result[0].value.length == 3) {
               this.CascaderList = res.result[0].children[0].children;
             } else if (res.result[0].value.length == 6) {
@@ -1159,7 +1141,6 @@
       },
       getPagerList1() {
         var v = this
-
         if (this.TagDot == 0) {
           this.param1.firSubPaymentTimeLike = this.AF.trimDate(this.param1Time);
           this.param1.secSubPaymentTimeLike = '';
@@ -1173,34 +1154,6 @@
           this.param1.secSubPaymentTimeLike = '';
           this.param1.thirdSubPaymentTimeLike = this.AF.trimDate(this.param1Time);
         }
-
-        // if (this.TagDot == 0 && this.param1.firSubPaymentTimeLike != '') {
-        //   this.param1.firSubPaymentTimeLike = this.AF.trimDate(this.param1Time);
-        //   this.param1.secSubPaymentTimeLike = '';
-        //   this.param1.thirdSubPaymentTimeLike ='';
-        // } else if (this.TagDot == 1 && this.param1.secSubPaymentTimeLike != '') {
-        //   this.param1.firSubPaymentTimeLike = '';
-        //   this.param1.secSubPaymentTimeLike = this.AF.trimDate(this.param1Time);
-        //   this.param1.thirdSubPaymentTimeLike ='';
-        // } else if (this.TagDot == 2 && this.param1.thirdSubPaymentTimeLike != '') {
-        //   this.param1.firSubPaymentTimeLike = '';
-        //   this.param1.secSubPaymentTimeLike = '';
-        //   this.param1.thirdSubPaymentTimeLike = this.AF.trimDate(this.param1Time);
-        // } else {
-        //   if(this.TagDot == 0){
-        //     this.param1.firSubPaymentTimeLike = this.AF.trimDate();
-        //     this.param1.secSubPaymentTimeLike = '';
-        //     this.param1.thirdSubPaymentTimeLike ='';
-        //   }else if(this.TagDot == 1){
-        //     this.param1.firSubPaymentTimeLike = '';
-        //     this.param1.secSubPaymentTimeLike = this.AF.trimDate();
-        //     this.param1.thirdSubPaymentTimeLike ='';
-        //   }else if(this.TagDot == 2){
-        //     this.param1.firSubPaymentTimeLike = '';
-        //     this.param1.secSubPaymentTimeLike = '';
-        //     this.param1.thirdSubPaymentTimeLike = this.AF.trimDate();
-        //   }
-        // }
         this.$http.post(this.apis.CMONEY, this.param1).then((res) => {
           v.tableData1 = res.page.list
           v.total1 = res.page.total
@@ -1273,6 +1226,9 @@
           }
           this.kmMoney = res.page.list[0].amount
         })
+      },
+      saveCharge(){
+          this.compName = 'charge'
       }
     }
   }

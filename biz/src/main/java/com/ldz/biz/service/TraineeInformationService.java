@@ -146,4 +146,8 @@ public interface TraineeInformationService extends BaseService<TraineeInformatio
     ApiResponse<TraineeInformation> getById(String id);
 
     ApiResponse<String> getTestStudentsError(int pageSize, int pageNum, String kskm);
+
+    ApiResponse<List<TraineeInformation>> getByIdCard(String idcard);
+
+    ApiResponse<String> saveChargeK3(String id, String amount,String remark);
 }

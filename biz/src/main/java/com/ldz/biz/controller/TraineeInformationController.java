@@ -503,6 +503,15 @@ public class TraineeInformationController extends BaseController<TraineeInformat
         return service.getById(id);
     }
 
+    @PostMapping("/getByIdCard")
+    public ApiResponse<List<TraineeInformation>> getByIdCardNo(String idcard){
+        return service.getByIdCard(idcard);
+    }
+
+    @PostMapping("/saveChargeK3")
+    public ApiResponse<String> saveChargeK3(String id,String amount,String remark){
+        return service.saveChargeK3(id,amount, remark);
+    }
 
 
 

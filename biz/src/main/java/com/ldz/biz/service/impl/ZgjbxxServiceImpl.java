@@ -157,8 +157,6 @@ public class ZgjbxxServiceImpl extends BaseServiceImpl<Zgjbxx, String> implement
         condition.eq(Zgjbxx.InnerColumn.gzgw,"0005");
         condition.eq(Zgjbxx.InnerColumn.aqyQdzt,"10");
         List<Zgjbxx> zgjbxxes = findByCondition(condition);
-
-
         return ApiResponse.success(zgjbxxes);
     }
 

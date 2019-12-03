@@ -1319,8 +1319,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             // 科目二缴费
             chargeCode = FeeType.SEC_SUB;
 
-            if (StringUtils.isNotBlank(information.getThirdSubPaymentTime())) {
-                return ApiResponse.fail("该学员已于" + information.getThirdSubPaymentTime() + "交过考试费");
+            if (StringUtils.isNotBlank(information.getSecSubPaymentTime())) {
+                return ApiResponse.fail("该学员已于" + information.getSecSubPaymentTime() + "交过考试费");
             }
             if (!StringUtils.equals(information.getSecSub(), "30") && !StringUtils.equals(information.getSecSub(), "40")) {
                 information.setSecSub("20"); // 已缴费

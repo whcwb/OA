@@ -1288,7 +1288,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             List<TraineeTestInfo> orgs = findByCondition(condition);
             if (orgs != null && orgs.size() > 0) {
                 if (StringUtils.equals(kmCode, "10")) {//科目一
-                    information.setFirSubTestTime(map.get(6));//科目一约考时间
+                    information.setFirSubTestTime(appendZero(map.get(6)));//科目一约考时间
                     Integer firSubTestNum = information.getFirSubTestNum();
                     if (firSubTestNum == null) {
                         firSubTestNum = 0;
@@ -1299,8 +1299,11 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     trainStatus = information.getFirSubTrainStatus();//科目一培训状态
                 } else if (StringUtils.equals(kmCode, "20")) { //科目二
                     information.setStatus("20");
-                    information.setSecSub("10");//科目二状态
-                    information.setSecSubTestTime(map.get(6));//科目二约考时间
+                    //科目二状态
+                    information.setSecSub("10");
+                    //科目二约考时间
+                    information.setSecSubTestTime(appendZero(map.get(6)));
+
                     Integer subTestNum = information.getSecSubTestNum();
                     if (subTestNum == null) {
                         subTestNum = 0;
@@ -1312,7 +1315,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 } else if (StringUtils.equals(kmCode, "30")) {//科目三
                     information.setStatus("30");
                     information.setThirdSub("10");//科目三状态
-                    information.setThirdSubTestTime(map.get(6));//科目三约考时间
+                    information.setThirdSubTestTime(appendZero(map.get(6)));//科目三约考时间
                     Integer subTestNum = information.getThirdSubTestNum();
                     if (subTestNum == null) {
                         subTestNum = 0;
@@ -1335,7 +1338,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             addEntity.setIdCardNo(information.getIdCardNo());//身份证号码
             addEntity.setSubject(map.get(3));//科目
             addEntity.setTestPlace(map.get(7) + "-" + map.get(8));//考试场地
-            addEntity.setTestTime(map.get(6));//约考时间
+            addEntity.setTestTime(appendZero(map.get(6)));//约考时间
             addEntity.setOperateTime(DateUtils.getNowTime());//操作时间
             addEntity.setRemark("excel约考信息批量导入");//备注
             addEntity.setOperator(sysUser.getYhid());//操作人
@@ -1456,7 +1459,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
             testInfo.setIdCardNo(map.get(2));//身份证号码
             testInfo.setSubject(map.get(3));//科目
             testInfo.setTestPlace(map.get(7) + "-" + map.get(8));//考试场地
-            testInfo.setTestTime(map.get(6));//约考时间
+            testInfo.setTestTime(appendZero(map.get(6)));//约考时间
             testInfo.setOperateTime(DateUtils.getNowTime()); //操作时间
             testInfo.setRemark("excel约考信息批量导入"); //备注
             testInfo.setOperator(sysUser.getZh() + "-" + sysUser.getXm()); //操作人
@@ -1735,6 +1738,5 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
 
         return split[0] + "-" + split[1] + "-" + split[2];
     }
-
 
 }

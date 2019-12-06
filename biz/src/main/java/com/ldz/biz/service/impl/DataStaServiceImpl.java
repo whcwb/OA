@@ -557,8 +557,6 @@ public class DataStaServiceImpl implements DataStaService {
         SimpleCondition zdcondition = new SimpleCondition(SysZdxm.class);
         zdcondition.eq(SysZdxm.InnerColumn.zdlmdm, "ZDCLK0040");
 
-
-
         SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
         condition.gte(TraineeInformation.InnerColumn.confirmTime, startTime);
         condition.lte(TraineeInformation.InnerColumn.confirmTime, endTime);

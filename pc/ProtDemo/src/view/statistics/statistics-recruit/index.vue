@@ -1,11 +1,19 @@
 <template>
           <div class="box_col">
-            <pager-tit title="年度招生统计"></pager-tit>
+            <Menu mode="horizontal" theme="light" :active-name="activeName" @on-select="changeMenu">
+              <MenuItem name="1">
+                按机构
+              </MenuItem>
+              <MenuItem name="2">
+                按车型
+              </MenuItem>
+            </Menu>
+<!--            <pager-tit title="年度招生统计"></pager-tit>-->
             <!--<div style="height: 400px">-->
               <!--<awb></awb>-->
             <!--</div>-->
-              <div class="box_col_100">
-                <Row style="margin-bottom: 10px">
+              <div class="box_col_100" v-if="activeName=='1'">
+                <Row style="margin-bottom: 10px;margin-top: 10px">
                   <!--<Col span="4">-->
                   <!--<RadioGroup v-model="button1" type="button">-->
                     <!--<Radio label="A1"></Radio>-->
@@ -15,7 +23,7 @@
                     <!--<Radio label="C1C2"></Radio>-->
                   <!--</RadioGroup>-->
                   <!--</Col>-->
-                  <Col span="5" style="margin-right: 10px">
+                  <Col span="4" style="margin-right: 10px">
                     <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
                     <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 100%"></DatePicker>
                   </Col>
@@ -25,7 +33,6 @@
                     <!--</Button>-->
                   <!--</Col>-->
                   <Col span="3" style="margin-right: 20px">
-
                     <Select v-model="param.bmd" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
                       <Option v-for="item in dictList.bmd.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
                     </Select>
@@ -58,6 +65,32 @@
                   <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" :columns="columns11" :data="data10" border stripe no-data-text="当前日期暂无数据，请选择日期"></Table>
                 </row>
                </div>
+            <div class="box_col_100" v-if="activeName=='2'">
+              <Row style="margin-bottom: 10px;margin-top: 10px">
+                <Col span="4" style="margin-right: 10px">
+                  <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
+                  <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 100%"></DatePicker>
+                </Col>
+                <Col span="3" style="margin-right: 20px">
+                  <Select v-model="param.carType" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
+                    <Option v-for="item in dictList.carType.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                  </Select>
+                </Col>
+                <Col span="1" style="margin-right: 10px">
+                  <Button type="primary" @click="getNf(year)">
+                    <Icon type="md-search"></Icon>
+                  </Button>
+                </Col>
+                <Col span="2">
+                  <Tooltip content="导出Excel" placement="right-start">
+                    <Button type="primary" icon="md-cloud-download" @click="excel1"></Button>
+                  </Tooltip>
+                </Col>
+              </Row>
+              <row>
+                <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" :columns="columns12" :data="data11" border stripe no-data-text="当前日期暂无数据，请选择日期"></Table>
+              </row>
+            </div>
           </div>
 </template>
 
@@ -72,18 +105,27 @@
       },
           data() {
             return {
+              activeName:'1',
               loading:true,
               year:'',
               param:{
                 startTime: this.AF.getYear()+'-01-01',
                 endTime: this.AF.getYear()+'-12-31',
                 jgdm:'',
-                bmd:[]
+                bmd:[],
+                carType:''
               },
               dictList: {
                 carType: {
                   code: 'ZDCLK0040',
-                  data: []
+                  data: [
+                    {label:'C1',value:'C1'},
+                    {label:'C2',value:'C2'},
+                    {label:'B2',value:'B2'},
+                    {label:'A1',value:'A1'},
+                    {label:'A2',value:'A2'},
+                    {label:'A3',value:'A3'},
+                  ]
                 },
                 bmd: {
                   code: '',
@@ -197,12 +239,109 @@
               ],
               data10: [
                 ],
+              columns12: [
+                {
+                  title: '车型',
+                  key: 'name',
+                  align: 'center',
+                  width: 120,
+                  fixed: 'left',
+                },
+                {
+                  renderHeader:(h,p)=>{
+                    return h('div',this.param.startTime+" —— "+this.param.endTime)
+                  },
+                  //title: this.shijian,
+                  align: 'center',
+                  children: [
+                    {
+                      title: '1月',
+                      key:'one',
+                      align: 'center',
+                    },
+                    {
+                      title: '2月',
+                      key: 'two',
+                      align: 'center',
+                    },
+                    {
+                      title: '3月',
+                      key: 'three',
+                      align: 'center',
+                    },
+                    {
+                      title: '4月',
+                      key: 'four',
+                      align: 'center',
+                    },
+                    {
+                      title: '5月',
+                      key: 'five',
+                      align: 'center',
+                    },
+                    {
+                      title: '6月',
+                      key: 'six',
+                      align: 'center',
+                    },
+                    {
+                      title: '7月',
+                      key: 'seven',
+                      align: 'center',
+                    },
+                    {
+                      title: '8月',
+                      key: 'eight',
+                      align: 'center',
+                    },
+                    {
+                      title: '9月',
+                      key: 'nine',
+                      align: 'center',
+                    },
+                    {
+                      title: '10月',
+                      key: 'ten',
+                      align: 'center',
+                    },
+                    {
+                      title: '11月',
+                      key: 'eve',
+                      align: 'center',
+                    },{
+                      title: '12月',
+                      key: 'twn',
+                      align: 'center',
+                    },
+                  ]
+                },
+                {
+                  title: '合计',
+                  key: 'hj1',
+                  align: 'center',
+                  sortable: true
+                },
+                {
+                  title: '退学人数',
+                  key: 'tx',
+                  align: 'center',
+                },
+                // {
+                //   title: '1-12合计',
+                //   key: 'hj3',
+                //   align: 'center',
+                //   sortable: true
+                // },
+              ],
+              data11: [
+              ],
               // zsqk:{},
             }
           },
       created(){
          this.getPagerList();
           this.getBmdList();
+          // this.getCartype()
       },
       mounted(){
         // const data = [];
@@ -219,6 +358,22 @@
         // this.data10 = data;
       },
       methods:{
+        changeMenu(name){
+          if (name == '1'){
+              this.activeName = '1'
+              this.getPagerList()
+          }else if (name == '2'){
+            this.activeName = '2'
+            this.getCartype()
+          }
+        },
+        excel1() {
+          if (this.param.startTime == '-01-01') {
+            this.param.startTime = this.AF.getYear() + '-01-01';
+            this.param.endTime = this.AF.getYear() + '-12-31';
+          }
+          window.open(http.url + `/pub/exportAllInByCar?startTime=${this.param.startTime}&endTime=${this.param.endTime}&carType=${this.param.carType}`, '_blank');
+        },
         excel() {
           if (this.param.startTime == '-01-01') {
             this.param.startTime = this.AF.getYear() + '-01-01';
@@ -262,17 +417,63 @@
         getTJ(st){
           this.param.jgdm = st;
           this.data10 = [];
-          this.getPagerList()
+          this.data11 = [];
+          if (this.activeName == '1'){
+            this.getPagerList()
+          }else {
+            this.getCartype()
+          }
+
         },
         getNf(gsh,date){
           // console.log(gsh);
           // console.log(date);
-          this.year=gsh
+          this.year = gsh;
           this.param.startTime = gsh+'-01-01';
           this.param.endTime = gsh+'-12-31';
           this.data10 = [];
-          this.getPagerList();
+          this.data11 = [];
+          if (this.activeName == '1'){
+            this.getPagerList()
+          }else {
+            this.getCartype()
+          }
         },
+          getCartype(){
+            if(this.param.startTime == '-01-01'){
+              this.param.startTime = this.AF.getYear()+'-01-01';
+              this.param.endTime = this.AF.getYear()+'-12-31';
+            }
+            this.data11 = [];
+            this.$http.post('/api/data/getAllInByCar',{startTime:this.param.startTime,endTime: this.param.endTime,carType:this.param.carType}).then((res)=>{
+              if (res.code == '200'){
+                  let a = res.result
+                  a.forEach((item,index)=>{
+                    var ps={}
+                    var c = item.split(',')
+                    ps.name = c[0];
+                    ps.one = c[1];
+                    ps.two = c[2];
+                    ps.three = c[3];
+                    ps.four = c[4];
+                    ps.five = c[5];
+                    ps.six = c[6];
+                    ps.seven = c[7];
+                    ps.eight = c[8];
+                    ps.nine = c[9];
+                    ps.ten = c[10];
+                    ps.eve = c[11];
+                    ps.twn = c[12];
+                    ps.hj1 = c[13];
+                    ps.tx = c[14];
+                    this.data11.push(ps)
+                  })
+
+              }else {
+                this.$Message.error(res.message)
+              }
+            })
+          },
           getPagerList(){
             // this.handleSpinCustom();
             // // console.log(this.year.getFullYear());
@@ -286,6 +487,7 @@
             this.$http.post('/api/data/getAllIn',{startTime:this.param.startTime,endTime: this.param.endTime,jgdm:this.param.jgdm}).then( (res)=>{
               // console.log(res);
              if(res.code == 200){
+               this.loading=false
                var zshj = {};
                res.result.forEach((item,index)=>{
                       var ps = {}

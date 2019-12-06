@@ -5,14 +5,9 @@ import com.ldz.biz.model.ChargeManagement;
 import com.ldz.biz.model.StudentAllModel;
 import com.ldz.biz.service.DataStaService;
 import com.ldz.util.bean.ApiResponse;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationPid;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -71,8 +66,17 @@ public class DataStatisticsController {
     @PostMapping("/getAllIn")
     public ApiResponse<List<StudentAllModel>> getAllIn(String startTime, String endTime) throws ParseException {
         return  service.getAllIn(startTime, endTime);
-
     }
+
+    /**
+     * 根据车型统计的每个队的人数
+     * @return
+     */
+    @PostMapping("/getAllInByCar")
+    public ApiResponse<List<String>> getAllInByCar(String startTime, String endTime, String carType) throws ParseException {
+        return service.getAllInByCar(startTime,endTime,carType);
+    }
+
 
     /**
      * 根据收费时间来统计某个时间段 收费的学员
@@ -81,8 +85,6 @@ public class DataStatisticsController {
     public ApiResponse<List<StudentAllModel>> getAllPayment(String startTime, String endTime, @RequestParam(required = false) String jgdm, @RequestParam(required = false)String[] lx){
         return service.getAllPayment(startTime, endTime, jgdm, lx);
     }
-
-
 
     /**
      *  学员合格率

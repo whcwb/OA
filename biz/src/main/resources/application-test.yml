@@ -16,5 +16,5 @@ spring:
 #    password: 'jxoa-18!**;'
 
 server:
-  port: 8082
+  port: 10010
 staticPath:  D:/static/common/

@@ -7,7 +7,6 @@ import com.ldz.util.bean.ApiResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +40,20 @@ public interface DataStaService {
     ApiResponse<List<StudentAllModel>> getStudentCount(String startTime, String endTime, String jgdm, String[] lx) throws ParseException;
 
     /**
-     * 统计每个队的学费
+     * 统计每个队的学员人数
      * @param startTime
      * @param endTime
      * @return
      */
     ApiResponse<List<StudentAllModel>> getAllIn(String startTime, String endTime) throws ParseException;
+
+    /**
+     * 统计每个车型的学员人数
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    ApiResponse<List<String>> getAllInByCar(String startTime, String endTime, String carType) throws ParseException;
 
     ApiResponse<List<StudentAllModel>> getAllPayment(String startTime, String endTime, String jgdm, String... lx);
 
@@ -55,6 +62,8 @@ public interface DataStaService {
     ApiResponse<String> statisCharge(int pageNum, int pageSize, String start, String end, String idCard, String name, String jgdm);
 
     void exportStatisCharge(String start, String end, String idCard, String name, String jgdm, HttpServletRequest request, HttpServletResponse response) throws IOException;
+
+
 
 
 

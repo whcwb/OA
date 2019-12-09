@@ -1587,6 +1587,64 @@ public class BizMainController {
     }
 
     /**
+     * 年度招生 excel 导出
+     */
+    @GetMapping("/exportAllInByCar")
+    public  void exportAllIn(String startTime, String endTime, HttpServletRequest request, HttpServletResponse response, String carType) throws ParseException, IOException {
+        ApiResponse<List<String>> allIn = staService.getAllInByCar(startTime, endTime,carType);
+        List<Map<Integer, String>> dataList = new ArrayList<>();
+        Map<Integer,String> titleMap = new HashMap<>();
+        titleMap.put(0, "车型");
+        titleMap.put(1, "一月");
+        titleMap.put(2, "二月");
+        titleMap.put(3, "三月");
+        titleMap.put(4, "四月");
+        titleMap.put(5, "五月");
+        titleMap.put(6, "六月");
+        titleMap.put(7, "七月");
+        titleMap.put(8, "八月");
+        titleMap.put(9, "九月");
+        titleMap.put(10, "十月");
+        titleMap.put(11, "十一月");
+        titleMap.put(12, "十二月");
+        titleMap.put(13, "合计");
+        titleMap.put(14,"退学人数");
+        dataList.add(titleMap);
+
+        List<String> result = allIn.getResult();
+        if(CollectionUtils.isNotEmpty(result)){
+            int total = 0;
+            for (String s : result) {
+                Map<Integer,String> dataMap = new HashMap<>();
+                String[] split = s.split(",");
+                dataMap.put(0,split[0]);
+                dataMap.put(1,split[1]);
+                dataMap.put(2,split[2]);
+                dataMap.put(3,split[3]);
+                dataMap.put(4,split[4]);
+                dataMap.put(5,split[5]);
+                dataMap.put(6,split[6]);
+                dataMap.put(7,split[7]);
+                dataMap.put(8,split[8]);
+                dataMap.put(9,split[9]);
+                dataMap.put(10,split[10]);
+                dataMap.put(11,split[11]);
+                dataMap.put(12,split[12]);
+                dataMap.put(13,split[13]);
+                dataMap.put(14,split[14]);
+                dataList.add(dataMap);
+            }
+        }
+        response.setContentType("application/msexcel");
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("pragma", "no-cache");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String((startTime.substring(0,4) + "年度招生").getBytes(StandardCharsets.UTF_8), "ISO8859-1") + ".xls");
+        OutputStream out = response.getOutputStream();
+        ExcelUtil.createSheet(out, "年度招生", dataList);
+    }
+
+
+    /**
      * 今日招生统计 Excel 导出
      */
     @GetMapping("/exportStudentCount")

@@ -13,7 +13,9 @@ import com.ldz.biz.service.DataStaService;
 import com.ldz.biz.service.TraineeInformationService;
 import com.ldz.biz.service.TraineeTestInfoService;
 import com.ldz.sys.model.SysJg;
+import com.ldz.sys.model.SysZdxm;
 import com.ldz.sys.service.JgService;
+import com.ldz.sys.service.ZdxmService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.DateUtils;
@@ -28,7 +30,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
@@ -50,6 +51,8 @@ public class DataStaServiceImpl implements DataStaService {
     private ChargeManagementMapper chargeManagementMapper;
     @Autowired
     private TraineeTestInfoService testInfoService;
+    @Autowired
+    private ZdxmService zdxmService;
 
     /**
      * 获取总校分校报名费统计
@@ -533,6 +536,91 @@ public class DataStaServiceImpl implements DataStaService {
         }
 
         return ApiResponse.success(models);
+    }
+
+    @Override
+    public ApiResponse<List<String>> getAllInByCar(String startTime, String endTime, String carType) throws ParseException {
+        List<String> map = new ArrayList<>();
+
+        if (StringUtils.isBlank(startTime)) {
+            startTime = DateUtils.getDateStr(new Date(), "yyyy") + "-01-01 00:00:00";
+        } else {
+            startTime += " 00:00:00";
+        }
+        if (StringUtils.isBlank(endTime)) {
+            endTime = DateUtils.getDateStr(new Date(), "yyyy") + "-12-31 23:59:59";
+        } else {
+            endTime += " 23:59:59";
+        }
+
+        List<String> monthBetween = DateUtils.getMonthBetween(startTime.substring(0, 4) + "-01", endTime.substring(0, 4) + "-12");
+        SimpleCondition zdcondition = new SimpleCondition(SysZdxm.class);
+        zdcondition.eq(SysZdxm.InnerColumn.zdlmdm, "ZDCLK0040");
+
+        SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+        condition.gte(TraineeInformation.InnerColumn.confirmTime, startTime);
+        condition.lte(TraineeInformation.InnerColumn.confirmTime, endTime);
+        if(StringUtils.isNotBlank(carType)){
+            condition.eq(TraineeInformation.InnerColumn.carType, carType);
+            zdcondition.eq(SysZdxm.InnerColumn.zdmc, carType);
+        }
+        List<SysZdxm> zdxms = zdxmService.findByCondition(zdcondition);
+        List<String> cars = zdxms.stream().map(SysZdxm::getZdmc).sorted(String::compareTo).collect(Collectors.toList());
+        List<TraineeInformation> informations = informationService.findByCondition(condition);
+        Map<String, List<TraineeInformation>> listMap = informations.stream().collect(Collectors.groupingBy(TraineeInformation::getCarType));
+        if(listMap.isEmpty()){
+            for (String car : cars) {
+                Map<String,Object> mm = new HashMap<>();
+                String data = car;
+                for (String s : monthBetween) {
+                    data += ","   + 0;
+                }
+                map.add(data);
+            }
+            return  ApiResponse.success(map);
+        }
+
+        for (String car : cars) {
+            List<TraineeInformation> informationList = listMap.get(car);
+            Map<String, List<TraineeInformation>> collect = new HashMap<>();
+            long count = 0;
+            if(CollectionUtils.isNotEmpty(informationList)){
+                collect = informationList.stream().collect(Collectors.groupingBy(t -> t.getConfirmTime().substring(0, 7)));
+            }
+            String data = car;
+            int total = 0;
+            for (String s : monthBetween) {
+                List<TraineeInformation> traineeInformations = collect.get(s);
+                if(CollectionUtils.isEmpty(traineeInformations)){
+                    data += ","   + 0;
+                }else{
+                    data += "," + traineeInformations.size();
+                    total += traineeInformations.size();
+                }
+            }
+            if(CollectionUtils.isNotEmpty(informationList)){
+              count =  informationList.stream().filter(traineeInformation -> StringUtils.equals(traineeInformation.getStatus(), "60")).count();
+            }
+            data += "," + total + "," + count;
+            map.add(data);
+        }
+        Map<String, List<TraineeInformation>> collect = informations.stream().collect(Collectors.groupingBy(t -> t.getConfirmTime().substring(0, 7)));
+        String data = "合计";
+        int total = 0;
+        for (String s : monthBetween) {
+            List<TraineeInformation> traineeInformations = collect.get(s);
+            if(CollectionUtils.isEmpty(traineeInformations)){
+                data += ","   + 0;
+            }else{
+                data += "," + traineeInformations.size();
+                total += traineeInformations.size();
+            }
+        }
+        long count = informations.stream().filter(traineeInformation -> StringUtils.equals(traineeInformation.getStatus(), "60")).count();
+        data += "," + total + "," + count;
+        map.add(data);
+
+        return ApiResponse.success(map);
     }
 
     @Override

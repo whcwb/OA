@@ -1,96 +1,104 @@
 <template>
           <div class="box_col">
-            <Menu mode="horizontal" theme="light" :active-name="activeName" @on-select="changeMenu">
-              <MenuItem name="1">
-                按机构
-              </MenuItem>
-              <MenuItem name="2">
-                按车型
-              </MenuItem>
-            </Menu>
-<!--            <pager-tit title="年度招生统计"></pager-tit>-->
-            <!--<div style="height: 400px">-->
-              <!--<awb></awb>-->
-            <!--</div>-->
-              <div class="box_col_100" v-if="activeName=='1'">
-                <Row style="margin-bottom: 10px;margin-top: 10px">
-                  <!--<Col span="4">-->
-                  <!--<RadioGroup v-model="button1" type="button">-->
+            <Tabs :value="activeName" @on-click="changeMenu">
+              <TabPane label="按机构" name="1">
+                <div class="box_col_100">
+                  <Row style="margin-bottom: 10px;margin-top: 10px">
+                    <!--<Col span="4">-->
+                    <!--<RadioGroup v-model="button1" type="button">-->
                     <!--<Radio label="A1"></Radio>-->
                     <!--<Radio label="A2"></Radio>-->
                     <!--<Radio label="A3"></Radio>-->
                     <!--<Radio label="B2"></Radio>-->
                     <!--<Radio label="C1C2"></Radio>-->
-                  <!--</RadioGroup>-->
-                  <!--</Col>-->
-                  <Col span="4" style="margin-right: 10px">
-                    <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
-                    <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 100%"></DatePicker>
-                  </Col>
-                  <!--<Col span="2">-->
+                    <!--</RadioGroup>-->
+                    <!--</Col>-->
+                    <Col span="4" style="margin-right: 10px">
+                      <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
+                      <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 100%"></DatePicker>
+                    </Col>
+                    <!--<Col span="2">-->
                     <!--<Button type="primary" @click="getNf(year)">-->
-                      <!--<Icon type="md-search"></Icon>-->
+                    <!--<Icon type="md-search"></Icon>-->
                     <!--</Button>-->
-                  <!--</Col>-->
-                  <Col span="3" style="margin-right: 20px">
-                    <Select v-model="param.bmd" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
-                      <Option v-for="item in dictList.bmd.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                    </Select>
-                   <!-- <Form :label-width="10">
-                    <FormItem>
-                      <Cascader trigger="hover" v-model="param.bmd" @on-change="getTJ" @on-clear="getTJ"  :data="dictList.bmd.data" placeholder="报名点选择"
-                                filterable></Cascader>
-                    </FormItem>
-                    </Form>-->
-                  </Col>
-                  <Col span="1" style="margin-right: 10px">
-                    <Button type="primary" @click="getNf(year)">
-                      <Icon type="md-search"></Icon>
-                    </Button>
-                  </Col>
+                    <!--</Col>-->
+                    <Col span="3" style="margin-right: 20px">
+                      <Select v-model="param.bmd" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
+                        <Option v-for="item in dictList.bmd.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                      </Select>
+                      <!-- <Form :label-width="10">
+                       <FormItem>
+                         <Cascader trigger="hover" v-model="param.bmd" @on-change="getTJ" @on-clear="getTJ"  :data="dictList.bmd.data" placeholder="报名点选择"
+                                   filterable></Cascader>
+                       </FormItem>
+                       </Form>-->
+                    </Col>
+                    <Col span="1" style="margin-right: 10px">
+                      <Button type="primary" @click="getNf(year)">
+                        <Icon type="md-search"></Icon>
+                      </Button>
+                    </Col>
 
-                  <Col span="2">
-                    <Tooltip content="导出Excel" placement="right-start">
-                      <Button type="primary" icon="md-cloud-download" @click="excel"></Button>
-                    </Tooltip>
-                  </Col>
-                 <!-- <Col span="4" :lg="2" :md="0">
-                    <Button type="primary" @click="getPagerList()">
-                      <Icon type="md-search" ></Icon>
-                      &lt;!&ndash;查询&ndash;&gt;
-                    </Button>
-                  </Col>-->
-                </Row>
-                <row>
-                  <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" :columns="columns11" :data="data10" border stripe no-data-text="当前日期暂无数据，请选择日期"></Table>
-                </row>
-               </div>
-            <div class="box_col_100" v-if="activeName=='2'">
-              <Row style="margin-bottom: 10px;margin-top: 10px">
-                <Col span="4" style="margin-right: 10px">
-                  <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
-                  <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 100%"></DatePicker>
-                </Col>
-                <Col span="3" style="margin-right: 20px">
-                  <Select v-model="param.carType" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
-                    <Option v-for="item in dictList.carType.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                  </Select>
-                </Col>
-                <Col span="1" style="margin-right: 10px">
-                  <Button type="primary" @click="getNf(year)">
-                    <Icon type="md-search"></Icon>
-                  </Button>
-                </Col>
-                <Col span="2">
-                  <Tooltip content="导出Excel" placement="right-start">
-                    <Button type="primary" icon="md-cloud-download" @click="excel1"></Button>
-                  </Tooltip>
-                </Col>
-              </Row>
-              <row>
-                <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" :columns="columns12" :data="data11" border stripe no-data-text="当前日期暂无数据，请选择日期"></Table>
-              </row>
-            </div>
+                    <Col span="2">
+                      <Tooltip content="导出Excel" placement="right-start">
+                        <Button type="primary" icon="md-cloud-download" @click="excel"></Button>
+                      </Tooltip>
+                    </Col>
+                    <!-- <Col span="4" :lg="2" :md="0">
+                       <Button type="primary" @click="getPagerList()">
+                         <Icon type="md-search" ></Icon>
+                         &lt;!&ndash;查询&ndash;&gt;
+                       </Button>
+                     </Col>-->
+                  </Row>
+                  <row>
+                    <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" :columns="columns11" :data="data10" border stripe no-data-text="当前日期暂无数据，请选择日期"></Table>
+                  </row>
+                </div>
+              </TabPane>
+              <TabPane label="按车型" name="2">
+                <div class="box_col_100" >
+                  <Row style="margin-bottom: 10px;margin-top: 10px">
+                    <Col span="4" style="margin-right: 10px">
+                      <!--<DatePicker type="daterange" @on-change="getNf" confirm placement="bottom-end" placeholder="选择日期（默认当天）" style="width: 250px"></DatePicker>-->
+                      <DatePicker  type="year" split-panels @on-change="getNf"  placeholder="请选择年份（默认当前年份）" style="width: 100%"></DatePicker>
+                    </Col>
+                    <Col span="3" style="margin-right: 20px">
+                      <Select v-model="param.carType" clearable style="width:100%" @on-change="getTJ" @on-clear="getTJ">
+                        <Option v-for="item in dictList.carType.data" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                      </Select>
+                    </Col>
+                    <Col span="1" style="margin-right: 10px">
+                      <Button type="primary" @click="getNf(year)">
+                        <Icon type="md-search"></Icon>
+                      </Button>
+                    </Col>
+                    <Col span="2">
+                      <Tooltip content="导出Excel" placement="right-start">
+                        <Button type="primary" icon="md-cloud-download" @click="excel1"></Button>
+                      </Tooltip>
+                    </Col>
+                  </Row>
+                  <row>
+                    <Table size="small" :loading="loading" :height="AF.getPageHeight()-280" :columns="columns12" :data="data11" border stripe no-data-text="当前日期暂无数据，请选择日期"></Table>
+                  </row>
+                </div>
+              </TabPane>
+            </Tabs>
+<!--            <Menu mode="horizontal" theme="light" :active-name="activeName" @on-select="changeMenu">-->
+<!--              <MenuItem name="1">-->
+<!--                按机构-->
+<!--              </MenuItem>-->
+<!--              <MenuItem name="2">-->
+<!--                按车型-->
+<!--              </MenuItem>-->
+<!--            </Menu>-->
+<!--            <pager-tit title="年度招生统计"></pager-tit>-->
+            <!--<div style="height: 400px">-->
+              <!--<awb></awb>-->
+            <!--</div>-->
+
+
           </div>
 </template>
 

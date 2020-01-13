@@ -15,8 +15,11 @@ import com.ldz.sys.model.SysJg;
 import com.ldz.sys.model.SysYh;
 import com.ldz.sys.service.JgService;
 import com.ldz.util.bean.ApiResponse;
+import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.ExcelReader;
 import com.ldz.util.exception.RuntimeCheck;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -511,6 +514,33 @@ public class TraineeInformationController extends BaseController<TraineeInformat
     @PostMapping("/saveChargeK3")
     public ApiResponse<String> saveChargeK3(String id,String amount,String remark){
         return service.saveChargeK3(id,amount, remark);
+    }
+
+    @PostMapping("/importResult")
+    public ApiResponse<String> importResult(MultipartFile file, HttpServletRequest request, HttpServletResponse response,String kskm) throws IOException {
+        RuntimeCheck.ifNull(file, "请上传文件");
+        RuntimeCheck.ifBlank(kskm, "考试科目不能为空");
+        String filename = file.getOriginalFilename();
+        if(filename.endsWith("txt")){
+            List<String> lines = IOUtils.readLines(file.getInputStream());
+            lines.forEach(s -> {
+                String[] split = s.split(",");
+                String zjhm = split[2];
+                String result = split[3].equals("1")?"00":"10";
+                String cx = split[6];
+                String time = split[8].substring(split[8].indexOf("考试时间:")+5, split[8].indexOf("考试地点:")).trim();
+                SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+                condition.eq(TraineeInformation.InnerColumn.idCardNo, zjhm);
+                condition.eq(TraineeInformation.InnerColumn.carType, cx);
+                condition.setOrderByClause(" id desc");
+                List<TraineeInformation> informations = service.findByCondition(condition);
+                if(CollectionUtils.isNotEmpty(informations)){
+                    TraineeInformation information = informations.get(0);
+                    service.updateTestResult(information.getId(),kskm,result,time);
+                }
+            });
+        }
+        return ApiResponse.success();
     }
 
 

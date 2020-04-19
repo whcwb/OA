@@ -151,6 +151,10 @@
             code: '',
             data: []
           },
+          classType: {
+              code: 'ZDCLK1002',
+              data: []
+          }
         },
         tabTit: [
           {
@@ -202,6 +206,22 @@
               let a = p.row.referrer.split('-')
               return h('div', a[0])
             }
+          },
+          {
+              title: '班型',
+              align: 'center',
+              width: 120,
+              render: (h, params) => {
+                  console.log(params.row.classType);
+                  var classType = this.dictUtil.getByCode(this, this.dictList.classType.code);
+                  for (let item of classType) {
+                      if (params.row.classType == item.key) {
+                          return h('div', item.val);
+                      }
+                  }
+
+                  return h('div', params.row.classType);
+              }
           },
           {
             title: '车型', width: 100, key: 'carType', align: 'center',

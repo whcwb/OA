@@ -6,8 +6,6 @@
   "scripts": {
     "dev": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
@@ -55,18 +53,5 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ],
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.js": [
-      "vue-cli-service lint",
-      "git add"
-    ],
-    "*.vue": [
-      "vue-cli-service lint",
-      "git add"
-    ]
-  }
+  ]
 }

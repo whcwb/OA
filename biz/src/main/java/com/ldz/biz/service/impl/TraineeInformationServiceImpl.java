@@ -3345,6 +3345,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         simpleCondition.lte(TraineeTestInfo.InnerColumn.testTime, time);
         List<TraineeTestInfo> infos = traineeTestInfoService.findByCondition(simpleCondition);
         BizException exception = new BizException();
+        BizException bizException = new BizException();
         for (TraineeTestInfo info : infos) {
             if (info.getTestTime().equals(time)) {
                 traineeTestInfoService.remove(info.getId());
@@ -3353,9 +3354,11 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 traineeTestInfoService.update(info);
             }
             exception.setSfzmhm(info.getIdCardNo());
+            bizException.setSfzmhm(info.getIdCardNo());
         }
 
         exception.setKskm(kskm);
+        bizException.setKskm(kskm);
         if (StringUtils.equals(kskm, "1")) {
             information.setFirSub("00");
             information.setFirSubTestTime(null);
@@ -3365,6 +3368,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             }
             information.setFirSubTestNum(Math.max(sum, 0));
             exception.setCode("101");
+            bizException.setCode("102");
         } else if (StringUtils.equals(kskm, "2")) {
             information.setSecSub("00");
             information.setSecSubTestTime(null);
@@ -3374,6 +3378,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             }
             information.setSecSubTestNum(Math.max(sum, 0));
             exception.setCode("201");
+            bizException.setCode("202");
         } else if (StringUtils.equals(kskm, "3")) {
             information.setThirdSub("00");
             information.setThirdSubTestTime(null);
@@ -3383,12 +3388,15 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             }
             information.setThirdSubTestNum(Math.max(sum, 0));
             exception.setCode("301");
+            bizException.setCode("302");
         } else if (StringUtils.equals(kskm, "4")) {
             information.setForthSub(null);
             information.setForthSubTestTime(null);
         }
-        exceptionService.clearException(exception, exception.getCode());
         baseMapper.updateByPrimaryKey(information);
+        exceptionService.clearException(exception, exception.getCode());
+        exceptionService.clearException(bizException,bizException.getCode());
+
         traineeStatusService.saveEntity(information, "考试预约撤回", "00", kmMap.get(kskm) + " 预约撤回");
         return ApiResponse.success();
     }

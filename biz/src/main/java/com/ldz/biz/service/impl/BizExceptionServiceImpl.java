@@ -42,6 +42,7 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	private NotSchoolTestInfoMapper schoolTestInfoMapper;
 	@Autowired
 	private ChargeManagementService chargeManagementService;
+
 	
 	@Override
 	protected Mapper<BizException> getBaseMapper() {
@@ -249,14 +250,20 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 				information.setId(traineeInfo.getId());
 				if (code.equals(traineeInfo.getCode())){
 					if (otherEntity == null){
-						information.setCode("");
-						information.setErrorMessage("");
+//						information.setCode("");
+//						information.setErrorMessage("");
+						baseMapper.updateCode(information.getId());
 					}else{
-						information.setCode(otherEntity.getCode());
-						information.setErrorMessage(otherEntity.getBz());
+						TraineeInformation traineeInformation = new TraineeInformation();
+						traineeInformation.setId(information.getId());
+						traineeInformation.setCode(otherEntity.getCode());
+						traineeInformation.setErrorMessage(otherEntity.getBz());
+//						information.setCode(otherEntity.getCode());
+//						information.setErrorMessage(otherEntity.getBz());
+						traineeInfoService.update(traineeInformation);
 					}
 					
-					traineeInfoService.update(information);
+
 				}
 			}
 		}

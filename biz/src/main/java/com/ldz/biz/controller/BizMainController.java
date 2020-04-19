@@ -11,10 +11,7 @@ import com.ldz.sys.model.SysJg;
 import com.ldz.sys.service.JgService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
-import com.ldz.util.commonUtil.DateUtils;
-import com.ldz.util.commonUtil.ExcelUtil;
-import com.ldz.util.commonUtil.HttpUtil;
-import com.ldz.util.commonUtil.JsonUtil;
+import com.ldz.util.commonUtil.*;
 import com.ldz.util.exception.RuntimeCheck;
 import jxl.Workbook;
 import jxl.format.Alignment;
@@ -29,6 +26,8 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,6 +58,8 @@ public class BizMainController {
     private String path;
     @Autowired
     private TraineeTestInfoService testInfoService;
+    @Autowired
+    private JdbcTemplate template;
 
     @Autowired
     private StringRedisTemplate redisDao;
@@ -85,6 +86,8 @@ public class BizMainController {
     private BizKcService kcService;
     @Autowired
     private BizExceptionService exceptionService;
+    @Autowired
+    private SnowflakeIdWorker idWorker;
 
     @Autowired
     private JgService jgService;
@@ -100,6 +103,55 @@ public class BizMainController {
                     exceptionService.expJobSave(config);
                 }
             }
+        }
+        return ApiResponse.success();
+    }
+
+    @PostMapping("/updateTest")
+    public ApiResponse<String> updateTest(){
+        String sql = "SELECT * FROM biz_exception WHERE ( code in ( '302' ) ) and ( kskm = '3' ) and ( zt = '00' ) order by cjsj";
+        List<BizException> exceptions = template.query(sql, new BeanPropertyRowMapper<>(BizException.class));
+        for (int i = 0; i < exceptions.size(); i++) {
+            BizException e = exceptions.get(i);
+            String sfzmhm = e.getSfzmhm();
+            SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
+            condition.eq(TraineeInformation.InnerColumn.idCardNo, sfzmhm);
+            condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("60"));
+            condition.setOrderByClause("id desc");
+            List<TraineeInformation> informations = informationService.findByCondition(condition);
+            if (CollectionUtils.isNotEmpty(informations)) {
+                TraineeInformation information = informations.get(0);
+                if (StringUtils.equals(information.getStatus(), "50")) {
+                    e.setZt("10");
+                    e.setGxsj("2020-04-17 13:33:00");
+                    e.setGxr("1-admini");
+                    exceptionService.update(e);
+                } else {
+                    String bz = e.getBz();
+                    String testtime = bz.substring(bz.indexOf("2020"), bz.indexOf(" 考试地点"));
+                    String s = "新农大车科目三考场-上午";
+                    TraineeTestInfo info = new TraineeTestInfo();
+                    info.setId(idWorker.nextId() + "");
+                    info.setCjr("1-admini");
+                    info.setCjsj(DateUtils.getNowTime());
+                    info.setIdCardNo(information.getIdCardNo());
+                    info.setJgdm(information.getJgdm());
+                    info.setOperateTime(DateUtils.getNowTime());
+                    info.setOperator("1-admini");
+                    info.setPayStatus("00");
+                    info.setSubject("科目三");
+                    info.setTestPlace(s);
+                    info.setTestTime(testtime);
+                    info.setTraineeId(information.getId());
+                    info.setTraineeName(information.getName());
+                    information.setThirdSub("20");
+                    information.setThirdSubTestTime(testtime);
+                    information.setThirdSubTestNum(information.getThirdSubTestNum()+1);
+                    informationService.update(information);
+                    testInfoService.save(info);
+                }
+            }
+
         }
         return ApiResponse.success();
     }

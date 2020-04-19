@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import com.ldz.biz.model.BizException;
 import com.ldz.biz.model.TraineeInformation;
 
+import org.apache.ibatis.annotations.Update;
 import tk.mybatis.mapper.common.Mapper;
 
 public interface BizExceptionMapper extends Mapper<BizException> {
@@ -94,4 +95,8 @@ public interface BizExceptionMapper extends Mapper<BizException> {
 			+" (select count(1) from ( SELECT COUNT(1) FROM biz_exception WHERE CODE = '903'  AND zt = '00' GROUP BY sfzmhm) t) 'FQQRYC'  "
 			+ "FROM trainee_information m WHERE STATUS NOT IN ('50', '60')")
     public Map<String, Integer> dashboard();
+
+	@Update("update trainee_information set code = null , error_message=null where id = #{id}")
+	int updateCode(@Param("id") String id);
+
 }

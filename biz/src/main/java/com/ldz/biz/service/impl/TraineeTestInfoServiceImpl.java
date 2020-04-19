@@ -773,6 +773,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 coachTraineeRercord.setModifyTime(DateUtils.getNowTime());
                 coachTraineeRercordService.update(coachTraineeRercord);
             }
+            traineeInformationService.update(information);
             BizException exception = new BizException();
             exception.setSfzmhm(map.get(5));
             exception.setKskm(kmMap.get(kmCode));
@@ -823,16 +824,19 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                         }
                         //将学员主表信息异常也标记为已处理，如果学员同时有其他异常信息，则更新其他异常信息
                         if (exception.getCode().equals(information.getCode())) {
+                            TraineeInformation traineeInformation = new TraineeInformation();
+                            traineeInformation.setId(information.getId());
                             if (otherEntity == null) {
-                                information.setCode("");
-                                information.setErrorMessage("");
+                                traineeInformation.setCode("");
+                                traineeInformation.setErrorMessage("");
                             } else {
-                                information.setCode(otherEntity.getCode());
-                                information.setErrorMessage(otherEntity.getBz());
+                                traineeInformation.setCode(otherEntity.getCode());
+                                traineeInformation.setErrorMessage(otherEntity.getBz());
                             }
+                            traineeInformationService.update(traineeInformation);
                         }
                     }
-                    traineeInformationService.update(information);
+
                 }
             }
             return ApiResponse.success(information.getJgmc() + "@sfgeeq@" + trainStatus + "@sfgeeq@" + subTestNums);

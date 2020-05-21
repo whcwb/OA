@@ -6,10 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import com.ldz.biz.constant.FeeType;
 import com.ldz.biz.constant.Status;
-import com.ldz.biz.mapper.ArchivesRecordMapper;
-import com.ldz.biz.mapper.CoachTraineeRercordMapper;
 import com.ldz.biz.mapper.TraineeInformationMapper;
-import com.ldz.biz.mapper.TraineeTestInfoMapper;
 import com.ldz.biz.model.*;
 import com.ldz.biz.service.*;
 import com.ldz.sys.base.BaseServiceImpl;
@@ -45,10 +42,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -79,26 +75,17 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     private ChargeManagementService chargeManagementService;
     @Autowired // 学员状态表
     private TraineeStatusService traineeStatusService;
-    @Autowired
-    private TraineeTestInfoMapper testInfoMapper;
     @Autowired //电子档案表
     private ElecArchivesManageService elecService;
-    @Autowired
-    private ArchivesRecordMapper archivesRecordMapper;
-    @Autowired
-    private CoachTraineeRercordMapper coachTraineeRercordMapper;
     //	学员图片地址  学员图片地址 headImg--头像   elecSign--电子签名  cardFront-身份证正面  cardBack-身份证反面
     @Value("${staticPath}")
     private String traineeImgFileUrl;
     @Value("${qqj.time}")
     private String time;
-    @Value("${qqj.rs}")
-    private Integer rs;
     @Value("${qqj.jg}")
     private Integer qqJg;
     @Autowired
     private SysMessageService messageService;//消息下发
-    private ExecutorService threadPool = Executors.newSingleThreadExecutor();
 
     @Override
     protected Mapper<TraineeInformation> getBaseMapper() {
@@ -496,7 +483,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (CollectionUtils.isNotEmpty(resultPage.getList()) || StringUtils.isBlank(idCardNo)) {
             afterPager(resultPage);
             result.setPage(resultPage);
-            return result;
         } else {
             LimitedCondition condition1 = getQueryCondition();
             condition1.setOrderByClause(" registration_time desc");
@@ -509,8 +495,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 result.setPage(new PageInfo());
                 result.setMessage("该学员信息不在系统中");
             }
-            return result;
         }
+        return result;
     }
 
 
@@ -577,7 +563,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             //学员姓名(0)|学习驾驶证明编号(1)|身份证明号码(2)|考试科目(3)|考试车型(4)|预约日期(5)|约考日期(6)|考试场地(7)|考试场次(8)|手机号码(9)|null(10)|
             //		科目一预约成功确认：【明涛驾校】尊敬的某某先生/女士：您预约的    年   月  日的科目一考试已受理成功，考试时间：上午8:30—10:30，下午13:30—15:00，请准时参加考试，预祝您考试顺利。缺考将视为不及格，再次约考需缴纳补考费。巩固练习请选择“服务学员”—“模拟考试”。如需帮助，请联系报名负责人或致电客服热线：400-133-2133。
             //学员{userName}您好，你已经成功约考{yhkm}(考试科目)  {yksj}(约考日期) {ykcx}(考试车型)
-            String messageBody = "";
+            String messageBody;
             String userXb = "先生";//性别 /* 00: 女  10: 男*/
             if (!StringUtils.equals(obj.getGender(), "10")) {
                 userXb = "女士";
@@ -729,7 +715,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             }
         }
 //			3、获取当前用户报名的费用
-        ChargeItemManagement chargeItemManagement = null;
+        ChargeItemManagement chargeItemManagement;
         HttpServletRequest requset = getRequset();
         String qqj = requset.getParameter("qqj");
         if (StringUtils.isNotBlank(qqj)) {
@@ -1127,7 +1113,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         //		6、插入将约考成功的消息插入消息表
         SysMessage message = new SysMessage();
         message.setTitle("报名缴费");
-        String messageBody = "";
+        String messageBody;
         String userXb = "先生";//性别 /* 00: 女  10: 男*/
         if (!StringUtils.equals(information.getGender(), "10")) {
             userXb = "女士";
@@ -1723,18 +1709,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
     @Override
     public ApiResponse<List<EChart>> countTest(String startTime, String endTime) {
-
-
-        if (StringUtils.isBlank(startTime)) {
-            startTime = DateUtils.getDateStr(new Date(), "yyyy-MM-dd");
-        } else {
-            startTime = startTime + " 00:00:00";
-        }
-        if (StringUtils.isBlank(endTime)) {
-            endTime = DateUtils.getNextTime();
-        } else {
-            endTime = endTime + " 23:59:59";
-        }
         List<EChart> eCharts = new ArrayList<>();
 
         SimpleCondition condition = new SimpleCondition(TraineeInformation.class);
@@ -1825,7 +1799,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             list.add(management);
             information.setManagements(list);
             response.setResult(information);
-            return response;
         } else {
             SimpleCondition simpleCondition1 = new SimpleCondition(ChargeManagement.class);
             simpleCondition1.eq(ChargeManagement.InnerColumn.idCardNo, idCardNo);
@@ -1842,13 +1815,12 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 traineeInformation.setRegistrationTime(chargeManagement.getChargeTime());
                 traineeInformation.setManagements(managementList);
                 response.setResult(traineeInformation);
-                return response;
             } else {
                 response.setCode(500);
                 response.setMessage("没有该学员的缴费信息");
-                return response;
             }
         }
+        return response;
 
     }
 
@@ -2094,7 +2066,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
     @Override
     public ApiResponse<Long> getJrDjBmfZ(Page<TraineeInformation> page) {
-//        long t = System.currentTimeMillis();
         ApiResponse<Long> result = new ApiResponse<>();
         LimitedCondition condition = getQueryCondition();
         condition.eq(TraineeInformation.InnerColumn.infoCheckStatus, "10");
@@ -2102,9 +2073,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         condition.notIn(TraineeInformation.InnerColumn.status, Arrays.asList("50", "60"));
         condition.setOrderByClause(" registration_time desc");
         PageInfo<TraineeInformation> pageInfo = findPage(page, condition);
-       /* long realPay = baseMapper.countRealPay();
-        result.setResult(realPay);*/
-        Integer count = countByCondition(condition);
         page.setPageNum(1);
         page.setPageSize(9999);
         PageInfo<TraineeInformation> info = findPage(page, condition);
@@ -2121,8 +2089,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         });
 
         result.setPage(pageInfo);
-//        long s = System.currentTimeMillis();
-//        System.out.println(s-t);
         return result;
     }
 
@@ -2138,8 +2104,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         condition1.gte(ChargeManagement.InnerColumn.cjsj, confirmTimeGte);
         condition1.lte(ChargeManagement.InnerColumn.cjsj, confirmTimeLte);
         condition1.eq(ChargeManagement.InnerColumn.chargeCode, FeeType.SIGN_UP);
-        if (StringUtils.equals(currentUser.getZw(), "财务主管") || currentUser.getJgdm().equals("100")) {
-        } else {
+        if (!(StringUtils.equals(currentUser.getZw(), "财务主管") || currentUser.getJgdm().equals("100"))) {
             condition1.eq(ChargeManagement.InnerColumn.receiver, currentUser.getZh() + "-" + currentUser.getXm());
         }
         if (StringUtils.isNotBlank(pj)) {
@@ -2167,13 +2132,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
 
         // condition.like(TraineeInformation.InnerColumn.confirmTime,DateUtils.getDateStr(new Date(),"yyyy-MM-dd"));
         PageInfo<TraineeInformation> pageInfo = findPage(page, condition);
-        Page<ChargeManagement> page1 = new Page<>();
-        page1.setPageNum(page.getPageNum());
-        page1.setPageSize(page.getPageSize());
         if (CollectionUtils.isNotEmpty(pageInfo.getList())) {
             condition1.in(ChargeManagement.InnerColumn.traineeId, pageInfo.getList().stream().map(TraineeInformation::getId).collect(Collectors.toSet()));
-            List<ChargeManagement> page2 = chargeManagementService.findByCondition(condition1);
-            List<ChargeManagement> managements = page2;
+            List<ChargeManagement> managements = chargeManagementService.findByCondition(condition1);
             List<String> strings = managements.stream().map(ChargeManagement::getTraineeId).collect(Collectors.toList());
             List<TraineeInformation> list = findIn(TraineeInformation.InnerColumn.id, strings);
             pageInfo.setList(list);
@@ -2193,12 +2154,12 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             List<TraineeInformation> info = findByCondition(condition);
 
             if (CollectionUtils.isNotEmpty(info)) {
-                long asLong = info.stream().mapToLong(TraineeInformation::getRealPay).reduce((i1, i2) -> i1 + i2).getAsLong();
+                long asLong = info.stream().mapToLong(TraineeInformation::getRealPay).reduce(Long::sum).getAsLong();
                 result.setResult(asLong);
             }
 
             for (TraineeInformation traineeInformation : pageInfo.getList()) {
-                managements.stream().filter(chargeManagement -> chargeManagement.getTraineeId().equals(traineeInformation.getId())).forEach(chargeManagement -> traineeInformation.setChargeRecord(chargeManagement));
+                managements.stream().filter(chargeManagement -> chargeManagement.getTraineeId().equals(traineeInformation.getId())).forEach(traineeInformation::setChargeRecord);
             }
             if (StringUtils.equals(pj, "10")) {
                 List<TraineeInformation> collect1 = pageInfo.getList().stream().sorted((o1, o2) -> o2.getChargeRecord().getPjbh().compareTo(o1.getChargeRecord().getPjbh())).collect(Collectors.toList());
@@ -2232,7 +2193,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             if (StringUtils.isNotBlank(information.getReferrer()) && StringUtils.contains(information.getReferrer(), "-")) {
                 String[] split = information.getReferrer().split("-");
                 String id = split[1];
-                String name = split[0];
                 String today = DateUtils.getToday("yyyy-MM");
                 String[] split1 = today.split("-");
                 Zgjbxx zgjbxx = zgjbxxService.findById(id);
@@ -2633,11 +2593,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             condition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(statu));
         }
         condition.setOrderByClause(" id desc ");
-        SimpleCondition finalCondition = condition;
-        PageInfo<TraineeTestInfo> testInfoPageInfo = PageHelper.startPage(entity.getPageNum(), entity.getPageSize()).doSelectPageInfo(() -> traineeTestInfoService.findByCondition(finalCondition));
+        PageInfo<TraineeTestInfo> testInfoPageInfo = PageHelper.startPage(entity.getPageNum(), entity.getPageSize()).doSelectPageInfo(() -> traineeTestInfoService.findByCondition(condition));
 
         List<String> collect = testInfoPageInfo.getList().stream().filter(p -> StringUtils.isNotBlank(p.getTraineeId())).map(TraineeTestInfo::getTraineeId).collect(Collectors.toList());
-        Map<String, List<TraineeTestInfo>> listMap = testInfoPageInfo.getList().stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
 
         List<TraineeInformation> page = findByIds(collect);
         Map<String, TraineeInformation> map = page.stream().collect(Collectors.toMap(TraineeInformation::getId, p -> p));
@@ -3105,7 +3063,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         response.setContentType("application/msexcel");
         request.setCharacterEncoding("UTF-8");
         response.setHeader("pragma", "no-cache");
-        response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1) + ".xls");
         OutputStream out = response.getOutputStream();
         ExcelUtil.createSheetArray(out, data, sheetList);
     }
@@ -3130,7 +3088,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         kmMap.put("third_sub_test_time", "科目三");
         kmMap.put("forth_sub_test_time", "科目四");
 
-        String cond = null;
+        String cond;
         if (StringUtils.equals(kskm, "1")) {
             cond = " m.fir_sub not in ('30','40')";
         } else if (StringUtils.equals(kskm, "2")) {
@@ -3140,7 +3098,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         } else {
             cond = " m.forth_sub not in ('10','20')";
         }
-        String error = getRequestParamterAsString("error");
 
         String kmTestColumn = kmMap.get(kskm);
         String testTime = null;
@@ -3189,9 +3146,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             simpleCondition.setOrderByClause(" test_time asc");
             List<TraineeTestInfo> list = traineeTestInfoService.findByCondition(simpleCondition);
             Map<String, List<TraineeTestInfo>> map = list.stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
-            info.getList().forEach(traineeInformation -> {
-                traineeInformation.setTestInfos(map.get(traineeInformation.getId()));
-            });
+            info.getList().forEach(traineeInformation -> traineeInformation.setTestInfos(map.get(traineeInformation.getId())));
         }
         ApiResponse<String> res = new ApiResponse<>();
         res.setPage(info);
@@ -3296,8 +3251,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 List<BizException> exps = exceptionService.findByCondition(condition);
                 if (CollectionUtils.isNotEmpty(exps)) {
                     BizException otherEntity = null;
-                    for (int i = 0; i < exps.size(); i++) {
-                        BizException entity = exps.get(i);
+                    for (BizException entity : exps) {
                         //将相同类型的异常标记为已处理
                         if (exception.getCode().equals(entity.getCode())) {
                             entity.setGxsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
@@ -3430,7 +3384,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         kmMap.put("third_sub_test_time", "科目三");
         kmMap.put("forth_sub_test_time", "科目四");
 
-        String cond = null;
+        String cond;
         if (StringUtils.equals(kskm, "1")) {
             cond = " m.fir_sub not in ('30','40')";
         } else if (StringUtils.equals(kskm, "2")) {
@@ -3494,8 +3448,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         String finalIdCardNoLike = idCardNoLike;
         String finalCond = cond;
         String finalNameLike = nameLike;
-        Set<String> finalSet = set;
-        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, kmTestColumn, kmMap.get(kmTestColumn), finalIdCardNoLike, finalCond, finalNameLike, finalSet));
+        PageInfo<TraineeInformation> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> baseMapper.getTestStudents(finalJgdm, finalTestTime, kmTestColumn, kmMap.get(kmTestColumn), finalIdCardNoLike, finalCond, finalNameLike, set));
         if (CollectionUtils.isNotEmpty(info.getList())) {
             List<TraineeInformation> infoList = info.getList();
             List<String> ids = infoList.stream().map(TraineeInformation::getId).collect(Collectors.toList());
@@ -3505,9 +3458,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             simpleCondition.setOrderByClause(" test_time asc");
             List<TraineeTestInfo> list = traineeTestInfoService.findByCondition(simpleCondition);
             Map<String, List<TraineeTestInfo>> map = list.stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
-            info.getList().forEach(traineeInformation -> {
-                traineeInformation.setTestInfos(map.get(traineeInformation.getId()));
-            });
+            info.getList().forEach(traineeInformation -> traineeInformation.setTestInfos(map.get(traineeInformation.getId())));
         }
         ApiResponse<String> res = new ApiResponse<>();
         res.setPage(info);
@@ -3558,6 +3509,31 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         charge.setRemark(remark);
         charge.setCjr(currentUser.getZh() + "-" + currentUser.getXm());
         chargeManagementService.save(charge);
+        return ApiResponse.success();
+    }
+
+    @Override
+    public ApiResponse<String> updateTraineeInfo(TraineeInformation information) {
+        RuntimeCheck.ifBlank(information.getId(), "请选择要修改的学员信息");
+        TraineeInformation info = findById(information.getId());
+        RuntimeCheck.ifTrue(StringUtils.equals("60",info.getStatus()) || StringUtils.equals("50",info.getStatus()), "学员已经结业或者退学 , 不能修改");
+        RuntimeCheck.ifNull(info , "未找到学员信息");
+        int i = update(information);
+        RuntimeCheck.ifFalse(i == 1 , "操作失败");
+        TraineeStatus status = new TraineeStatus();
+        SysYh user = getCurrentUser();
+        status.setCjr(user.getZh() + "-" + user.getXm());
+        status.setId(genId());
+        status.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+        status.setIdCardNo(information.getIdCardNo());
+        status.setOperateTime(DateUtils.getNowTime());
+        status.setOperator(status.getCjr());
+        status.setRemark("学员信息修改");
+        status.setStatus("00");
+        status.setTraineeId(info.getId());
+        status.setTraineeName(information.getName());
+        status.setType("学员信息修改");
+        traineeStatusService.save(status);
         return ApiResponse.success();
     }
 

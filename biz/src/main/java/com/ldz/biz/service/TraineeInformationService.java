@@ -150,4 +150,6 @@ public interface TraineeInformationService extends BaseService<TraineeInformatio
     ApiResponse<List<TraineeInformation>> getByIdCard(String idcard);
 
     ApiResponse<String> saveChargeK3(String id, String amount,String remark);
+
+    ApiResponse<String> updateTraineeInfo(TraineeInformation information);
 }

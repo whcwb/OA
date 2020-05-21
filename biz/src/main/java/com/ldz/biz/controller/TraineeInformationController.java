@@ -543,6 +543,13 @@ public class TraineeInformationController extends BaseController<TraineeInformat
         return ApiResponse.success();
     }
 
+    @PostMapping("/updateTraineeInfo")
+    public ApiResponse<String> updateTraineeInfo(TraineeInformation information){
+        return service.updateTraineeInfo(information);
+    }
+
+
+
 
 
 }

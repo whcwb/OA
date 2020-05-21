@@ -40,8 +40,8 @@
             </Col>
             <Col span="12">
               <FormItem>
-                <Select v-model="jxName" placeholder="请选择驾校" @on-change="SelectChangeJx">
-                  <Option v-for="(item,index) in jxList" :value="item.val" :key="index">{{ item.val }}</Option>
+                <Select v-model="selectRow.jgdm" placeholder="请选择驾校" @on-change="SelectChangeJx">
+                  <Option v-for="(item,index) in bmdList" :value="item.value" :key="index">{{ item.label }}</Option>
                 </Select>
               </FormItem>
             </Col>
@@ -57,6 +57,103 @@
                 <Select v-model="selectRow.status" placeholder="请选择状态" @on-change="SelectChangeJx">
                   <Option v-for="(item,index) in ztList" :value="item.key" :key="item.key">{{ item.val }}</Option>
                 </Select>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="8">
+              <FormItem label="科目一状态:" :label-width="90">
+                <Select v-model="selectRow.firSub" placeholder="科目一状态" >
+                  <Option v-for="(item,index) in firList" :value="item.key" :key="item.key">{{ item.val }}</Option>
+                </Select>
+              </FormItem>
+            </Col>
+            <Col span="8">
+              <FormItem label="缴费时间:" :label-width="70">
+                <DatePicker v-model="selectRow.firSubPaymentTime"
+                            format="yyyy-MM-dd"
+                            placeholder="科目一缴费时间"
+                            style="width: 100%"></DatePicker>
+<!--                <Input prefix="ios-clipboard" type="text" placeholder="科目一缴费时间" v-model="selectRow.firSub"/>-->
+              </FormItem>
+            </Col>
+            <Col span="8">
+              <FormItem label="考试时间:" :label-width="70">
+                <DatePicker v-model="selectRow.firSubTestTime"
+                            format="yyyy-MM-dd"
+                            placeholder="考试时间"
+                            style="width: 100%"></DatePicker>
+<!--                <Input prefix="ios-clipboard" type="text" placeholder="科目一考试时间" v-model="selectRow.firSub"/>-->
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="8">
+              <FormItem label="科目二状态:" :label-width="90">
+                <Select v-model="selectRow.secSub" placeholder="科目二状态" >
+                  <Option v-for="(item,index) in secList" :value="item.key" :key="item.key">{{ item.val }}</Option>
+                </Select>
+              </FormItem>
+            </Col>
+            <Col span="8">
+              <FormItem label="缴费时间:" :label-width="70">
+                <DatePicker v-model="selectRow.secSubPaymentTime"
+                            format="yyyy-MM-dd"
+                            placeholder="缴费时间"
+                            style="width: 100%"></DatePicker>
+              </FormItem>
+            </Col>
+            <Col span="8">
+              <FormItem label="考试时间:" :label-width="70">
+                <DatePicker v-model="selectRow.secSubTestTime"
+                            format="yyyy-MM-dd"
+                            placeholder="考试时间"
+                            style="width: 100%"></DatePicker>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="8">
+              <FormItem label="科目三状态:" :label-width="90">
+                <Select v-model="selectRow.thirdSub" placeholder="科目三状态" >
+                  <Option v-for="(item,index) in secList" :value="item.key" :key="item.key">{{ item.val }}</Option>
+                </Select>
+              </FormItem>
+            </Col>
+            <Col span="8">
+              <FormItem label="缴费时间:"  :label-width="70">
+                <DatePicker v-model="selectRow.thirdSubPaymentTime"
+                            format="yyyy-MM-dd"
+                            placeholder="科目三缴费时间"
+                            style="width: 100%"></DatePicker>
+              </FormItem>
+            </Col>
+            <Col span="8">
+              <FormItem label="考试时间:" :label-width="70">
+                <DatePicker v-model="selectRow.thirdSubTestTime"
+                            format="yyyy-MM-dd"
+                            placeholder="科目三考试时间"
+                            style="width: 100%"></DatePicker>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="8">
+              <FormItem label="科目四状态:"  :label-width="90">
+                <Select v-model="selectRow.forthSub" placeholder="科目四状态" >
+                  <Option v-for="(item,index) in forthList" :value="item.key" :key="item.key">{{ item.val }}</Option>
+                </Select>
+              </FormItem>
+            </Col>
+            <Col span="8">
+                <span></span>
+            </Col>
+            <Col span="8">
+              <FormItem  label="考试时间:"  :label-width="70">
+                <DatePicker v-model="selectRow.forthSubTestTime"
+                            format="yyyy-MM-dd"
+                            placeholder="科目四考试时间"
+                            style="width: 100%"></DatePicker>
               </FormItem>
             </Col>
           </Row>
@@ -85,9 +182,13 @@
         dui:'',
         jxList:[],
         ztList:[],
+        firList:[ {key:'30', val:'不合格'},{key:'40', val:'合格'}],
+        secList:[{key:'30',val: '不合格'},{key:'40', val:'合格'}],
+        forthList:[ {key:'10', val:'不合格'}, {key:'20', val:'合格'}],
         jxName:'',
         zt:'',
-        status:''
+        status:'',
+        bmdList:[]
       }
     },
     created(){
@@ -96,10 +197,47 @@
       this.status = this.selectRow.status
       this.getJTjx()
       this.getZTList()
+      this.getBmdList()
       console.log(this.selectRow);
-      console.log(this.ztList)
+      console.log(this.bmdList)
     },
     methods:{
+      getBmdList(){
+        var v = this
+        this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree,{timers:new Date().getTime()}).then((res) => {
+          if (res.code === 200) {
+            function tree(arr) {
+              if(arr[0].value.length == 9){
+                if(arr.length == 1){
+                  v.user.jgdm = arr[0].value
+                  // console.log('111111',arr[0]);
+                  v.bmdChange([arr[0].value],[arr[0]])
+                  v.user.jgmc = arr[0].label + '/' + v.jxName
+                  return arr
+                }else {
+                  return arr
+                }
+              }else if(arr[0].value.length == 6){
+                return arr[0].children
+              }else if(arr[0].value.length == 3) {
+                return arr[0].children[0].children
+              }
+            }
+            this.bmdList = tree(res.result)
+            // console.log("报名点信息",this.dictList.bmd.data )
+          } else {
+            this.swal({
+              text: '无法加载报名点信息!',
+              type: 'error'
+            });
+          }
+        }).catch((error) => {
+          this.swal({
+            text: this.apis.NETWORK_ERR_STR,
+            type: 'error'
+          });
+        })
+      },
       getZTList(){
         this.ztList = this.dictUtil.getByCode(this,'ZDCLK1010');
         console.log(this.ztList);
@@ -136,10 +274,21 @@
           id:this.selectRow.id,
           name:this.selectRow.name,
           phone:this.selectRow.phone,
-          jgmc:this.dui+'/'+this.jxName,
+          jgdm:this.selectRow.jgdm,
           idCardNo:this.selectRow.idCardNo,
           status:this.selectRow.status,
-          serialNum: this.selectRow.serialNum
+          serialNum: this.selectRow.serialNum,
+          firSub: this.selectRow.firSub,
+          firSubPaymentTime:this.selectRow.firSubPaymentTime,
+          firSubTestTime: this.selectRow.firSubTestTime,
+          secSub: this.selectRow.secSub,
+          secSubPaymentTime: this.selectRow.secSubPaymentTime,
+          secSubTestTime: this.selectRow.secSubTestTime,
+          thirdSub:this.selectRow.thirdSub,
+          thirdSubPaymentTime:this.selectRow.thirdSubPaymentTime,
+          thirdSubTestTime:this.selectRow.thirdSubTestTime,
+          forthSub:this.forthSub,
+          forthSubTestTime:this.forthSubTestTime
         }).then(res=>{
           if(res.code == 200){
             v.$parent.compName = ''

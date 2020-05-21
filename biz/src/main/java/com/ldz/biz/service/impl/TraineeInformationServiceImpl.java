@@ -3517,27 +3517,94 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifBlank(information.getId(), "请选择要修改的学员信息");
         TraineeInformation info = findById(information.getId());
         RuntimeCheck.ifNull(info , "未找到学员信息");
-        RuntimeCheck.ifTrue(StringUtils.equals("60",info.getStatus()) || StringUtils.equals("50",info.getStatus()), "学员已经结业或者退学 , 不能修改");
+//        RuntimeCheck.ifTrue(StringUtils.equals("60",info.getStatus()) || StringUtils.equals("50",info.getStatus()), "学员已经结业或者退学 , 不能修改");
         RuntimeCheck.ifTrue(StringUtils.equals(info.getStatus(), "99"), "当前学员还未收费 , 不能修改状态");
         RuntimeCheck.ifTrue(StringUtils.isBlank(info.getSerialNum()) && StringUtils.isBlank(information.getSerialNum()) && information.getStatus().compareTo("00") > 0, "学员没有流水号 , 请先输入流水号");
         if( StringUtils.isBlank(info.getSerialNum()) && StringUtils.isNotBlank(information.getSerialNum())){
             information.setAcceptTime(DateUtils.getNowTime());
             information.setAcceptStatus("20");
         }
-        if(StringUtils.equals(information.getStatus(), "10")){
-            information.setFirSub("00");
-        }else if(StringUtils.equals(information.getStatus(), "20")){
-            information.setSecSub("00");
-        }else if(StringUtils.equals(information.getStatus(), "30")){
-            information.setThirdSub("00");
-        }else if(StringUtils.equals(information.getStatus(), "40")){
-            information.setForthSub("");
+        if(StringUtils.isNotBlank(information.getJgdm()) && !StringUtils.equals(info.getJgdm(),information.getJgdm())){
+            SysJg jg = jgService.findByOrgCode(information.getJgdm());
+            information.setJgmc("明涛驾校/" +  jg.getJgmc());
+            information.setGlyxm(jg.getGlyxm());
         }
+        SysYh sysYh = getCurrentUser();
+        BizException exception = new BizException();
+        exception.setSfzmhm(information.getIdCardNo());
+        exception.setXm(information.getName());
+        if (StringUtils.isNotBlank(information.getFirSub())) {
+            exception.setKskm("1");
+            exception.setCode("102");
+            exceptionService.clearException(exception, exception.getCode());
+        }
+        if (StringUtils.isNotBlank(information.getSecSub())) {
+            exception.setKskm("2");
+            exception.setCode("202");
+            exceptionService.clearException(exception, exception.getCode());
+        }
+        if (StringUtils.isNotBlank(information.getThirdSub())) {
+            exception.setKskm("3");
+            exception.setCode("302");
+            exceptionService.clearException(exception, exception.getCode());
+        }
+        if (StringUtils.isNotBlank(information.getForthSub())) {
+            exception.setKskm("4");
+            exception.setCode("402");
+            // 科目四成绩确认 清理异常
+            SimpleCondition econdition = new SimpleCondition(BizException.class);
+            econdition.eq(BizException.InnerColumn.sfzmhm, info.getIdCardNo());
+            econdition.eq(BizException.InnerColumn.code, "402");
+            econdition.eq(BizException.InnerColumn.zt, "00");
+            List<BizException> exceptions = exceptionService.findByCondition(econdition);
+            exceptions.forEach(e -> {
+                e.setZt("10");
+                exceptionService.update(e);
+            });
+            exceptionService.clearException(exception, exception.getCode());
+            if (information != null) {
+                //查询学员是否有相关类型未处理的异常信息
+                Example condition1 = new Example(BizException.class);
+                condition1.and()
+                        .andEqualTo(BizException.InnerColumn.sfzmhm.name(), information.getIdCardNo())
+                        .andEqualTo(BizException.InnerColumn.zt.name(), "00");
+                List<BizException> exps = exceptionService.findByCondition(condition1);
+                if (CollectionUtils.isNotEmpty(exps)) {
+                    BizException otherEntity = null;
+                    for (BizException entity : exps) {
+                        //将相同类型的异常标记为已处理
+                        if (exception.getCode().equals(entity.getCode())) {
+                            entity.setGxsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+                            entity.setGxr(sysYh.getZh() + "-" + sysYh.getXm());
+                            entity.setZt("10");
+                            exceptionService.update(entity);
+                        } else {
+                            otherEntity = entity;
+                        }
+                    }
+                    //将学员主表信息异常也标记为已处理，如果学员同时有其他异常信息，则更新其他异常信息
+                    if (exception.getCode().equals(information.getCode())) {
+                        TraineeInformation traineeInformation = new TraineeInformation();
+                        traineeInformation.setId(information.getId());
+                        if (otherEntity == null) {
+                            traineeInformation.setCode("");
+                            traineeInformation.setErrorMessage("");
+                        } else {
+                            traineeInformation.setCode(otherEntity.getCode());
+                            traineeInformation.setErrorMessage(otherEntity.getBz());
+                        }
+                        update(traineeInformation);
+                    }
+                }
+
+            }
+        }
+
+
         int i = update(information);
         RuntimeCheck.ifFalse(i == 1 , "操作失败");
         TraineeStatus status = new TraineeStatus();
-        SysYh user = getCurrentUser();
-        status.setCjr(user.getZh() + "-" + user.getXm());
+        status.setCjr(sysYh.getZh() + "-" + sysYh.getXm());
         status.setId(genId());
         status.setCjsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
         status.setIdCardNo(information.getIdCardNo());

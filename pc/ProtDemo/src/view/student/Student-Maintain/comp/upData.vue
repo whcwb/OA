@@ -46,6 +46,20 @@
               </FormItem>
             </Col>
           </Row>
+          <Row>
+            <Col span="12">
+              <FormItem>
+                <Input prefix="ios-clipboard" type="text" placeholder="流水号码" v-model="selectRow.serialNum"/>
+              </FormItem>
+            </Col>
+            <Col span="12">
+              <FormItem>
+                <Select v-model="status" placeholder="请选择状态" @on-change="SelectChangeJx">
+                  <Option v-for="(item,index) in ztList" :value="item.val" :key="index">{{ item.val }}</Option>
+                </Select>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </div>
       <div slot='footer'>
@@ -70,16 +84,25 @@
         UpModal: true,
         dui:'',
         jxList:[],
-        jxName:''
+        ztList:[],
+        jxName:'',
+        zt:'',
+        status:''
       }
     },
     created(){
       this.dui = this.selectRow.jgmc.split('/')[0]
       this.jxName = this.selectRow.jgmc.split('/')[1]
+      this.status = this.selectRow.status
       this.getJTjx()
+      this.getZTList()
       console.log(this.selectRow);
     },
     methods:{
+      getZTList(){
+        this.ztList = this.dictUtil.getByCode(this,'ZDCLK1010');
+        console.log(this.ztList);
+      },
       getJTjx(){
         this.jxList = this.dictUtil.getByCode(this,'ZDCLK1019');
         console.log(this.jxList);
@@ -89,6 +112,22 @@
       },
       colse(){
         this.$parent.compName = ''
+      },
+      changeZt(){
+        this.$http.post('/api/traineeinformation/updateTraineeInfo',{
+          serialNum : this.selectRow.serialNum,
+          status: this.status
+        }).then((res)=>{
+          if(res.code == 200){
+            v.$parent.compName = ''
+            v.$parent.getPager()
+            this.$Message.success(res.message);
+          }else {
+            this.$Message.error(res.message);
+          }
+        }).catch(err=>{
+          this.$Message.error(res.message);
+        })
       },
       save(){
         var v = this
@@ -103,12 +142,14 @@
             v.$parent.compName = ''
             v.$parent.getPager()
             this.$Message.success(res.message);
+            this.changeZt()
           }else {
             this.$Message.error(res.message);
           }
         }).catch(err=>{
           this.$Message.error(res.message);
         })
+
       }
     }
   }

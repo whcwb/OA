@@ -54,8 +54,8 @@
             </Col>
             <Col span="12">
               <FormItem>
-                <Select v-model="status" placeholder="请选择状态" @on-change="SelectChangeJx">
-                  <Option v-for="(item,index) in ztList" :value="item.val" :key="index">{{ item.val }}</Option>
+                <Select v-model="selectRow.status" placeholder="请选择状态" @on-change="SelectChangeJx">
+                  <Option v-for="(item,index) in ztList" :value="item.key" :key="item.key">{{ item.val }}</Option>
                 </Select>
               </FormItem>
             </Col>
@@ -97,6 +97,7 @@
       this.getJTjx()
       this.getZTList()
       console.log(this.selectRow);
+      console.log(this.ztList)
     },
     methods:{
       getZTList(){
@@ -131,12 +132,14 @@
       },
       save(){
         var v = this
-        this.$http.post('/api/traineeinformation/update',{
+        this.$http.post('/api/traineeinformation/updateTraineeInfo',{
           id:this.selectRow.id,
           name:this.selectRow.name,
           phone:this.selectRow.phone,
           jgmc:this.dui+'/'+this.jxName,
-          idCardNo:this.selectRow.idCardNo
+          idCardNo:this.selectRow.idCardNo,
+          status:this.selectRow.status,
+          serialNum: this.selectRow.serialNum
         }).then(res=>{
           if(res.code == 200){
             v.$parent.compName = ''

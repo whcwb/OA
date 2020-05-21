@@ -3516,8 +3516,23 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     public ApiResponse<String> updateTraineeInfo(TraineeInformation information) {
         RuntimeCheck.ifBlank(information.getId(), "请选择要修改的学员信息");
         TraineeInformation info = findById(information.getId());
-        RuntimeCheck.ifTrue(StringUtils.equals("60",info.getStatus()) || StringUtils.equals("50",info.getStatus()), "学员已经结业或者退学 , 不能修改");
         RuntimeCheck.ifNull(info , "未找到学员信息");
+        RuntimeCheck.ifTrue(StringUtils.equals("60",info.getStatus()) || StringUtils.equals("50",info.getStatus()), "学员已经结业或者退学 , 不能修改");
+        RuntimeCheck.ifTrue(StringUtils.equals(info.getStatus(), "99"), "当前学员还未收费 , 不能修改状态");
+        RuntimeCheck.ifTrue(StringUtils.isBlank(info.getSerialNum()) && StringUtils.isBlank(information.getSerialNum()) && information.getStatus().compareTo("00") > 0, "学员没有流水号 , 请先输入流水号");
+        if( StringUtils.isBlank(info.getSerialNum()) && StringUtils.isNotBlank(information.getSerialNum())){
+            information.setAcceptTime(DateUtils.getNowTime());
+            information.setAcceptStatus("20");
+        }
+        if(StringUtils.equals(information.getStatus(), "10")){
+            information.setFirSub("00");
+        }else if(StringUtils.equals(information.getStatus(), "20")){
+            information.setSecSub("00");
+        }else if(StringUtils.equals(information.getStatus(), "30")){
+            information.setThirdSub("00");
+        }else if(StringUtils.equals(information.getStatus(), "40")){
+            information.setForthSub("");
+        }
         int i = update(information);
         RuntimeCheck.ifFalse(i == 1 , "操作失败");
         TraineeStatus status = new TraineeStatus();

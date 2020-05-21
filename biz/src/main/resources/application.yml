@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod #合并 application-test.yml 中的配置参数
+    active: test #合并 application-test.yml 中的配置参数
   #上传文件设置
   http:
     multipart:

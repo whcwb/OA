@@ -53,7 +53,9 @@
                 当前状态
               </span>
               <Tag color="success">{{getZt}}</Tag>
+<!--              <Button type="primary" shape="circle" icon="md-create" size="small" @click="updateDqzt"></Button>-->
             </span>
+
             <Row>
               <Col span="24" align="center">
                 有效期止：<span v-if="selectRow.indateEndTime == ''">-</span><span v-else>{{selectRow.indateEndTime}}</span>
@@ -675,6 +677,9 @@
       }
     },
     methods: {
+      updateDqzt(){
+        console.log('1')
+      },
       km() {
         if (this.selectRow.testInfos.length == 0) {
           return

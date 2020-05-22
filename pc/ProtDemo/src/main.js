@@ -34,6 +34,8 @@ import NoData from './components/NoDataPage'
 import newTree from './components/newTree'
 //兼容IE11
 import 'babel-polyfill'
+import moment from 'moment'
+Vue.prototype.moment = moment;
 // import '@/mock'
 // 实际打包时应该不引入mock
 // import env from '../config/env'
@@ -61,6 +63,7 @@ Vue.prototype.mixin = mixin;
 
 Vue.prototype.AF = comFun;
 Vue.prototype.col = col;
+
 
 Vue.prototype.swal = swal;
 

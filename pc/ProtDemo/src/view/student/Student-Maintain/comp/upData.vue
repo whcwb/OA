@@ -70,16 +70,18 @@
             </Col>
             <Col span="8">
               <FormItem label="缴费时间:" :label-width="70">
+<!--                v-model="selectRow.firSubPaymentTime"-->
                 <DatePicker v-model="selectRow.firSubPaymentTime"
                             format="yyyy-MM-dd"
                             placeholder="科目一缴费时间"
-                            style="width: 100%"></DatePicker>
+                            style="width: 100%" @on-change="(t) => { sb(t,'firSubPaymentTime')}"></DatePicker>
 <!--                <Input prefix="ios-clipboard" type="text" placeholder="科目一缴费时间" v-model="selectRow.firSub"/>-->
               </FormItem>
             </Col>
             <Col span="8">
               <FormItem label="考试时间:" :label-width="70">
                 <DatePicker v-model="selectRow.firSubTestTime"
+                            @on-change="(t) => { sb(t,'firSubTestTime')}"
                             format="yyyy-MM-dd"
                             placeholder="考试时间"
                             style="width: 100%"></DatePicker>
@@ -98,6 +100,7 @@
             <Col span="8">
               <FormItem label="缴费时间:" :label-width="70">
                 <DatePicker v-model="selectRow.secSubPaymentTime"
+                            @on-change="(t) => { sb(t,'secSubPaymentTime')}"
                             format="yyyy-MM-dd"
                             placeholder="缴费时间"
                             style="width: 100%"></DatePicker>
@@ -106,6 +109,7 @@
             <Col span="8">
               <FormItem label="考试时间:" :label-width="70">
                 <DatePicker v-model="selectRow.secSubTestTime"
+                            @on-change="(t) => { sb(t,'secSubTestTime')}"
                             format="yyyy-MM-dd"
                             placeholder="考试时间"
                             style="width: 100%"></DatePicker>
@@ -123,6 +127,7 @@
             <Col span="8">
               <FormItem label="缴费时间:"  :label-width="70">
                 <DatePicker v-model="selectRow.thirdSubPaymentTime"
+                            @on-change="(t) => { sb(t,'thirdSubPaymentTime')}"
                             format="yyyy-MM-dd"
                             placeholder="科目三缴费时间"
                             style="width: 100%"></DatePicker>
@@ -130,10 +135,14 @@
             </Col>
             <Col span="8">
               <FormItem label="考试时间:" :label-width="70">
-                <DatePicker v-model="selectRow.thirdSubTestTime"
+<!--                v-model="selectRow.thirdSubTestTime"-->
+                <DatePicker  v-model="selectRow.thirdSubTestTime"
+                  @on-change="(t) => { sb(t,'thirdSubTestTime')}"
                             format="yyyy-MM-dd"
                             placeholder="科目三考试时间"
-                            style="width: 100%"></DatePicker>
+                            style="width: 100%"
+
+                ></DatePicker>
               </FormItem>
             </Col>
           </Row>
@@ -151,6 +160,7 @@
             <Col span="8">
               <FormItem  label="考试时间:"  :label-width="70">
                 <DatePicker v-model="selectRow.forthSubTestTime"
+                            @on-change="(t) => { sb(t,'forthSubTestTime')}"
                             format="yyyy-MM-dd"
                             placeholder="科目四考试时间"
                             style="width: 100%"></DatePicker>
@@ -202,6 +212,14 @@
       console.log(this.bmdList)
     },
     methods:{
+      sb(t,k){
+        if(t == ""){
+          this.selectRow[k]  = null
+        }else {
+          console.log(t?this.moment(t).format("YYYY-MM-DD"):'空');
+          this.selectRow[k] = this.moment(t).format("YYYY-MM-DD");
+        }
+      },
       getBmdList(){
         var v = this
         this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree,{timers:new Date().getTime()}).then((res) => {
@@ -279,16 +297,16 @@
           status:this.selectRow.status,
           serialNum: this.selectRow.serialNum,
           firSub: this.selectRow.firSub,
-          firSubPaymentTime:this.selectRow.firSubPaymentTime,
-          firSubTestTime: this.selectRow.firSubTestTime,
+          firSubPaymentTime:this.selectRow.firSubPaymentTime?this.moment( this.selectRow.firSubPaymentTime).format("YYYY-MM-DD"):"",
+          firSubTestTime: this.selectRow.firSubTestTime?this.moment(this.selectRow.firSubTestTime).format("YYYY-MM-DD"):"",
           secSub: this.selectRow.secSub,
-          secSubPaymentTime: this.selectRow.secSubPaymentTime,
-          secSubTestTime: this.selectRow.secSubTestTime,
+          secSubPaymentTime: this.selectRow.secSubPaymentTime?this.moment(this.selectRow.secSubPaymentTime).format("YYYY-MM-DD"):"",
+          secSubTestTime: this.selectRow.secSubTestTime?this.moment(this.selectRow.secSubTestTime).format("YYYY-MM-DD"):"",
           thirdSub:this.selectRow.thirdSub,
-          thirdSubPaymentTime:this.selectRow.thirdSubPaymentTime,
-          thirdSubTestTime:this.selectRow.thirdSubTestTime,
+          thirdSubPaymentTime:this.selectRow.thirdSubPaymentTime?this.moment(this.selectRow.thirdSubPaymentTime).format("YYYY-MM-DD"):"",
+          thirdSubTestTime:this.selectRow.thirdSubTestTime?this.moment(this.selectRow.thirdSubTestTime).format("YYYY-MM-DD"):"",
           forthSub:this.forthSub,
-          forthSubTestTime:this.forthSubTestTime
+          forthSubTestTime:this.selectRow.forthSubTestTime?this.moment(this.selectRow.forthSubTestTime).format("YYYY-MM-DD"):""
         }).then(res=>{
           if(res.code == 200){
             v.$parent.compName = ''

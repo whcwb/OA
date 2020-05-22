@@ -1617,8 +1617,8 @@ public class BizMainController {
 
         List<StudentAllModel> result = allIn.getResult();
         if(CollectionUtils.isNotEmpty(result)){
-            int total = 0;
             for (StudentAllModel model : result) {
+                int total = 0;
                 Map<Integer,String> dataMap  =new HashMap<>();
                 dataMap.put(0, model.getJgmc());
                 List<StudentAllModel.StuAll> stu = model.getStu();

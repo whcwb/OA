@@ -20,13 +20,18 @@
             <Input v-model="param.traineeNameLike" @on-enter="getpagerList" clearable
                    size="large" placeholder="学员姓名"/>
           </Col>
-
-          <Col span="5" :lg="5" :md="4">
+          <Col span="3" :lg="3" :md="4">
+            <Input v-model="param.serialnum" @on-enter="getpagerList"
+                   size="large" clearable
+                   placeholder="流水号"/>
+          </Col>
+          <Col span="4" :lg="4" :md="4">
             <Input v-model="param.idCardNoLike" @on-enter="getpagerList"
                    size="large" clearable
                    placeholder="证件号码"/>
           </Col>
-          <Col span="7" :lg="7" :md="4">
+
+          <Col span="5" :lg="5" :md="4">
             <DatePicker v-model="bmTime" split-panels type="daterange" :clearable="true" :editable="false"
                         @on-change="DatePickerC"
                         placement="bottom-end" placeholder="报名日期" style="width: 100% ;"></DatePicker>
@@ -253,11 +258,18 @@
             }
           },
           {
+            title: '流水号',
+            key: 'serialNum',
+            minWidth: 180,
+            align: "center"
+          },
+          {
             title: '证件号码',
             key: 'idCardNo',
             minWidth: 180,
             align: "center"
           },
+
           {
             title: '收费时间',
             align: 'center',

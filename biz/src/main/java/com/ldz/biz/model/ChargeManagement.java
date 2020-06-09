@@ -151,10 +151,21 @@ public class ChargeManagement implements Serializable {
     private TraineeInformation information;
     @Transient
     private String jgdm;
+    /**
+     * 机构管理员姓名
+     */
     @Transient
     private String glyxm;
+    /**
+     * 机构联系电话
+     */
     @Transient
     private String jgPhone;
+    /**
+     * 流水号
+     */
+    @Transient
+    private String serialNum;
     /**
      * 驳回人
      */
@@ -188,6 +199,14 @@ public class ChargeManagement implements Serializable {
      */
     private String ycyy;
 
+
+    public String getSerialNum() {
+        return serialNum;
+    }
+
+    public void setSerialNum(String serialNum) {
+        this.serialNum = serialNum;
+    }
 
     public String getYcr() {
         return ycr;

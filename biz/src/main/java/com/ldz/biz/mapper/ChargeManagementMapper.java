@@ -4,6 +4,7 @@ import com.ldz.biz.model.ChargeManagement;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
@@ -41,4 +42,6 @@ public interface ChargeManagementMapper extends Mapper<ChargeManagement> {
             " where a.charge_time &gt;= #{startTime} and a.charge_time &lt;= #{endTime} and  (charge_code ='0000' or charge_code = '0003') order by c.px asc </script>")
     List<ChargeManagement> getAllIn2( @Param("startTime") String startTime, @Param("endTime") String endTime);
 
+    @Select(" select id_card_no from trainee_information where serial_num like '%${serialnum}%'")
+    List<String> getIdCardNo(@Param("serialnum") String serialnum);
 }

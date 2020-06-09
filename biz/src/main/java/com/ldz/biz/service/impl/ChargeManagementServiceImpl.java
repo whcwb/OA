@@ -525,18 +525,29 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         ApiResponse<List<Map<String, Long>>> result = new ApiResponse<>();
         LinkedHashMap<String, Long> inMap = new LinkedHashMap<>();
         LinkedHashMap<String, Long> outMap = new LinkedHashMap<>();
-        // SimpleCondition condition= new SimpleCondition(ChargeManagement.class);
+
         LimitedCondition condition = getQueryCondition();
+        // 添加流水号查询 2020-06-05
+        String serialnum = getRequestParamterAsString("serialnum");
+        if(StringUtils.isNotBlank(serialnum)){
+            List<String> cardNo = baseMapper.getIdCardNo(serialnum);
+            if (CollectionUtils.isEmpty(cardNo)) {
+                return result;
+            }
+            condition.in(ChargeManagement.InnerColumn.idCardNo , cardNo);
+        }
+
         condition.and().andCondition(" zt = '00' or zt = '10'");
         condition.setOrderByClause(" SUBSTR(IFNULL(pjbh,'9999999999'),1,13) asc , charge_time desc ");
         PageInfo<ChargeManagement> info = findPage(page, condition);
-        info.getList().stream().forEach(chargeManagement -> {
+        info.getList().forEach(chargeManagement -> {
             if (StringUtils.isNotBlank(chargeManagement.getTraineeId())) {
                 TraineeInformation information = traineeInformationService.findById(chargeManagement.getTraineeId());
                 SysJg jg = jgService.findByOrgCode(information.getJgdm());
                 if (!ObjectUtils.isEmpty(information)) {
                     chargeManagement.setGlyxm(information.getGlyxm());
                     chargeManagement.setJgPhone(jg.getLxdh1());
+                    chargeManagement.setSerialNum(information.getSerialNum());
                 }
             }
         });
@@ -547,7 +558,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             SimpleCondition simpleCondition = new SimpleCondition(SysZdxm.class);
             simpleCondition.eq(SysZdxm.InnerColumn.zdlmdm, "ZDCLK1024");
             List<SysZdxm> zdxms = zdxmService.findByCondition(simpleCondition);
-            Map<String, String> collect = zdxms.stream().collect(Collectors.toMap(SysZdxm::getZddm, p -> p.getZdmc()));
+            Map<String, String> collect = zdxms.stream().collect(Collectors.toMap(SysZdxm::getZddm, SysZdxm::getZdmc));
             // 总支出
             Map<String, List<ChargeManagement>> map = managements.stream().filter(chargeManagement -> StringUtils.isNotBlank(chargeManagement.getInOutType())).collect(Collectors.groupingBy(ChargeManagement::getInOutType));
             if (map.get("10") != null) {

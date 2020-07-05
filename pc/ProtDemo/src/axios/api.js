@@ -1,19 +1,9 @@
-// let ajaxUrl = 'http://127.0.0.1:8082';
-// let ajaxUrl = 'http://192.168.0.105:8080';
-// let ajaxUrl = 'http://192.168.123.12:10010';//羊
-// let ajaxUrl ='http://192.168.123.69:10010'; // 陈伟
-// let ajaxUrl ='http://192.168.123.6:10010';//宋
-// let ajaxUrl ='http://192.168.0.101:10010';//宋
-// let ajaxUrl = 'http://mt.xxpt123.com:81';
-// let ajaxUrl = 'http://localhost:10010';
-let ajaxUrl = 'http://47.110.39.144:8082';
+let ajaxUrl = 'http://localhost:10010';
+// let ajaxUrl = 'http://47.110.39.144:8082';
 export default {
   NETWORK_ERR_STR: '网络加载异常!',
-  // url:'http://192.168.3.234:10010',
-  // url:'http://47.98.39.45:9986/biz',
   url: ajaxUrl,
   upFile: ajaxUrl + '/upload',
-  // getImgUrl: 'http://192.168.3.35:8889'+'/img/',
   getImgUrl: ajaxUrl + '/img/',
   LOGIN: {
     QUERY: 'login',

@@ -14,8 +14,10 @@ import com.ldz.sys.base.LimitedCondition;
 import com.ldz.sys.model.SysJg;
 import com.ldz.sys.model.SysMessage;
 import com.ldz.sys.model.SysYh;
+import com.ldz.sys.model.SysZdxm;
 import com.ldz.sys.service.JgService;
 import com.ldz.sys.service.SysMessageService;
+import com.ldz.sys.service.ZdxmService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.*;
@@ -86,6 +88,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     private Integer qqJg;
     @Autowired
     private SysMessageService messageService;//消息下发
+    @Autowired
+    private ZdxmService zdxmService;
 
     @Override
     protected Mapper<TraineeInformation> getBaseMapper() {
@@ -1271,6 +1275,10 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifBlank(traineeId, "请选择缴费学员");
         RuntimeCheck.ifBlank(amount, "请填写缴费金额");
         RuntimeCheck.ifBlank(km, "请选择缴费科目");
+        String key = traineeId + "-" + amount + "-" + km;
+        String params = redisDao.boundValueOps(key).get();
+        RuntimeCheck.ifTrue(StringUtils.isNotBlank(params), "请勿重复提交数据");
+        redisDao.boundValueOps(key).set("1", 5 , TimeUnit.SECONDS);
         SimpleCondition chacondition = new SimpleCondition(ChargeManagement.class);
         chacondition.eq(ChargeManagement.InnerColumn.traineeId, traineeId);
         if (StringUtils.equals(km, "10")) {
@@ -1286,7 +1294,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (CollectionUtils.isNotEmpty(list)) {
             return ApiResponse.fail(" 该学员已于 " + list.get(0).getCjsj().substring(0, 10) + " 交过初考费");
         }
-
         SysYh currentUser = getCurrentUser();
         TraineeInformation information = findById(traineeId);
         String chargeCode = "";
@@ -2458,22 +2465,18 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (StringUtils.equals(information.getClassType(), classType)) {
             return ApiResponse.fail("当前班型已经是该班型，不需要修改");
         }
-        if (!StringUtils.containsAny(classType, "10", "20", "30", "40", "50")) {
+
+
+        List<SysZdxm> zdxms = zdxmService.findEq(SysZdxm.InnerColumn.zdlmdm, "ZDCLK1002");
+        Map<String, String> map = zdxms.stream().collect(Collectors.toMap(SysZdxm::getZddm, SysZdxm::getZdmc));
+        Set<String> set = map.keySet();
+
+        if (!set.contains(classType)) {
             return ApiResponse.fail("所选车型有误，请重新选择");
         }
 
         String oldClassType = information.getCarType();
-        if (StringUtils.equals(oldClassType, "10")) {
-            oldClassType = "普通班";
-        } else if (StringUtils.equals(oldClassType, "20")) {
-            oldClassType = "VIP班";
-        } else if (StringUtils.equals(oldClassType, "30")) {
-            oldClassType = "超级VIP班";
-        } else if (StringUtils.equals(oldClassType, "40")) {
-            oldClassType = "挂靠班";
-        } else if (StringUtils.equals(oldClassType, "50")) {
-            oldClassType = "承包班";
-        }
+        oldClassType = map.get(oldClassType);
         ChargeManagement management = new ChargeManagement();
         // management.setRemark(" 修改车型 : " + information.getCarType() + " -> " + carType + " - " +  remark);
 

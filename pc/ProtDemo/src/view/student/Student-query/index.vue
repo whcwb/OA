@@ -212,7 +212,6 @@
               align: 'center',
               width: 120,
               render: (h, params) => {
-                  console.log(params.row.classType);
                   var classType = this.dictUtil.getByCode(this, this.dictList.classType.code);
                   for (let item of classType) {
                       if (params.row.classType == item.key) {
@@ -221,7 +220,21 @@
                   }
 
                   return h('div', params.row.classType);
-              }
+              },
+            filters:[
+              {label:'普通班',value:'10'},
+              {label: 'VIP班',value: "20"},
+              {label:'超级VIP班',value:'30'},
+              {label:'挂靠班',value:'40'},
+              {label:'承包班',value:'50'},
+              {label:'挂靠自费班',value:'60'},
+              {label:'贵宾班',value:'70'},
+              {label:'全包班',value:'80'}],
+            filterRemote: (value,p,v) => {
+              this.param.classTypeIn = value.join(",");
+              this.getPagerList();
+              return true;
+            }
           },
           {
             title: '车型', width: 100, key: 'carType', align: 'center',

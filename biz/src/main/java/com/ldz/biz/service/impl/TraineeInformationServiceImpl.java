@@ -1311,7 +1311,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         } else if (StringUtils.equals(km, "30")) {
             chargeCode = FeeType.THIRD_SUB;
             // 科目三缴费时 需要先交科目二的费用 ， 判断科目二是否已经缴纳费用
-            RuntimeCheck.ifTrue(StringUtils.isBlank(information.getSecSubPaymentTime()), "请先缴纳科目二的考试费用");
+//            RuntimeCheck.ifTrue(StringUtils.isBlank(information.getSecSubPaymentTime()), "请先缴纳科目二的考试费用");
             if (StringUtils.isNotBlank(information.getThirdSubPaymentTime())) {
                 return ApiResponse.fail("该学员已于" + information.getThirdSubPaymentTime() + "交过考试费");
             }

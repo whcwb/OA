@@ -439,12 +439,25 @@
         ],
       }
     },
-    created() {
-      let strTime = this.AF.trimDate().split('-')
-      strTime[0] = parseInt(strTime[0]) - 3
-      strTime[2] = '01'
-      strTime = strTime.join('-')
-      this.param.bmTime = [strTime, this.AF.trimDate()]
+    created: function () {
+      let item = sessionStorage.getItem("student_query_bmTime");
+      if(item){
+        let bmTime =  JSON.parse(item);
+        let start = new Date(new Date(bmTime[0]).getTime() + 8 * 60 * 60 * 1000);
+        let trimDate = this.AF.trimDate(start);
+        let end = new Date(new Date(bmTime[1]).getTime() + 8 * 60 * 60 * 1000);
+        let trimDate1 = this.AF.trimDate(end);
+        this.param.bmTime = [trimDate,trimDate1];
+      }else{
+        let strTime = this.AF.trimDate().split('-')
+        strTime[0] = parseInt(strTime[0]) - 3
+        strTime[2] = '01'
+        strTime = strTime.join('-')
+        this.param.bmTime = [strTime, this.AF.trimDate()]
+        console.log("start_time", this.param.bmTime)
+      }
+
+
       this.getkm()
       this.getDictList();
       this.getBmdList();
@@ -467,7 +480,8 @@
         },
       getPagerList(val) {
         if(val){
-          this.param.bmTime = []
+        }else {
+          sessionStorage.setItem("student_query_bmTime", JSON.stringify(this.param.bmTime));
         }
         this.$http.post(this.apis.TRAINEE.PAGER, this.param).then(res => {
           if (res.code == 200) {

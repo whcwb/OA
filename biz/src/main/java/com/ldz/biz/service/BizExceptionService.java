@@ -50,4 +50,6 @@ public interface BizExceptionService extends BaseService<BizException, java.lang
 	public ApiResponse<Map<String, Integer>> dashboard();
 
     ApiResponse<String> updateException(String id);
+
+    void clearExceptionById(String id);
 }

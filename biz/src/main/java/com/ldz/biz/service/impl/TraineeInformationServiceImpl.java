@@ -295,8 +295,16 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         Map<String, List<TraineeTestInfo>> map = testInfoList.stream().collect(Collectors.groupingBy(TraineeTestInfo::getTraineeId));
         for (TraineeInformation traineeInformation : list) {
             traineeInformation.setTestInfos(map.get(traineeInformation.getId()));
+            if(StringUtils.isNotBlank(traineeInformation.getReferrer())){
+                if(traineeInformation.getReferrer().contains("-")){
+                    traineeInformation.setLo("local");
+                }else if(traineeInformation.getReferrer().contains("队")){
+                    traineeInformation.setLo("branch");
+                }else{
+                    traineeInformation.setLo("other");
+                }
+            }
         }
-
         HttpServletRequest requset = getRequset();
         String sign = requset.getParameter("sign");
         String arr = requset.getParameter("arr");
@@ -375,27 +383,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
                 }
             }
         }
-
-
-//		//将该用户的身份证正面、反面 地址反馈出来 目前客户没有这个需求，所以此代码暂时注掉
-//		if(CollectionUtils.isNotEmpty(list)){
-//	    	for(TraineeInformation t:list){
-//				SimpleCondition elecCondition = new SimpleCondition(ElecArchivesManage.class);
-//				elecCondition.eq(ElecArchivesManage.InnerColumn.traineeId,t.getId());
-//				elecCondition.setOrderByClause(ElecArchivesManage.InnerColumn.id.desc());
-//				List<ElecArchivesManage> elecArchivesManageList=elecService.findByCondition(elecCondition);
-//				if(elecArchivesManageList!=null&&elecArchivesManageList.size()>0){
-//					for(ElecArchivesManage elec:elecArchivesManageList){
-//						//类型  0、学员签名 1、身份证正面  2、身份证反面 3、学员头像
-//						if(StringUtils.equals(elec.getType(),"1")){
-//							t.setCardFront(elec.getFilePath());
-//						}else if(StringUtils.equals(elec.getType(),"2")){
-//							t.setCardBack(elec.getFilePath());
-//						}
-//					}
-//				}
-//			}
-//		}
 
     }
 
@@ -2068,6 +2055,8 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         if (save > 0) {
             traineeStatusService.saveEntity(information, "学员退学", "00", oldStatus);
         }
+        // 学员已退学 , 将所有的异常清空
+        exceptionService.clearExceptionById(information.getId());
         return ApiResponse.success();
     }
 
@@ -2359,7 +2348,6 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         managementPage.setPageSize(page.getPageSize());
         managementPage.setPageNum(page.getPageNum());
 
-        // PageHelper.startPage(page.getPageNum(),page.getPageSize());
         PageInfo<ChargeManagement> page1 = chargeManagementService.findPage(managementPage, simpleCondition);
         List<String> list = page1.getList().stream().map(ChargeManagement::getTraineeId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(list)) {
@@ -3074,14 +3062,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     @Override
     public ApiResponse<String> getTestStudents(int pageSize, int pageNum, String kskm) {
         Map<String, String> kmMap = new HashMap<>();
-      /*  kmMap.put("1", "10");
-        kmMap.put("2", "20");
-        kmMap.put("3", "30");
-        kmMap.put("4", "40");
-        kmMap.put("10", "科目一");
-        kmMap.put("20", "科目二");
-        kmMap.put("30", "科目三");
-        kmMap.put("40", "科目四");*/
+
         kmMap.put("1", "fir_sub_test_time");
         kmMap.put("2", "sec_sub_test_time");
         kmMap.put("3", "third_sub_test_time");
@@ -3520,19 +3501,69 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifBlank(information.getId(), "请选择要修改的学员信息");
         TraineeInformation info = findById(information.getId());
         RuntimeCheck.ifNull(info , "未找到学员信息");
-//        RuntimeCheck.ifTrue(StringUtils.equals("60",info.getStatus()) || StringUtils.equals("50",info.getStatus()), "学员已经结业或者退学 , 不能修改");
         RuntimeCheck.ifTrue(StringUtils.equals(info.getStatus(), "99"), "当前学员还未收费 , 不能修改状态");
         RuntimeCheck.ifTrue(StringUtils.isBlank(info.getSerialNum()) && StringUtils.isBlank(information.getSerialNum()) && information.getStatus().compareTo("00") > 0, "学员没有流水号 , 请先输入流水号");
         if( StringUtils.isBlank(info.getSerialNum()) && StringUtils.isNotBlank(information.getSerialNum())){
             information.setAcceptTime(DateUtils.getNowTime());
             information.setAcceptStatus("20");
         }
+        SysYh sysYh = getCurrentUser();
+        if(StringUtils.isNotBlank(info.getReferrer())){
+            // 如果推荐人不为空
+            if(info.getReferrer().contains("-") ){
+                if(!info.getReferrer().split("-")[1].equals(information.getReferrer())){
+                    // 首先判断当前是否为员工id , 如果是按照换内部推荐人处理
+                    Zgjbxx zgjbxx = zgjbxxService.findById(information.getReferrer());
+                    if(zgjbxx != null){
+                        ZgTjjl zgTjjl = new ZgTjjl();
+                        zgTjjl.setCjr(sysYh.getZh() + "-" + sysYh.getXm());
+                        zgTjjl.setCjsj(DateUtils.getNowTime());
+                        zgTjjl.setId(genId());
+                        zgTjjl.setZgId(zgjbxx.getId());
+                        zgTjjl.setTraineeId(info.getId());
+                        zgTjjlService.save(zgTjjl);
+                        ZgTjjl tjjl = new ZgTjjl();
+                        tjjl.setZgId(info.getReferrer().split("-")[1]);
+                        tjjl.setTraineeId(info.getId());
+                        zgTjjlService.remove(tjjl);
+                        information.setReferrer(zgjbxx.getXm() + "-"  + zgjbxx.getId());
+                    }
+                }else {
+                    information.setReferrer(info.getReferrer());
+                }
+
+            }else{
+                Zgjbxx zgjbxx = zgjbxxService.findById(information.getReferrer());
+                if(zgjbxx != null){
+                    ZgTjjl zgTjjl = new ZgTjjl();
+                    zgTjjl.setCjr(sysYh.getZh() + "-" + sysYh.getXm());
+                    zgTjjl.setCjsj(DateUtils.getNowTime());
+                    zgTjjl.setId(genId());
+                    zgTjjl.setZgId(zgjbxx.getId());
+                    zgTjjl.setTraineeId(info.getId());
+                    zgTjjlService.save(zgTjjl);
+                    information.setReferrer(zgjbxx.getXm() + "-"  + zgjbxx.getId());
+                }
+            }
+        }else{
+            Zgjbxx zgjbxx = zgjbxxService.findById(information.getReferrer());
+            if(zgjbxx != null){
+                ZgTjjl zgTjjl = new ZgTjjl();
+                zgTjjl.setCjr(sysYh.getZh() + "-" + sysYh.getXm());
+                zgTjjl.setCjsj(DateUtils.getNowTime());
+                zgTjjl.setId(genId());
+                zgTjjl.setZgId(zgjbxx.getId());
+                zgTjjl.setTraineeId(info.getId());
+                zgTjjlService.save(zgTjjl);
+                information.setReferrer(zgjbxx.getXm() + "-"  + zgjbxx.getId());
+            }
+        }
         if(StringUtils.isNotBlank(information.getJgdm()) && !StringUtils.equals(info.getJgdm(),information.getJgdm())){
             SysJg jg = jgService.findByOrgCode(information.getJgdm());
             information.setJgmc("明涛驾校/" +  jg.getJgmc());
             information.setGlyxm(jg.getGlyxm());
         }
-        SysYh sysYh = getCurrentUser();
+
         BizException exception = new BizException();
         exception.setSfzmhm(information.getIdCardNo());
         exception.setXm(information.getName());

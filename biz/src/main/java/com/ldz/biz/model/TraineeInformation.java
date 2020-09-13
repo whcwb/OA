@@ -494,6 +494,17 @@ public class TraineeInformation implements Serializable {
     @Transient
     private Integer total;
 
+    @Transient
+    private String lo;
+
+    public String getLo() {
+        return lo;
+    }
+
+    public void setLo(String lo) {
+        this.lo = lo;
+    }
+
     public Integer getTotal() {
         return total;
     }

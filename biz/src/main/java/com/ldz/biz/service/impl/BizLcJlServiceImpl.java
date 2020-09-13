@@ -259,7 +259,7 @@ public class BizLcJlServiceImpl extends BaseServiceImpl<BizLcJl, String> impleme
         Date start = dateFormat.parse(kssj);
 
         // 计算实际时长  (所有车辆免费前五分钟)
-        int lcSc = (int) ((end.getTime() - start.getTime()) / (1000 * 60) - 5) < 0 ? 0 : (int) ((end.getTime() - start.getTime()) / (1000 * 60) - 5);
+        int lcSc = Math.max((int) ((end.getTime() - start.getTime()) / (1000 * 60) - 5), 0);
 
         // 计算练车费用
         SimpleCondition condition = new SimpleCondition(SysZdxm.class);
@@ -424,7 +424,6 @@ public class BizLcJlServiceImpl extends BaseServiceImpl<BizLcJl, String> impleme
                 continue;
             }
             if (StringUtils.isBlank(num) || StringUtils.equals(num,"null")) {
-                continue;
             } else {
                 int anInt = Integer.parseInt(num);
                 for (int i = 0; i < anInt; i++) {
@@ -623,18 +622,6 @@ public class BizLcJlServiceImpl extends BaseServiceImpl<BizLcJl, String> impleme
     public ApiResponse<List<LcJlModel>> getAllLog() {
         List<LcJlModel> list = new ArrayList<>();
         LimitedCondition condition = getQueryCondition();
-       /* String cjsjGte = getRequestParamterAsString("cjsjGte");
-        String cjsjLte = getRequestParamterAsString("cjsjLte");
-        if(StringUtils.isBlank(cjsjGte)){
-            condition.gte(BizLcJl.InnerColumn.cjsj, DateUtils.getDateStr(new Date(),"yyyy-MM-dd")+ " 00:00:00");
-        }
-        if(StringUtils.isBlank(cjsjLte)){
-            condition.lte(BizLcJl.InnerColumn.cjsj, DateUtils.getDateStr(new Date(),"yyyy-MM-dd") + " 23:59:59");
-        }*/
-        /*String cjsjLike = getRequestParamterAsString("cjsjLike");
-        if(StringUtils.isBlank(cjsjLike)){
-            condition.like(BizLcJl.InnerColumn.cjsj,DateUtils.getDateStr(new Date(), "yyyy-MM-dd"));
-        }*/
         condition.and().andIsNotNull(BizLcJl.InnerColumn.lcFy.name());
         List<BizLcJl> jls = findByCondition(condition);
         if (CollectionUtils.isNotEmpty(jls)) {
@@ -679,18 +666,6 @@ public class BizLcJlServiceImpl extends BaseServiceImpl<BizLcJl, String> impleme
         RuntimeCheck.ifBlank(zgId, "请选择安全员");
         // 首先查询当天所有的安全员记录
         LimitedCondition condition = getQueryCondition();
-        /*String cjsjLike = getRequestParamterAsString("cjsjLike");
-        if(StringUtils.isBlank(cjsjLike)){
-            condition.like(BizLcJl.InnerColumn.cjsj,DateUtils.getDateStr(new Date(), "yyyy-MM-dd"));
-        }*/
-       /* String cjsjGte = getRequestParamterAsString("cjsjGte");
-        String cjsjLte = getRequestParamterAsString("cjsjLte");
-        if(StringUtils.isBlank(cjsjGte)){
-            condition.gte(BizLcJl.InnerColumn.cjsj, DateUtils.getDateStr(new Date(),"yyyy-MM-dd")+ " 00:00:00");
-        }
-        if(StringUtils.isBlank(cjsjLte)){
-            condition.lte(BizLcJl.InnerColumn.cjsj, DateUtils.getDateStr(new Date(),"yyyy-MM-dd") + " 23:59:59");
-        }*/
         condition.eq(BizLcJl.InnerColumn.zgId, zgId);
         condition.and().andIsNotNull(BizLcJl.InnerColumn.lcFy.name());
         List<BizLcJl> jls = findByCondition(condition);

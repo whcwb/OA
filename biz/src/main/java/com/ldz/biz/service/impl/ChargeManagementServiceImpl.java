@@ -149,7 +149,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
                 }
                 // 欠费金额
                 int oweAmount = traineeInformation.getOweAmount();
-
+                RuntimeCheck.ifTrue(oweAmount <= 0 , "学员已还款,请勿重复操作");
                 traineeInformation.setOweAmount(0);
                 // 不欠费
                 traineeInformation.setArrearage("00");

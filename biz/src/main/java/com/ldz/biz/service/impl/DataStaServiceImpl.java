@@ -743,7 +743,7 @@ public class DataStaServiceImpl implements DataStaService {
             km = map.get(km);
         }
         List<TraineeTestInfo> info = testInfoService.getInfo(jgdm, startTime, endTime, km);
-        LinkedHashMap<String, List<TraineeTestInfo>> collect = info.stream().collect(Collectors.groupingBy(TraineeTestInfo::getJgdm, LinkedHashMap::new, Collectors.toList()));
+        LinkedHashMap<String, List<TraineeTestInfo>> collect = info.stream().filter(traineeTestInfo -> StringUtils.isNotBlank(traineeTestInfo.getJgdm())).collect(Collectors.groupingBy(TraineeTestInfo::getJgdm, LinkedHashMap::new, Collectors.toList()));
         // 计算合格率
         for (String s : collect.keySet()) {
             LinkedHashMap<String, String> dataMap = new LinkedHashMap<>();

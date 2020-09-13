@@ -7,11 +7,14 @@ import com.ldz.biz.service.*;
 import com.ldz.sys.base.BaseServiceImpl;
 import com.ldz.sys.model.SysMessage;
 import com.ldz.sys.model.SysYh;
+import com.ldz.sys.model.SysZdxm;
 import com.ldz.sys.service.SysMessageService;
+import com.ldz.sys.service.ZdxmService;
 import com.ldz.util.bean.ApiResponse;
 import com.ldz.util.bean.SimpleCondition;
 import com.ldz.util.commonUtil.DateUtils;
 import com.ldz.util.commonUtil.JsonUtil;
+import com.ldz.util.exception.RuntimeCheck;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -42,7 +45,8 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
     private TraineeInformationService traineeInformationService;//学员列表
     @Autowired
     private TraineeStatusService traineeStatusService;//学员状态表
-
+    @Autowired
+    private ZdxmService zdxmService;
     @Autowired
     private CoachTraineeRercordService coachTraineeRercordService;//教练学员分配表
     @Autowired
@@ -642,16 +646,6 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     }
                 }
             }
-            /*if (StringUtils.isNotEmpty(map.get(16))) {
-
-                if (StringUtils.equals(map.get(16).trim(), "不合格") || StringUtils.equals(map.get(16).trim(), "缺考")) {
-                    testResult = "10";
-                } else if (StringUtils.equals(map.get(16).trim(), "合格")) {
-                    obj.setPayStatus("00");
-                } else {
-                    return ApiResponse.fail("考试结果状态不对。考试结果：" + map.get(16));
-                }
-            }*/
             if (CollectionUtils.isNotEmpty(orgs)) {
                 for (TraineeTestInfo org : orgs) {
                     org.setTestResult(testResult);
@@ -774,6 +768,21 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 coachTraineeRercordService.update(coachTraineeRercord);
             }
             traineeInformationService.update(information);
+            // 查看学员是否已经毕业 , 若毕业 则清空当前学员的异常信息
+            if(StringUtils.equals(information.getStatus(),"50")){
+                SimpleCondition condition1 = new SimpleCondition(BizException.class);
+                condition1.eq(BizException.InnerColumn.zt,"00");
+                condition1.eq(BizException.InnerColumn.xyid, information.getId());
+                List<BizException> exceptions = exceptionService.findByCondition(condition1);
+                if(CollectionUtils.isNotEmpty(exceptions)){
+                    for (BizException exception : exceptions) {
+                        exception.setZt("10");
+                        exception.setGxsj(DateUtils.getNowTime());
+                        exception.setGxr(sysUser.getXm() + "-" + sysUser.getZh());
+                        exceptionService.update(exception);
+                    }
+                }
+            }
             BizException exception = new BizException();
             exception.setSfzmhm(map.get(5));
             exception.setKskm(kmMap.get(kmCode));
@@ -911,6 +920,10 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
         Map<String, List<TraineeInformation>> listMap = infos.stream().collect(Collectors.groupingBy(TraineeInformation::getIdCardNo));
         int mapSize = 0;
         List<TraineeInformation> resultMap = new ArrayList<>();
+        // 查询班型字典代码
+        List<SysZdxm> zdxms = zdxmService.findByTypeCode("ZDCLK1002");
+        RuntimeCheck.ifEmpty(zdxms, "字典项缺失 , 请联系管理员");
+        Map<String, String> classTypeMap = zdxms.stream().collect(Collectors.toMap(SysZdxm::getZddm, SysZdxm::getZdmc));
         for (Map<Integer, String> map : list) {
             Map<Integer, String> tableNameInfo = Maps.newLinkedHashMap();
             Map<String, String> webMap = new HashMap<>();
@@ -925,6 +938,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 map.put(mapSize + 6, "实收金额");
                 map.put(mapSize + 7, "欠费金额");
                 map.put(mapSize + 8, "初考/补考");
+                map.put(mapSize + 9, "班型");
                 resultList.add(map);
                 errorList.add(map);
             } else {
@@ -1002,6 +1016,9 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     if (StringUtils.isNotBlank(subTestNums)) {
                         map.put(mapSize + 8, Integer.parseInt(subTestNums) <= 0 ? "初考" : "补考");
                     }
+                    if(information != null){
+                        map.put(mapSize + 9 , classTypeMap.get(information.getClassType()));
+                    }
                     webMap.put("jgmc", jgmc);
                     webMap.put("trainStatus", trainStatus);
                     webMap.put("subTestNums", subTestNums);
@@ -1021,7 +1038,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                         information.setName(map.get(0));
                         information.setJgmc("非本校学员");
                     }
-                    information.setTestInfos(Arrays.asList(testInfo));
+                    information.setTestInfos(Collections.singletonList(testInfo));
                     resultMap.add(information);
                 } else {
                     webMap.put("success", "0");

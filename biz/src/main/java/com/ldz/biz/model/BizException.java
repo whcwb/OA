@@ -367,7 +367,8 @@ public class BizException implements Serializable {
         gxsj("gxsj"),
         gxr("gxr"),
         bz1("bz1"),
-        bz2("bz2");
+        bz2("bz2"),
+        xyid("XYID");
 
         private final String column;
 

@@ -7,20 +7,13 @@
             <div solt="title" style="height: 32px;">
               <pager-tit title="信息录入"></pager-tit>
             </div>
-            <!--<div slot="extra">
-                <Button type="default" icon="md-refresh" style="font-size: 18px" @click="initPage">重置</Button>
-                &nbsp;
-                <Button type="success" icon="md-checkmark-circle-outline" style="font-size: 18px" @click="submit('userForm')">
-                  保存
-                </Button>
-            </div>-->
             <Row style="padding-top:10px">
               <Col offset="1" span="24">
                 <Row>
                   <Col span="8">
                     <FormItem prop="idCardNo">
                       <Input prefix=" iconfont icon-2shenfenzhenghaoma" type="text" placeholder="身份证件号(必填)"
-                             v-model="user.idCardNo"/>
+                             v-model="user.idCardNo" maxlength="18"/>
                     </FormItem>
                   </Col>
                   <Col span="6">
@@ -39,12 +32,6 @@
                   <Col span="4" style="padding-left: 10px;">
                     <Button type="info" @click="readCard" icon="md-card">读卡</Button>{{AutoReadCard}}
                   </Col>
-                  <!--<Col span="4">
-                    <FormItem>
-                      <Input prefix=" iconfont icon-rili" disabled type="text" placeholder="出生日期"
-                             v-model="user.birDay"/>
-                    </FormItem>
-                  </Col>-->
                 </Row>
                 <Row>
                   <Col span="6">
@@ -58,28 +45,6 @@
                     </FormItem>
                   </Col>
                 </Row>
-                <!--<Row>
-                  <Col span="8">
-                    <FormItem>
-                      <Input prefix=" iconfont icon-dizhi" type="text" placeholder="居住地址" v-model="user.address"/>
-                    </FormItem>
-                  </Col>
-                  <Col span="6">
-                    <FormItem>
-                      <Input v-if="user.idCardEndTime == '长期'"
-                             :value="user.idCardStartTime+' — '+user.idCardEndTime" readonly placeholder="证件有效期" />
-
-                      <DatePicker v-else v-model="user.idCardTime" split-panels type="daterange" placement="bottom-end" placeholder="证件有效日期"
-                                  style="width: 100% ;"></DatePicker>
-                    </FormItem>
-                  </Col>
-                  <Col span="4" style="padding-left: 10px;">
-                    <Button type="info" @click="readCard" icon="md-card">读卡</Button>{{AutoReadCard}}
-                  </Col>
-                  <Col span="4" style="padding-left: 10px;vertical-align: bottom">
-                    <Checkbox :checked.sync="repeat"  @on-change="CheckboxChange">重学优惠</Checkbox>
-                  </Col>
-                </Row>-->
                 <Row>
                   <Col span="3">
                     <FormItem prop="jgdm">   <!-- prop="jgdm"--> <!--v-model="fullJgdmPath"-->

@@ -49,8 +49,8 @@ public interface TraineeInformationMapper extends Mapper<TraineeInformation> {
     @Select("<script>" +
             "   SELECT *  FROM trainee_information m LEFT JOIN trainee_test_info c ON  " +
             "m.id=c.trainee_id " +
-            "AND m.${kmTestColumn}=c.test_time " +
-            " WHERE STATUS NOT IN ('50', '60') AND c.subject=#{subject}  " +
+            "AND m.${kmTestColumn}=c.test_time AND c.subject=#{subject}  " +
+            " WHERE STATUS NOT IN ('50', '60')  " +
             " AND ${condition} AND (c.`test_result` IS NULL OR test_result='') " +
             " <if test = 'idCardNo != null '>" +
             " AND m.id_card_no like '%${idCardNo}%'" +

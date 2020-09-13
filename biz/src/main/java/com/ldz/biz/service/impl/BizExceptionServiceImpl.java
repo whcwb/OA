@@ -8,6 +8,7 @@ import com.ldz.biz.constant.FeeType;
 import com.ldz.biz.constant.Status;
 import com.ldz.biz.model.*;
 import com.ldz.biz.service.*;
+import com.ldz.util.commonUtil.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -354,6 +355,23 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 		}
 		update(exception);
 		return ApiResponse.success();
+	}
+
+    @Override
+    public void clearExceptionById(String id) {
+		SimpleCondition condition = new SimpleCondition(BizException.class);
+		condition.eq(BizException.InnerColumn.xyid, id);
+		condition.eq(BizException.InnerColumn.zt, "00");
+		List<BizException> exceptions = findByCondition(condition);
+		if(CollectionUtils.isNotEmpty(exceptions)){
+			SysYh sysYh = getCurrentUser();
+			exceptions.forEach(e -> {
+				e.setZt("10");
+				e.setGxsj(DateUtils.getNowTime());
+				e.setGxr(sysYh.getXm() + "-" + sysYh.getZh());
+				update(e);
+			});
+		}
 	}
 
 }

@@ -272,6 +272,7 @@ public class BizMainController {
         map.put(6, "收费记录");
         map.put(7, "时间");
         map.put(8, "操作人");
+        map.put(9, "流水号");
         data.add(map);
         if (pagerList != null && pagerList.isSuccess()) {
             List<ChargeManagement> dataList = pagerList.getPage().getList();
@@ -289,6 +290,7 @@ public class BizMainController {
                     m.put(6, l.getChargeFee() + "");
                     m.put(7, l.getCjsj());
                     m.put(8, l.getCjr());
+                    m.put(9, l.getSerialNum());
                     data.add(m);
                 }
             }
@@ -931,21 +933,30 @@ public class BizMainController {
         }
         List<Map<Integer, String>> data = new ArrayList<>();
         if (StringUtils.equals(sign, "7")) {
-            condition.and().andCondition(" (status='10' and (fir_sub_test_num =0 or fir_sub_test_num =1)  and (fir_sub is null or fir_sub = '')) or fir_sub='30' and fir_sub='40'");
+            condition.and().andCondition("  fir_sub_test_time != '' ");
             condition.and().andCondition("fir_sub_payment_time is  null or fir_sub_payment_time = '' ");
-            condition.eq(TraineeInformation.InnerColumn.acceptStatus, "20");
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
+            condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
+            condition.setOrderByClause(" code asc,fir_sub_test_time asc");
+
             if (StringUtils.isNotBlank(firSubTestTimeLike)) {
                 condition.like(TraineeInformation.InnerColumn.firSubTestTime, firSubTestTimeLike);
             }
         } else if (StringUtils.equals(sign, "2")) {
-            condition.and().andCondition(" (sec_sub = '10' and status='20' and sec_sub_test_num = 1) or sec_sub='30' or sec_sub = '40'");
-            condition.and().andCondition("sec_sub_payment_time is null or sec_sub_payment_time = ''");
+            condition.and().andCondition("  sec_sub_test_time != ''");
+            condition.and().andCondition(" sec_sub_payment_time is null or sec_sub_payment_time = '' ");
+            condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
+            condition.setOrderByClause("code asc, sec_sub_test_time asc  ");
             if (StringUtils.isNotBlank(secSubTestTimeLike)) {
                 condition.like(TraineeInformation.InnerColumn.secSubTestTime, secSubTestTimeLike);
             }
         } else if (StringUtils.equals(sign, "3")) {
-            condition.and().andCondition(" (third_sub_test_num =1 and third_sub = '10' and status='30') or third_sub='30' or third_sub='40'");
+            condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
+            condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
+            condition.and().andCondition("   third_sub_test_time != '' ");
             condition.and().andCondition("third_sub_payment_time is null or third_sub_payment_time = ''"); // 考试费未缴纳
+            condition.setOrderByClause("code asc, third_sub_test_time asc  ");
             if (StringUtils.isNotBlank(thirdSubTestTimeLike)) {
                 condition.like(TraineeInformation.InnerColumn.thirdSubTestTime, thirdSubTestTimeLike);
             }

@@ -11,8 +11,11 @@
       </div>
     </div>
     <div class="">
-      <div style="line-height: 40px;border-bottom: #f2f2f2 2px solid">
+      <div v-if="mess.carType" style="line-height: 40px;border-bottom: #f2f2f2 2px solid">
         {{mess.carType}}
+      </div>
+      <div v-else style="line-height: 40px;border-bottom: #f2f2f2 2px solid">
+        -
       </div>
       <div>
         <div class="box_row colCenter borbot rowRight" v-if="mess.institutions.length > 0 ">
@@ -20,6 +23,12 @@
           <span style="color: crimson;font-size: 22px;font-weight: 700"
           v-if="mess.institutions.length >2">
             +{{mess.institutions.length -2}}
+          </span>
+        </div>
+        <div class="box_row colCenter borbot rowRight" v-else >
+          <Tag color="orange" v-for="(item,index) in [{jgmc:'其他收费'}]" v-if="index < 2">{{item.jgmc}}</Tag>
+          <span style="color: crimson;font-size: 22px;font-weight: 700">
+
           </span>
         </div>
         <div class="box_row colCenter borbot rowRight" v-else>

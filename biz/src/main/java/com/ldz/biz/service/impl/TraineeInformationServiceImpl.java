@@ -1262,10 +1262,12 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifBlank(traineeId, "请选择缴费学员");
         RuntimeCheck.ifBlank(amount, "请填写缴费金额");
         RuntimeCheck.ifBlank(km, "请选择缴费科目");
-        String key = traineeId + "-" + amount + "-" + km;
-        String params = redisDao.boundValueOps(key).get();
-        RuntimeCheck.ifTrue(StringUtils.isNotBlank(params), "请勿重复提交数据");
-        redisDao.boundValueOps(key).set("1", 5 , TimeUnit.SECONDS);
+        String key = traineeId +  "-" + km;
+        synchronized (this){
+            String params = redisDao.boundValueOps(key).get();
+            RuntimeCheck.ifTrue(StringUtils.isNotBlank(params), "请勿重复提交数据");
+            redisDao.boundValueOps(key).set("1", 10 , TimeUnit.SECONDS);
+        }
         SimpleCondition chacondition = new SimpleCondition(ChargeManagement.class);
         chacondition.eq(ChargeManagement.InnerColumn.traineeId, traineeId);
         if (StringUtils.equals(km, "10")) {

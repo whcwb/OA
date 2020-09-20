@@ -21,14 +21,14 @@
                     <Option v-for="(item,index) in cityList" :value="item.key" :key="index">{{ item.val }}</Option>
                   </Select>
                 </FormItem>
-                <FormItem prop="inOutType" label="收支" >
-                  <Select  v-model="inOutType" placeholder="收支"
-                           disabled
-                           @on-change="changeType" >
-                    <Option v-for="(item,index) in inOutTypelist" :value="item.val" :key="index">{{ item.lab }}</Option>
-                  </Select>
-                </FormItem>
-                <FormItem prop="chargeCode" label="收费项:">
+<!--                <FormItem prop="inOutType" label="收支" >-->
+<!--                  <Select  v-model="inOutType" placeholder="收支"-->
+<!--                           disabled-->
+<!--                           @on-change="changeType" >-->
+<!--                    <Option v-for="(item,index) in inOutTypelist" :value="item.val" :key="index">{{ item.lab }}</Option>-->
+<!--                  </Select>-->
+<!--                </FormItem>-->
+                <FormItem prop="chargeCode" label="支出项:">
                   <Select  v-model="form.chargeCode" placeholder="请选择收费项" @on-change="changeFee">
                     <Option v-for="(item,index) in sfList" :value="item.id" :key="index">{{ item.chargeName }}</Option>
                   </Select>

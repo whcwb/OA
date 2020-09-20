@@ -677,7 +677,6 @@ import charge from './comp/charge'
             render: (h, p) => {
               if (p.row.code !== '' && p.row.code !== null){
                 return h('div', [
-
                   h('Tooltip',
                     {
                       props:
@@ -743,20 +742,10 @@ import charge from './comp/charge'
                         },
                         on: {
                           click: () => {
-                            if (p.row.secSubPaymentTime == '') {
-                              this.swal({
-                                text: '请先确定缴纳科二初考费',
-                                type: 'warning'
-                              });
-                              return
-                            }
-                            else {
                               if (p.row.secSub == '30') this.confirmText=true
                               this.payOk.traineeId = p.row.id
                               this.payOk.amount = this.kmMoney
                               this.confirm = true
-                              // this.OKpay(p.index)
-                            }
                           }
                         }
                       },  '')

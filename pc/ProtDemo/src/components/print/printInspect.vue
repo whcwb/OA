@@ -266,10 +266,8 @@
         if (arr.length == 0) {
           return
         }
-        // this.jgName = v.dictUtil.getValByCode(v, 'ZDCLK1017', arr[0].chargeSource)
         this.jgName =  arr[0].chargeSource;
         arr.forEach((item, index) => {
-
           this.messIdList[index] = item.id
           this.money += item.chargeFee
           console.log(item.traineeName);

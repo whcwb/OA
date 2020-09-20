@@ -407,8 +407,6 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         String receiptNo = "";
 
         if (ids != null && ids.length > 0) {
-
-
             SimpleCondition simpleCondition = new SimpleCondition(ChargeManagement.class);
             simpleCondition.in(ChargeManagement.InnerColumn.traineeId, Arrays.asList(ids));
             simpleCondition.like(ChargeManagement.InnerColumn.pjbh, num);

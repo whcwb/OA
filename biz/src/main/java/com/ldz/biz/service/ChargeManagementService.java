@@ -19,7 +19,7 @@ public interface ChargeManagementService extends BaseService<ChargeManagement, S
 
     ApiResponse<String> removeEntity(String id);
 
-    ApiResponse<String> saveOtherCharge(ChargeManagement entity);
+    ApiResponse<ChargeManagement> saveOtherCharge(ChargeManagement entity);
 
     ApiResponse<String> confirmCharge(Map<String,String> chargeIds);
 

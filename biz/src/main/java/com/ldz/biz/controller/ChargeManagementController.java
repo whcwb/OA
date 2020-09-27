@@ -79,9 +79,10 @@ public class ChargeManagementController extends BaseController<ChargeManagement,
 
     /**
      * 其他收支录入
+     * @return
      */
     @PostMapping("/otherCharge")
-    public ApiResponse<String> otherCharge(ChargeManagement entity){
+    public ApiResponse<ChargeManagement> otherCharge(ChargeManagement entity){
         return service.saveOtherCharge(entity);
     }
 

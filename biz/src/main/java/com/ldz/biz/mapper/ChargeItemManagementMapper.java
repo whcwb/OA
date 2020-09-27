@@ -21,7 +21,7 @@ public interface ChargeItemManagementMapper extends Mapper<ChargeItemManagement>
             " </script>"})
     List<ChargeItemManagement> getUserCharge(@Param("chargeCode") String chargeCode, @Param("jgdm") String jgdm,@Param("carType")String carType);
 
-    @Select("select charge_name from charge_item_management a left join charge_institution_manage b on a.id = b.charge_id where a.charge_code like '${chargeCode}%' and b.jgdm = #{jgdm} and a.car_type like '%${carType}%'")
+    @Select("select charge_name from charge_item_management a left join charge_institution_manage b on a.id = b.charge_id where a.charge_code = #{chargeCode} and b.jgdm = #{jgdm} and a.car_type like '%${carType}%'")
      String findChargeName(@Param("jgdm") String jgdm ,@Param("chargeCode") String chargeCode,@Param("carType")String carType);
 
 }

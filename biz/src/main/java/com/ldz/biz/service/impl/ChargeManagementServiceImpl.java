@@ -3,7 +3,6 @@ package com.ldz.biz.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.collect.Lists;
 import com.ldz.biz.constant.FeeType;
 import com.ldz.biz.mapper.ChargeManagementMapper;
 import com.ldz.biz.model.*;
@@ -24,7 +23,6 @@ import com.ldz.util.redis.RedisTemplateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -129,10 +127,9 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
     }
 
     @Override
-    public ApiResponse<String> saveOtherCharge(ChargeManagement entity) {
+    public ApiResponse<ChargeManagement> saveOtherCharge(ChargeManagement entity) {
         SysYh currentUser = getCurrentUser();
-
-        /*RuntimeCheck.ifTrue(entity.getChargeFee() <=0 , "收支金额不能为小于0的整数");*/
+        ApiResponse<ChargeManagement> result = new ApiResponse<>();
         RuntimeCheck.ifBlank(entity.getChargeType(), "收款方式不能为空");
         RuntimeCheck.ifBlank(entity.getChargeCode(), "收费代码不能为空");
         ChargeItemManagement managements = null;
@@ -142,10 +139,15 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             TraineeInformation traineeInformation = traineeInformationService.findById(entity.getTraineeId());
             if (!ObjectUtils.isEmpty(traineeInformation)) {
                 if (StringUtils.isNotBlank(entity.getTraineeName()) && !StringUtils.equals(entity.getTraineeName(), traineeInformation.getName())) {
-                    return ApiResponse.fail("学员姓名与当前记录不符");
+
+                    result.setCode(500);
+                    result.setMessage("学员姓名与当前记录不符");
+                    return result;
                 }
                 if (StringUtils.equals(traineeInformation.getStatus(), "99")) {
-                    return ApiResponse.fail("学员尚未确认缴纳学费,不能进行分期还款");
+                    result.setCode(500);
+                    result.setMessage("学员尚未确认缴纳学费,不能进行分期还款");
+                    return result;
                 }
                 // 欠费金额
                 int oweAmount = traineeInformation.getOweAmount();
@@ -159,12 +161,16 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
                 entity.setChargeFee(oweAmount);
                 entity.setChargeSource(traineeInformation.getJgmc());
             } else {
-                return ApiResponse.fail("系统中不存在该学员信息");
+                result.setCode(500);
+                result.setMessage("系统中不存在该学员信息");
+                return result;
             }
         } else {
             managements = itemManagementService.findById(entity.getChargeCode());
             if (ObjectUtils.isEmpty(managements)) {
-                return ApiResponse.fail("不存在该费用项");
+                result.setCode(500);
+                result.setMessage("不存在该费用项");
+                return result;
             }
             if (entity.getChargeFee() == null || entity.getChargeFee() <= 0) {
                 entity.setChargeFee(managements.getAmount());
@@ -181,7 +187,9 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             if (CollectionUtils.isNotEmpty(traineeInformations)) {
                 TraineeInformation traineeInformation = traineeInformations.get(0);
                 if (StringUtils.isNotBlank(entity.getTraineeName()) && !StringUtils.equals(entity.getTraineeName(), traineeInformation.getName())) {
-                    return ApiResponse.fail("学员姓名与当前记录不符");
+                    result.setCode(500);
+                    result.setMessage("学员姓名与当前记录不符");
+                    return result;
                 }
                 entity.setTraineeId(traineeInformation.getId());
                 entity.setChargeSource(traineeInformation.getJgmc());
@@ -212,7 +220,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             exceptionService.clearException(exception, exception.getCode());
             statusService.saveEntity(traineeInformation, "分期尾款收费", "00", "分期尾款收费");
         }
-        return ApiResponse.success();
+        return ApiResponse.success(entity);
     }
 
     @Override

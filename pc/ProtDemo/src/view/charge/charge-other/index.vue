@@ -242,19 +242,6 @@ export default {
           }
         },
         {
-          title: '票据编号',
-          align: 'center',
-          minWidth: 100,
-          render: (h, p) => {
-            if (p.row.pjbh) {
-              let s = p.row.pjbh.split("-");
-              return h('div', s[0] + "-" + s[1]);
-            } else {
-              return h('div', '');
-            }
-          }
-        },
-        {
           title: '备注',
           align: 'center',
           minWidth: 150,
@@ -378,6 +365,11 @@ export default {
         if (valid) {
           this.$http.post(this.apis.OTHER.ADD, this.form).then((res) => {
             if (res.code == 200) {
+              this.printMess=[];
+              if(res.result){
+                this.printMess.push(res.result);
+                this.winPrint();
+              }
               this.getPagerList()
               this.form = {
                 chargeFee: 0,
@@ -417,7 +409,6 @@ export default {
     },
     winPrint() {
       if(this.printMess.length > 0){
-        console.log('flag', this.printMess)
         let flag = true;
         let pjbh='';
         for (let item of this.printMess) {

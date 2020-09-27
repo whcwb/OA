@@ -151,7 +151,7 @@
                     今收到
                   </div>
                   <div class="ItemMess">
-                    {{'　　' +nameList}}
+                    {{'　　' +nameList + '　　' + idCardList}}
                   </div>
                 </div>
                 <div class="messList">
@@ -235,7 +235,8 @@ export default {
       tjr:'',
       messIdList:[],
       studentIDS:[],
-      chargeName:''
+      chargeName:'',
+      idCardList:""
     }
   },
   props: {
@@ -306,12 +307,15 @@ export default {
 
         this.messIdList[index] = item.id
         this.money += item.chargeFee
+
         if (index == arr.length - 1) {
           this.bz += item.remark
-          this.nameList = this.nameList + item.traineeName + " 　　　" + item.idCardNo
+          this.nameList = this.nameList + item.traineeName
+          this.idCardList +=  item.idCardNo
         } else {
           this.bz += item.remark + "、"
           this.nameList = this.nameList + item.traineeName + "、"
+          this.idCardList +=  item.idCardNo + "、"
         }
         console.log('namelist',this.nameList)
       })
@@ -319,7 +323,7 @@ export default {
     },
     printClick(){
       var v = this
-      this.BDNum()
+      // this.BDNum()
       this.bzShow = false
       const cssText = `
           #printDivSigUp {

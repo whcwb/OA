@@ -248,7 +248,7 @@
               this.$http.post('/api/traineeinformation/editClassType',v.C_param).then(res=>{
                 if(res.code == 200){
                   // this.$Message.success(res.message);
-                  if(v.C_param.inOutType=='00'){
+                  // if(v.C_param.inOutType=='00'){
                     // this.swal({
                     //   type:'question',
                     //   title:'班型变更成功',
@@ -260,15 +260,15 @@
                     //   console.log('shijianm',val);
                     //   if(val.value){
                     //     console.log('reasdfsdaf',mess)
-                        v.print({traineeId:mess.id})
+                        v.print({traineeId:mess.id,inOutType:v.C_param.inOutType,chargeCode:'0005'})
                     //   }
                     // })
-                  }else {
-                    this.swal({
-                      type:'success',
-                      title:'班型变更成功'
-                    })
-                  }
+                  // }else {
+                  //   this.swal({
+                  //     type:'success',
+                  //     title:'班型变更成功'
+                  //   })
+                  // }
                   v.find()
                   this.carTypC = false
                 }else {
@@ -289,7 +289,7 @@
       },
       print(id){
         var v = this
-        this.AF.idPrintMess(id,(res)=>{
+        this.AF.idPrintMess(id, (res)=>{
           v.mess = res
           v.compName='pagPrint'
         })

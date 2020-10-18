@@ -24,6 +24,9 @@ export default {
     DX: (n) => {
       if (!/^(0|[1-9]\d*)(\.\d+)?$/.test(n))
         return "数据非法";
+      if(n==0){
+        return '零元'
+      }
       var unit = "仟佰拾亿仟佰拾万仟佰拾元角分", str = "";
       n += "00";
       var p = n.indexOf('.');
@@ -51,7 +54,8 @@ export default {
         str += '　壹贰叁肆伍陆柒捌玖'.charAt(n.charAt(i)) + unit.charAt(i);
       }
 
-      return str.replaceAll('', ' ');
+
+      return  str.replaceAll('', ' ');
     },
   },
   methods: {

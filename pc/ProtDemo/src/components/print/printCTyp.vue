@@ -135,7 +135,7 @@
 
                 <div class="messList">
                   <div class="messTit">
-                    今收到
+                    {{inOutName}}
                   </div>
                   <div class="ItemMess">
                     :{{UM.chargeSource}}_{{UM.glyxm}} ( {{UM.traineeName}} )
@@ -230,6 +230,7 @@
     data() {
       return {
         bzShow: true,
+        inOutName:'今收到',
         jgphone: '',//机构电话
         jgName: '',//机构名称
         glyxm: '',//机构管理员
@@ -271,7 +272,9 @@
     created() {
       this.getTime()
       this.UM = this.mess
-      console.log('數據傳遞', this.UM);
+      if(this.mess.inOutType == '10'){
+        this.inOutName = '今支出'
+      }
     },
     methods: {
       getTime(){

@@ -77,6 +77,25 @@ export default {
     }).catch((err) => {
     })
   },
+  idPrintMessNew(id, intOut, callback) {
+    $http.post('/api/chargemanagement/findTodayCharge', {"traineeId":id,"chargeCode":'0005', 'inOutType':intOut}).then((res) => {
+      let OBJ = {}
+      if (res.code == 200) {
+        OBJ = res.page.list[0]
+        if (res.page.list[0].pjbh == '') {
+          this.getPrintNum('pjdy', [res.page.list[0].traineeId], num => {
+            OBJ.pjbh = num
+          })
+        } else {
+          let a = res.page.list[0].pjbh.split('-')
+          OBJ = a[0] + '-' + a[1]
+        }
+      }
+      callback && callback(OBJ)
+      return OBJ
+    }).catch((err) => {
+    })
+  },
 
 
   getPrintNum(num, ids, callback) {

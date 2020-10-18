@@ -38,7 +38,7 @@
         <span class="expand-value" >{{row.pjbh !=''?row.pjbh.substring(0,13):''}}</span>
       </Col>
       <Col span="8" >
-        <div v-if="(row.chargeCode == '0004' || row.chargeCode == '0005')&& row.inOutType == '00'">
+        <div v-if="(row.chargeCode == '0004' || row.chargeCode == '0005')">
           <span class="expand-key">补打票据：</span>
           <Button icon="ios-print" type="primary" @click="winPrint(row)" size="small"></Button>
         </div>
@@ -71,7 +71,7 @@
       methods:{
         winPrint(r){
           // console.log(r);
-          if((r.chargeCode == '0004' || r.chargeCode == '0005') && r.inOutType == '00'){
+          if((r.chargeCode == '0004' || r.chargeCode == '0005')){
             this.$emit('print',{traineeId:r.traineeId,id:r.id})
             return;
           }else{

@@ -2444,9 +2444,9 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         RuntimeCheck.ifBlank(inOutType, "收支类型不能为空");
         RuntimeCheck.ifTrue(fee < 0, "费用不能小于0");
         RuntimeCheck.ifBlank(chargeType, "收费类型不能为空");
-        if (StringUtils.isBlank(information.getSerialNum())) {
-            return ApiResponse.fail("学员还未受理 ，不支持此操作 ");
-        }
+//        if (StringUtils.isBlank(information.getSerialNum())) {
+//            return ApiResponse.fail("学员还未受理 ，不支持此操作 ");
+//        }
 
         if (StringUtils.containsAny(information.getStatus(), "50", "60")) {
             return ApiResponse.fail("学员已经退学或结业，不能修改");

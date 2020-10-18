@@ -207,7 +207,7 @@
                   {{chargeType(UM.chargeType)}}
                 </div>
                 <div style="float: right">
-                  Tel:{{UM.jgPhone.length==11 ? '400-133-2133': jgphone}}
+                  Tel:{{ '400-133-2133'}}
                 </div>
               </div>
             </div>

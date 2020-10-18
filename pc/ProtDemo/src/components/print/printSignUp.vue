@@ -149,7 +149,7 @@
                     交來
                   </div>
                   <div class="ItemMess">
-                    : 报名费
+                    : {{feeName}}
                   </div>
                 </div>
 
@@ -242,6 +242,7 @@
         glyxm:'',//机构管理员
         payType:'',//支付类型
         time: '',
+        feeName:'报名费',
         user: JSON.parse(sessionStorage.getItem('userInfo')),
         num: 0,
         modalShow: true,
@@ -309,9 +310,14 @@
         this.glyxm = arr[0].glyxm
         this.jgName = arr[0].jgmc.split('/')[0]
         this.tjr = arr[0].referrer.split('-')[0]
-        // console.log('推荐仁',this.tjr);
+        let owe = 0
+        let real = 0
         arr.forEach((item, index) => {
-
+          let oweAmount = item.registrationFee - item.realPay;
+          if( oweAmount > 0){
+            owe += oweAmount
+          }
+          real += item.realPay
           if(this.payType.length == 0){
             this.payType = v.dictUtil.getValByCode(v, 'ZDCLK1004', item.chargeRecord.chargeType)
           }else {
@@ -334,6 +340,10 @@
               this.bz = this.bz.substring(0,30)
             }
             this.nameList = this.nameList + jgmcArr[0] + item.name + item.carType + "、"
+          }
+          if( owe > 0) {
+            this.bz = "实收 " + real + " 元 , 欠费 " + owe + " 元";
+            this.feeName = "报名费(分期)";
           }
 
         })

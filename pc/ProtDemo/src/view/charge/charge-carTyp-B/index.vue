@@ -8,7 +8,7 @@
       <Col span="24">
         <Row type="flex" style="margin: 8px 0">
           <Col span="4">
-            <Input type="text" placeholder="证件号码" clearable  clearable size="large" v-model="param.idCardNo"/>
+            <Input type="text" placeholder="证件号码" clearable  clearable size="large" v-model="param.idCardNo" @on-change="find"/>
           </Col>
           <Col span="2" align="center">
             <Button type="primary"  @click="find" size="large">
@@ -186,9 +186,9 @@
         C_param:{
           id:'',
           classType:'',
-          inOutType:'',//00 收入   10 支出
+          inOutType:'00',//00 收入   10 支出
           fee:'',//金额
-          chargeType:'',//收款方式 00 现金 10转账
+          chargeType:'10',//收款方式 00 现金 10转账
           remark:'',//备注
         },
         ruleValidate: {
@@ -249,20 +249,20 @@
                 if(res.code == 200){
                   // this.$Message.success(res.message);
                   if(v.C_param.inOutType=='00'){
-                    this.swal({
-                      type:'question',
-                      title:'班型变更成功',
-                      text:'是否打印收款单据？',
-                      showCancelButton:true,
-                      confirmButtonText:'打印单据',
-                      cancelButtonText:'完成',
-                    }).then((val)=>{
-                      console.log('shijianm',val);
-                      if(val.value){
-                        console.log('reasdfsdaf',mess)
+                    // this.swal({
+                    //   type:'question',
+                    //   title:'班型变更成功',
+                    //   text:'是否打印收款单据？',
+                    //   showCancelButton:true,
+                    //   confirmButtonText:'打印单据',
+                    //   cancelButtonText:'完成',
+                    // }).then((val)=>{
+                    //   console.log('shijianm',val);
+                    //   if(val.value){
+                    //     console.log('reasdfsdaf',mess)
                         v.print({traineeId:mess.id})
-                      }
-                    })
+                    //   }
+                    // })
                   }else {
                     this.swal({
                       type:'success',
@@ -316,7 +316,7 @@
       find() {
         if(this.param.idCardNo === '' ){
             this.show = '1';
-            this.message = "请先输入证件号码";
+            this.message = "请输入证件号码";
             return;
         }
         this.$http.post(this.apis.TRAINEE.PAGER, this.param).then((res) => {
@@ -332,6 +332,8 @@
                 this.C_param= {}
                 this.stuMes.id = ''
               }else {
+                let classtype = res.page.list[0].classType;
+                this.C_param.classType =classtype
                 res.page.list[0].classType = this.dictUtil.getValByCode(this, 'ZDCLK1002', res.page.list[0].classType)
                 this.stuMes = res.page.list[0];
               }

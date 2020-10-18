@@ -11,7 +11,7 @@ import java.util.List;
 public interface CoachTraineeRercordMapper extends Mapper<CoachTraineeRercord>,InsertListMapper<CoachTraineeRercord> {
     /**
      * 将所有退学的学员，做更新
-     * @param trainees
+     * @param
      */
     @Update({ "<script> " +
             " UPDATE COACH_TRAINEE_RERCORD AS R "+

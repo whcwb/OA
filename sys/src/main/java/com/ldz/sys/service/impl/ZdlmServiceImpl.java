@@ -48,12 +48,12 @@ public class ZdlmServiceImpl extends BaseServiceImpl<SysZdlm,String> implements 
         return true;
     }
 
-
     @Override
     public void afterPager(PageInfo<SysZdlm> resultPage){
         List<SysZdlm> list = resultPage.getList();
         List<String> lmdms = list.stream().map(SysZdlm::getLmdm).collect(Collectors.toList());
         List<SysZdxm> zdxms = zdxmService.findByZdlms(lmdms);
+        zdxms.sort(Comparator.comparing(SysZdxm::getZddm));
         Map<String,SysZdlm> zdlmMap = list.stream().collect(Collectors.toMap(SysZdlm::getLmdm,p->p));
         for (SysZdxm zdxm : zdxms) {
             SysZdlm zdlm = zdlmMap.get(zdxm.getZdlmdm());

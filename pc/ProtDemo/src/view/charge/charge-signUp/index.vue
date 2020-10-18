@@ -3,26 +3,26 @@
     <!--<pager-tit title="报名收费" iconname="ios-football"></pager-tit>-->
     {{AutoReadCard}}
     <Menu mode="horizontal" :active-name="activeName" @on-select="MenuClick">
-      <MenuItem name="1">
+      <menu-item name="1">
         <div style="font-weight: 700;font-size: 16px">
           待缴费
         </div>
-      </MenuItem>
-      <MenuItem name="2">
+      </menu-item>
+      <menu-item name="2">
         <div style="font-weight: 700;font-size: 16px">
           已缴费
         </div>
-      </MenuItem>
-      <MenuItem name="3">
+      </menu-item>
+      <menu-item name="3">
         <div style="font-weight: 700;font-size: 16px">
           收据已打印
         </div>
-      </MenuItem>
-      <MenuItem name="4">
+      </menu-item>
+      <menu-item name="4">
         <div style="font-weight: 700;font-size: 16px">
           收据未打印
         </div>
-      </MenuItem>
+      </menu-item>
     </Menu>
     <div class="tagTit" style="position: absolute;right: 80px;top: 13px;z-index: 999">
       <Tag type="dot" color="success" style="margin-left: 16px">未分期</Tag>
@@ -1090,6 +1090,7 @@
       ,
       winPrint() {
         var v = this
+        console.log('print', this.printMess)
         if (this.printMess.length > 1) {
           for (var i = 0; i < this.printMess.length - 1; i++){
             if (this.printMess[i].chargeRecord.pjbh != '' &&

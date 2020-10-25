@@ -19,16 +19,9 @@
                 </FormItem>
                 <FormItem prop="chargeSource" label="所属驾校">
                   <Select v-model="form.chargeSource" placeholder="请选择驾校">
-                    <Option v-for="(item,index) in cityList" :value="item.key" :key="index">{{ item.val }}</Option>
+                    <Option v-for="(item,index) in cityList" :value="item.val" :key="index">{{ item.val }}</Option>
                   </Select>
                 </FormItem>
-<!--                <FormItem prop="inOutType" label="收支">-->
-<!--                  <Select v-model="inOutType" placeholder="收支"-->
-<!--                          disabled-->
-<!--                          @on-change="changeType">-->
-<!--                    <Option v-for="(item,index) in inOutTypelist" :value="item.val" :key="index">{{ item.lab }}</Option>-->
-<!--                  </Select>-->
-<!--                </FormItem>-->
                 <FormItem prop="chargeCode" label="收费项:">
                   <Select v-model="form.chargeCode" placeholder="请选择收费项" @on-change="changeFee">
                     <Option v-for="(item,index) in sfList" :value="item.id" :key="index">{{ item.chargeName }}</Option>
@@ -67,11 +60,6 @@
                   {{ inCount }}
                   </span>
                   元
-                    <!-- - 支出：-->
-                    <!--<span style="font-size: 20px;color: #ff9900" >-->
-                    <!--{{ outCount }}-->
-                    <!--</span>-->
-                    <!--元-->
                 </span>
                 </div>
               </Col>
@@ -101,11 +89,11 @@
                   <Icon type="md-search"></Icon>
                   <!--查询-->
                 </Button>
-                <Tooltip content="打印" style="float: right">
-                  <Button type="primary" @click="winPrint">
-                    <Icon type="md-print"/>
-                  </Button>
-                </Tooltip>
+<!--                <Tooltip content="打印" style="float: right">-->
+<!--                  <Button type="primary" @click="winPrintNew">-->
+<!--                    <Icon type="md-print"/>-->
+<!--                  </Button>-->
+<!--                </Tooltip>-->
               </Col>
             </Row>
             <Table border stripe
@@ -115,18 +103,19 @@
           </Card>
         </div>
       </div>
-      <component :is="compName" :printMess='printMess'></component>
+      <component :is="compName" :printMess='printMess' :hisPrintMess="hisPrintMess" :printClose="printClose"></component>
     </div>
   </div>
 </template>
 
 <script>
 import OPrintMess from '../../../components/print/other'
+import PrintNew from '../../../components/printNew'
 
 export default {
   name: "index",
   components: {
-    OPrintMess
+    OPrintMess,PrintNew
   },
   data: function () {
     return {
@@ -136,6 +125,8 @@ export default {
       inCount: 0,
       outCount: 0,
       inOutType: '00',
+      hisPrintMess:'',
+      printClose:false,
       inOutTypelist: [
         {
           val: '00',
@@ -251,7 +242,7 @@ export default {
           title: '操作',
           align: 'center',
           fixed: 'right',
-          minWidth: 90,
+          minWidth: 120,
           render: (h, p) => {
             return h('div', [
               h('Button', {
@@ -264,7 +255,23 @@ export default {
                     this.dele(p.row.id)
                   }
                 }
-              }, '撤回')
+              }, '撤回'),
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size:'small'
+                },
+                style: {
+                  marginLeft: '10px'
+                },
+                on: {
+                  click: () => {
+                    this.hisPrintMess = p.row
+                    this.printClose =false
+                    this.winPrintNew()
+                  }
+                }
+              }, "补打")
             ])
           }
         }
@@ -286,7 +293,6 @@ export default {
         this.param.nameLike = window.vueObject.$data.card.NameA;
         this.getPagerList();
       }
-
       return "";
     }
   },
@@ -368,7 +374,9 @@ export default {
               this.printMess=[];
               if(res.result){
                 this.printMess.push(res.result);
-                this.winPrint();
+                this.hisPrintMess = res.result
+                this.printClose = true
+                this.winPrintNew();
               }
               this.getPagerList()
               this.form = {
@@ -384,7 +392,7 @@ export default {
               this.sfList = [];
               this.getSfList();
             }
-            this.$Message.info(res.message);
+            // this.$Message.info(res.message);
           }).catch((err) => {
             this.$Message.error(res.message);
           })
@@ -406,6 +414,9 @@ export default {
       this.sfList = [];
       this.getSfList();
       this.$Message.success('重置成功');
+    },
+    winPrintNew(){
+          this.compName = 'PrintNew'
     },
     winPrint() {
       if(this.printMess.length > 0){

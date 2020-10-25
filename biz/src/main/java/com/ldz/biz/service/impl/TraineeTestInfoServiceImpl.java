@@ -939,6 +939,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                 map.put(mapSize + 7, "欠费金额");
                 map.put(mapSize + 8, "初考/补考");
                 map.put(mapSize + 9, "班型");
+                map.put(mapSize + 10, "联系电话");
                 resultList.add(map);
                 errorList.add(map);
             } else {
@@ -1018,6 +1019,7 @@ public class TraineeTestInfoServiceImpl extends BaseServiceImpl<TraineeTestInfo,
                     }
                     if(information != null){
                         map.put(mapSize + 9 , classTypeMap.get(information.getClassType()));
+                        map.put(mapSize + 10, information.getPhone());
                     }
                     webMap.put("jgmc", jgmc);
                     webMap.put("trainStatus", trainStatus);

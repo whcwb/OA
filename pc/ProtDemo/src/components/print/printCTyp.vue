@@ -169,16 +169,16 @@
                   </div>
                   <div class="ItemMess2">
                     :
-                    <span v-if="UM.pjbh==''">{{user.xm}}</span>
-                    <span v-else>{{receiver(UM.receiver)}}</span>
+                    <span v-if="UM.pjbh==''">{{ (user.xm.split("-").length > 1) ? (user.xm.split("-")[1]):(user.xm.split("-")[0])}}</span>
+                    <span v-else>{{UM.receiver.split("-").length > 1? (UM.receiver.split("-")[1]):(UM.receiver.split("-")[0]) }}</span>
                   </div>
                   <div class="messTit2">
                     收款人
                   </div>
                   <div class="ItemMess2">
                     :
-                    <span v-if="UM.pjbh==''">{{user.xm}}</span>
-                    <span v-else>{{receiver(UM.receiver)}}</span>
+                    <span v-if="UM.pjbh==''">{{user.xm.split("-").length > 1 ? user.xm.split("-")[1]:user.xm.split("-")[0]}}</span>
+                    <span v-else>{{UM.receiver.split("-").length > 1? (UM.receiver.split("-")[1]):(UM.receiver.split("-")[0]) }}</span>
                   </div>
                   <div class="messTit2">
                     交款人
@@ -272,6 +272,7 @@
     created() {
       this.getTime()
       this.UM = this.mess
+      this.messIdList.push(this.mess.id)
       if(this.mess.inOutType == '10'){
         this.inOutName = '今支出'
       }
@@ -291,7 +292,6 @@
         return this.dictUtil.getValByCode(this, 'ZDCLK1024',code)
       },
       receiver(arr){
-        // let a = arr.split('-')[1]
         return arr
       },
       printClick() {
@@ -393,14 +393,13 @@
           v.close()
         }, 300)
       },
-
       BDNum() {
         var v = this;
         var ids = this.messIdList.join(',');
         this.$http.post('/api/chargemanagement/savePjbh', {
           ids: ids,
           num: 'pjdy',
-          pjbh: this.num
+          pjbh: this.UM.pjbh
         }).then(res => {
           if (!res.code == 200) {
             return

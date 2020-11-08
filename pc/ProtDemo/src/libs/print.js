@@ -11,14 +11,12 @@ obj.print = (id,item,time,callback) => {
     {'x': 110, 'y': 150, 'w': 150, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '科目二', 'font_size': 9},
     {'x': 10, 'y': 190, 'w': 100, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '证件号码', 'font_size': 12},
     {'x': 110, 'y': 190, 'w': 150, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '', 'font_size': 9},
-    {'x': 10, 'y': 230, 'w': 100, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '所属驾校', 'font_size': 12},
+    {'x': 10, 'y': 230, 'w': 100, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '费用', 'font_size': 12},
     {'x': 110, 'y': 230, 'w': 150, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '', 'font_size': 9},
-    {'x': 10, 'y': 270, 'w': 100, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '费用', 'font_size': 12},
+    {'x': 10, 'y': 270, 'w': 100, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '备注', 'font_size': 12},
     {'x': 110, 'y': 270, 'w': 150, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '', 'font_size': 9},
-    {'x': 10, 'y': 310, 'w': 100, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '备注', 'font_size': 12},
-    {'x': 110, 'y': 310, 'w': 150, 'h': 40, 'isbar': 'F', 'border': 1, 'text': '1人', 'font_size': 9},
-    {'x': 10, 'y': 350, 'w': 100, 'h': 40, 'isbar': 'F', 'border': 0, 'text': '本票据遗失不补', 'font_size': 9},
-    {'x': 125, 'y': 350, 'w': 150, 'h': 40, 'isbar': 'F', 'border': 0, 'text': time, 'font_size': 9}
+    {'x': 10, 'y': 310, 'w': 100, 'h': 40, 'isbar': 'F', 'border': 0, 'text': '本票据遗失不补', 'font_size': 9},
+    {'x': 125, 'y': 310, 'w': 150, 'h': 40, 'isbar': 'F', 'border': 0, 'text': time, 'font_size': 9}
   ];
 
   let itemIndex=0;
@@ -33,8 +31,6 @@ obj.print = (id,item,time,callback) => {
     }
   })
 
-  console.log(item)
-  console.log(printJson)
 
   $.ajax({
     type: "POST",

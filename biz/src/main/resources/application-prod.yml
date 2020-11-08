@@ -9,17 +9,10 @@ spring:
     maxIdle: 200
     maxActive: 1024
     maxWait: 1000
-#    password: 'jxba-MR17!#**'
 
-#      redis配置信息
-#  redis:
-#    host: 127.0.0.1
-#    port: 6379
-#    database: 10
 
 
 staticPath: /data/wwwroot/biz/img/
-#staticPath:  D:/static/common/
 server:
   port: 10010
 

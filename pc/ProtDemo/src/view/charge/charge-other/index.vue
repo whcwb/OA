@@ -17,11 +17,11 @@
                 <FormItem prop="idCardNo" label="证件号码:">
                   <Input type="text" size="large" placeholder="请输入证件号码" v-model="form.idCardNo"></Input>
                 </FormItem>
-                <FormItem prop="chargeSource" label="所属驾校">
-                  <Select v-model="form.chargeSource" placeholder="请选择驾校">
-                    <Option v-for="(item,index) in cityList" :value="item.val" :key="index">{{ item.val }}</Option>
-                  </Select>
-                </FormItem>
+<!--                <FormItem prop="chargeSource" label="所属驾校">-->
+<!--                  <Select v-model="form.chargeSource" placeholder="请选择驾校">-->
+<!--                    <Option v-for="(item,index) in cityList" :value="item.val" :key="index">{{ item.val }}</Option>-->
+<!--                  </Select>-->
+<!--                </FormItem>-->
                 <FormItem prop="chargeCode" label="收费项:">
                   <Select v-model="form.chargeCode" placeholder="请选择收费项" @on-change="changeFee">
                     <Option v-for="(item,index) in sfList" :value="item.id" :key="index">{{ item.chargeName }}</Option>
@@ -67,11 +67,11 @@
                 <DatePicker type="date" split-panels :value="this.AF.trimDate()" :clearable="false"
                             @on-change="changeTime" placeholder="审核日期" style="width: 100% ;"></DatePicker>
               </Col>
-              <Col span="3" :lg="3" :md="5">
-                <Input v-model="param.chargeSourceLike"
-                       @on-enter="getPagerList"
-                       placeholder="请输入学员所属驾校"/>
-              </Col>
+<!--              <Col span="3" :lg="3" :md="5">-->
+<!--                <Input v-model="param.chargeSourceLike"-->
+<!--                       @on-enter="getPagerList"-->
+<!--                       placeholder="请输入学员所属驾校"/>-->
+<!--              </Col>-->
               <Col span="3" :lg="3" :md="5">
                 <Input v-model="param.traineeNameLike"
                        @on-enter="getPagerList"
@@ -192,12 +192,12 @@ export default {
           minWidth: 180,
           key: 'idCardNo'
         },
-        {
-          title: '驾校名称',
-          align: 'center',
-          minWidth: 120,
-          key: 'chargeSource'
-        },
+        // {
+        //   title: '驾校名称',
+        //   align: 'center',
+        //   minWidth: 120,
+        //   key: 'chargeSource'
+        // },
         {
           title: '收费项',
           align: 'center',
@@ -213,29 +213,29 @@ export default {
         {
           title: '收费时间',
           key: 'chargeTime',
-          minWidth: 100,
+          minWidth: 150,
           align: 'center',
-          render: (h, p) => {
-            return h('div', [
-              h('Tooltip', {
-                props: {
-                  placement: 'top',
-                  content: p.row.chargeTime
-                }
-              }, [
-                h('Time', {
-                  props: {
-                    time: new Date(p.row.chargeTime.replace(/-/g, "/"))
-                  }
-                })
-              ])
-            ])
-          }
+          // render: (h, p) => {
+          //   return h('div', [
+          //     h('Tooltip', {
+          //       props: {
+          //         placement: 'top',
+          //         content: p.row.chargeTime
+          //       }
+          //     }, [
+          //       h('Time', {
+          //         props: {
+          //           time: new Date(p.row.chargeTime.replace(/-/g, "/"))
+          //         }
+          //       })
+          //     ])
+          //   ])
+          // }
         },
         {
           title: '备注',
           align: 'center',
-          minWidth: 150,
+          minWidth: 100,
           key: 'remark'
         },
         {
@@ -245,17 +245,17 @@ export default {
           minWidth: 120,
           render: (h, p) => {
             return h('div', [
-              h('Button', {
-                props: {
-                  type: 'error',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.dele(p.row.id)
-                  }
-                }
-              }, '撤回'),
+              // h('Button', {
+              //   props: {
+              //     type: 'error',
+              //     size: 'small'
+              //   },
+              //   on: {
+              //     click: () => {
+              //       this.dele(p.row.id)
+              //     }
+              //   }
+              // }, '撤回'),
               h('Button', {
                 props: {
                   type: 'primary',
@@ -431,6 +431,7 @@ export default {
           }
         }
         if(flag){
+          this.printMess.chargeFee += '元'
           this.AF.WinPrint(this, this.printMess, 'OPrintMess')
         }else{
           this.swal({

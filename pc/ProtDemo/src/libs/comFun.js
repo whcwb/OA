@@ -69,7 +69,7 @@ export default {
           })
         } else {
           let a = res.page.list[0].pjbh.split('-')
-          OBJ = a[0] + '-' + a[1]
+          OBJ.pjbh= a[0] + '-' + a[1]
         }
       }
       callback && callback(OBJ)

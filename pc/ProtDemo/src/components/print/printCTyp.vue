@@ -259,7 +259,7 @@
     },
     filters: {
       chargeTime: (val) => {
-        console.log(val);
+        // console.log(val);
         // return val.Substring(0,10)
       }
     },
@@ -270,8 +270,10 @@
       }
     },
     created() {
+      console.log("mess-> " , this.mess)
       this.getTime()
       this.UM = this.mess
+      console.log(this.UM, "UM")
       this.messIdList.push(this.mess.id)
       if(this.mess.inOutType == '10'){
         this.inOutName = '今支出'

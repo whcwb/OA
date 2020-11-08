@@ -143,16 +143,12 @@
               val: this.info.idCardNo,
             },
             {
-              title:'所属驾校',
-              val: this.info.chargeSource
-            },
-            {
               title: '费用',
-              val: this.info.chargeFee,
+              val: this.info.chargeFee + '元',
             },
             {
               title: '备注',
-              val: '讲解及练车'
+              val: ''
             },
           ]
 

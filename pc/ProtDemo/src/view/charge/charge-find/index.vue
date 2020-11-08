@@ -81,60 +81,6 @@
               </div>
             </div>
           </div>
-          <!--<Row type="flex" justify="start">-->
-            <!--<Col span="3" v-for="(val,key) of AddMess[0]">-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--报名费:-->
-              <!--<Tag color="green" style="font-size: 18px">{{AddMess['报名费收入']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--分期尾款:-->
-              <!--<Tag color="green" style="font-size: 18px">{{AddMess['分期还款收费']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--体检收费:-->
-              <!--<Tag color="green" style="font-size: 18px">{{AddMess['体检收费']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--变更车型收入:-->
-              <!--<Tag color="green" style="font-size: 18px">{{AddMess['车型修改收入']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--其他收入:-->
-              <!--<Tag color="green" style="font-size: 18px">{{AddMess['其他收入']}}</Tag>-->
-            <!--</Col>-->
-          <!--</Row>-->
-          <!--<Row type="flex" justify="start" style="margin-top: 8px">-->
-            <!--<Col span="3">-->
-              <!--总支出:-->
-              <!--<Tag color="red" style="font-size: 18px">{{AddMess['总支出']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--科一初考费:-->
-              <!--<Tag color="red" style="font-size: 18px">{{AddMess['科一初考费支出']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--科二初考费:-->
-              <!--<Tag color="red" style="font-size: 18px">{{AddMess['科二初考费支出']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--科三初考费:-->
-              <!--<Tag color="red" style="font-size: 18px">{{AddMess['科三初考费支出']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--变更车型支出:-->
-              <!--<Tag color="red" style="font-size: 18px">{{AddMess['车型修改支出']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--退学支出:-->
-              <!--<Tag color="red" style="font-size: 18px">{{AddMess['退费支出']}}</Tag>-->
-            <!--</Col>-->
-            <!--<Col span="3">-->
-              <!--其他支出:-->
-              <!--<Tag color="red" style="font-size: 18px">{{AddMess['其他支出']}}</Tag>-->
-            <!--</Col>-->
-          <!--</Row>-->
         </div>
       </div>
       <div class="box_row rowRight" style="padding-top: 16px;margin-right: 12px">
@@ -156,7 +102,6 @@
 </template>
 
 <script>
-  //import mess from './comp/mess'
   import expandRow from './comp/expand'
   import http from '@/axios/index';
   import pagPrint from '../../../components/print/printCTyp'
@@ -351,10 +296,10 @@
         this.bmTime = [this.AF.trimDate(), this.AF.trimDate()];
       }
       this.DatePickerC([this.bmTime[0], this.bmTime[1]]);
-      this.chargeCodeIn=''
-      this.param.chargeCodeIn=''
+      this.chargeCodeIn='';
+      this.param.chargeCodeIn='';
       this.getPagerList();
-      this.getTypeList()
+      this.getTypeList();
     },
     computed: {
       AutoReadCard() {

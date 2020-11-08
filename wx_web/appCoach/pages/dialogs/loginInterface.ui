@@ -240,7 +240,6 @@ export default {
           sendData.openid = urlGetOpenid
         }
         this.$http('POST',ui.getApp().apis.SMSLOGIN,sendData,(res)=>{
-            console.log(JSON.stringify(res))
              res.result.userInfo.token = res.result.accessToken.token
              localStorage.setItem('coachToken', JSON.stringify(res.result.accessToken));//缓存关键参数包括userId username  token
              localStorage.setItem('coachUserInfo',JSON.stringify(res.result.userInfo))//缓存用户信息
@@ -318,15 +317,12 @@ export default {
     },
 
     login_qq(){
-      console.log('调用qq接口')
       ui.login({
         target: 'qq',
         success: data => {
-          console.log(data)
           this.checkOpenid(data.openid)
         },
         fail:data=>{
-          console.log('fail', data)
         }
       })
     },
@@ -350,7 +346,6 @@ export default {
               isLogin: true,
               data: data.data.result
             }
-            console.log(data.data.result)
             ui.setStorageSync('userinfo', data.data.result)
             ui.hideDialog({ userinfo: userinfo })
           }

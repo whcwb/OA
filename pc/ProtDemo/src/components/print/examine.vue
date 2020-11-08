@@ -258,7 +258,6 @@
       printMess: Array
     },
     created() {
-      console.log('數據傳遞', this.printMess);
       this.getMess(this.printMess)
     },
     methods: {

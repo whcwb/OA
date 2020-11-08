@@ -89,7 +89,6 @@
         })
       },
       change(mess){
-        // console.log(mess);
         this.changeMess = mess
         this.compName = 'additem'
       },

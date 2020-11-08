@@ -35,7 +35,6 @@ let UKey = {
             UKey.Socket_UK = new WebSocket(url,"usbkey-protocol");
           }
         }catch (e) {
-          console.log(e);
         }
     },
     clear:()=>{
@@ -129,7 +128,6 @@ let UKey = {
                 }
             }
             UKey.Socket_UK.onclose = function() {
-                console.log('Socket_UK close');
             }
         } catch(e) {
           swalError('读取数据失败，请确定服务程序是否安装')

@@ -16,7 +16,6 @@ let httpInstance = axios.create({
 httpInstance.url = url;
 // 添加请求拦截器 数据请求之前
 httpInstance.interceptors.request.use((config) => {
-  // console.log('数据拦截',config);
   if(config.method == 'get'){
     if (config.url.indexOf('?') < 0){
         config.url += '?t='+ new Date().getTime()
@@ -72,7 +71,6 @@ httpInstance.interceptors.request.use((config) => {
   }
   return config;
 }, function (error) {
-    console.log(error);
     // 对请求错误做些什么
   return Promise.reject(error);
   // iView.Spin.hide()

@@ -88,7 +88,6 @@
     methods: {
       getData() {
         this.$http.post('/api/kclb/getAllLb').then(res => {
-          // console.log(res);
           if (res.code == 200) {
             this.mesData = res.result
           }

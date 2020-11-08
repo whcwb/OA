@@ -71,7 +71,6 @@
       this.param.pageSize = 999999;
       let now = new Date();
       let today = now.format("yyyy-MM-dd");
-      console.log(today);
       this.minTime = today;
       this.maxTime = today;
       delete this.param.pageNum;
@@ -86,7 +85,6 @@
       ]),
       afterPager(list) {
         this.addmoney = 0
-        console.log(list);
         for (let r of list) {
           this.addmoney += r.lcFy;
         }

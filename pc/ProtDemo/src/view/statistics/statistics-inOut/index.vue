@@ -204,7 +204,6 @@
 
       },
       getlx(lx) {
-        // console.log(lx);
         this.getSRTJList()
       },
       getTJ(st) {
@@ -213,8 +212,6 @@
         this.getSRTJList()
       },
       getNf(gsh, date) {
-        // console.log(gsh);
-        // console.log(date);
         this.param.startTime = gsh[0];
         this.param.endTime = gsh[1];
         this.data1 = [];
@@ -223,7 +220,6 @@
       getBmdList() {
         this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
           if (res.code === 200) {
-            // // console.log('ppoopp',res.result);
             if (res.result[0].value.length == 3) {
               this.dictList.bmd.data = res.result[0].children[0].children;
             } else if (res.result[0].value.length == 6) {
@@ -241,7 +237,6 @@
         this.loading=true
         var v=this;
         this.$http.post(this.apis.COUNT.BMSF, this.param).then(res => {
-          // console.log(res);
          v.loading = false;
           if (res.code == 200) {
             this.data1 = res.result?res.result:[];
@@ -255,12 +250,10 @@
       },
       getNSRList() {
         this.$http.post(this.apis.COUNT.NSR).then((res) => {
-          // console.log(res);
         })
       },
       getNZCList() {
         this.$http.post(this.apis.COUNT.NZC).then((res) => {
-          // console.log(res);
         })
       },
     }

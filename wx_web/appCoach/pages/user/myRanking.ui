@@ -119,7 +119,6 @@ export default {
     },
     getPjList (){//请求教练数据
         this.$http('GET',ui.getApp().apis.COACHMANAGEMENTPMLIST,this.pjDate,(res)=>{
-                    console.log(JSON.stringify(res))
                     this.pjPage.pageNum = res.result.pageNum
                     this.pjPage.pageSize = res.result.pageSize
                     this.pjPage.size = res.result.size

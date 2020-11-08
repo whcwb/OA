@@ -256,7 +256,6 @@ export default {
       this.$http('POST',ui.getApp().apis.TOP10,{
            coachId:this.getUser().id
           },(res)=>{
-            console.log("前十条数据"+JSON.stringify(res))
             let result = res.result || []
             
             result.forEach((value,index) => {
@@ -285,7 +284,6 @@ export default {
     this.$http('POST',ui.getApp().apis.GETQRCODE,{
            id:this.getUser().id
           },(res)=>{
-             console.log(JSON.stringify(res))
             import(`#/pages/dialogs/qrCode.ui`).then((content) => {
             ui.showDialog({
               // 窗体标题

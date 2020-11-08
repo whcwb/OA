@@ -115,7 +115,6 @@
       dom.setOption(option)
       var zoomSize = 6;
       dom.on('click', function (params) {
-        // console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
         dom.dispatchAction({
           type: 'dataZoom',
           startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],

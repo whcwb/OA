@@ -393,7 +393,6 @@
         getBmdList() {
           this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
             if (res.code === 200) {
-              // console.log('ppoopp',res.result);
               if(res.result[0].value.length==3){
                 this.dictList.bmd.data = res.result[0].children[0].children;
               }else if(res.result[0].value.length==6){
@@ -434,8 +433,6 @@
 
         },
         getNf(gsh,date){
-          // console.log(gsh);
-          // console.log(date);
           this.year = gsh;
           this.param.startTime = gsh+'-01-01';
           this.param.endTime = gsh+'-12-31';
@@ -483,17 +480,13 @@
             })
           },
           getPagerList(){
-            // this.handleSpinCustom();
-            // // console.log(this.year.getFullYear());
             if(this.param.startTime == '-01-01'){
               this.param.startTime = this.AF.getYear()+'-01-01';
               this.param.endTime = this.AF.getYear()+'-12-31';
             }
             this.data10 = [];
             this.loading=true
-            // console.log(this.param.jgdm);
             this.$http.post('/api/data/getAllIn',{startTime:this.param.startTime,endTime: this.param.endTime,jgdm:this.param.jgdm}).then( (res)=>{
-              // console.log(res);
              if(res.code == 200){
                this.loading=false
                var zshj = {};

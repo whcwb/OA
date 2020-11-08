@@ -598,8 +598,6 @@
       }
     },
     created() {
-      console.log(this.selectRow);
-      console.log(this.selectRow.serialNum);
       this.km()
 
     },
@@ -676,7 +674,6 @@
           return
         }
         this.selectRow.testInfos.forEach((item, index) => {
-          console.log(item);
           if (item.subject == "科目一") {
             this.fir.push(item)
           } else if (item.subject == "科目二") {
@@ -687,8 +684,6 @@
         })
       },
       close() {
-        console.log('asdf');
-        console.log(this.$parent);
         this.$parent.compName = ''
       }
     }

@@ -44,10 +44,8 @@ export default {
   },
   watch:{
     percent:(n,o)=>{
-      // console.log('++++++++',n);
       if(n==100){
           let tok = localStorage.getItem('coachUserInfo')
-          // console.log('-----------');
          if(tok){
             ui.redirectTo({
               url: '/pages/index'
@@ -74,7 +72,6 @@ export default {
       script.src='./static/utils/jweixin-1.2.0.js'
       document.body.appendChild(script)
       script.onload = function(){ // 微信js初始化 回调函数
-      console.log('*****wx',wx)
       // 微信js初始化成功后引用 微信功能方法
           ui.getApp().wxUtil = require('../static/ajax/wechatUtil.js').default
           var code =  ui.getApp().wxUtil.getQueryString("code")
@@ -99,9 +96,7 @@ export default {
             }, 10)
             sessionStorage.setItem("wxCode",code);
           }else{
-            console.log("跳转登录界面")
             let urlto = ui.getApp().wxUtil.getCode()
-            console.log(urlto)
             window.location.href = urlto
           }
       }

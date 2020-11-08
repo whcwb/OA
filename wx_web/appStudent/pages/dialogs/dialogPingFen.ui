@@ -39,7 +39,6 @@ export default {
         this.numFen = data.numFen
         this.coachId3 = data.coachId2
         this.starShow = true
-        console.log(data.coachId2)
       }
     })
      
@@ -55,7 +54,6 @@ export default {
            traineeName:this.getUser().name,
            comment:this.textPJ
           },(res)=>{
-            console.log("给教练评价"+JSON.stringify(res))
             // 调用ui.hideDialog关闭窗体，并回传数据
             ui.hideDialog({result:res.result})
             this.numFen = ''//关闭窗口时清除弹窗数据

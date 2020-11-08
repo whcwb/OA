@@ -13,7 +13,6 @@ const router = new Router({
 const LOGIN_PAGE_NAME = 'login'
 
 router.beforeEach((to, from, next) => {
-  // console.log('___+__+_',to);
   if(to.name == 'Student-acceptance'){
     to.params.id = AF.getRandom(6)
   }

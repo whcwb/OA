@@ -206,7 +206,6 @@ import charge from './comp/charge'
     },
     watch: {
       param1Time: function (n, o) {
-        // console.log(n);
         // this.param1.firSubPaymentTimeLike = n
         // this.param1.secSubPaymentTimeLike = n
         // this.param1.thirdSubPaymentTimeLike = n
@@ -248,7 +247,6 @@ import charge from './comp/charge'
                 minWidth: 100,
                 align: 'center',
                 render: (h, p) => {
-                    console.log(this.payOk.km)
                     let arr=p.row.testInfos;
                     let place=''
                     let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
@@ -408,8 +406,6 @@ import charge from './comp/charge'
                           },
                           on: {
                             click: () => {
-                              // console.log(p.row.remark);
-                              // console.log(this.payOk.remark);
                               if (p.row.code !== '' && p.row.code !== null) return
                             }
                           }
@@ -441,8 +437,6 @@ import charge from './comp/charge'
                           },
                           on: {
                             click: () => {
-                              // console.log(p.row.remark);
-                              // console.log(this.payOk.remark);
                               if (p.row.code !== '' && p.row.code !== null) return
                               this.payOk.traineeId = p.row.id
                               this.payOk.amount = this.kmMoney
@@ -483,13 +477,10 @@ import charge from './comp/charge'
                 minWidth: 100,
                 align: 'center',
                 render: (h, p) => {
-                    console.log(this.payOk.km)
                     let arr=p.row.testInfos;
                     let place=''
-                    console.log(arr);
                     let km=this.payOk.km=='10'?p.row.firSubTestTime:this.payOk.km=='20'?p.row.secSubTestTime:p.row.thirdSubTestTime
                     arr.map((val,index,arr)=>{
-                        console.log(val);
                         if(val.testTime===km){
                             place=val.testPlace
                         }
@@ -993,7 +984,6 @@ import charge from './comp/charge'
     methods: {
         getkm(){
             if (this.$route.query.param){
-                console.log(this.$route.query.param);
                 sessionStorage.setItem("queryJF", this.$route.query.param);
                 this.TagDot = parseInt(this.$route.query.param) -1
                 var a =''
@@ -1153,7 +1143,6 @@ import charge from './comp/charge'
         })
       },
       tabcheck(arr) {
-        console.log(arr);
       }
       ,
       winPrint() {
@@ -1186,7 +1175,6 @@ import charge from './comp/charge'
           this.param.sign = 3;
           this.param1.sign = 6;
           this.chargeCode = '9996';
-          console.log("科目三", this.param1)
           this.tabTit = this.tabTitS
         }
         this.getKmMoney()
@@ -1198,7 +1186,6 @@ import charge from './comp/charge'
       },
       getKmMoney() {
         this.$http.post(this.apis.SFX.PAGER, {chargeCode: this.chargeCode}).then((res) => {
-          // console.log('++++',res);
           if (res.page.list.length == 0) {
             this.kmMoney = 0
             return

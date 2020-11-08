@@ -30,7 +30,6 @@
     watch:{
       params:function (n,o) {
         if(n){
-          console.log(JSON.parse(n));
           this.getStudentList(JSON.parse(n))
         }
       }
@@ -44,7 +43,6 @@
     methods:{
       itemClick(item,index){
         this.tagIndex = index
-        console.log('lll');
         this.$parent.stuMes = item
         if (item.status == '60') {
           this.$parent.message = "该学员已经退费";

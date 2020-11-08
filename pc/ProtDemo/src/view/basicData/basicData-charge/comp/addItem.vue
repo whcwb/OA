@@ -168,7 +168,6 @@
     methods: {
       CheckboxCar(arr){
         this.form.carType = arr.join(',')
-        // console.log(arr);
       },
       getDictList() {
         this.FYLX = this.dictUtil.getByCode(this, this.FYLXCode);
@@ -177,7 +176,6 @@
       },
       save() {
         for (let item of this.FYLX){
-          // console.log(item);
           if(item.key == this.form.chargeCode && this.form.chargeCode != '4999'){
             this.form.chargeName = item.val
           }

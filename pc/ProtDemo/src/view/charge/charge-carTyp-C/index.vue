@@ -206,7 +206,6 @@
     },
     watch: {
       idCardNo:function (n,o) {
-        console.log(n);
         this.param.idCardNo = n
         this.find()
       },
@@ -253,9 +252,7 @@
                       confirmButtonText:'打印单据',
                       cancelButtonText:'完成',
                     }).then((val)=>{
-                      console.log('shijianm',val);
                       if(val.value){
-                        console.log('reasdfsdaf',mess)
                         v.print({traineeId:mess.id})
                       }
                     })
@@ -293,7 +290,6 @@
       getBxCx(num){
         this.$http.post('/api/chargeitemmanagement/getJgBx',{jgdm:num,timers:new Date().getTime()}).then(res=>{
           if(res.code == 200){
-            // console.log(res.result);
             if(res.result.carType.length == 0){
               this.swal({
                 type:'error',
@@ -348,8 +344,6 @@
         })
       },
       change(vaule, key) {
-        // console.log('//////', vaule);
-        // console.log(key);
         this.param.orgPath = key[key.length - 1].value
       },
     }

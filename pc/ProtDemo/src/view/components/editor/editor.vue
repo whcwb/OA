@@ -19,7 +19,6 @@
   },
   methods: {
     handleChange (html, text) {
-      // console.log(html, text)
     }
   }
 }

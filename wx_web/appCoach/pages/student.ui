@@ -276,7 +276,6 @@ export default {
       this.sendDate.pageNum = 1
       this.loadMore = true
       this.getStudentList(1)
-      //console.log(JSON.stringify(this.sendDate)+"----------------------")
       this.show1 = false
      
     },
@@ -289,7 +288,6 @@ export default {
       this.sendDate.pageNum = 1
       this.loadMore = true
       this.getStudentList(1)
-      console.log(JSON.stringify(this.sendDate)+"----------------------")
       //this.navList[1].name = val.join('-')
       this.show2 = false
     },
@@ -302,7 +300,6 @@ export default {
       this.sendDate.pageNum = 1
       this.loadMore = true
       this.getStudentList(1)
-      console.log(JSON.stringify(this.sendDate)+"----------------------")
       //this.navList[2].name = this.checklist3[0].value
       this.show3 = false
     },
@@ -413,7 +410,6 @@ export default {
     /**this.$http('POST',ui.getApp().apis.PUBSENDMSG,{
            coachId:this.getUser().id
           },(res)=>{
-            console.log("前十条数据"+JSON.stringify(res))
             let result = res.result
             result.forEach((value,index) => {
                if(! value.head_img){
@@ -472,7 +468,6 @@ export default {
     },
     getStudentList(type){
       this.$http('POST',ui.getApp().apis.TRANINESSLIST,this.sendDate,(res)=>{
-            console.log("学生数据"+JSON.stringify(res))
             let itemList = []
             
             this.getDate.pageNum = res.result.pageNum

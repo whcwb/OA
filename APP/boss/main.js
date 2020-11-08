@@ -23,8 +23,6 @@ let options = {
     //   next()
     // }
     next()
-    // console.log('去',to)
-    // console.log('来',from)
   }
 }
 
@@ -38,21 +36,18 @@ ui.extend({
         document.body.appendChild(script)
 
         script.onload = function(){ // 微信js初始化 回调函数
-            // console.log('*****wx',wx)
-            
+
             // 微信js初始化成功后引用 微信功能方法
             ui.getApp().wxUtil = require('./static/ajax/wechatUtil.js').default
 
             //获取Code 直
             let authCode = ui.getApp().wxUtil.getQueryString("code");
-            // console.log('获取code',authCode)
-            
+
             if(authCode){
               
               // 获取Openid
               ui.getApp().wxUtil.vueParent = this;
               ui.getApp().wxUtil.getOpenid(authCode,(res)=>{
-                  // console.log('openid-------',res)
                   localStorage.setItem("openid",res);//存储openid
                   ui.getApp().wxUtil.initConfig();//执行 微信 config
               });
@@ -70,7 +65,6 @@ ui.extend({
     getUserMess(callback){//网络数据请求 获取用户信息
       this.$http('POST',ui.getApp().apis.USERMESS,{},(res)=>{
         if(res.code==200 && res.result){
-            // console.log('用户信息',res)
             if(res.result.yhTx == ''){
               res.result.yhTx ='static/img/login/logo.png'
             }
@@ -101,7 +95,6 @@ ui.extend({
         header: ui.getApp().Ajax.header,
         method:method,
         success: function (res) {
-          // console.log('请求成功')
           if(res.data.code ==403){
             ui.showToast({ title: res.data.message})
             ui.redirectTo({
@@ -114,12 +107,10 @@ ui.extend({
           }
         },
         fail:function(err){
-          // console.log('请求失败',err)
           ui.showToast({ title: '网络数据异常'})
           // callback && callback(err.data);
         // },
         // complete:function(mess){
-          // // console.log('请求结果')
           // callback && callback(mess.data);
         }
       })
@@ -150,7 +141,6 @@ ui.extend({
 
 
   sayHello(){
-    console.log('全局方法参数',ui.getApp().Ajax)
   },
   goBack(){
     ui.navigateBack()

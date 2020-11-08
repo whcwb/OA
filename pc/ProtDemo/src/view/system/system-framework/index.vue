@@ -246,7 +246,6 @@
         this.componentName = 'modelForm';
       },
       del(item) {
-        console.log(item);
         let ids = [];
         ids.push(item.jgdm);
         this.util.del(this, this.apis.FRAMEWORK.DELE, ids, () => {
@@ -254,7 +253,6 @@
         });
       },
       treeClick(event) {
-        console.log('+++',event);
         if (event.length > 0) {
           this.choosedItem = event[0];
           this.treeMess = event[0]
@@ -263,11 +261,8 @@
         }
       },
       CascaderGet(val,Mess){
-        console.log(val);
-        console.log(Mess);
         let code = val[val.length-1]
         this.$http.post('/api/jg/getSubOrg',{jgdm:code}).then(res=>{
-          console.log('---',res);
           if (res.code == 200) {
             this.choosedItem = res.result
             this.treeMess = res.result

@@ -146,7 +146,6 @@
         v.SpinShow = true;
         this.param.timers = new Date().getTime()
         this.$http.get(this.apis.DAILY.QUERY, {params: v.param}).then((res) => {
-          console.log('数据', res)
           v.tableData = res.page.list
           v.pageTotal = res.page.total;
         })

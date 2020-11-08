@@ -140,8 +140,6 @@
         this.getBmdList()
       },
       getNf(gsh, date) {
-        // console.log(gsh);
-        // console.log(date);
         this.param.reduceCheckTimeGte = gsh[0] + " 00:00:00";
         this.param.reduceCheckTimeLte = gsh[1] + " 23:59:59";
         this.data1 = [];

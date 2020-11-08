@@ -194,7 +194,6 @@
         this.componentName = 'modelForm';
       },
       del(item) {
-        console.log(item);
         let ids = [];
         ids.push(item.jgdm);
         this.util.del(this, this.apis.FRAMEWORK.DELE, ids, () => {

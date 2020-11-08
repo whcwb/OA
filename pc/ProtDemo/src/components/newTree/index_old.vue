@@ -50,11 +50,9 @@
     },
     watch: {
       checkList: function (n, o) {
-        console.log(n);
       }
     },
     created() {
-      // console.log('++++',this.checkList);
     },
     mounted() {
       this.getTree()
@@ -109,7 +107,6 @@
                           } else if (item3.tagTyp != 'success') {
                             item3.tagTyp = 'primary'
                           }
-                          // console.log(res.result);
                         })
                         if (item3.children && item3.children.length > 0) {
                           item3.children.forEach((item4, index4) => {
@@ -141,7 +138,6 @@
           //     a.jgmc = fName + '/' + a.jgmc
           //
           obj = JSON.stringify(obj)
-          console.log(obj);
           this.checkPush(fName, obj)
         } else if (obj.tagTyp == 'success') {
           obj.tagTyp = 'primary'
@@ -151,7 +147,6 @@
       checkPush(fName, obj) {
         obj = JSON.parse(obj)
         obj.jgmc = fName + '/' + obj.jgmc
-        console.log(obj);
 
         this.checkList.push(obj)
         this.checkEmit()

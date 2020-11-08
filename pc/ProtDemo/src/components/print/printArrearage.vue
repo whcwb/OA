@@ -250,7 +250,6 @@
       this.getMess(this.printMess,()=>{
         this.getNum()
       })
-      console.log('數據傳遞', this.printMess);
     },
     methods: {
       getTime(){

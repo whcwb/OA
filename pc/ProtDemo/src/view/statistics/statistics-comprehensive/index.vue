@@ -233,8 +233,6 @@
     },
     methods: {
       getNf(gsh, date) {
-        // console.log(gsh);
-        // console.log(date);
         this.year = gsh
         this.param.startTime = gsh + '-01-01';
         this.param.endTime = gsh + '-12-31';
@@ -282,7 +280,6 @@
         // });
         this.loading=true
         this.$http.post('/api/data/getAllIn', this.param).then((res) => {
-          // console.log(res);
           if (res.code == 200) {
             res.result.forEach((item, index) => {
               var ps = {}

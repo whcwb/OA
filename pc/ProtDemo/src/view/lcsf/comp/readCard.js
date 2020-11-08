@@ -62,9 +62,7 @@ obj.overCar = (v,KM) => {
   obj.readCard((key, mess) => {
     if(!key){
       setTimeout(() => {
-        console.log('v.cancekFzkp',v.cancelFzkp);
         if (v.cancelFzkp !== 'true') {
-          console.log('setTimeout');
           obj.overCar(v,KM)
         }
       }, 200)
@@ -91,7 +89,6 @@ obj.overCar = (v,KM) => {
       mess.km = KM ;
       $http.post('/api/lcjl/getJl', {cardNo:mess}).then(res => {
         if (res.code == 200) {
-          // console.log(res.result.lcKm);
           if(res.result.lcKm !== KM){
             let k = KM === '3' ?'二' :'三';
             swal({
@@ -126,9 +123,7 @@ obj.overCar = (v,KM) => {
           })
         }else {
           // setTimeout(() => {
-          //   console.log(v.cancelFzkp);
           //   if (v.cancelFzkp !== 'true') {
-          //     console.log('setTimeout');
           //     obj.overCar(v)
           //   }
           // }, 1000)

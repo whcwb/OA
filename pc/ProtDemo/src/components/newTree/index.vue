@@ -39,7 +39,6 @@
     },
     watch: {
       checkList: function (n, o) {
-        console.log(n);
       }
     },
     created() {
@@ -47,19 +46,14 @@
       this.getTree()
     },
     mounted() {
-      // console.log('++++',this.treeMess);
     },
     methods: {
       menSeltct(name, r, l) {
-        // console.log(name);
-        // console.log(r);
-        // console.log(l);
       },
 
       getTree() {
         var v = this
         this.$http.get(this.apis.FRAMEWORK.getCurrentUserOrgTree, {timers: new Date().getTime()}).then((res) => {
-          console.log('====', res.result);
           function yz(arr) {
             if (arr[0].jgdm.length === 3) {
               return arr[0].children
@@ -73,7 +67,6 @@
 
           if (res.code === 200) {
             if (this.checkList.length == 0) {
-              console.log(tree);
               v.treeMess = tree
             } else {
               tree.forEach((item, index) => {
@@ -88,14 +81,12 @@
                   })
                 })
               })
-              console.log('树结构加载',tree);
               v.treeMess = tree
             }
           }
         })
       },
       TagClick(list) {
-        console.log(list);
         this.selectList = []
         list.forEach((item, index) => {
           if (item.children.length == 0) {
@@ -107,7 +98,6 @@
       checkPush(obj) {
         obj = JSON.parse(obj)
         obj.jgmc = obj.fjgmc + '/' + obj.jgmc
-        // console.log(obj);
 
         this.selectList.push(obj)
         this.checkEmit()

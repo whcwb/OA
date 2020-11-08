@@ -805,7 +805,6 @@
                       cancelButtonText:'完成',
                     }).then((val)=>{
                       if(val.value){
-                        console.log('reasdfsdaf',mess)
                         v.print({traineeId:mess.id})
                       }
                     })
@@ -896,7 +895,6 @@
       getBxCx(num) {
         this.$http.post('/api/chargeitemmanagement/getJgBx', {jgdm: num, timers: new Date().getTime()}).then(res => {
           if (res.code == 200) {
-            // console.log(res.result);
             if (res.result.carType.length == 0) {
               this.swal({
                 type: 'error',

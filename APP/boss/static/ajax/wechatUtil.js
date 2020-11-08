@@ -109,7 +109,6 @@ wx.ready(function(){
     //微信jsapi使用，不允许页面切换，所以这里使用router来做页面跳转，不再使用location强制跳页面
     if (wechatUtil.vueParent){
     //   wechatUtil.vueParent.$router.push({name:'indexName'});
-    console.log('页面跳转')
       return;
     }
     wechatUtil.checkJsApi();
@@ -120,7 +119,6 @@ wx.ready(function(){
 });
 
 wx.error(function(res){
-    console.log('error',res);
     // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
 });
 //--------------------------------------------------------------------------
@@ -137,20 +135,17 @@ wechatUtil.qrScan = (callback)=>{//打开微信扫码功能
             callback && callback(result);
         },
         fail : function(res) {
-            console.log(res)
             // alert(JSON.stringify(res));
         }
     });
 };
 wechatUtil.chooseImage = (callback)=>{//拍照或从手机相册中选图接口
-    console.log('chooseImage');
     wx.chooseImage({
         count: 1, // 默认9
         sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
         sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
         success: function (res) {
             var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
-            console.log(res);
             callback && callback(localIds);
         }
     });
@@ -166,7 +161,6 @@ wechatUtil.uploadImage = (id , callback)=>{//上传图片接口
         localId: id, // 需要上传的图片的本地ID，由chooseImage接口获得
         isShowProgressTips: 1, // 默认为1，显示进度提示
         success: function (res) {
-          console.log(res);
           var serverId = res.serverId; // 返回图片的服务器端ID
           callback && callback(res)
         }

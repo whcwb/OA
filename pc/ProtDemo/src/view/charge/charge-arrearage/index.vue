@@ -326,8 +326,6 @@
                   },
                   on: {
                     click: () => {
-                      console.log(p.row.remark);
-                      // console.log(this.payOk.remark);
                       this.payOk.traineeId = p.row.id
                       this.OKpay(p.index)
                     }
@@ -688,7 +686,6 @@
       }
       ,
       tabcheck(arr) {
-        console.log(arr);
         this.printMess = arr
       },
       winPrint() {
@@ -716,7 +713,6 @@
 
       },
       pageChange(n, num) {
-        console.log(num + '--1--' + n);
         if (num == 0) {
           this.param.pageNum = n
           this.getPagerList()
@@ -727,7 +723,6 @@
       }
       ,
       pageSizeChange(n, num) {
-        console.log(num + '--2--' + n);
         this.param.pageSize = n
         this.getPagerList()
       }

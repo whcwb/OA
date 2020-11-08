@@ -43,7 +43,6 @@ export default {
            traineeName:this.getUser().name,
            comment:this.textPJ
           },(res)=>{
-            console.log("给教练评价"+JSON.stringify(res))
             // 调用ui.hideDialog关闭窗体，并回传数据
             ui.hideDialog({result:res.result})
            

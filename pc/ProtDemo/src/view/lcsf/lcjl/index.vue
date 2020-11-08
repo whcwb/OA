@@ -103,7 +103,6 @@
         },
         methods: {
           chpageNum(){
-            console.log(123455);
             this.param.pageNum=1
           },
           parseTime(s) {
@@ -122,7 +121,6 @@
                 }
             },
             print(){
-                console.log('print');
             }
         }
     }

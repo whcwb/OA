@@ -300,7 +300,6 @@ export default {
      this.jlDate.pageNum = '1'
      this.jlList = []
      this.getCoachItem()
-     console.log(JSON.stringify(this.jlDate))
     },
     change1 (val) {//性别选择变化事件
      if(val[0] != 'all'){
@@ -348,7 +347,6 @@ export default {
     getCoachItem (){//获取教练信息
       let cdCodeList = this.cdCodeList
       this.$http('POST',ui.getApp().apis.COACHMANAGEMENT,this.jlDate,(res)=>{
-              console.log(JSON.stringify(res))
               this.jlResult.pageNum = res.result.pageNum
               this.jlResult.pageSize = res.result.pageSize
               this.jlResult.pages = res.result.pages
@@ -373,7 +371,6 @@ export default {
     getBannerImg (){//获取轮播图
       this.$http('POST',ui.getApp().apis.PICROTATIONQUERYPIC,{type:'1'},(res)=>{
               this.bannerList = []
-              console.log("轮播图"+JSON.stringify(res))
               let result = res.result || []
               result.forEach(function (value,index) {
                  if(value.picUrl){

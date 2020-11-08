@@ -842,7 +842,6 @@
       }
       ,
       pageSizeChange(n, num) {
-        console.log(num + '--2--' + n);
         this.param.pageSize = n
         this.getPagerList()
       }

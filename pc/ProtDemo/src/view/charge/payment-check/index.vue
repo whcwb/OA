@@ -211,7 +211,6 @@
         this.key = this.result.key;
         this.$refs.upload.clearFiles();
         // this.result.code = res.code;
-        // console.log(res.result.list);
         // if (res.code == 200) {
         //   this.result.errorKey = res.result.errorKey;
         //   this.result.sucKey = res.result.sucKey;
@@ -219,7 +218,6 @@
         //   this.result.error = res.result.errorCount;
         //   this.result.success = res.result.succeedCount;
         //   this.acceptResult = res.result.list;
-        //   console.log('./././/./', res);
         //   this.compName = 'result';
         //   this.showModal = true;
         // } else {

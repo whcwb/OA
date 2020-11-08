@@ -90,7 +90,6 @@
                   FcSave:()=>{
                     this.getYYdj();
                     // this.$parent.getYYdj();
-                    console.log(this.$parent);
                     this.util.getPageData(this.$parent);
                     //this.util.initTable(this);
                   }
@@ -177,9 +176,7 @@
         })
       },
       JHvideo(row){
-        // console.log('row', this.tok);
         let text = encodeURIComponent(row.jlXm+",请来前台取卡!"+row.jlXm+",请来前台取卡!"+row.jlXm+",请来前台取卡!");
-        // console.log(text)
         this.aSrc = "https://tsn.baidu.com/text2audio?tok="+this.tok+"&per=0&spd=4&ctp=1&lan=zh&cuid=123456890987654321&tex=" + text;
         setTimeout(()=>{
           this.aSrc = ''
@@ -195,12 +192,10 @@
           cardNo:num,
         }).then((res) => {
           if (res.code == 200) {
-            console.log(res);
             if(res.page.list.length == 0){
               this.choosedItem.lcClId=""
             }else {
               let car =  res.page.list[0];
-              console.log(car);
               if(car.clKm !== '2'){
                 this.$refs.ref.objData[row.index]._isExpanded = false
                 this.swal({
@@ -320,7 +315,6 @@
       },
       getYYdj() {
         this.$http.get('/api/lcjl/query', {params: {kssjIsNull: '1', orderBy: 'cjsj asc',lcKm:'2'}}).then((res) => {
-          console.log(res);
           if (res.code == 200) {
             this.yydata = res.result
             for(let i=0;i<this.yydata.length;i++){

@@ -212,7 +212,6 @@ export default {
           sendData.openid = urlGetOpenid
         }
         this.$http('POST',ui.getApp().apis.SMSLOGIN,sendData,(res)=>{
-            console.log(JSON.stringify(res))
              res.result.userInfo.token = res.result.accessToken.token
              localStorage.setItem('token', JSON.stringify(res.result.accessToken));//缓存关键参数包括userId username  token
              localStorage.setItem('userInfo',JSON.stringify(res.result.userInfo))//缓存用户信息
@@ -300,15 +299,12 @@ export default {
     },
 
     login_qq(){
-      console.log('调用qq接口')
       ui.login({
         target: 'qq',
         success: data => {
-          console.log(data)
           this.checkOpenid(data.openid)
         },
         fail:data=>{
-          console.log('fail', data)
         }
       })
     },
@@ -332,13 +328,11 @@ export default {
               isLogin: true,
               data: data.data.result
             }
-            console.log(data.data.result)
             ui.setStorageSync('userinfo', data.data.result)
             ui.hideDialog({ userinfo: userinfo })
           }
         },
         fail: function (data) {
-          console.log(data,'checkOpenid,fail')
         }
       })
     },
@@ -346,11 +340,9 @@ export default {
       ui.login({
         target: 'weixin',
         success: data => {
-          console.log(data)
           this.checkUnionid(data.unionid)
         },
         fail:data=>{
-          console.log('fail', data)
         }
       })
       
@@ -364,8 +356,6 @@ export default {
           unionid: unionid,
         },
         success: function (data) {
-          console.log(data)
-          console.log(data.data.error_code,'checkUnionid,success')
           //没有绑定
           if(data.data.error_code === 0){
             that.state = 1
@@ -382,7 +372,6 @@ export default {
           }
         },
         fail: function (data) {
-          console.log(data,'checkOpenid,fail')
         }
       })
     },
@@ -417,7 +406,6 @@ export default {
             }
           },
           fail: function (data) {
-            console.log(data,'fail')
           }
         })
       }else if(this.type === 'qq'){
@@ -450,7 +438,6 @@ export default {
             }
           },
           fail: function (data) {
-            console.log(data,'fail')
           }
         })
       }

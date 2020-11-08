@@ -13,8 +13,6 @@
   },
   methods:{
     build( s,z){
-      // console.log(s);
-      // console.log(z);
       let   option = {
         title: {
           text: "收支统计"
@@ -96,7 +94,6 @@
     getNSRList(){
       var s = []
       this.$http.post(this.apis.COUNT.NSR).then( (res)=>{
-        // console.log(res);
         if(res.code == 200){
           s = [
             res.result['2018-01']/10000,
@@ -119,7 +116,6 @@
     getNZCList(s){
       var z = []
       this.$http.post(this.apis.COUNT.NZC).then( (res)=>{
-        // console.log(res);
         if(res.code == 200){
           z = [
             res.result['2018-01']/10000,

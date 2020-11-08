@@ -51,7 +51,6 @@
   },
   methods: {
     handleDelete (params) {
-      // console.log(params)
     },
     exportExcel () {
       this.$refs.tables.exportCsv({

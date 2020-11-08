@@ -75,11 +75,9 @@
     },
     methods: {
       tySelect(val) {
-        console.log(val);
       },
       save() {
         this.$http.post(this.apis.DAK.ADD,this.formTop).then((res)=>{
-          console.log(res);
         })
       },
       close() {

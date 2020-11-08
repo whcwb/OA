@@ -51,7 +51,6 @@ export default {
       
         //提交投诉
       this.$http('POST',ui.getApp().apis.COMPLAINRECORDSAVE,data,(res)=>{
-            console.log("投诉教练"+JSON.stringify(res))
             // 调用ui.hideDialog关闭窗体，并回传数据
             ui.hideDialog({type:true})
             this.textContent = ''//关闭窗口时清除弹窗数据

@@ -233,7 +233,6 @@
     created() {
       var v = this
       this.getTime()
-      console.log(this.printMess);
       this.getNum()
       this.getMess(this.printMess)
     },
@@ -270,13 +269,11 @@
         arr.forEach((item, index) => {
           this.messIdList[index] = item.id
           this.money += item.chargeFee
-          console.log(item.traineeName);
           if (index == arr.length - 1) {
             this.nameList = this.nameList + item.traineeName
           } else {
             this.nameList = this.nameList + item.traineeName + "、"
           }
-          // console.log(this.nameList);
         })
 
       },

@@ -68,7 +68,6 @@ let dictUtil = {
         return val;
       }else{
         // v.$router.push({ name: 'login' });
-        console.log('字典丢失');
       }
     }catch(e){
 
@@ -92,7 +91,6 @@ let dictUtil = {
         }
       }
     }).catch((error) => {
-      console.log(error)
     })
   }
 }

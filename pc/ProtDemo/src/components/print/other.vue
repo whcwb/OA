@@ -269,7 +269,6 @@ export default {
       setTimeout(()=>{
         v.AF.getPrintNum('other',this.studentIDS,num => {
           v.num = num
-          console.log("num -> " , num);
           // v.num = 0
           if(v.num == 0){
             v.num = '网络异常!请点击取消按钮,重新打开获取票据号';
@@ -317,7 +316,6 @@ export default {
           this.nameList = this.nameList + item.traineeName + "、"
           this.idCardList +=  item.idCardNo + "、"
         }
-        console.log('namelist',this.nameList)
       })
       callback && callback()
     },

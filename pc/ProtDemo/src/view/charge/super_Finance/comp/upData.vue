@@ -77,12 +77,10 @@
       this.dui = this.selectRow.jgmc.split('/')[0]
       this.jxName = this.selectRow.jgmc.split('/')[1]
       this.getJTjx()
-      console.log(this.selectRow);
     },
     methods:{
       getJTjx(){
         this.jxList = this.dictUtil.getByCode(this,'ZDCLK1019');
-        console.log(this.jxList);
       },
       SelectChangeJx(){
 

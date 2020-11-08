@@ -122,12 +122,10 @@
         },
       //   getcarsyrlx(){
       //     this.$http.post('/api/car/getsyrlx',{clId:this.clId}).then((res)=>{
-      //       console.log(res);
       //     })
       //   },
       // getCarArchives(){
       //   this.$http.post('/api/car/getCarArchives',{clId:this.clId}).then((res)=>{
-      //     console.log(res);
       //   })
       // },
         printTable() {

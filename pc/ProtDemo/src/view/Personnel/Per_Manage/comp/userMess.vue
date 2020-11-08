@@ -368,7 +368,6 @@
         this.addmess.zjcx1 = n.join(',')
       },
       jl:function (n,o) {
-        // console.log('adsf',n);
         if(n){
           this.addmess.jlZt = '10'
         }else {
@@ -405,7 +404,6 @@
     created() {
       this.addmess = this.userAudit
       if (this.userAudit.id) {
-        // console.log(this.userAudit.jlZt);
         if(this.userAudit.jlZt == '20'){
           this.jl = false
         }else if(this.userAudit.jlZt == '10'){
@@ -415,7 +413,6 @@
         for(let i=0;i<arrL;i++){
           this.CascaderArr[i] = this.addmess.jgdm.substring(0,(i+1)*3)
         }
-        // console.log('---',this.CascaderArr);
 
         this.drivingType = this.userAudit.zjcx1.split(',')
         this.tit = '人员信息维护'

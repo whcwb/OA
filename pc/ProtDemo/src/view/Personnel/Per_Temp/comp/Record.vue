@@ -194,7 +194,6 @@
 
       },
       pageChange(n, num) {
-        // console.log(num + '--1--' + n);
         if (num == 0) {
           this.Rkparam.pageNum = n
           this.getRkList()
@@ -204,7 +203,6 @@
         }
       },
       pageSizeChange(n, num) {
-        // console.log(num + '--2--' + n);
         if (num == 0) {
           this.Rkparam.pageSize = n
           this.getRkList()

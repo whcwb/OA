@@ -243,7 +243,6 @@
                 },
                 on: {
                   print: (id) => {
-                    // console.log('数据id', id);
                     var v = this
                     v.AF.idPrintMess(id, (res) => {
                       v.itemMess = res
@@ -332,8 +331,6 @@
         })
       },
       rowClick(mess, index) {
-        // console.log(mess);
-        // console.log(index);
         this.$emit('idCardNo', mess.idCardNo)
       },
       fineSup(n) {
@@ -351,8 +348,6 @@
 
       },
       DatePickerC(data) {
-        // console.log('1', this.bmTime);
-        // console.log('2', data);
         this.param.cjsjGte = data[0]
         this.param.cjsjLte = data[1]
         this.param.pageNum = 1

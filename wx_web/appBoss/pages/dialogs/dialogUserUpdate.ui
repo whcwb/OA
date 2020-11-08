@@ -109,7 +109,6 @@ export default {
     this.$http('POST',ui.getApp().apis.YWCL.ZDPAGER,{pageNum:1,pageSize:100,lmdm:'ZDCLK1019'},(res)=>{
               if(res.page.list && res.page.list.length>=1 ){
                  let shList = res.page.list[0].zdxmList
-                 console.log(JSON.stringify(shList))
                  that.countryList = []
                  shList.forEach(function(value,index){
                     let obj = {}

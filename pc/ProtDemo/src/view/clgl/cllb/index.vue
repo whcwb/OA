@@ -174,7 +174,6 @@
       },
       getClsyr(){
         this.$http.post('/api/clsyr/getAll').then((res)=>{
-          console.log(res);
         })
       },
     }

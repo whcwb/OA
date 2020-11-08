@@ -292,7 +292,6 @@
       print(mess) {
         this.hisPrintMess = mess
         this.componentName = 'print'
-        console.log('dayin')
       },
       his(item) {//历史练车记录
         this.clId = item.id;
@@ -314,9 +313,6 @@
         this.getXY(cx)
       },
       carClick(val, cx, zg) {
-        console.log(val);
-        console.log(zg);
-        console.log('------------', this.formData)
         this.$refs.fcdrawer.show(val, zg);
         this.formData.lcClId = val;
         this.formData.zgId = zg;

@@ -304,9 +304,6 @@
                 this.$refs.ref.objData[row.index]._isExpanded = true
                 v.showFQfzkp = false;
                 this.choosedItem.cardNo = mess;
-                console.log('++====+==+++=++',row);
-
-                console.log('++====+==+++=++',this.choosedItem);
                 this.getCarNoNum(row)
               }else {
                 this.choosedItem.cardNo = '';

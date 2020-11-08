@@ -102,7 +102,6 @@
     },
     methods: {
       kcMcChange(val){
-        // console.log(val);
         if(val === undefined){
           this.kcLxlist = []
           return
@@ -115,7 +114,6 @@
       },
       getStockTyp(){
         this.$http.post('/api/kclb/getAllLb').then(res => {
-          // console.log(res);
           if (res.code == 200) {
             this.kcMcList = res.result
           }

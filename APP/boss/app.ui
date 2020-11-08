@@ -174,7 +174,6 @@ export default {
       this.initBodyStyle()
     },
     wxUtil(n,o){//微信方法监听
-      // console.log('数据监听*-*-*-*-*-*-*-');
       if(n==null){
         this.getWxJs()
       }

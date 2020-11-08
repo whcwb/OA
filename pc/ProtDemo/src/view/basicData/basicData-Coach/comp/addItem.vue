@@ -228,7 +228,6 @@
         this.form.drivingType = n.join(',')
       },
       'form.orgPath': function (n, o) {
-        // console.log(n);
         this.form.jgdm = n[n.length - 1]
       },
       'form.licenseTime': function (n, o) {
@@ -249,7 +248,6 @@
       }
     },
     created() {
-      // console.log(this.mess);
       if (this.mess.id) {
         this.tit = '修改教员信息'
         this.drivingType = this.mess.drivingType.split(',');
@@ -288,7 +286,6 @@
         }
       },
       save() {
-        // console.log(this.form);
         this.$refs.saveForm.validate((valid) => {
           if (valid) {
 
@@ -315,7 +312,6 @@
         this.$parent.getPagerList()
       },
       DatePicklic(n) {
-        // console.log(n);
         if (n.length > 1 && n[0] != '') {
           const a = this.AF.Num_Date(n[1]) - this.AF.Num_Date(n[0])
           const b = Math.floor((a) / (1000 * 60 * 60 * 24 * 365))

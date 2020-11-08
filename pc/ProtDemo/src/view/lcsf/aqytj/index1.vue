@@ -131,7 +131,6 @@
       },
       getData() {
         this.list = [];
-        console.log(this.param.kssjInRange.length);
         if (this.param.kssjInRange.length > 26) {
           let sj = this.param.kssjInRange.split(',');
           let st = sj[0];

@@ -92,7 +92,6 @@
     created() {
       if(this.changeMess.id){
         this.tit = '修改支出项'
-        // console.log(this.changeMess);
         delete this.changeMess.institutions
         this.form  = this.changeMess
       }
@@ -101,17 +100,14 @@
     methods: {
       getDictList() {
         this.FYLX = this.dictUtil.getByCode(this, this.FYLXCode);
-        // console.log(this.FYLX);
       },
       save() {
         for (let item of this.FYLX){
-          // console.log(item);
           if(item.key == this.form.chargeCode && this.form.chargeCode != '9999'){
             this.form.chargeName = item.val
           }
         }
 
-        // console.log(this.form);
         this.$refs.saveForm.validate((valid) => {
           if(valid){
 

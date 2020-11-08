@@ -79,7 +79,6 @@
       },
       getsyrlist(){
         this.$http.post('/api/carls/pager',this.param.dah).then((res)=>{
-          console.log(res);
           if(res.code == 200){
             this.pageData = res.page.list
           }

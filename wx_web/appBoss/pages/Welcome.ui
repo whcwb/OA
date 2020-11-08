@@ -74,7 +74,6 @@ export default {
       script.src='./static/utils/jweixin-1.2.0.js'
       document.body.appendChild(script)
       script.onload = function(){ // 微信js初始化 回调函数
-      console.log('*****wx',wx)
       // 微信js初始化成功后引用 微信功能方法
           ui.getApp().wxUtil = require('../static/ajax/wechatUtil.js').default
           var code =  ui.getApp().wxUtil.getQueryString("code")

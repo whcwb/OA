@@ -86,7 +86,6 @@
       },
       getPagerList(){
           let p = JSON.parse(JSON.stringify(this.parms));
-        console.log(p);
         this.$http.get('/api/lcwxjl/query',{params:p}).then(res=>{
           if(res.code == 200){
             this.tableData = res.result

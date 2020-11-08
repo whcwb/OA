@@ -83,7 +83,6 @@
       }
     },
     created(){
-      // console.log('+++===+++',this.mess);
     },
     methods:{
       dele(id){

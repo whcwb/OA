@@ -355,13 +355,11 @@
           this.user.idCardNo = window.vueObject.$data.card.CardNo;
           this.user.name = window.vueObject.$data.card.NameA;
           this.user.address = window.vueObject.$data.card.Address;
-          //console.log(window.vueObject);
           if(window.vueObject.$data.card.Sex == '1'){
             this.user.gender='10'
           }else {
             this.user.gender='00'
           }
-          //console.log(window.vueObject.$data.card.Born);
           this.user.birDay = window.vueObject.$data.card.Born;
           this.user.idCardTime = new Array();
           this.user.idCardTime.push(new Date(window.vueObject.$data.card.UserLifeB.substring(0, 4) + "-" + window.vueObject.$data.card.UserLifeB.substring(4, 6) + "-" + window.vueObject.$data.card.UserLifeB.substring(6, 8)));
@@ -373,7 +371,6 @@
 
           // this.user.idCardStartTime = window.vueObject.$data.card.UserLifeB;
           // this.user.idCardEndTime = window.vueObject.$data.card.UserLifeE;
-          // console.log(this.user.birDay);
         }
         return "";
      },
@@ -425,7 +422,6 @@
         }
       },
       tjrChange(a){
-        console.log(a);
         if(a){
           this.user.referrer = a.label +'-'+ a.value
         }else {
@@ -442,12 +438,10 @@
               type:'error'
             })
           }
-          console.log(res);
         })
       },
       initPage() {
         window.vueObject.$data.card={};
-        //console.log(window.vueObject.$data.card);
         this.cardFrontFile = null;
         this.cardBackFile = null;
         this.headImg = null;
@@ -489,7 +483,6 @@
               if(arr[0].value.length == 9){
                 if(arr.length == 1){
                   v.user.jgdm = arr[0].value
-                  // console.log('111111',arr[0]);
                   v.bmdChange([arr[0].value],[arr[0]])
                   v.user.jgmc = arr[0].label + '/' + v.jxName
                   return arr
@@ -503,7 +496,6 @@
               }
             }
             this.dictList.bmd.data = tree(res.result)
-            // console.log("报名点信息",this.dictList.bmd.data )
           } else {
             this.swal({
               text: '无法加载报名点信息!',
@@ -534,12 +526,10 @@
       },
       bmdChangeFQ(val){
         if(val.indexOf('队')!=-1){
-          console.log(val);
           this.user.referrer = val
         }
       },
       bmdChangeQ(val){
-        // console.log(val)
         var v = this
         if(val){
           this.jfmcFor(val,(a)=>{
@@ -550,7 +540,6 @@
         }
       },
       bmdChangeC(val) {
-        console.log(val);
         var v = this
         if(val){
           this.jfmcFor(val,(a)=>{
@@ -561,9 +550,6 @@
         }
       },
       bmdChange(val,mes) {
-        console.log('1',val);
-        console.log('2',mes);
-
         if(mes && mes[0].lx == '10'){
           this.userRealyPay = true
         }else {
@@ -594,7 +580,6 @@
       },
       getBxCx(num){
         this.$http.post('/api/chargeitemmanagement/getJgBx',{jgdm:num,timers:new Date().getTime()}).then(res=>{
-          console.log('班型车型',res);
           if(res.code == 200){
             this.FXLB =res.result
           }
@@ -604,7 +589,6 @@
       },
       SelectChangeJx(val){
         this.user.jgmc = this.user.jgmc.split('/')[0] + '/'+val;
-        // console.log(val);
       },
       //根据机构代码加载优惠项
       loadReduce(jgdm) {
@@ -665,7 +649,6 @@
       getDictList(){
         //获取班型
         // this.dictList.classType.data =
-        // console.log('123',this.dictUtil.getByCode(this, this.dictList.classType.code));
         //获取车型
         // this.dictList.carType.data = this.dictUtil.getByCode(this, this.dictList.carType.code);
       },

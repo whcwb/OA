@@ -9,7 +9,6 @@ let options = {
       next()
     }else{
        if(!um){
-        console.log("没有登录")
         next({
            path:'/pages/login'
         })
@@ -17,8 +16,6 @@ let options = {
         next()
       }
     }
-    console.log('去',to)
-    console.log('来',from)
 
   }
 }
@@ -43,8 +40,7 @@ ui.extend({
             document.body.appendChild(script)
 
             script.onload = function(){ // 微信js初始化 回调函数
-                console.log('*****wx',wx)
-                
+
                 // 微信js初始化成功后引用 微信功能方法
                 ui.getApp().wxUtil = require('./static/ajax/wechatUtil.js').default
                 //ui.getApp().wxUtil.
@@ -54,14 +50,12 @@ ui.extend({
                 if(! urlGetOpenid){
                   ui.getApp().wxUtil.getCode()
                   authCode = ui.getApp().wxUtil.getQueryString("code");
-                  console.log('获取code',authCode)
                 }
                 
                 if(authCode){
                   // 获取Openid
                   ui.getApp().wxUtil.vueParent = this;
                   ui.getApp().wxUtil.getOpenid(authCode,(res)=>{
-                      console.log('openid-------',res)
                       sessionStorage.setItem("openid",res);//存储openid
                       ui.getApp().wxUtil.initConfig();//执行 微信 config
                   });
@@ -82,7 +76,6 @@ ui.extend({
         /**getUserMess(callback){//网络数据请求 获取用户信息
           this.$http('POST',ui.getApp().apis.USERMESS,{},(res)=>{
             if(res.code==200 && res.result){
-                console.log('用户信息',res)
                 if(res.result.yhTx == ''){
                   res.result.yhTx ='static/img/login/logo.png'
                 }
@@ -98,8 +91,6 @@ ui.extend({
           //url=ui.getApp().Ajax.url+':'+ui.getApp().Ajax.port+url
           url=ui.getApp().Ajax.url+url
           let accessTokenStr = localStorage.getItem("bossToken")
-          console.log(url)
-          console.log(JSON.stringify(data))
           if(accessTokenStr != null && accessTokenStr != '' && accessTokenStr != undefined){
             
             let tokMess = JSON.parse(accessTokenStr)
@@ -121,7 +112,6 @@ ui.extend({
             header: ui.getApp().Ajax.header,
             method:method,
             success: function (res) {
-              console.log('请求成功')
               if(res.data.code == 999 || res.data.code ==404){
                 ui.showToast({ title: res.data.message})
                 setTimeout(() => {
@@ -140,7 +130,6 @@ ui.extend({
               /** ui.redirectTo({
                 url: '/pages/dialogs/loginInterface'
               })
-              console.log(JSON.stringify(err))
               **/
             if(! failCallback){
               ui.showToast({ title:"连接超时"})
@@ -168,7 +157,6 @@ ui.extend({
 
 
       sayHello(){
-        console.log('全局方法参数',ui.getApp().Ajax)
       },
       goBack(){
         ui.navigateBack()

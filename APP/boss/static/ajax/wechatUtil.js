@@ -35,7 +35,6 @@ wechatUtil.getOpenid = (code,callback)=>{
         url:urls.url+':8080/biz'+urls.wechat.getOpenid+"?code="+code,
         type:'get',
         success:function(res){
-            console.log(res);
             if (res.code == 200){
                 wechatUtil.openid = res.message;
                 callback && callback(res.message)
@@ -96,7 +95,6 @@ wechatUtil.checkJsApi = ()=>{
   wx.checkJsApi({
     jsApiList: ['scanQRCode','chooseImage','uploadImage','previewImage','chooseWXPay'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
     success: function(res) {
-      console.log(res);
       // 以键值对的形式返回，可用的api值true，不可用为false
       // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
     }

@@ -307,7 +307,6 @@
           }
           let now = new Date();
           let duration =  moment(moment(now) - moment(startTime));
-          // // console.log(duration);
           if((r.kssj && r.kssj.length > 0) && (!r.jssj || r.jssj == '')){
             let min = parseInt(duration/60000);
             r.sc = duration.subtract(8,'hour').format("HH时mm分钟");//this.parseTime(min);
@@ -330,7 +329,6 @@
           if (!this.total){
             this.total = 0;
           }
-          // // console.log(r.lcFy);
         }
       },
       showfcModel(mess) {
@@ -382,12 +380,10 @@
       print(mess) {
         this.hisPrintMess = mess
         this.componentName = 'print'
-        // console.log('dayin')
       },
       printHc(mess) {
         this.hisPrintMess = mess
         this.componentName = 'printSl'
-        // console.log('dayin')
       },
       his(item) {//历史练车记录
         this.clId = item.id;
@@ -467,16 +463,13 @@
           }
         })
       }, tar(){
-        // console.log("hell");
       }
     },
     mounted(){
       var v = this
       this.$nextTick(() => {
         $(document).keypress(function (event) {
-          console.log(event.keyCode);
           if (event.keyCode === 44) {
-            console.log(this);
             v.yyClick()
           }else if (event.keyCode === 46) {
             v.readCar()

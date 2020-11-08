@@ -107,7 +107,6 @@
         })
       },
       CasChange(val,lab){
-        // console.log(lab);
         if(lab.length == 2){
           this.param.mc = lab[0].label+'/'+lab[1].label
           this.getPagerList(0)

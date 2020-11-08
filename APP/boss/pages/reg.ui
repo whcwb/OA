@@ -286,7 +286,6 @@ export default {
   },
   created () {
     if(ui.getApp().yqm){
-      console.log(ui.getApp().yqm);
     }else{
       ui.showToast({
          title: '请重新扫描邀请码！'
@@ -306,7 +305,6 @@ export default {
         this.xy=false
         
       }
-      console.log(this.xy);
     },
     handleSend (run) {
         var v = this
@@ -333,7 +331,6 @@ export default {
           if(res.code==200){
 
           }
-        console.log(data)
       })
     },
     regYZ(){//数据验证

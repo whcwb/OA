@@ -45,7 +45,6 @@
     },
     watch:{
       price:function (n,o) {
-        // console.log(n);
         if(n>this.userAudit.registrationFee){
           this.swal({
             type:'error',

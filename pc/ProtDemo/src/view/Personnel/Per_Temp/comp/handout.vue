@@ -165,13 +165,11 @@
         this.$parent.compName = ''
       },
       pageChange(n) {
-        // console.log(num + '--1--' + n);
         this.Ckparam.pageNum = n
         this.getCklist()
 
       },
       pageSizeChange(n) {
-        // console.log(num + '--2--' + n);
         this.Ckparam.pageSize = n
         this.getCklist()
       }

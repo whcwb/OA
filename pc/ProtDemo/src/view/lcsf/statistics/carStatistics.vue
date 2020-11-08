@@ -98,8 +98,6 @@
     },
     methods: {
       print(item) {
-        console.log('print');
-        console.log(item);
       },
       afterPager(list) {
         this.sc = 0;

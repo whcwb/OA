@@ -147,7 +147,6 @@
         // }
       },
       handleView (name) {
-        console.log(name);
         this.imgName = name;
         this.visible = true;
       },

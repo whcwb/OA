@@ -54,7 +54,6 @@
       },
       submit(){
         this.form.estimatedSendTime = this.AF.trimTime(this.form.estimatedSendTime)
-        console.log(this.form);
         this.$http.post('/api/message/repeat',this.form).then(res=>{
           if(res.code == 200){
             this.$Message.success(res.message);

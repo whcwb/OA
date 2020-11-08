@@ -97,7 +97,6 @@
     },
     created(){
       this.params.id = this.$parent.choosedItem.id
-      console.log(this.$parent.choosedItem);
       for( let key in this.fileGroup ){
         if(key == 'id'){
           this.params.id = this.$parent.choosedItem['id']
@@ -130,7 +129,6 @@
         this.params[r.urlType] = r.urlList.join(',')//将图片地址数组转成字符串
       },
       save(){
-        console.log(this.params);
         this.$http.post('/api/car/dzda',this.params).then(res=>{
           if(res.code == 200){
             this.$parent.componentName = ''

@@ -102,7 +102,6 @@
       },
       afterPager(list){
         this.addmoney = 0
-        console.log(list);
         for (let r of list){
           this.addmoney += r.lcFy;
         }

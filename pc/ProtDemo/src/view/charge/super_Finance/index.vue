@@ -804,7 +804,6 @@
                       confirmButtonText:'打印单据',
                       cancelButtonText:'完成',
                     }).then((val)=>{
-                      console.log('shijianm',val);
                       if(val.value){
                         console.log('reasdfsdaf',mess)
                         v.print({traineeId:mess.id})

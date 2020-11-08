@@ -137,7 +137,6 @@
             // this.compName = 'userMess'
             this.total = res.page.total
           }
-          // console.log(res);
         })
       },
       remove(id){
@@ -266,8 +265,6 @@
                 // filterMultiple: false,
                 // filterMethod (value, row) {
                 //   if (value === 10) {
-                //     console.log(this.param);
-                //     console.log(this.getPagerList);
                 //     this.param.ls = '10';
                 //     this.getPagerList();
                 //     return  row.ls == '10';

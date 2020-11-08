@@ -430,7 +430,6 @@
     methods: {
       getkm() {
         if (this.$route.query.param) {
-          console.log(this.$route.query.param);
           sessionStorage.setItem("queryKM", this.$route.query.param);
           this.TagDot = parseInt(this.$route.query.param) - 1
           this.param.kskm = this.$route.query.param;

@@ -72,7 +72,6 @@
     },
     created(){
       this.formData = JSON.parse(JSON.stringify(this.row));
-      // console.log('zi',this.formData);
       this.getCarList();
       if(this.row.lcKm == '3'){
         this.getSafemanList()
@@ -86,7 +85,6 @@
     },
     methods:{
       readCardSuccess(item){
-        // console.log("readCardSuccess",item);
       },
       getSave(){
         delete this.formData.xyList;

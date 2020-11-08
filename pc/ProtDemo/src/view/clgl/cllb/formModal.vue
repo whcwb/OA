@@ -117,8 +117,6 @@
     },
     watch: {
       foreignList: function (n, o) {
-        console.log(n);
-        console.log(o);
       }
     },
     created() {
@@ -149,7 +147,6 @@
         this.formItem.srydzlx = '0006';
       },
       changeHpzl(val){
-        console.log(val);
         if(val=='1'){
           this.formItem.syxz = '01'
         }else {
@@ -168,7 +165,6 @@
         this.$http.get('/api/clsyr/getAll').then(res => {
           if (res.code == 200) {
             this.SyrList = res.result
-            // console.log('*********syr',res);
           }
         })
       },

@@ -35,7 +35,6 @@
     },
     created() {
         this.item = this.$parent.choosedItem;
-        // console.log(this.item);
     },
     methods: {
       close(){

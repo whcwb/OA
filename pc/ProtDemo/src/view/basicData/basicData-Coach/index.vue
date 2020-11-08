@@ -301,7 +301,6 @@
         // }else if(lab.length == 0){
         //   this.param.mc = ''
         // }
-        // console.log(val);
         if(val.length==3){
           this.param.jgdm =val[val.length-1]
           this.getPagerList()
@@ -324,7 +323,6 @@
         var v = this
         this.$http.post(this.apis.JL.PAGER,this.param).then((res) => {
           if (res.code == 200) {
-            // console.log(res);
             v.listMess = res.page.list
             v.total = res.page.total
             v.paramLoading=false

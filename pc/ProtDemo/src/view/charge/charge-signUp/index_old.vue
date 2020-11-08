@@ -389,7 +389,6 @@
                       },
                       on: {
                         click: () => {
-                          // console.log(p.row.remark);
                           if (p.row.reduceStatus == '00') {
                             this.swal({
                               text: '优惠审核未通过',
@@ -761,7 +760,6 @@
         })
       },
       OKpay(index) {
-        console.log(this.payOk);
         if (this.payOk.chargeType == '') {
           this.swal({
             text: '请选择收费方式',
@@ -826,7 +824,6 @@
       }
       ,
       tabcheck(arr) {
-        console.log(arr);
         this.printMess = arr
       }
       ,
@@ -835,7 +832,6 @@
       }
       ,
       pageChange(n, num) {
-        console.log(num + '--1--' + n);
         if (num == 0) {
           this.param.pageNum = n
           this.getPagerList()

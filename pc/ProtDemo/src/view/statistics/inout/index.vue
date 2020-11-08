@@ -315,19 +315,15 @@
         this.compName = 'C_M'
       },
       djfCheck(arr){
-        console.log(arr);
         let CheckList = []
         let bzList = []
         arr.forEach((item,index)=>{
           // this.djfCheckList =
           CheckList.push(item.id)
-          console.log('12306',item);
           bzList.push(this.confirmMap.get(item.id))
           if(index == arr.length-1){
             this.djfCheckList = CheckList.join(',')
             this.bzs = bzList.join(',')
-            console.log('bzs',this.bzs);
-            console.log(this.djfCheckList);
           }
         })
       },
@@ -335,7 +331,6 @@
         this.jXlist = this.dictUtil.getByCode(this, 'ZDCLK1019');
       },
       CasChange(val) {
-        console.log(val);
         // if (val.length == 1) {
         //   this.param.jgdm = val[0]
           this.param.pageNum = 1,
@@ -385,7 +380,6 @@
         })
       },
       OKpay(index) {
-        console.log(this.payOk);
         if (this.payOk.chargeType == '') {
           this.swal({
             text: '请选择收费方式',
@@ -463,7 +457,6 @@
       }
       ,
       pageChange(n, num) {
-        // console.log(num + '--1--' + n);
         if (num == 0) {
           this.param.pageNum = n
           this.getPagerList()
@@ -473,7 +466,6 @@
         }
       },
       pageSizeChange(n, num) {
-        console.log(num + '--2--' + n);
         if (num == 0) {
           this.param.pageSize = n
           this.getPagerList()

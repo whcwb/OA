@@ -162,7 +162,6 @@
         return a
       },
       removeFile(mes) {
-        console.log(mes);
         this.urlList.forEach((it,index)=>{
           if(it == mes){
             this.urlList.splice(index,1)
@@ -172,7 +171,6 @@
         })
       },
       addImg(mes) {
-        console.log(mes);
         this.urlList.push(mes)
         this.Updata.daFile = this.urlList.join(',')
       },

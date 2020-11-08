@@ -306,10 +306,8 @@
                 },
                 on: {
                   'on-change': (event) => {
-                    console.log('change', event);
                     p.row.remark = event.srcElement.value;
                     this.confirmMap.set(p.row.id,event.srcElement.value)
-                    console.log(this.confirmMap);
                     this.payOk.remark = event.srcElement.value;
                   }
                 }
@@ -498,7 +496,6 @@
                       },
                       on: {
                         click: () => {
-                          // console.log(p.row.remark);
                           if (p.row.reduceStatus == '00') {
                             this.swal({
                               text: '优惠审核未通过',
@@ -899,19 +896,15 @@
         this.compName = 'C_M'
       },
       djfCheck(arr){
-        console.log(arr);
         let CheckList = []
         let bzList = []
         arr.forEach((item,index)=>{
           // this.djfCheckList =
           CheckList.push(item.id)
-          console.log('12306',item);
           bzList.push(this.confirmMap.get(item.id))
           if(index == arr.length-1){
             this.djfCheckList = CheckList.join(',')
             this.bzs = bzList.join(',')
-            console.log('bzs',this.bzs);
-            console.log(this.djfCheckList);
           }
         })
       },
@@ -990,7 +983,6 @@
         }
       },
       CasChange(val) {
-        console.log(val);
         // if (val.length == 1) {
         //   this.param.jgdm = val[0]
           this.param.pageNum = 1,
@@ -1034,7 +1026,6 @@
         })
       },
       OKpay(index) {
-        console.log(this.payOk);
         if (this.payOk.chargeType == '') {
           this.swal({
             text: '请选择收费方式',
@@ -1090,7 +1081,6 @@
       ,
       winPrint() {
         var v = this
-        console.log('print', this.printMess)
         if (this.printMess.length > 1) {
           for (var i = 0; i < this.printMess.length - 1; i++){
             if (this.printMess[i].chargeRecord.pjbh != '' &&
@@ -1113,7 +1103,6 @@
       }
       ,
       pageChange(n, num) {
-        // console.log(num + '--1--' + n);
         if (num == 0) {
           this.param.pageNum = n
           this.getPagerList()
@@ -1123,7 +1112,6 @@
         }
       },
       pageSizeChange(n, num) {
-        console.log(num + '--2--' + n);
         if (num == 0) {
           this.param.pageSize = n
           this.getPagerList()

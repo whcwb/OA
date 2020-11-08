@@ -49,7 +49,6 @@
             return;
         }
 
-        // console.log(this.user);
         this.$http.post(this.apis.TRAINEEREDUCE.AUDIT, this.user).then((res) => {
           let msg = res.message;
           if (res.code === 200) {

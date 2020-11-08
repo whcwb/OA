@@ -51,7 +51,6 @@
     },
     created() {
       // this.checkGroup = usermes
-      console.log('数据传输', this.usermes)
     },
     mounted() {
       this.getUserRoles();

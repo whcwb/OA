@@ -134,7 +134,6 @@ export default {
       // ui.navigateTo({
       //   url: '/pages/reg'
       // })
-      console.log('项目？ 微信:App**********',ui.getApp().projectType);
       if(ui.getApp().projectType){
           this.wxSys()
       }else{
@@ -144,7 +143,6 @@ export default {
     wxSys(){//微信扫一扫
       ui.getApp().wxUtil.qrScan((res)=>{
           // v.codeyz(res)
-          console.log('邀请码',res);
           ui.getApp().yqm = res
           ui.navigateTo({
             url: '/pages/reg'
@@ -157,7 +155,6 @@ export default {
         color:'#4caf5',
         onlyFromCamera: true,
         success: (res) => {
-          console.log(res)
           ui.showAlert({
             content: res,
             buttonText: '扫一扫',

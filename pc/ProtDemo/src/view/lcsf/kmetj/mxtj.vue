@@ -119,7 +119,6 @@
         }
       },
       print() {
-        console.log('print');
       }
     }
   }

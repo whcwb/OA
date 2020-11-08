@@ -162,7 +162,6 @@
       getPager(){
         this.util.initTable(this);
         this.$http.post('/api/carns/getPage').then(res => {
-          console.log(res);
           this.tj = res.result
         })
       },

@@ -137,7 +137,6 @@
         })
       },
       getRoleFunctions() {
-        // console.log('信息' , this.addmess);
         let url = this.apis.FUNCTION.GET_ROLE_FUNCTIONS + 'jsdm=ur' + this.addmess.yhid;
         this.$http.get(url,{timers:new Date().getTime()}).then((res) => {
           if (res.code === 200 && res.result) {

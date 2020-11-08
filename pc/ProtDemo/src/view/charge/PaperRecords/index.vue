@@ -170,7 +170,6 @@
                             confirmButtonText: '确定',
                             cancelButtonText: '取消'
                           }).then((val) => {
-                            // console.log(val)
                             if (val.value===true) {
                               this.remove(p.row.pjbh)
                             }
@@ -198,7 +197,6 @@
       this.getJTjx()
     },
     mounted(){
-      console.log(moment().format('YYYY-MM-DD'));
       this.time = '2019-10-16';
     },
     methods: {
@@ -257,7 +255,6 @@
       },
       getJTjx() {
         this.jxList = this.dictUtil.getByCode(this, 'ZDCLK1019');
-        console.log(this.jx);
       },
       getDictList() {
         this.dictList.carType.data = this.dictUtil.getByCode(this, this.dictList.carType.code);

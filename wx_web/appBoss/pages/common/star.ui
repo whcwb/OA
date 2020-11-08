@@ -39,7 +39,6 @@ export default {
     }
   },
   created () {
-    console.log(this.num);
     this.starList.forEach((item,index) => {
       if(index<this.num){
         item.color="#ffc217"
@@ -48,7 +47,6 @@ export default {
   },
   methods: {},
   mounted() {
-    console.log(this.num)
     this.starList.forEach((item,index) => {
       if(index<this.num){
         item.color="#ffc217"

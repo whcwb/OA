@@ -36,7 +36,6 @@
       }
     },
     created() {
-      // console.log('數據傳遞',this.mess);
     },
     methods: {
       close(){

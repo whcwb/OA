@@ -82,7 +82,6 @@
       },
       getPagerList(){
         this.$http.post('/api/picrotation/pager',this.param).then(res=>{
-          console.log('pq',res);
           if(res.code==200){
            this.listData=res.page.list
           }

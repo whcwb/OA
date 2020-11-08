@@ -184,7 +184,6 @@
         })
       },
       pageChange(n, num) {
-        // console.log(num + '--1--' + n);
         if (num == 0) {
           this.param.pageNum = n
           this.getPagerList()
@@ -194,7 +193,6 @@
         }
       },
       pageSizeChange(n, num) {
-        // console.log(num + '--2--' + n);
         if (num == 0) {
           this.param.pageSize = n
           this.getPagerList()

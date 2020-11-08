@@ -8,7 +8,6 @@ import moment from "moment";
 export default {
   carCard(km, cardNo, callback) {
     $http.post('/api/lccl/carInfo', {km: km, cardNo: cardNo}).then(res => {
-      console.log('........3', typeof res.code);
       if (res.code == 200) {
         callback && callback(true, res)
       } else if (res.code === 501) {//code  = 501   (此卡正在训练中)    code = 505 此卡绑定车辆科目与当前选择科目不一致
@@ -191,7 +190,6 @@ export default {
     //   }
     // }
     function minNum(val) {
-      // console.log(val);
       if (val < 10) {
         return '0' + val
       } else {
@@ -306,7 +304,6 @@ export default {
 /*
 this.$nextTick(() => {
         $(document).keypress(function (event) {//keypress 单件
-          console.log(event.keyCode);
           // $(document).keyup(function(event){  keyup 组合件
           if (event.keyCode === 44) {
             alert('你按下了<,');

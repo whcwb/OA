@@ -182,7 +182,6 @@ export default {
   },
   methods: {
      slide (e) {
-      console.log(e)
     },
     sliderShow() {
       this.isShow=true

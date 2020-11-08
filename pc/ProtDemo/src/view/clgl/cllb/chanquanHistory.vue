@@ -308,7 +308,6 @@
       this.carData = this.$parent.choosedItem
       this.param.clId = this.carData.id
 
-      console.log(this.carData);
 
     },
     mounted() {

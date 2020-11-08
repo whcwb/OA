@@ -454,7 +454,6 @@
         strTime[2] = '01'
         strTime = strTime.join('-')
         this.param.bmTime = [strTime, this.AF.trimDate()]
-        console.log("start_time", this.param.bmTime)
       }
 
 
@@ -467,7 +466,6 @@
     methods: {
         getkm(){
             if (this.$route.query.param){
-                console.log(this.$route.query.param);
                 sessionStorage.setItem("queryZT", this.$route.query.param);
                 this.param.statusArray = this.$route.query.param;
                 this.param.bmTime = []
@@ -533,7 +531,6 @@
       getBmdList() {
         this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree, {timers: new Date().getTime()}).then((res) => {
           if (res.code === 200) {
-            //console.log('ppoopp',res.result);
             if (res.result[0].value.length == 3) {
               this.dictList.bmd.data = res.result[0].children[0].children;
             } else if (res.result[0].value.length == 6) {

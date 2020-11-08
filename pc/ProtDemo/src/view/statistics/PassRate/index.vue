@@ -171,8 +171,6 @@
         this.getDTList()
       },
       getNf(gsh, date) {
-        console.log(gsh);
-        console.log(date);
         this.param.startTime = gsh[0];
         this.param.endTime = gsh[1];
         this.data10 = [];
@@ -188,7 +186,6 @@
           startTime: this.param.startTime,
           endTime: this.param.endTime
         }).then((res) => {
-          console.log(res);
           if (res.code == 200) {
             this.data10 = res.result
           } else {

@@ -263,7 +263,6 @@
       }
     },
     created(){
-      console.log('created');
       this.getDictList()
     },
     mounted(){
@@ -324,8 +323,6 @@
           messarr.push(item.xyXm)
           dxarr.push(item.xyDh)
           if (index == arrAMess) {
-            console.log(dxarr.join(','))
-            console.log(messarr.join(','))
             this.formData.xyIds = messarr.join(',');
             this.formData.xyDh = dxarr.join(',')
           }
@@ -373,7 +370,6 @@
                 }
               },200)
             }
-            console.log('v.showFQfzkp',v.showFQfzkp);
             if (v.showFQfzkp){
               return;
             }
@@ -402,7 +398,6 @@
         })
       },
       addjlSaveOk() {
-        console.log('教练添加成功');
         this.getjxjllist(this.jlJx)
       },
       // getSave(){
@@ -452,8 +447,6 @@
       //
       // },
       getjxjllist(val){
-        console.log(val);
-        console.log(typeof val);
         if(!val||val === ''){
           this.wxjldis = true
         }else{
@@ -462,13 +455,11 @@
         this.jlJx = val
         this.formData.jlJx = val
         this.$http.get('/api/lcwxjl/query',{params:{jlJx:val,notShowLoading: "true"}}).then((res)=>{
-          console.log(res);
           this.wxJL = res.result
         })
       },
       getSafemanList(){
         this.$http.post('/api/zgjbxx/getAqy',{notShowLoading:'true'}).then((res)=>{
-          console.log(res);
           if(res.code == 200){
             this.sfaemanlist = res.result
           }else {
@@ -487,7 +478,6 @@
         this.$http.get('/api/zgjbxx/query',{params:{gzgw:'0003',zzzt:'10'}}).then(res=>{
           if(res.code == 200){
             this.bxJL = res.result
-            console.log(this.bxJL);
           }
         })
       },
@@ -496,7 +486,6 @@
       show(){
         this.DrawerVal = true;
           this.formData.lcLx = '00'
-        console.log('open');
         this.getbxJLList();
         this.getwxJLList();
         this.getSafemanList()

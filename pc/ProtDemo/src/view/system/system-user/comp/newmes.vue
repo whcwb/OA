@@ -120,7 +120,6 @@
     name: '',
     watch:{
       'jgdms':function (n,o) {
-        console.log('+++++',n);
       }
     },
     data() {
@@ -222,7 +221,6 @@
           ids.push(r);
         }
         this.checkGroup = ids;
-        console.log('checkGroup',this.checkGroup);
       },
       editUserRoles() {
         let v = this;
@@ -301,7 +299,6 @@
         })
       },
       getRoleFunctions() {
-        // console.log('wwwwwwwwwwww',this.addmess);
         let url = this.apis.FUNCTION.GET_ROLE_FUNCTIONS + "?jsdm=ur" + this.addmess.yhid;
         this.$http.get(url,{timers:new Date().getTime()}).then((res) => {
           if (res.code === 200 && res.result) {
@@ -360,7 +357,6 @@
         this.$http.get(this.apis.FRAMEWORK.getCurrentOrgTree,{timers:new Date().getTime()}).then((res) => {
           // if()
           this.usermess = JSON.parse(sessionStorage.getItem('userInfo'))
-          // console.log('123',res.result);
           if(this.usermess.xm == "超级管理员"){
             this.orgTree = res.result[0].children
           }else {
@@ -390,7 +386,6 @@
         })
       },
       fullcal() {
-        console.log('信息', this.usermes)
       },
       colse() {
         var v = this

@@ -84,7 +84,6 @@
     components: {carCard,jlwh,addjl,print,carStatistics,PlLazy,yypd,fcdrawer,yydrawer,addyypd},
     watch:{
       'jlLx':function (n,o) {
-        console.log('**',n);
       }
     },
     data(){
@@ -194,7 +193,6 @@
     },
     methods: {
       yyconform(e){
-        console.log('yyconform',e);
         this.formData = e
         this.$refs.addyypd.show();
         this.DrawerVal = true;
@@ -222,7 +220,6 @@
         this.sfaemanlist = [];
       },
       open() {
-        console.log('open');
       },
       print(mess) {
         this.hisPrintMess = mess
@@ -234,7 +231,6 @@
       },
       // getJgmc(){
       //   this.$http.get('/api/jg/getCurrentOrgTree').then((res)=>{
-      //     console.log(res);
       //     if(res.result[0].children){
       //       let t = res.result[0].children
       //       if(t.children[0].children == ''){
@@ -244,31 +240,25 @@
       //   })
       // },
       upup(e) {
-        console.log(e);
         this.compName = ''
       },
       getXYID(arr) {
-        console.log(arr);
         let arrleng = arr.length - 1
         let messarr = []
         arr.forEach((item, index) => {
           messarr.push(item.id)
           if (index == arrleng) {
-            console.log(messarr.join(','));
             this.formData.xyIds = messarr.join(',');
-            console.log("学员ids", this.formData.xyIds);
           }
         })
       },
       yyClick(val, cx) {
-        console.log(val);
         this.$refs.yydrawer.show();
         this.DrawerVal = true;
         this.formData.lcClId = val;
         this.getXY(cx)
       },
       carClick(val, cx, zg) {
-        console.log(val);
         this.$refs.fcdrawer.show();
         this.DrawerVal = true;
         this.formData.lcClId = val;
@@ -287,7 +277,6 @@
         this.$http.post('/api/traineeinformation/getAppoint', p).then((res) => {
           if (res.code == 200 && res.result) {
             this.XY = res.result.slice(0, 10);
-            console.log(res.result.slice(0, 10))
             //this.tt()
             // var t = 1;
             // while (t*10<res.result.length) {
@@ -345,13 +334,11 @@
             this.CarList = res.page.list
           } else {
             this.$Message.info(res.message);
-            console.log(res);
           }
         })
       },
     },
     mounted () {
-      console.log('mounted');
 
     },
     created(){

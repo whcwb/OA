@@ -95,7 +95,6 @@
       }
     },
     created(){
-      console.log(this.mess);
       if(this.mess.id){
         this.form = this.mess
       }

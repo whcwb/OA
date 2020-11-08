@@ -131,7 +131,6 @@
     methods: {
       winPrint(value) {
         this.mess = value;
-        console.log(this.mess);
         this.compName = 'printBx';
       },
       gethisList() {
@@ -148,13 +147,11 @@
         this.$parent.compName = ''
       },
       pageChange(n) {
-        // console.log(num + '--1--' + n);
         this.param.pageNum = n
         this.gethisList()
 
       },
       pageSizeChange(n) {
-        // console.log(num + '--2--' + n);
         this.param.pageSize = n
         this.gethisList()
       }

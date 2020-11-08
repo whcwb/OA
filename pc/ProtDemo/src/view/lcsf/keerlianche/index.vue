@@ -302,10 +302,8 @@
           }
           let now = new Date();
           let duration =  moment(moment(now) - moment(startTime));
-          // console.log(duration);
           if((r.kssj && r.kssj.length > 0) && (!r.jssj || r.jssj == '')){
             let min = parseInt(duration/60000);
-            // console.log(min);
             r.sc = duration.subtract(8,'hour').format("HH时mm分钟");//this.parseTime(min);
             r.lcFy = Math.round(min*500/60);
             r.showlcFy = r.lcFy + '元';
@@ -314,7 +312,6 @@
           if (!this.total){
             this.total = 0;
           }
-          // console.log(r.lcFy);
         }
       },
       parseTime(s) {
@@ -379,7 +376,6 @@
         this.$refs.jlySelect.clearSingleSelect();
       },
       yyClick(val, cx) {
-        console.log(val);
         this.$refs.yyModel.show();
         this.formData.lcClId = val;
       },
@@ -436,7 +432,6 @@
             })
           }else {
             this.AF.carCard('2', mess, (type, res) => {
-              console.log('**********', res);
               if (type) {
                 if (res.result) {
                   //如果车辆已经绑卡   返回车辆信息
@@ -512,7 +507,6 @@
       printHc(mess) {
         this.hisPrintMess = mess
         this.componentName = 'print'
-        // console.log('dayin')
       },
       his(item) {//历史练车记录
         this.clId = item.id;

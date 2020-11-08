@@ -102,7 +102,6 @@
     },
     watch: {
       'param.bmTime': function (n, o) {
-        //console.log(n)
       }
     },
     data() {
@@ -426,7 +425,6 @@
                   },
                   on: {
                     click: () => {
-                      console.log(p.row.carType);
                       if(p.row.carType == 'C1'){
                         this.swal({
                           title:'是否变更车型为 C2',

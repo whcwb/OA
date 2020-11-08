@@ -274,7 +274,6 @@
         this.$refs.jlySelect.clearSingleSelect();
       },
       yyClick(val, cx) {
-        console.log(val);
         this.$refs.yyModel.show();
         this.formData.lcClId = val;
       },
@@ -331,7 +330,6 @@
             })
           }else {
             this.AF.carCard('2', mess, (type, res) => {
-              console.log('**********', res);
               if (type) {
                 if (res.result) {
                   //如果车辆已经绑卡   返回车辆信息

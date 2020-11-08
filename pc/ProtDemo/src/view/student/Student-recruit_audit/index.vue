@@ -255,7 +255,6 @@
             minWidth:120, fixed: 'left',
             render: (h, params) => {
               let jgmcArray = params.row.jgmc.split("/");
-              console.log(jgmcArray);
               let res = "";
               if (jgmcArray.length > 1) {
                 for (let i = 0; i < jgmcArray.length; i++) {
@@ -494,7 +493,6 @@
       },
       revokeInfo(id) {
         this.$http.post(this.apis.TRAINEE.REVOKEINFO, {traineeId: id.id}).then((res) => {
-          console.log(JSON.stringify(res))
           if (res.code === 200) {
             // this.util.initTable(this)
             this.getPagerList()

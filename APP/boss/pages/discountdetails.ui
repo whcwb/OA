@@ -153,7 +153,6 @@ export default {
       ui.showToast({ title: '请选择学员'})
     }else{
       this.studentMess = ui.getApp().studentMess
-      console.log('学员信息',this.studentMess)
     }
   }
 }

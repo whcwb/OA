@@ -107,11 +107,9 @@
     },
     methods: {
       MenuClick(name) {
-        console.log(name);
         this.componentName = name
       },
       print() {
-        console.log('print');
       }
     }
   }

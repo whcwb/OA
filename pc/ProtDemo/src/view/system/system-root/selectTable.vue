@@ -79,7 +79,6 @@
       }
     },
     created() {
-      console.log(this.hasIds);
       this.util.initTable(this);
       setTimeout(() => {
         this.initJs();
@@ -94,13 +93,11 @@
         // }, 1000)
       },
       checkIds() {
-        console.log(this.pageData);
         for (let r of this.pageData) {
           if (this.checkedIds.indexOf(r.jsId) != -1) {
             r._checked = true;
           }
         }
-        console.log(this.pageData);
       },
       selectionClick(selection) {
         for (let r of this.pageData) {

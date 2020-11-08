@@ -195,7 +195,6 @@
       close() {
         // this.$parent.compHisName = '';
         // document.getElementById("page1").innerHTML = "";
-        // console.log('q');
         clearInterval(this.Interval)
         this.$parent.componentName = ''
         if (typeof this.$parent.getCarList == 'function') {

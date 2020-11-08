@@ -79,7 +79,6 @@
                     r.rzt = r.aqyQdzt == '10'
                     r.idx = ++i;
                 }
-                console.log(data);
             }
         }
     }

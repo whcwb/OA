@@ -254,8 +254,6 @@
       this.getZTList()
       this.getBmdList()
       this.getTjrList()
-      console.log(this.selectRow);
-      console.log(this.bmdList)
     },
     methods:{
       getTjrList() {//获取推荐人
@@ -268,11 +266,9 @@
               type:'error'
             })
           }
-          console.log(res);
         })
       },
       tjrChange(a){
-        console.log(a);
         if(a){
           this.selectRow.referrer = a.label +'-'+ a.value
         }else {
@@ -281,7 +277,6 @@
       },
       bmdChangeFQ(val){
         if(val.indexOf('队')!=-1){
-          console.log(val);
           this.selectRow.referrer = val
         }
       },
@@ -289,7 +284,6 @@
         if(t == ""){
           this.selectRow[k]  = null
         }else {
-          console.log(t?this.moment(t).format("YYYY-MM-DD"):'空');
           this.selectRow[k] = this.moment(t).format("YYYY-MM-DD");
         }
       },
@@ -301,7 +295,6 @@
               if(arr[0].value.length == 9){
                 if(arr.length == 1){
                   v.user.jgdm = arr[0].value
-                  // console.log('111111',arr[0]);
                   v.bmdChange([arr[0].value],[arr[0]])
                   v.user.jgmc = arr[0].label + '/' + v.jxName
                   return arr
@@ -315,7 +308,6 @@
               }
             }
             this.bmdList = tree(res.result)
-            // console.log("报名点信息",this.dictList.bmd.data )
           } else {
             this.swal({
               text: '无法加载报名点信息!',
@@ -331,11 +323,9 @@
       },
       getZTList(){
         this.ztList = this.dictUtil.getByCode(this,'ZDCLK1010');
-        console.log(this.ztList);
       },
       getJTjx(){
         this.jxList = this.dictUtil.getByCode(this,'ZDCLK1019');
-        console.log(this.jxList);
       },
       SelectChangeJx(){
 

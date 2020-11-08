@@ -231,7 +231,6 @@
     methods: {
       getDict() {
         this.yhlxDict = this.dictUtil.getByCode(this, this.yhlxDictCode);
-        console.log(this.yhlxDict);
       },
       getmess() {
         var v = this

@@ -187,7 +187,6 @@
         this.$emit('close')
       },
       getCarNoNum(mess) {
-        console.log('num', mess);
         this.$http.post('/api/lccl/pager', {
           notShowLoading: 'true',
           pagerNum: 1,
@@ -196,13 +195,11 @@
           cardNo: mess,
         }).then((res) => {
           if (res.code == 200) {
-            console.log(res);
             if (res.page.list.length == 0) {
               this.formData.lcClId = ""
               this.showCAR = true
             } else {
               let car = res.page.list[0];
-              console.log(car);
               if (car.clKm !== '3') {
                 this.swal({
                   title: '此卡已绑定科目二车辆,请更换卡片',
@@ -312,7 +309,6 @@
           } else {
             v.showFQfzkp = false;
             this.formData.cardNo = mess
-            console.log('mess', mess);
             // this.getSave()
           }
         })
@@ -350,10 +346,7 @@
         })
       },
       carItem(it, index) {
-        console.log(it);
-        console.log(it.id);
         this.formData.lcClId = it.id
-        console.log(this.formData);
 
       },
       getCoachList(id, clear) {
@@ -392,14 +385,12 @@
       },
       getDictList(){
         this.lcLxList = this.dictUtil.getByCode(this, 'ZDCLK1048');
-        console.log('0.0',this.lcLxList);
       },
       open() {
       },
       show(mess) {
         var v = this
         this.AF.carCard('3', mess, (type, res) => {
-          console.log('**********', res);
           if (type) {
             if (res.result) {
               v.carMess = res.result

@@ -22,8 +22,6 @@ alert(t);
 
      }, 500);*/
      SynCardRead.addEventListener("CardIn", function (state) {
-       console.log(state);
-       console.log(this);
      }, false);
    }else{
      return false;

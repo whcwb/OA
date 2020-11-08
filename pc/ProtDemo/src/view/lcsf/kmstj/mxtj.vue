@@ -146,7 +146,6 @@
         }
       },
       print() {
-        console.log('print');
       }
     }
   }

@@ -270,8 +270,6 @@
           messarr.push(item.xyXm)
           dxarr.push(item.xyDh)
           if (index == arrAMess) {
-            console.log(dxarr.join(','))
-            console.log(messarr.join(','))
             this.formData.xyIds = messarr.join(',');
             this.formData.xyDh = dxarr.join(',')
           }

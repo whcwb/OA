@@ -326,8 +326,6 @@
           messarr.push(item.xyXm)
           dxarr.push(item.xyDh)
           if (index == arrAMess) {
-            console.log(dxarr.join(','))
-            console.log(messarr.join(','))
             this.formData.xyIds = messarr.join(',');
             this.formData.xyDh = dxarr.join(',')
           }
@@ -414,7 +412,6 @@
         this.jlJx = val
         this.formData.jlJx = val
         this.$http.get('/api/lcwxjl/query', {params: {jlJx: val,notShowLoading: "true"}}).then((res) => {
-          console.log(res);
           this.wxJL = res.result
         })
       },

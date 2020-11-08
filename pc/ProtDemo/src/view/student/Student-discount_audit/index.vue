@@ -426,7 +426,6 @@
           }
         }).catch(err => {
           this.SpinShow = false
-          // console.log(err);
         })
       },
       getPagerList1() {
@@ -440,7 +439,6 @@
           }
         }).catch(err => {
           this.SpinShow1 = false
-          // console.log(err);
         })
       },
       //撤回
@@ -480,7 +478,6 @@
         this.dictList.carType.data = this.dictUtil.getByCode(this, this.dictList.carType.code);
       },
       pageChange(n, num) {
-        console.log(num + '--1--' + n);
         if (num == 0) {
           this.param.pageNum = n
           this.getPagerList()
@@ -490,7 +487,6 @@
         }
       },
       pageSizeChange(n, num) {
-        console.log(num + '--2--' + n);
         if (num == 0) {
           this.param.pageSize = n
           this.getPagerList()

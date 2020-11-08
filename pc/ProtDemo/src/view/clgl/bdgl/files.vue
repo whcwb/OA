@@ -74,7 +74,6 @@
         if(key == 'id'){
           this.params.id = this.$parent.choosedItem['id']
         }else {
-          console.log('1234566',this.$parent.choosedItem[key]);
           if(!this.$parent.choosedItem[key] || this.$parent.choosedItem[key] == ''){
             this.fileGroup[key].urlList = []
           }else {
@@ -103,7 +102,6 @@
         this.params[r.urlType] = r.urlList.join(',')//将图片地址数组转成字符串
       },
       save(){
-        console.log(this.params);
         this.$http.post('/api/car/dzda',this.params).then(res=>{
           if(res.code == 200){
             this.$parent.componentName = ''

@@ -86,7 +86,6 @@
     methods:{
       gettplist(){
         this.$http.post('/api/car/getCarArchives',{clId:this.carInfo.clId}).then((res)=>{
-          console.log(res);
           if(res.code == 200){
              this.tp = res.result.fileUrl
           }else{

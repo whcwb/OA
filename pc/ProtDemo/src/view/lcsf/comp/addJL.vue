@@ -85,8 +85,6 @@
     methods: {
       jsSelect(val) {
         // this.formDataJL.jlJx = val.value
-        // console.log(val.value);
-        // console.log(this.formDataJL);
       },
       remove() {
         this.$emit('remove')
@@ -100,7 +98,6 @@
         //   t.push({label: r.val + '-' + r.by1, value: r.val})
         // }
         this.schoolList = list;
-        console.log(this.schoolList);
       },
       JLRowClick(row) {
         this.$emit('JLRowClick', row)
@@ -133,7 +130,6 @@
         //   })
         //   return
         // }
-        console.log('######',this.formDataJL);
         let params = JSON.parse(JSON.stringify(this.formDataJL));
         this.$http.post('/api/lcwxjl/save', params).then(res => {
           if (res.code == 200) {

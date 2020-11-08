@@ -50,7 +50,6 @@
         'getUserInfo'
       ]),
       handleSubmit(mess) {
-        // console.log('', mess);
       }
     }
   }

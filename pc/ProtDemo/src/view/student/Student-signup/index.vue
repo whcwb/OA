@@ -13,7 +13,7 @@
                   <Col span="8">
                     <FormItem prop="idCardNo">
                       <Input prefix=" iconfont icon-2shenfenzhenghaoma" type="text" placeholder="身份证件号(必填)"
-                             v-model="user.idCardNo" maxlength="18"/>
+                             v-model="user.idCardNo" :maxlength="18"/>
                     </FormItem>
                   </Col>
                   <Col span="6">
@@ -265,6 +265,7 @@
         cardBackFile: null,
         headImg: null,
         userRealyPay:false,
+        form:{idCardNo:''},
         user: {
           repeat:null,
           free:null,
@@ -400,6 +401,13 @@
       this.getBmdList();
       this.initPenSign();
     },
+    mounted() {
+      let v = this
+      v.rdc.startQuart(v);
+    },
+    beforeDestroy(){
+      this.rdc.clearReadCard();
+    },
     methods: {
       CheckboxChange(){
         // this.repeat = true
@@ -469,6 +477,7 @@
           referrer: '',//推荐人
           remark: ''//备注
         }
+        this.rdc.startQuart(this);
         // if (this.jxfwPenSign != null) {
         //   this.jxfwPenSign.HWClearPenSign();
         //   this.jxfwPenSign = null;

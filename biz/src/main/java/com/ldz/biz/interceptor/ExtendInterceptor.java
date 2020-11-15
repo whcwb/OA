@@ -22,7 +22,7 @@ public class ExtendInterceptor extends BaseWebConfigure {
 						,"/login"
 						,"/getUKeyPwd"
 						,"/getUserLoginType"
-						,"/upload");
+						,"/upload","/readIDCard");
 		super.addInterceptors(registry);
 	}
 	

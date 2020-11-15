@@ -16,6 +16,7 @@ import '@/assets/css/tabpage.less'
 import './assets/iconfont/iconfont.css'
 import mixin from './mixins'
 import comFun from './libs/comFun'
+import rdc from './libs/readIdCard'
 import col from './libs/color'
 //提示插件引入
 import swal from 'sweetalert2';
@@ -63,6 +64,7 @@ Vue.prototype.mixin = mixin;
 
 Vue.prototype.AF = comFun;
 Vue.prototype.col = col;
+Vue.prototype.rdc = rdc;
 
 
 Vue.prototype.swal = swal;

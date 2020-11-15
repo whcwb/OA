@@ -89,8 +89,9 @@
                   <Icon type="md-search"></Icon>
                   <!--查询-->
                 </Button>
-<!--                <Tooltip content="打印" style="float: right">-->
-<!--                  <Button type="primary" @click="winPrintNew">-->
+
+<!--                <Tooltip content="读卡" style="float: right">-->
+<!--                  <Button type="primary" @click="duka">-->
 <!--                    <Icon type="md-print"/>-->
 <!--                  </Button>-->
 <!--                </Tooltip>-->
@@ -192,12 +193,6 @@ export default {
           minWidth: 180,
           key: 'idCardNo'
         },
-        // {
-        //   title: '驾校名称',
-        //   align: 'center',
-        //   minWidth: 120,
-        //   key: 'chargeSource'
-        // },
         {
           title: '收费项',
           align: 'center',
@@ -286,6 +281,14 @@ export default {
     this.getDictList();
     this.getSfList();
   },
+  mounted() {
+    let v = this
+    v.rdc.startQuart(v);
+  },
+  beforeDestroy(){
+     this.rdc.clearReadCard();
+      // clearInterval(this.IC)
+  },
   computed: {
     AutoReadCard() {
       if (window.vueObject.$data.card.CardNo) {
@@ -297,6 +300,9 @@ export default {
     }
   },
   methods: {
+    // duka(){
+    //  this.rdc.readIdCard(this);
+    // },
     changeTime(val) {
       let time = this.AF.trimDate(val);
       this.param.chargeTimeLike = time;
@@ -332,7 +338,6 @@ export default {
         }
       })
     },
-
     getPagerList() {
       var v = this;
       this.param.chargeTimeLike = this.AF.trimDate(this.param.chargeTimeLike)
@@ -353,7 +358,6 @@ export default {
             }
           }
         })
-
       })
     },
     dele(id) {
@@ -391,6 +395,9 @@ export default {
               this.type = '1';
               this.sfList = [];
               this.getSfList();
+              // 启动读取身份证任务
+              this.clear();
+              // this.rdc.startQuart(this)
             }
             // this.$Message.info(res.message);
           }).catch((err) => {
@@ -413,7 +420,9 @@ export default {
       this.type = '1';
       this.sfList = [];
       this.getSfList();
-      this.$Message.success('重置成功');
+      // this.$Message.success('重置成功');
+      // 启动读取身份证任务
+      this.rdc.startQuart(this)
     },
     winPrintNew(){
           this.compName = 'PrintNew'

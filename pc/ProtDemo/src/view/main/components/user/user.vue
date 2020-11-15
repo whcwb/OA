@@ -43,7 +43,7 @@
         <Icon type="md-print" size="24" color="#fff"/>
       </Button>
     </Tooltip>
-    <Tooltip content="读卡器驱动(练车)" style="margin-right: 16px">
+    <Tooltip content="读卡器驱动(新中新/练车)" style="margin-right: 16px">
       <Button type="warning"
               size="small"
               @click="xz">
@@ -119,7 +119,7 @@
         window.open('../浩顺打印机驱动.zip', '_blank');
       },
       xz(){
-        window.open('../读卡器驱动.zip', '_blank');
+        window.open('../Hsrp.exe', '_blank');
       },
       xzx(){
         window.open('../SynCardReader.exe', '_blank');

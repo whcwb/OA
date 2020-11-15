@@ -6,6 +6,7 @@ import store from '../store'
 import moment from "moment";
 
 export default {
+
   carCard(km, cardNo, callback) {
     $http.post('/api/lccl/carInfo', {km: km, cardNo: cardNo}).then(res => {
       if (res.code == 200) {

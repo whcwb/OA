@@ -126,8 +126,8 @@ export default {
       inCount: 0,
       outCount: 0,
       inOutType: '00',
-      hisPrintMess:'',
-      printClose:false,
+      hisPrintMess: '',
+      printClose: false,
       inOutTypelist: [
         {
           val: '00',
@@ -138,6 +138,9 @@ export default {
           lab: '支出'
         }
       ],
+      user: {
+        idCardNo: ''
+      },
       form: {
         chargeFee: 0,
         chargeType: '10',
@@ -254,7 +257,7 @@ export default {
               h('Button', {
                 props: {
                   type: 'primary',
-                  size:'small'
+                  size: 'small'
                 },
                 style: {
                   marginLeft: '10px'
@@ -262,7 +265,7 @@ export default {
                 on: {
                   click: () => {
                     this.hisPrintMess = p.row
-                    this.printClose =false
+                    this.printClose = false
                     this.winPrintNew()
                   }
                 }
@@ -280,14 +283,15 @@ export default {
     this.getPagerList();
     this.getDictList();
     this.getSfList();
+    this.keyLis();
   },
   mounted() {
     let v = this
     v.rdc.startQuart(v);
   },
-  beforeDestroy(){
-     this.rdc.clearReadCard();
-      // clearInterval(this.IC)
+  beforeDestroy() {
+    this.rdc.clearReadCard();
+    // clearInterval(this.IC)
   },
   computed: {
     AutoReadCard() {
@@ -303,6 +307,14 @@ export default {
     // duka(){
     //  this.rdc.readIdCard(this);
     // },
+    keyLis() {
+      var _this = this;
+      document.onkeydown = (e) => {
+        if(e.key == 'Enter'){
+          _this.save();
+        }
+      }
+    },
     changeTime(val) {
       let time = this.AF.trimDate(val);
       this.param.chargeTimeLike = time;
@@ -331,7 +343,7 @@ export default {
       this.$http.post(this.apis.OTHER.NAME, {type: this.type}).then((res) => {
         if (res.code == 200) {
           this.sfList = res.result;
-          if(this.sfList.length > 0){
+          if (this.sfList.length > 0) {
             this.form.chargeCode = this.sfList[0].id;
             this.form.chargeFee = this.sfList[0].amount;
           }
@@ -375,8 +387,8 @@ export default {
         if (valid) {
           this.$http.post(this.apis.OTHER.ADD, this.form).then((res) => {
             if (res.code == 200) {
-              this.printMess=[];
-              if(res.result){
+              this.printMess = [];
+              if (res.result) {
                 this.printMess.push(res.result);
                 this.hisPrintMess = res.result
                 this.printClose = true
@@ -424,28 +436,28 @@ export default {
       // 启动读取身份证任务
       this.rdc.startQuart(this)
     },
-    winPrintNew(){
-          this.compName = 'PrintNew'
+    winPrintNew() {
+      this.compName = 'PrintNew'
     },
     winPrint() {
-      if(this.printMess.length > 0){
+      if (this.printMess.length > 0) {
         let flag = true;
-        let pjbh='';
+        let pjbh = '';
         for (let item of this.printMess) {
-          if(pjbh != '' && item.pjbh==pjbh){
+          if (pjbh != '' && item.pjbh == pjbh) {
             flag = false;
             break;
-          }else {
+          } else {
             pjbh = item.pjbh
           }
         }
-        if(flag){
+        if (flag) {
           this.printMess.chargeFee += '元'
           this.AF.WinPrint(this, this.printMess, 'OPrintMess')
-        }else{
+        } else {
           this.swal({
-            title:'所选条目有多个票据编号,请重新选择',
-            type:'warning'
+            title: '所选条目有多个票据编号,请重新选择',
+            type: 'warning'
           })
         }
       }

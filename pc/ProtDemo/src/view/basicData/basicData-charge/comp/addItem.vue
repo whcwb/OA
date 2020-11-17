@@ -22,7 +22,7 @@
                   <FormItem prop="chargeCode" label="收费项">
                     <Select filterable clearable  v-model="form.chargeCode"
                             placeholder="请选择收费项"
-                            size="large">
+                            size="large" @on-change="test">
                       <Option v-for="item in FYLX" :value="item.key">{{item.val}}</Option>
                     </Select>
                   </FormItem>
@@ -166,6 +166,9 @@
       }
     },
     methods: {
+      test(val){
+        console.log(val,'111')
+      },
       CheckboxCar(arr){
         this.form.carType = arr.join(',')
       },
@@ -175,12 +178,13 @@
         this.CARDTYP = this.dictUtil.getByCode(this, this.CARDTYPCode);
       },
       save() {
+        console.log('item', this.FYLX)
         for (let item of this.FYLX){
           if(item.key == this.form.chargeCode && this.form.chargeCode != '4999'){
             this.form.chargeName = item.val
           }
         }
-
+        console.log('form', this.form)
         if(this.form.chargeCode=='0000' && this.form.carType==''){
           this.swal({
             title: '请选择车型',
@@ -205,9 +209,8 @@
           });
           return
         }
-
+        const bx = this.form.BX;
         if(this.form.BX && this.form.BX!=''){
-          this.form.chargeCode = this.form.chargeCode+'-'+this.form.BX
           for (let item of this.BX){
             if(item.key == this.form.BX){
               this.form.chargeName = this.form.chargeName + '-' + item.val
@@ -217,10 +220,16 @@
 
         this.$refs.saveForm.validate((valid) => {
           if(valid){
-
             if(this.changeMess.id){
               delete this.changeMess.institutions
-              this.$http.post(this.apis.SFX.UPDATE,this.form).then((res)=>{
+              let param = {carType: this.form.carType,
+                amount: this.form.amount,
+                chargeName: this.form.chargeName,
+                inOutType: this.form.inOutType,
+                jgdms: this.form.jgdms,
+                chargeCode: this.form.chargeCode + '-' + bx
+              };
+              this.$http.post(this.apis.SFX.UPDATE,param).then((res)=>{
                 if (res.code == 200) {
                   this.$parent.getPagerList()
                   this.close()
@@ -228,7 +237,14 @@
               })
             }else {
               delete this.form.BX
-              this.$http.post(this.apis.SFX.SAVE, this.form).then((res) => {
+              let param = {carType: this.form.carType,
+                amount: this.form.amount,
+                chargeName: this.form.chargeName,
+                inOutType: this.form.inOutType,
+                jgdms: this.form.jgdms,
+                chargeCode: this.form.chargeCode + '-' + bx
+              };
+              this.$http.post(this.apis.SFX.SAVE, param).then((res) => {
                 if (res.code == 200) {
                   this.close()
                 }

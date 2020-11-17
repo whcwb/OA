@@ -1,23 +1,13 @@
 import $ from 'jquery'
-var flag = true;
-var errorMsg='';
-var errCode = '';
-var t = {};
-var s = '';
+
+let flag = true;
+let errorMsg = '';
+let errCode = '';
+let t = {};
+let s = '';
 
 
 export default {
-  rdcSwal(p){
-    p.swal({
-      text: errorMsg,
-      type: "warning",
-      confirmButtonText:'确认',
-    }).then(val=>{
-      if(errCode != 2){
-        this.startQuart(p)
-      }
-    })
-  },
   quartFun(fn, time){
     return function fun(){
       s = setTimeout(() => {
@@ -39,16 +29,15 @@ export default {
         success: (data) => {
           let res = JSON.parse(JSON.stringify(data))
           if (res.ResultCode == 0) {
-            t.form.idCardNo = res.IDCardNo;
-            t.form.traineeName = res.Name;
-            t.user.idCardNo =  res.IDCardNo;
+            t.form.idCardNo = res.IDCardNo.trim();
+            t.form.traineeName = res.Name.trim();
+            t.user.idCardNo =  res.IDCardNo.trim();
             t.user.address = res.Address.trim();
             t.user.name = res.Name.trim();
             t.user.birDay = res.Born;
             t.user.gender = res.Sex+'0';
-            console.log(t.user,"user")
-            flag = false;
-            clearTimeout(s);
+            // flag = false;
+            // clearTimeout(s);
           } else if (res.ResultCode == 2) {
             // errorMsg = res.ResultInfo;
             errCode = res.ResultCode;
@@ -59,9 +48,7 @@ export default {
               type: "warning",
               confirmButtonText:'确认',
             }).then(val=>{
-              if(errCode != 2){
-                this.startQuart(t)
-              }
+              clearTimeout(s);
             });
             // 异常 , 需要重新操作 , 此时需要弹窗
           }
@@ -81,6 +68,6 @@ export default {
   startQuart(v){
     t=v;
     flag = true;
-    this.quartFun(this.readIdCard, 200)();
+    this.quartFun(this.readIdCard, 1000)();
   }
 }

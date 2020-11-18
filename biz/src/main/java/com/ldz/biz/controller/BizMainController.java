@@ -922,6 +922,7 @@ public class BizMainController {
         String firSubTestTimeLike = request.getParameter("firSubTestTimeLike");
         String secSubTestTimeLike = request.getParameter("secSubTestTimeLike");
         String thirdSubTestTimeLike = request.getParameter("thirdSubTestTimeLike");
+        SimpleCondition testCondition = new SimpleCondition(TraineeTestInfo.class);
         if (StringUtils.isNotBlank(jgmcLike)) {
             condition.like(TraineeInformation.InnerColumn.jgmc, jgmcLike);
         }
@@ -938,9 +939,10 @@ public class BizMainController {
             condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
             condition.setOrderByClause(" code asc,fir_sub_test_time asc");
-
+            testCondition.like(TraineeTestInfo.InnerColumn.subject, "科目一");
             if (StringUtils.isNotBlank(firSubTestTimeLike)) {
                 condition.like(TraineeInformation.InnerColumn.firSubTestTime, firSubTestTimeLike);
+                testCondition.like(TraineeTestInfo.InnerColumn.testTime, firSubTestTimeLike);
             }
         } else if (StringUtils.equals(sign, "2")) {
             condition.and().andCondition("  sec_sub_test_time != ''");
@@ -950,7 +952,9 @@ public class BizMainController {
             condition.setOrderByClause("code asc, sec_sub_test_time asc  ");
             if (StringUtils.isNotBlank(secSubTestTimeLike)) {
                 condition.like(TraineeInformation.InnerColumn.secSubTestTime, secSubTestTimeLike);
+                testCondition.like(TraineeTestInfo.InnerColumn.testTime, secSubTestTimeLike);
             }
+            testCondition.like(TraineeTestInfo.InnerColumn.subject, "科目二");
         } else if (StringUtils.equals(sign, "3")) {
             condition.and().andNotIn(TraineeInformation.InnerColumn.status.name(), Arrays.asList("50", "60"));
             condition.and().andNotEqualTo(TraineeInformation.InnerColumn.classType.name(), "60");
@@ -959,7 +963,9 @@ public class BizMainController {
             condition.setOrderByClause("code asc, third_sub_test_time asc  ");
             if (StringUtils.isNotBlank(thirdSubTestTimeLike)) {
                 condition.like(TraineeInformation.InnerColumn.thirdSubTestTime, thirdSubTestTimeLike);
+                testCondition.like(TraineeTestInfo.InnerColumn.testTime, thirdSubTestTimeLike);
             }
+            testCondition.like(TraineeTestInfo.InnerColumn.subject, "科目三");
         }
         Map<Integer, String> map = new HashMap<>();
         map.put(0, "序号");
@@ -971,9 +977,14 @@ public class BizMainController {
         map.put(6, "考试科目");
         map.put(7, "考试时间");
         map.put(8, "机构代码");
+        map.put(9, "考试地点");
         data.add(map);
         List<Map<Integer, String>> coll = new ArrayList<>();
         List<TraineeInformation> informations = informationService.findByCondition(condition);
+        Set<String> idCards = informations.stream().map(TraineeInformation::getIdCardNo).collect(Collectors.toSet());
+        testCondition.in(TraineeTestInfo.InnerColumn.idCardNo,  idCards);
+        List<TraineeTestInfo> infos = testInfoService.findByCondition(testCondition);
+        Map<String, List<TraineeTestInfo>> infoMap = infos.stream().collect(Collectors.groupingBy(TraineeTestInfo::getIdCardNo));
         for (int i = 0; i < informations.size(); i++) {
             TraineeInformation information = informations.get(i);
             Map<Integer, String> m = new HashMap<>();
@@ -983,6 +994,10 @@ public class BizMainController {
             m.put(3, information.getCarType());
             m.put(4, information.getJgmc());
             m.put(8, information.getJgdm());
+            List<TraineeTestInfo> testInfo = infoMap.get(information.getIdCardNo());
+            if(CollectionUtils.isNotEmpty(testInfo) ) {
+                m.put(9, testInfo.get(0).getTestPlace());
+            }
             if (StringUtils.equals(sign, "7")) {
                 m.put(5, "120");
                 m.put(6, "科目一");
@@ -1027,13 +1042,14 @@ public class BizMainController {
         }
         List<Map<Integer, String>> collect = coll.stream().sorted((o1, o2) -> o1.get(8).compareTo(o2.get(8))).collect(Collectors.toList());
         data.addAll(collect);
-        String fileName = java.net.URLEncoder.encode((sign.equals("7") ? "科目一" : sign.equals("2") ? "科目二" : sign.equals("3") ? "科目三" : "") + "考试待缴", "UTF-8");
+        String km = sign.equals("7") ? "科目一" : sign.equals("2") ? "科目二" : sign.equals("3") ? "科目三" : "";
+        String fileName = java.net.URLEncoder.encode(km + "考试待缴", "UTF-8");
         response.setContentType("application/msexcel");
         request.setCharacterEncoding("UTF-8");
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheet(out, (sign.equals("7") ? "科目一" : sign.equals("2") ? "科目二" : sign.equals("3") ? "科目三" : "") + "考试代缴", data);
+        ExcelUtil.createSheet(out, km + "考试代缴", data);
     }
 
 

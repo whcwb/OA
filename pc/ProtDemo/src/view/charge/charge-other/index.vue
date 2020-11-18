@@ -36,6 +36,7 @@
               </Form>
             </div>
             <div style="text-align: right">
+              <Button type="error" style="margin-right: 10px" @click="readCard"> 读卡</Button>
               <Button type="default"
                       style="color: #949494;margin-right: 10px" @click="clear"
               >重置
@@ -286,24 +287,27 @@ export default {
     this.keyLis();
   },
   mounted() {
-    let v = this
-    v.rdc.startQuart(v);
+    // let v = this
+    // v.rdc.startQuart(v);
   },
   beforeDestroy() {
-    this.rdc.clearReadCard();
+    // this.rdc.clearReadCard();
     // clearInterval(this.IC)
   },
   computed: {
     AutoReadCard() {
       if (window.vueObject.$data.card.CardNo) {
-        this.param.idCardNoLike = window.vueObject.$data.card.CardNo;
-        this.param.nameLike = window.vueObject.$data.card.NameA;
+        this.form.idCardNo = window.vueObject.$data.card.CardNo;
+        this.form.traineeName = window.vueObject.$data.card.NameA;
         this.getPagerList();
       }
       return "";
     }
   },
   methods: {
+    readCard(){
+        this.rdc.readCardByHand(this);
+    },
     // duka(){
     //  this.rdc.readIdCard(this);
     // },
@@ -434,7 +438,7 @@ export default {
       this.getSfList();
       // this.$Message.success('重置成功');
       // 启动读取身份证任务
-      this.rdc.startQuart(this)
+      // this.rdc.startQuart(this)
     },
     winPrintNew() {
       this.compName = 'PrintNew'

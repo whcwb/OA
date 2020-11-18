@@ -178,13 +178,11 @@
         this.CARDTYP = this.dictUtil.getByCode(this, this.CARDTYPCode);
       },
       save() {
-        console.log('item', this.FYLX)
         for (let item of this.FYLX){
           if(item.key == this.form.chargeCode && this.form.chargeCode != '4999'){
             this.form.chargeName = item.val
           }
         }
-        console.log('form', this.form)
         if(this.form.chargeCode=='0000' && this.form.carType==''){
           this.swal({
             title: '请选择车型',
@@ -227,7 +225,8 @@
                 chargeName: this.form.chargeName,
                 inOutType: this.form.inOutType,
                 jgdms: this.form.jgdms,
-                chargeCode: this.form.chargeCode + '-' + bx
+                chargeCode: this.form.chargeCode + '-' + bx,
+                id: this.changeMess.id
               };
               this.$http.post(this.apis.SFX.UPDATE,param).then((res)=>{
                 if (res.code == 200) {

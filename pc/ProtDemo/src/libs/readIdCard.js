@@ -68,6 +68,35 @@ export default {
   startQuart(v){
     t=v;
     flag = true;
-    this.quartFun(this.readIdCard, 1000)();
+    this.quartFun(this.readIdCard, 2000)();
+  },
+  readCardByHand(v){
+    $.ajax({
+      type: 'get',
+      url: 'http://127.0.0.1:39999/readIDCard',
+      dataType: 'json',
+      beforeSend: () => {
+      },
+      success: (data) => {
+        let res = JSON.parse(JSON.stringify(data))
+        if (res.ResultCode == 0) {
+          v.form.idCardNo = res.IDCardNo.trim();
+          v.form.traineeName = res.Name.trim();
+        } else  {
+          // errorMsg = res.ResultInfo;
+          // errorMsg = res.ResultInfo;
+          let errorMsg = res.ResultInfo
+          v.swal({
+            text: errorMsg,
+            type: "warning",
+            confirmButtonText: '确认',
+          }).then(val => {
+          });
+          // 异常 , 需要重新操作 , 此时需要弹窗
+        }
+      },
+      error: (data) => {
+      }
+    })
   }
 }

@@ -297,9 +297,9 @@ export default {
   computed: {
     AutoReadCard() {
       if (window.vueObject.$data.card.CardNo) {
-        this.form.idCardNo = window.vueObject.$data.card.CardNo;
-        this.form.traineeName = window.vueObject.$data.card.NameA;
-        this.getPagerList();
+        this.form.idCardNo = window.vueObject.$data.card.CardNo.trim();
+        this.form.traineeName = window.vueObject.$data.card.NameA.trim();
+        // this.getPagerList();
       }
       return "";
     }
@@ -387,6 +387,13 @@ export default {
       })
     },
     save() {
+      if(!this.form.idCardNo){
+        // this.swal({
+        //   text:'请填写学员信息',
+        //   type:'warning'
+        // })
+        return
+      }
       this.$refs.saveForm.validate((valid) => {
         if (valid) {
           this.$http.post(this.apis.OTHER.ADD, this.form).then((res) => {
@@ -435,6 +442,7 @@ export default {
       };
       this.type = '1';
       this.sfList = [];
+      window.vueObject.$data.card.CardNo = ''
       this.getSfList();
       // this.$Message.success('重置成功');
       // 启动读取身份证任务

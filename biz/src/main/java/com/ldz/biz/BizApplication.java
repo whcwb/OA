@@ -12,8 +12,6 @@ public class BizApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BizApplication.class, args);
-		/*GnService bean = SpringContextUtil.getBean(GnService.class);
-		bean.initPermission();*/
 	}
 
 }

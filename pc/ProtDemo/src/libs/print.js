@@ -31,21 +31,23 @@ obj.print = (id,item,time,callback) => {
     }
   })
 
-
-  $.ajax({
-    type: "POST",
-    url: "http://127.0.0.1:39999/print",
-    data: JSON.stringify(printJson),
-    contentType: "application/json",
-    dataType: "json",
-    beforeSend: function () { },
-    success: function (data) {
-      // alert("打印成功="+data);
-    },
-    error:function(data){
-      // alert("服务未启动，请先启动监听服务");
-    }
-  });
+var xhr = new XMLHttpRequest();
+  xhr.open("POST","http://127.0.0.1:39999/print");
+  xhr.send(JSON.stringify(printJson))
+  // $.ajax({
+  //   type: "POST",
+  //   url: "http://127.0.0.1:39999/print",
+  //   data: JSON.stringify(printJson),
+  //   contentType: "application/json",
+  //   dataType: "json",
+  //   beforeSend: function () { },
+  //   success: function (data) {
+  //     // alert("打印成功="+data);
+  //   },
+  //   error:function(data){
+  //     // alert("服务未启动，请先启动监听服务");
+  //   }
+  // });
 
 }
 

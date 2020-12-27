@@ -402,11 +402,11 @@
       this.initPenSign();
     },
     mounted() {
-      let v = this
-      v.rdc.startQuart(v);
+      // let v = this
+      // v.rdc.startQuart(v);
     },
     beforeDestroy(){
-      this.rdc.clearReadCard();
+      // this.rdc.clearReadCard();
     },
     methods: {
       CheckboxChange(){
@@ -477,7 +477,7 @@
           referrer: '',//推荐人
           remark: ''//备注
         }
-        this.rdc.startQuart(this);
+        // this.rdc.startQuart(this);
         // if (this.jxfwPenSign != null) {
         //   this.jxfwPenSign.HWClearPenSign();
         //   this.jxfwPenSign = null;

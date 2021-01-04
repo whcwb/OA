@@ -81,7 +81,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         condition.eq(ChargeManagement.InnerColumn.idCardNo, entity.getIdCardNo());
         condition.and().andCondition(" zt != '20' and zt != '30'");
         List<ChargeManagement> managementList = findByCondition(condition);
-        RuntimeCheck.ifTrue(CollectionUtils.isNotEmpty(managementList), "学员已缴费,请勿重复录入");
+//        RuntimeCheck.ifTrue(CollectionUtils.isNotEmpty(managementList), "学员已缴费,请勿重复录入");
         // 查询体检费用
         ChargeItemManagement itemManagement = new ChargeItemManagement();
         itemManagement.setChargeCode(FeeType.INSPECT);

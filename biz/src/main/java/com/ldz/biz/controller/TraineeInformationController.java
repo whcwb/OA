@@ -370,6 +370,14 @@ public class TraineeInformationController extends BaseController<TraineeInformat
     }
 
     /**
+     * 分期付款学员信息导出(所有分期的)
+     */
+    @GetMapping("/export_stag")
+    public void exportInstallInfo(Page<TraineeInformation> page, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        service.exportStag(page,request,response);
+    }
+
+    /**
      * 查询已经预约还没考试的学员
      */
     @PostMapping("/getAllAppointed")

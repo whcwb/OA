@@ -26,7 +26,7 @@
                    placeholder="流水号"/>
           </Col>
           <Col span="4" :lg="4" :md="4">
-            <Input v-model="param.idCardNoLike" @on-enter="getpagerList"
+            <Input v-model="param.idCardNo" @on-enter="getpagerList"
                    size="large" clearable
                    placeholder="证件号码"/>
           </Col>
@@ -261,7 +261,7 @@
         param: {
           // inOutType:'11',
           traineeNameLike: '',
-          idCardNoLike: '',
+          idCardNo: '',
           // chargeSourceLike: '',//驾校名称
           chargeCodeIn: '',
           // cjsjLike:'',
@@ -279,7 +279,7 @@
       'param.traineeNameLike': function (n, o) {
         this.fineSup(n)
       },
-      'param.idCardNoLike': function (n, o) {
+      'param.idCardNo': function (n, o) {
         this.fineSup(n)
       },
       // 'param.chargeCode':function(n,o){
@@ -303,7 +303,7 @@
     computed: {
       AutoReadCard() {
         if (window.vueObject.$data.card.CardNo) {
-          this.param.idCardNoLike = window.vueObject.$data.card.CardNo;
+          this.param.idCardNo = window.vueObject.$data.card.CardNo;
           this.param.nameLike = window.vueObject.$data.card.NameA;
           this.getPagerList();
         }
@@ -340,7 +340,7 @@
           this.DatePickerC(['', ''])
         }
         if (this.param.traineeNameLike == '' &&
-          this.param.idCardNoLike == '' &&
+          this.param.idCardNo == '' &&
           this.chargeCodeIn == '') {
           this.bmTime = [this.AF.trimDate(), this.AF.trimDate()];
           this.DatePickerC([this.bmTime[0], this.bmTime[1]]);
@@ -364,6 +364,7 @@
         }
         // this.param.pageNum = 1;
         let par = JSON.parse(JSON.stringify(this.param))
+        v.tableData = []
         this.$http.post('/api/chargemanagement/findTodayCharge', par).then((res) => {
           if (res.code == 200) {
             v.tableData = res.page.list
@@ -391,7 +392,7 @@
         this.param.chargeCodeIn=(this.chargeCodeIn).toString()
         window.open(http.url + this.apis.EXCEL.CHARGE +
           "?traineeNameLike=" + this.param.traineeNameLike +
-          "&idCardNoLike=" + this.param.idCardNoLike +
+          "&idCardNo=" + this.param.idCardNo +
           "&chargeCode=" + this.param.chargeCodeIn +
           // "&chargeSourceLike=" + this.param.chargeSourceLike +
           "&cjsjGte=" + this.param.cjsjGte +

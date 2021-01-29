@@ -9,6 +9,7 @@ import com.ldz.util.bean.ApiResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -152,4 +153,6 @@ public interface TraineeInformationService extends BaseService<TraineeInformatio
     ApiResponse<String> saveChargeK3(String id, String amount,String remark);
 
     ApiResponse<String> updateTraineeInfo(TraineeInformation information);
+
+    void exportStag(Page<TraineeInformation> page, HttpServletRequest request, HttpServletResponse response) throws IOException;
 }

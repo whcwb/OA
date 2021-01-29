@@ -40,10 +40,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.*;
@@ -3064,7 +3066,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     @Override
     public ApiResponse<String> getTestStudents(int pageSize, int pageNum, String kskm) {
         Map<String, String> kmMap = new HashMap<>();
-
+        RuntimeCheck.ifBlank(kskm, "请选择考试科目");
         kmMap.put("1", "fir_sub_test_time");
         kmMap.put("2", "sec_sub_test_time");
         kmMap.put("3", "third_sub_test_time");
@@ -3653,6 +3655,46 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         status.setType("学员信息修改");
         traineeStatusService.save(status);
         return ApiResponse.success();
+    }
+
+    @Override
+    public void exportStag(Page<TraineeInformation> page, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        page.setPageSize(99999);
+        ApiResponse<Long> apiResponse = getStag(page);
+        PageInfo<TraineeInformation> info = apiResponse.getPage();
+        List<Map<Integer, String>> data = new ArrayList<>();
+        Map<Integer, String> titleMap = new HashMap<>();
+        titleMap.put(0, "序号");
+        titleMap.put(1, "报名点");
+        titleMap.put(2, "姓名");
+        titleMap.put(3, "证件号码");
+        titleMap.put(4, "车型");
+        titleMap.put(5, "欠费金额");
+        titleMap.put(6, "报名时间");
+        data.add(titleMap);
+
+        List<TraineeInformation> infoList = info.getList();
+        if(CollectionUtils.isNotEmpty(infoList)){
+            for (int i = 0; i < infoList.size(); i++) {
+                TraineeInformation t = infoList.get(i);
+                Map<Integer, String> dataMap = new HashMap<>();
+                dataMap.put(0, String.valueOf(i+1));
+                dataMap.put(1, t.getJgmc());
+                dataMap.put(2, t.getName());
+                dataMap.put(3, t.getIdCardNo());
+                dataMap.put(4, t.getCarType());
+                dataMap.put(5, String.valueOf(t.getOweAmount()));
+                dataMap.put(6, t.getRegistrationTime());
+                data.add(dataMap);
+            }
+        }
+
+        response.setContentType("application/msexcel");
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("pragma", "no-cache");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String("分期学员".getBytes("utf-8"), "ISO8859-1") + ".xls");
+        OutputStream out = response.getOutputStream();
+        ExcelUtil.createSheet(out,"分期学院",data);
     }
 
 

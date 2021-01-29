@@ -3,6 +3,7 @@ package com.ldz.biz.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import com.ldz.biz.constant.FeeType;
 import com.ldz.biz.mapper.ChargeManagementMapper;
 import com.ldz.biz.model.*;
@@ -33,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -151,7 +153,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
                 }
                 // 欠费金额
                 int oweAmount = traineeInformation.getOweAmount();
-                RuntimeCheck.ifTrue(oweAmount <= 0 , "学员已还款,请勿重复操作");
+                RuntimeCheck.ifTrue(oweAmount <= 0, "学员已还款,请勿重复操作");
                 traineeInformation.setOweAmount(0);
                 // 不欠费
                 traineeInformation.setArrearage("00");
@@ -516,7 +518,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
             printlog.setChargeId(join);
             printlog.setCjr(user.getZh() + "-" + user.getXm());
             printlog.setCjsj(DateUtils.getNowTime());
-            printlog.setPjbh(pjbh+ "-" +num);
+            printlog.setPjbh(pjbh + "-" + num);
             printlog.setJgdm(jgdm);
             printlog.setJgmc(jgmc);
             printlogService.save(printlog);
@@ -535,24 +537,40 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         LimitedCondition condition = getQueryCondition();
         // 添加流水号查询 2020-06-05
         String serialnum = getRequestParamterAsString("serialnum");
-        if(StringUtils.isNotBlank(serialnum)){
+        if (StringUtils.isNotBlank(serialnum)) {
             List<String> cardNo = baseMapper.getIdCardNo(serialnum);
             if (CollectionUtils.isEmpty(cardNo)) {
                 return result;
             }
-            condition.in(ChargeManagement.InnerColumn.idCardNo , cardNo);
+            condition.in(ChargeManagement.InnerColumn.idCardNo, cardNo);
         }
 
         condition.and().andCondition(" zt = '00' or zt = '10'");
         condition.setOrderByClause(" SUBSTR(IFNULL(pjbh,'9999999999'),1,13) asc , charge_time desc ");
         PageInfo<ChargeManagement> info = findPage(page, condition);
+        if (CollectionUtils.isEmpty(info.getList())) {
+            return ApiResponse.success(new ArrayList<>());
+        }
+        Set<String> trainIds = info.getList().stream().filter(chargeManagement -> StringUtils.isNotBlank(chargeManagement.getTraineeId())).map(ChargeManagement::getTraineeId).collect(toSet());
+        Map<String, TraineeInformation> informationMap = Maps.newHashMap();
+        Map<String, SysJg> jgMap = Maps.newHashMap();
+
+        if (CollectionUtils.isNotEmpty(trainIds)) {
+            List<TraineeInformation> informations = traineeInformationService.findByIds(trainIds);
+            informationMap = informations.stream().collect(toMap(TraineeInformation::getId, p -> p));
+            Set<String> jgdms = informations.stream().map(TraineeInformation::getJgdm).collect(toSet());
+            List<SysJg> jgs = jgService.findIn(SysJg.InnerColumn.jgdm, jgdms);
+            jgMap = jgs.stream().collect(Collectors.toMap(SysJg::getJgdm, p -> p));
+        }
+        Map<String, TraineeInformation> finalInformationMap = informationMap;
+        Map<String, SysJg> finalJgMap = jgMap;
         info.getList().forEach(chargeManagement -> {
             if (StringUtils.isNotBlank(chargeManagement.getTraineeId())) {
-                TraineeInformation information = traineeInformationService.findById(chargeManagement.getTraineeId());
-                SysJg jg = jgService.findByOrgCode(information.getJgdm());
+                TraineeInformation information = finalInformationMap.get(chargeManagement.getTraineeId());
+                SysJg jg = finalJgMap.get(information.getJgdm());
                 if (!ObjectUtils.isEmpty(information)) {
                     chargeManagement.setGlyxm(information.getGlyxm());
-                    chargeManagement.setJgPhone(jg.getLxdh1());
+                    chargeManagement.setJgPhone(jg != null ? jg.getLxdh1() : "");
                     chargeManagement.setSerialNum(information.getSerialNum());
                 }
             }
@@ -672,7 +690,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         response.setContentType("application/msexcel");
         request.setCharacterEncoding("UTF-8");
         response.setHeader("pragma", "no-cache");
-        response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes("utf-8"), "ISO8859-1") + ".xls");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
         ExcelUtil.createSheet(out, "收费审核记录", data);
 
@@ -737,28 +755,28 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
 
     @Override
     public ApiResponse<String> removePjbh(String pjbh) {
-		SysYh user = getCurrentUser();
-		RuntimeCheck.ifNull(user, "未获取到用户信息 ， 请重新登录");
-		RuntimeCheck.ifBlank(pjbh, "请选择要作废的票据编号");
-    	// 根据票据编号查询打印该编号的所有收费记录
+        SysYh user = getCurrentUser();
+        RuntimeCheck.ifNull(user, "未获取到用户信息 ， 请重新登录");
+        RuntimeCheck.ifBlank(pjbh, "请选择要作废的票据编号");
+        // 根据票据编号查询打印该编号的所有收费记录
         SimpleCondition condition = new SimpleCondition(ChargePrintlog.class);
         condition.and().andCondition(" zfsj is null or zfsj = ''");
         condition.eq(ChargePrintlog.InnerColumn.pjbh, pjbh);
-		List<ChargePrintlog> printlogs = printlogService.findByCondition(condition);
-		RuntimeCheck.ifTrue(CollectionUtils.isEmpty(printlogs), "未找到打印该票据的记录");
-		// 根据查询到的记录 清空其中的票据编号
-		ChargePrintlog printlog = printlogs.get(0);
-		List<String> ids = Arrays.asList(printlog.getChargeId().split(","));
-		List<ChargeManagement> managements = findByIds(ids);
-		managements.forEach(charge -> {
-			charge.setPjbh(null);
-			baseMapper.updateByPrimaryKey(charge);
-		});
-		// 更新作废记录
-		printlog.setZfr(user.getZh() + "-" + user.getXm());
-		printlog.setZfsj(DateUtils.getNowTime());
-		printlogService.update(printlog);
-		return ApiResponse.success();
+        List<ChargePrintlog> printlogs = printlogService.findByCondition(condition);
+        RuntimeCheck.ifTrue(CollectionUtils.isEmpty(printlogs), "未找到打印该票据的记录");
+        // 根据查询到的记录 清空其中的票据编号
+        ChargePrintlog printlog = printlogs.get(0);
+        List<String> ids = Arrays.asList(printlog.getChargeId().split(","));
+        List<ChargeManagement> managements = findByIds(ids);
+        managements.forEach(charge -> {
+            charge.setPjbh(null);
+            baseMapper.updateByPrimaryKey(charge);
+        });
+        // 更新作废记录
+        printlog.setZfr(user.getZh() + "-" + user.getXm());
+        printlog.setZfsj(DateUtils.getNowTime());
+        printlogService.update(printlog);
+        return ApiResponse.success();
     }
 
     @Override
@@ -766,19 +784,19 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         SimpleCondition condition = new SimpleCondition(ChargePrintlog.class);
         condition.setOrderByClause(" id desc ");
         String jgdm = getRequestParamterAsString("jgdm");
-        if(StringUtils.isNotBlank(jgdm)){
+        if (StringUtils.isNotBlank(jgdm)) {
             condition.eq(ChargePrintlog.InnerColumn.jgdm, jgdm);
         }
 
         String time = getRequestParamterAsString("time");
-        if(StringUtils.isBlank(time)){
+        if (StringUtils.isBlank(time)) {
             time = DateTime.now().toString("yyyy-MM-dd");
             condition.startWith(ChargePrintlog.InnerColumn.cjsj, time);
-        }else{
+        } else {
             condition.startWith(ChargePrintlog.InnerColumn.cjsj, time);
         }
         String pjbh = getRequestParamterAsString("pjbh");
-        if(StringUtils.isNotBlank(pjbh)){
+        if (StringUtils.isNotBlank(pjbh)) {
             condition.like(ChargePrintlog.InnerColumn.pjbh, pjbh);
         }
         PageInfo<ChargePrintlog> info = PageHelper.startPage(pageNum, pageSize).doSelectPageInfo(() -> printlogService.findByCondition(condition));

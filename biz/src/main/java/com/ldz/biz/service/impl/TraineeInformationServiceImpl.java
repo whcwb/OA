@@ -2837,6 +2837,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         tableName.put("thirdSubTestNum", "科三考试次数");
         tableName.put("forthSub", "科四状态");
         tableName.put("remark", "备注");
+        tableName.put("referrer", "推荐人");
         LimitedCondition condition = getQueryCondition();
         condition.setOrderByClause(" jgdm asc ");
         String statusArray = getRequestParamterAsString("statusArray");
@@ -2970,7 +2971,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
             }
             m.put("forthSub", forthSubName);//科四状态
             m.put("remark", StringUtils.equals(l.getRemark(), "999999") ? "历史数据" : l.getRemark());//备注
-
+            m.put("referrer", l.getReferrer());
             data.add(m);
             seq++;
         }
@@ -3000,6 +3001,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         tableNameInfo.put("secondSubjectCoach", "科二教练员");
         tableNameInfo.put("thirdSubjectCoach", "科三教练员");
         tableNameInfo.put("remark", "备注");
+        tableNameInfo.put("referrer", "推荐人");
         sheelMapInfo.put("name", "基本信息");
         sheelMapInfo.put("sheelMap", tableNameInfo);
         sheetList.add(sheelMapInfo);

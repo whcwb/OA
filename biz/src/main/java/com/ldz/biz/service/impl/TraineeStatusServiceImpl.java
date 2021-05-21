@@ -41,4 +41,23 @@ public class TraineeStatusServiceImpl extends BaseServiceImpl<TraineeStatus, Str
 		addTraineeStatus.setStatus(status);//状态
 		return save(addTraineeStatus);
 	}
+
+	@Override
+	public int saveEntityForEx(TraineeInformation traineeInfo, String type, String status, String remark){
+
+		TraineeStatus addTraineeStatus=new TraineeStatus();
+
+		addTraineeStatus.setId(genId());
+		addTraineeStatus.setTraineeId(traineeInfo.getId());//學員ID
+		addTraineeStatus.setTraineeName(traineeInfo.getName());//學員姓名
+		addTraineeStatus.setIdCardNo(traineeInfo.getIdCardNo());//身份证号码
+		addTraineeStatus.setOperator("admini");//操作人
+		addTraineeStatus.setOperateTime(DateUtils.getNowTime());//操作時間
+		addTraineeStatus.setCjr("admini"+"-"+"超级管理员");
+		addTraineeStatus.setCjsj(DateUtils.getNowTime());
+		addTraineeStatus.setRemark(remark);//备注
+		addTraineeStatus.setType(type);
+		addTraineeStatus.setStatus(status);//状态
+		return save(addTraineeStatus);
+	}
 }

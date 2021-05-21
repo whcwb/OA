@@ -155,4 +155,6 @@ public interface TraineeInformationService extends BaseService<TraineeInformatio
     ApiResponse<String> updateTraineeInfo(TraineeInformation information);
 
     void exportStag(Page<TraineeInformation> page, HttpServletRequest request, HttpServletResponse response) throws IOException;
+
+    ApiResponse<String> updateTestResultForEx(String id, String km, String s, String time);
 }

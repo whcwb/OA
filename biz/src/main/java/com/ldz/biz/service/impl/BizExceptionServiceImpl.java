@@ -271,6 +271,61 @@ public class BizExceptionServiceImpl extends BaseServiceImpl<BizException, java.
 	}
 
 	@Override
+	public void clearExceptionForEx(BizException info, String code) {
+		if (StringUtils.isBlank(info.getSfzmhm())){
+			return;
+		}
+		if (StringUtils.isBlank(info.getCode())){
+			return;
+		}
+//		SysYh user = getCurrentUser();
+		//1.查询在办学员信息，只对在办学员进行信息异常处理
+		TraineeInformation traineeInfo = traineeInfoService.findByIdCardNo(info.getSfzmhm());
+		if (traineeInfo != null){
+			//查询学员是否有相关类型未处理的异常信息
+			Example condition = new Example(BizException.class);
+			condition.and()
+					.andEqualTo(BizException.InnerColumn.sfzmhm.name(), info.getSfzmhm())
+					.andEqualTo(BizException.InnerColumn.zt.name(), "00");
+			List<BizException> exps = baseMapper.selectByExample(condition);
+			if (CollectionUtils.isNotEmpty(exps)){
+				BizException otherEntity = null;
+				for (int i=0; i<exps.size(); i++){
+					BizException entity = exps.get(i);
+					//将相同类型的异常标记为已处理
+					if (code.equals(entity.getCode())){
+						entity.setGxsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+						entity.setGxr("admini"+"-"+"超级管理员");
+						entity.setZt("10");
+
+						baseMapper.updateByPrimaryKey(entity);
+					}else{
+						otherEntity = entity;
+					}
+				}
+				//将学员主表信息异常也标记为已处理，如果学员同时有其他异常信息，则更新其他异常信息
+				TraineeInformation information = new TraineeInformation();
+				information.setId(traineeInfo.getId());
+				if (code.equals(traineeInfo.getCode())){
+					if (otherEntity == null){
+//						information.setCode("");
+//						information.setErrorMessage("");
+						baseMapper.updateCode(information.getId());
+					}else{
+						TraineeInformation traineeInformation = new TraineeInformation();
+						traineeInformation.setId(information.getId());
+						traineeInformation.setCode(otherEntity.getCode());
+						traineeInformation.setErrorMessage(otherEntity.getBz());
+//						information.setCode(otherEntity.getCode());
+//						information.setErrorMessage(otherEntity.getBz());
+						traineeInfoService.update(traineeInformation);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
 	public void expJobSave(BizExceptionConfig config) {
 		List<TraineeInformation> students = Lists.newArrayList();
 		String kskm = "";

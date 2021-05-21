@@ -17,4 +17,6 @@ public interface TraineeStatusService extends BaseService<TraineeStatus, String>
      * @return
      */
     int saveEntity(TraineeInformation traineeInfo, String type, String status, String remark);
+
+    int saveEntityForEx(TraineeInformation traineeInfo, String type, String status, String remark);
 }

@@ -225,7 +225,7 @@
                 chargeName: this.form.chargeName,
                 inOutType: this.form.inOutType,
                 jgdms: this.form.jgdms,
-                chargeCode: this.form.chargeCode + '-' + bx,
+                chargeCode: this.form.chargeCode +   bx?('-' + bx):'',
                 id: this.changeMess.id
               };
               this.$http.post(this.apis.SFX.UPDATE,param).then((res)=>{

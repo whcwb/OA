@@ -1,5 +1,5 @@
-// let ajaxUrl = 'http://localhost:10010';
-let ajaxUrl = 'http://47.110.39.144:8082';
+let ajaxUrl = 'http://localhost:10010';
+// let ajaxUrl = 'http://47.110.39.144:8082';
 export default {
   NETWORK_ERR_STR: '网络加载异常!',
   url: ajaxUrl,

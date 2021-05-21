@@ -3273,6 +3273,135 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
     }
 
     @Override
+    public ApiResponse<String> updateTestResultForEx(String id, String kskm, String result, String time) {
+        RuntimeCheck.ifBlank(id, "请选择学员");
+        RuntimeCheck.ifBlank(kskm, "请选择科目");
+        RuntimeCheck.ifBlank(result, "请选择考试结果");
+        RuntimeCheck.ifBlank(time, "请选择考试时间");
+        Map<String, String> kmMap = new HashMap<>();
+        kmMap.put("1", "科目一");
+        kmMap.put("2", "科目二");
+        kmMap.put("3", "科目三");
+        kmMap.put("4", "科目四");
+        TraineeInformation information = findById(id);
+        SimpleCondition simpleCondition = new SimpleCondition(TraineeTestInfo.class);
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.subject, kmMap.get(kskm));
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.testTime, time);
+        simpleCondition.eq(TraineeTestInfo.InnerColumn.traineeId, id);
+        List<TraineeTestInfo> testInfos = traineeTestInfoService.findByCondition(simpleCondition);
+        if (CollectionUtils.isEmpty(testInfos)) {
+            return ApiResponse.success();
+        }
+        for (TraineeTestInfo info : testInfos) {
+            info.setTestResult(result);
+            traineeTestInfoService.update(info);
+            BizException exception = new BizException();
+            exception.setSfzmhm(info.getIdCardNo());
+            // 根据当前考试科目 , 查看是否需要修改当前学员的状态
+            if (StringUtils.equals(kskm, "1")) {
+                exception.setCode("102");
+                // 科目一考试如果合格 , 如果不在科目一就修改为科目二
+                if (StringUtils.equals(result, "00")) {
+                    if (StringUtils.equals(information.getStatus(), "10")) {
+                        information.setStatus("20");
+                    }
+                    information.setFirSub("40");
+                } else {
+                    information.setFirSub("30");
+                }
+            } else if (StringUtils.equals(kskm, "2")) {
+                exception.setCode("202");
+                if (StringUtils.equals(result, "00")) {
+                    // 科目二合格 , 查看当前状态是否在科目二, 不在则不更新状态
+                    information.setSecSub("40");
+                    if (StringUtils.equals(information.getStatus(), "20")) {
+                        if (StringUtils.equals(information.getThirdSub(), "40")) {
+                            information.setStatus("40");
+                        } else {
+                            information.setStatus("30");
+                        }
+                    }
+                } else {
+                    information.setSecSub("30");
+                }
+            } else if (StringUtils.equals(kskm, "3")) {
+                exception.setCode("302");
+                if (StringUtils.equals(result, "00")) {
+                    information.setThirdSub("40");
+                    if (StringUtils.equals(information.getStatus(), "30")) {
+                        if (StringUtils.equals(information.getSecSub(), "40")) {
+                            information.setStatus("40");
+                        } else {
+                            information.setStatus("20");
+                        }
+                    }
+                } else {
+                    information.setThirdSub("30");
+                }
+            } else if (StringUtils.equals(kskm, "4")) {
+                exception.setCode("402");
+                if (StringUtils.equals(result, "00")) {
+                    information.setForthSub("20");
+                    information.setStatus("50");
+                } else {
+                    information.setForthSub("10");
+                }
+                // 科目四成绩确认 清理异常
+                SimpleCondition condition = new SimpleCondition(BizException.class);
+                condition.eq(BizException.InnerColumn.sfzmhm, info.getIdCardNo());
+                condition.eq(BizException.InnerColumn.code, "402");
+                condition.eq(BizException.InnerColumn.zt, "00");
+                List<BizException> exceptions = exceptionService.findByCondition(condition);
+                exceptions.forEach(e -> {
+                    e.setZt("10");
+                    exceptionService.update(e);
+                });
+            } else {
+                information.setForthSub("10");
+            }
+            exceptionService.clearExceptionForEx(exception, exception.getCode());
+            if (information != null) {
+                //查询学员是否有相关类型未处理的异常信息
+                Example condition = new Example(BizException.class);
+                condition.and()
+                        .andEqualTo(BizException.InnerColumn.sfzmhm.name(), information.getIdCardNo())
+                        .andEqualTo(BizException.InnerColumn.zt.name(), "00");
+                List<BizException> exps = exceptionService.findByCondition(condition);
+                if (CollectionUtils.isNotEmpty(exps)) {
+                    BizException otherEntity = null;
+                    for (BizException entity : exps) {
+                        //将相同类型的异常标记为已处理
+                        if (exception.getCode().equals(entity.getCode())) {
+                            entity.setGxsj(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+                            entity.setGxr("admini" + "-" + "超级管理员");
+                            entity.setZt("10");
+
+                            exceptionService.update(entity);
+                        } else {
+                            otherEntity = entity;
+                        }
+                    }
+                    //将学员主表信息异常也标记为已处理，如果学员同时有其他异常信息，则更新其他异常信息
+                    if (exception.getCode().equals(information.getCode())) {
+                        if (otherEntity == null) {
+                            information.setCode("");
+                            information.setErrorMessage("");
+                        } else {
+                            information.setCode(otherEntity.getCode());
+                            information.setErrorMessage(otherEntity.getBz());
+                        }
+                    }
+
+                }
+            }
+        }
+        update(information);
+        traineeStatusService.saveEntityForEx(information, kmMap.get(kskm) + "成绩手动确认", "00", "成绩确认");
+        return ApiResponse.success();
+    }
+
+
+    @Override
     public ApiResponse<String> revokeTestAppoint(String id, String kskm, String time) {
         RuntimeCheck.ifBlank(id, "请选择学员");
         RuntimeCheck.ifBlank(kskm, "请选择科目");

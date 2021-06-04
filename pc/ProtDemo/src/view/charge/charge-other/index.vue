@@ -49,9 +49,9 @@
           <Card style="width: 100%">
             <Row :gutter="10" style="margin-bottom: 8px">
               <Col span="8" :lg="8" :md="24">
-                <div class="box_row_100 " style="font-weight: 700;font-size: 18px">
+                <div class="box_row_100 " style="font-weight: 700;font-size: 18px" @click="showD">
                   收费记录
-                  <span style="font-size: 16px;margin-left: 16px">
+                  <span style="font-size: 16px;margin-left: 16px" v-show="showDetail">
                     共:
                    <span style="font-size: 20px;color: #ff9900">
                     {{ tableData.length }}
@@ -61,7 +61,7 @@
                   {{ inCount }}
                   </span>
                   元
-                </span>
+                  </span>
                 </div>
               </Col>
               <Col span="3" :lg="3" :md="4">
@@ -121,6 +121,7 @@ export default {
   },
   data: function () {
     return {
+      showDetail: false,
       compName: '',
       printMess: [],
       count: 0,
@@ -476,6 +477,9 @@ export default {
     },
     selectChange(arr) {
       this.printMess = arr
+    },
+    showD() {
+      this.showDetail = !this.showDetail;
     }
   }
 }

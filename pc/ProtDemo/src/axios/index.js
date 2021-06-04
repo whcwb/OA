@@ -31,23 +31,6 @@ httpInstance.interceptors.request.use((config) => {
   }
     if (!(config.data && config.data.notShowLoading && config.data.notShowLoading == 'true')
     && !(config.params && config.params.notShowLoading && config.params.notShowLoading == 'true')){
-    // if (true) {
-    // iView.Spin.hide()
-  // } else {
-  //   iView.Spin.show({
-  //     render: (h) => {
-  //       return h('div', [
-  //         h('Icon', {
-  //           'class': 'demo-spin-icon-load',
-  //           props: {
-  //             type: 'ios-loading',
-  //             size: 50
-  //           }
-  //         }),
-  //         h('div', '数据加载中')
-  //       ])
-  //     }
-  //   })
   }
 
 

@@ -153,6 +153,7 @@
         this.carList = this.changeMess.carType.split(',')
         // this.changeMess.BX = this.changeMess.chargeName.split('-')[1]
         this.changeMess.chargeCode = this.changeMess.chargeCode.split('-')[0]
+        console.log(this.changeMess.chargeCode)
         this.changeMess.jgdms = []
         this.changeMess.institutions.forEach((item,index)=>{
           this.changeMess.jgdms.push(item.jgdm)
@@ -216,6 +217,7 @@
           }
         }
 
+        console.log("this.form.chargeCode",this.form.chargeCode);
         this.$refs.saveForm.validate((valid) => {
           if(valid){
             if(this.changeMess.id){
@@ -225,7 +227,7 @@
                 chargeName: this.form.chargeName,
                 inOutType: this.form.inOutType,
                 jgdms: this.form.jgdms,
-                chargeCode: this.form.chargeCode +   bx?('-' + bx):'',
+                chargeCode: this.form.chargeCode +   (bx?('-' + bx):''),
                 id: this.changeMess.id
               };
               this.$http.post(this.apis.SFX.UPDATE,param).then((res)=>{
@@ -241,7 +243,7 @@
                 chargeName: this.form.chargeName,
                 inOutType: this.form.inOutType,
                 jgdms: this.form.jgdms,
-                chargeCode: this.form.chargeCode + '-' + bx
+                chargeCode: this.form.chargeCode + (bx?('-' + bx):'')
               };
               this.$http.post(this.apis.SFX.SAVE, param).then((res) => {
                 if (res.code == 200) {

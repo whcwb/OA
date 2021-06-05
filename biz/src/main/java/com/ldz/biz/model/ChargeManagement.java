@@ -108,7 +108,7 @@ public class ChargeManagement implements Serializable {
     private String remark;
 
     /**
-     * 银行流水号
+     * 银行流水号 (好像没有用 , 用来存手机号码)
      */
     @Column(name = "bank_serial_num")
     private String bankSerialNum;

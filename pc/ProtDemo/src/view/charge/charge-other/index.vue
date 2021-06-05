@@ -17,11 +17,6 @@
                 <FormItem prop="idCardNo" label="证件号码:">
                   <Input type="text" size="large" placeholder="请输入证件号码" v-model="form.idCardNo"></Input>
                 </FormItem>
-<!--                <FormItem prop="chargeSource" label="所属驾校">-->
-<!--                  <Select v-model="form.chargeSource" placeholder="请选择驾校">-->
-<!--                    <Option v-for="(item,index) in cityList" :value="item.val" :key="index">{{ item.val }}</Option>-->
-<!--                  </Select>-->
-<!--                </FormItem>-->
                 <FormItem prop="chargeCode" label="收费项:">
                   <Select v-model="form.chargeCode" placeholder="请选择收费项" @on-change="changeFee">
                     <Option v-for="(item,index) in sfList" :value="item.id" :key="index">{{ item.chargeName }}</Option>
@@ -29,6 +24,9 @@
                 </FormItem>
                 <FormItem prop="chargeFee" label="金额:">
                   <Input type="text" placeholder="请输入金额" v-model="form.chargeFee" :value="this.form.chargeFee"></Input>
+                </FormItem>
+                <FormItem prop="bankSerialNum" label="手机号码:">
+                  <Input type="text" placeholder="请输入手机号码" v-model="form.bankSerialNum" :value="this.form.chargeFee"></Input>
                 </FormItem>
                 <FormItem prop="remark" label="备注:">
                   <Input type="text" placeholder="请输入备注" v-model="form.remark"></Input>
@@ -68,11 +66,6 @@
                 <DatePicker type="date" split-panels :value="this.AF.trimDate()" :clearable="false"
                             @on-change="changeTime" placeholder="审核日期" style="width: 100% ;"></DatePicker>
               </Col>
-<!--              <Col span="3" :lg="3" :md="5">-->
-<!--                <Input v-model="param.chargeSourceLike"-->
-<!--                       @on-enter="getPagerList"-->
-<!--                       placeholder="请输入学员所属驾校"/>-->
-<!--              </Col>-->
               <Col span="3" :lg="3" :md="5">
                 <Input v-model="param.traineeNameLike"
                        @on-enter="getPagerList"
@@ -90,12 +83,6 @@
                   <Icon type="md-search"></Icon>
                   <!--查询-->
                 </Button>
-
-<!--                <Tooltip content="读卡" style="float: right">-->
-<!--                  <Button type="primary" @click="duka">-->
-<!--                    <Icon type="md-print"/>-->
-<!--                  </Button>-->
-<!--                </Tooltip>-->
               </Col>
             </Row>
             <Table border stripe
@@ -113,11 +100,12 @@
 <script>
 import OPrintMess from '../../../components/print/other'
 import PrintNew from '../../../components/printNew'
+import printOther from "../../../components/print/printOther";
 
 export default {
   name: "index",
   components: {
-    OPrintMess,PrintNew
+    OPrintMess,PrintNew,printOther
   },
   data: function () {
     return {
@@ -150,7 +138,8 @@ export default {
         idCardNo: '',
         traineeName: '',
         chargeSource: '',
-        remark: ''
+        remark: '',
+        bankSerialNum:'' // 银行流水号没有用 , 用来存手机号码
       },
       ruleValidate: {
         traineeName: [
@@ -215,22 +204,25 @@ export default {
           key: 'chargeTime',
           minWidth: 150,
           align: 'center',
-          // render: (h, p) => {
-          //   return h('div', [
-          //     h('Tooltip', {
-          //       props: {
-          //         placement: 'top',
-          //         content: p.row.chargeTime
-          //       }
-          //     }, [
-          //       h('Time', {
-          //         props: {
-          //           time: new Date(p.row.chargeTime.replace(/-/g, "/"))
-          //         }
-          //       })
-          //     ])
-          //   ])
-          // }
+        },
+        {
+          title: '手机号码',
+          key: 'bankSerialNum',
+          minWidth: 150,
+          align: 'center',
+        },
+        {
+          title: '票据编号',
+          minWidth: 150,
+          align: 'center',
+          render: (h,p) => {
+            let pjbh = '';
+            if(p.row.pjbh){
+              let split = p.row.pjbh.split('-');
+              pjbh = split[0] + "-" + split[1]
+            }
+            return h('div',pjbh);
+          }
         },
         {
           title: '备注',
@@ -245,17 +237,7 @@ export default {
           minWidth: 120,
           render: (h, p) => {
             return h('div', [
-              // h('Button', {
-              //   props: {
-              //     type: 'error',
-              //     size: 'small'
-              //   },
-              //   on: {
-              //     click: () => {
-              //       this.dele(p.row.id)
-              //     }
-              //   }
-              // }, '撤回'),
+
               h('Button', {
                 props: {
                   type: 'primary',
@@ -266,9 +248,14 @@ export default {
                 },
                 on: {
                   click: () => {
+                    console.log('p.row',p.row);
                     this.hisPrintMess = p.row
                     this.printClose = false
-                    this.winPrintNew()
+                    if(p.row.chargeName.indexOf('从业资格证') > 0) {
+                      this.compName = 'printOther'
+                    }else {
+                      this.winPrintNew()
+                    }
                   }
                 }
               }, "补打")
@@ -404,7 +391,11 @@ export default {
                 this.printMess.push(res.result);
                 this.hisPrintMess = res.result
                 this.printClose = true
-                this.winPrintNew();
+                if(this.hisPrintMess.chargeName.indexOf('从业资格证') > 0){
+                  this.compName = 'printOther'
+                }else {
+                  this.winPrintNew();
+                }
               }
               this.getPagerList()
               this.form = {

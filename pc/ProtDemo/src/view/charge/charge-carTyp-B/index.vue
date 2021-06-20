@@ -147,7 +147,7 @@
 </template>
 
 <script>
-  import pagPrint from '../../../components/print/printCTyp'
+  import pagPrint from '../../../components/print/printCTyp-B'
   export default {
     name: "index",
     components:{pagPrint},
@@ -246,26 +246,9 @@
             }else {
               this.$http.post('/api/traineeinformation/editClassType',v.C_param).then(res=>{
                 if(res.code == 200){
-                  // this.$Message.success(res.message);
-                  // if(v.C_param.inOutType=='00'){
-                    // this.swal({
-                    //   type:'question',
-                    //   title:'班型变更成功',
-                    //   text:'是否打印收款单据？',
-                    //   showCancelButton:true,
-                    //   confirmButtonText:'打印单据',
-                    //   cancelButtonText:'完成',
-                    // }).then((val)=>{
-                    //   if(val.value){
-                        v.print({traineeId:mess.id,inOutType:v.C_param.inOutType,chargeCode:'0005'})
-                    //   }
-                    // })
-                  // }else {
-                  //   this.swal({
-                  //     type:'success',
-                  //     title:'班型变更成功'
-                  //   })
-                  // }
+
+                  v.print({traineeId:mess.id,inOutType:v.C_param.inOutType,chargeCode:'0005'})
+
                   v.find()
                   this.carTypC = false
                 }else {

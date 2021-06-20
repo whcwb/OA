@@ -572,6 +572,7 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
                     chargeManagement.setGlyxm(information.getGlyxm());
                     chargeManagement.setJgPhone(jg != null ? jg.getLxdh1() : "");
                     chargeManagement.setSerialNum(information.getSerialNum());
+                    chargeManagement.setInformation(information);
                 }
             }
         });
@@ -803,6 +804,42 @@ public class ChargeManagementServiceImpl extends BaseServiceImpl<ChargeManagemen
         ApiResponse<String> res = new ApiResponse<>();
         res.setPage(info);
         return res;
+    }
+
+    @Override
+    public void exportOther(Page<ChargeManagement> page, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ApiResponse<List<ChargeManagement>> res = pager(page);
+        List<ChargeManagement> list = res.getPage().getList();
+        List<Map<Integer, String>> data = new ArrayList<>();
+        Map<Integer, String> titleMap = new HashMap<>();
+        titleMap.put(0, "序号");
+        titleMap.put(1, "姓名");
+        titleMap.put(2, "证件号码");
+        titleMap.put(3, "收费项");
+        titleMap.put(4, "收费金额");
+        titleMap.put(5, "收费时间");
+        titleMap.put(6, "手机号码");
+        data.add(titleMap);
+
+        for (int i = 0; i < list.size(); i++) {
+            Map<Integer,String> dataMap = new HashMap<>();
+            ChargeManagement management = list.get(i);
+            dataMap.put(0, (i+1) + "");
+            dataMap.put(1,management.getTraineeName());
+            dataMap.put(2,management.getIdCardNo());
+            dataMap.put(3, management.getChargeName());
+            dataMap.put(4, management.getChargeFee() +"");
+            dataMap.put(5, management.getChargeTime());
+            dataMap.put(6, management.getBankSerialNum());
+            data.add(dataMap);
+        }
+
+        response.setContentType("application/msexcel");
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("pragma", "no-cache");
+        response.addHeader("Content-Disposition", "attachment; filename=" + new String("其他收费".getBytes("utf-8"), "ISO8859-1") + ".xls");
+        OutputStream out = response.getOutputStream();
+        ExcelUtil.createSheet(out,"其他收费",data);
     }
 
 

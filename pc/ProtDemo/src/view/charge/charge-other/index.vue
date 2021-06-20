@@ -63,24 +63,34 @@
                 </div>
               </Col>
               <Col span="3" :lg="3" :md="4">
-                <DatePicker type="date" split-panels :value="this.AF.trimDate()" :clearable="false"
-                            @on-change="changeTime" placeholder="审核日期" style="width: 100% ;"></DatePicker>
+                <DatePicker type="daterange" split-panels  :clearable="false"
+                            @on-change="changeTime" placeholder="收费日期" style="width: 100% ;"></DatePicker>
               </Col>
               <Col span="3" :lg="3" :md="5">
                 <Input v-model="param.traineeNameLike"
                        @on-enter="getPagerList"
                        placeholder="请输入学员姓名"/>
               </Col>
+              <Col span="3" :lg="3" :md="5">
+                <Select v-model="param.chargeName" placeholder="请选择收费项" @on-change="getPagerList">
+                  <Option v-for="(item,index) in sfList" :value="item.chargeName" :key="index">{{ item.chargeName }}</Option>
+                </Select>
+              </Col>
 
-
-              <Col span="4" :lg="4" :md="5">
+              <Col span="2" :lg="2" :md="2">
                 <Input v-model="param.idCardNoLike"
                        @on-enter="getPagerList"
                        placeholder="请输入学员证件号码"/>
               </Col>
-              <Col span="3" :lg="3" :md="6">
+              <Col span="2" :lg="2" :md="4">
                 <Button type="primary" @click="getPagerList">
                   <Icon type="md-search"></Icon>
+                  <!--查询-->
+                </Button>
+              </Col>
+              <Col span="2" :lg="2" :md="4">
+                <Button type="primary" @click="exportStag">
+                  <Icon type="ios-cloud-download"></Icon>
                   <!--查询-->
                 </Button>
               </Col>
@@ -101,6 +111,7 @@
 import OPrintMess from '../../../components/print/other'
 import PrintNew from '../../../components/printNew'
 import printOther from "../../../components/print/printOther";
+import Cookies from 'js-cookie';
 
 export default {
   name: "index",
@@ -150,10 +161,12 @@ export default {
         ]
       },
       sfList: [],
+      sfxList:[],
       cityList: [],
       cityCode: 'ZDCLK1017',
       param: {
-        chargeTimeLike: '',
+        chargeName:'',
+        chargeTimeInRange: '',
         traineeNameLike: '',//姓名
         chargeSourceLike: '',//驾校
         idCardNoLike: '',//证件号码
@@ -269,6 +282,8 @@ export default {
     }
   },
   created() {
+    let date = this.AF.trimDate();
+    this.param.chargeTimeInRange = date + ' 00:00:00,' +  date +" 23:59:59";
     this.getPagerList();
     this.getDictList();
     this.getSfList();
@@ -293,6 +308,17 @@ export default {
     }
   },
   methods: {
+    exportStag() {
+      let p = '';
+      for (let k in this.param) {
+        p += '&' + k + '=' + this.param[k];
+      }
+      p = p.substr(1);
+      let accessToken = JSON.parse(Cookies.get('accessToken'));
+      let token = accessToken.token;
+      let userid = accessToken.userId;
+      window.open(this.apis.url + '/api/chargemanagement/export_other?token=' + token + "&userid=" + userid + "&" + p);
+    },
     readCard(){
         this.rdc.readCardByHand(this);
     },
@@ -308,8 +334,9 @@ export default {
       }
     },
     changeTime(val) {
-      let time = this.AF.trimDate(val);
-      this.param.chargeTimeLike = time;
+      console.log('val:', val)
+      // let time = this.AF.trimDate(val);
+      this.param.chargeTimeInRange = val[0] + ' 00:00:00' + "," + val[1] + " 23:59:59";
       this.getPagerList();
     },
     changeFee(val) {
@@ -344,7 +371,7 @@ export default {
     },
     getPagerList() {
       var v = this;
-      this.param.chargeTimeLike = this.AF.trimDate(this.param.chargeTimeLike)
+
       this.$http.post(this.apis.TJSDF.PAGER, this.param).then((res) => {
         v.tableData = res.page.list;
         v.total = res.page.total;

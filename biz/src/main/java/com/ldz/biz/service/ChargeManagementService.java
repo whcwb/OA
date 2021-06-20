@@ -63,4 +63,6 @@ public interface ChargeManagementService extends BaseService<ChargeManagement, S
     ApiResponse<String> removePjbh(String pjbh);
 
     ApiResponse<String> getPrintLog(int pageNum, int pageSize);
+
+    void exportOther(Page<ChargeManagement> page, HttpServletRequest request, HttpServletResponse response) throws IOException;
 }

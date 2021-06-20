@@ -13,6 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -187,6 +190,11 @@ public class ChargeManagementController extends BaseController<ChargeManagement,
     @GetMapping("/getPrintLog")
     public ApiResponse<String> getPrintLog(@RequestParam(defaultValue = "1") int pageNum,@RequestParam(defaultValue = "8") int pageSize){
         return service.getPrintLog(pageNum, pageSize);
+    }
+
+    @GetMapping("/export_other")
+    public void exportOther(Page<ChargeManagement> page, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        service.exportOther(page,request,response);
     }
 
 }

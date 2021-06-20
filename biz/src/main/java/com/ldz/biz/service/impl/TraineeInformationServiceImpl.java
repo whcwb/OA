@@ -3825,7 +3825,7 @@ public class TraineeInformationServiceImpl extends BaseServiceImpl<TraineeInform
         response.setHeader("pragma", "no-cache");
         response.addHeader("Content-Disposition", "attachment; filename=" + new String("分期学员".getBytes("utf-8"), "ISO8859-1") + ".xls");
         OutputStream out = response.getOutputStream();
-        ExcelUtil.createSheet(out,"分期学院",data);
+        ExcelUtil.createSheet(out,"分期学员",data);
     }
 
 

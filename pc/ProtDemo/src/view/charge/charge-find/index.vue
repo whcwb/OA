@@ -105,11 +105,12 @@
   import expandRow from './comp/expand'
   import http from '@/axios/index';
   import pagPrint from '../../../components/print/printCTyp'
+  import pagPrint2 from '../../../components/print/printCTyp-B'
 
   export default {
     name: "index",
     components: {
-      expandRow, pagPrint
+      expandRow, pagPrint, pagPrint2
     },
     props: {
       tabHeight: {
@@ -245,8 +246,13 @@
                   print: (id) => {
                     var v = this
                     v.AF.idPrintMess(id, (res) => {
+                      console.log('res',res);
                       v.itemMess = res
-                      v.compName = 'pagPrint'
+                      if(res.chargeCode == '0005') {
+                        v.compName = 'pagPrint2'
+                      }else {
+                        v.compName = 'pagPrint'
+                      }
                     })
                   }
                 }
